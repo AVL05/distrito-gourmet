@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Manrope:wght@200;300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg-body text-text-main font-body font-light text-base leading-relaxed antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-text-main font-normal tracking-wider mb-4;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl uppercase;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl uppercase relative inline-block pb-2;
+  }
+
+  h2::after {
+    content: none;
+  }
+
+  /* Custom elegant scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F8F6F0;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D9D2C5;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B89065;
+  }
+}
+
+@layer components {
+  /* Minimalist Buttons */
+  .btn {
+    @apply inline-block px-8 py-3 bg-transparent border border-gray-300 text-text-main font-body text-xs uppercase tracking-[2px] cursor-pointer transition-all duration-300;
+  }
+
+  .btn:hover {
+    @apply border-primary-hover text-primary-hover bg-gray-50/50;
+  }
+
+  .btn-primary {
+    @apply border-primary text-primary;
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary text-white border-primary;
+  }
+
+  .btn-outline {
+    @apply border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white;
+  }
+
+  .btn-link {
+    @apply underline hover:text-primary transition-colors;
+  }
+
+  .btn-sm {
+    @apply px-4 py-2 text-[10px] tracking-[1.5px] border border-gray-300 hover:bg-gray-50 hover:text-primary;
+  }
+
+  .btn-text {
+    @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-xs uppercase tracking-[1.5px] transition-colors duration-300 hover:text-main;
+  }
+
+  /* Structural */
+  .container {
+    @apply max-w-7xl mx-auto px-6 md:px-8;
+  }
+
+  .section {
+    @apply py-24;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply bg-transparent border-none border-b border-gray-300 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-gray-400;
+  }
+
+  label {
+    @apply text-[10px] uppercase tracking-[1.5px] text-text-muted block mb-2;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
