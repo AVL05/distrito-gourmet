@@ -46,7 +46,7 @@ const ProfileView = () => {
     <div className="min-h-screen bg-bg-body relative overflow-hidden flex items-center justify-center py-32 px-4">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
-      <div className="w-full max-w-2xl bg-white/90 shadow-sm border-gray-100 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+      <div className="w-full max-w-2xl bg-white/90 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         <div className="text-center mb-12">
           <span className="text-primary text-3xl mb-4 opacity-80 block font-light">✧</span>
           <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">

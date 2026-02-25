@@ -76,7 +76,7 @@ const ReservationsView = () => {
           ) : (
             <div className="space-y-8 max-w-4xl mx-auto">
               {reservations.length === 0 ? (
-                <div className="flex flex-col items-center justify-center text-center py-20 bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-200 shadow-[0_0_30px_rgba(0,0,0,0.5)] rounded-sm">
+                <div className="flex flex-col items-center justify-center text-center py-20 bg-white/90 backdrop-blur-md border border-gray-200 shadow-[0_0_30px_rgba(0,0,0,0.5)] rounded-sm">
                   <span className="text-primary text-4xl mb-6 opacity-50 font-light">✦</span>
                   <p className="text-gray-500 font-light tracking-wide text-lg">
                     Aún no constan reservas en su historial.
@@ -86,7 +86,7 @@ const ReservationsView = () => {
                 reservations.map((res) => (
                   <div
                     key={res.id}
-                    className="bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 hover:border-primary/30 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(197,160,89,0.1)] relative overflow-hidden group"
+                    className="bg-white/90 backdrop-blur-md border border-gray-100 p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 hover:border-primary/30 transition-all duration-500 shadow-[0_0_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_30px_rgba(197,160,89,0.1)] relative overflow-hidden group"
                   >
                     <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 

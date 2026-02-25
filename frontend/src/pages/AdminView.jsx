@@ -139,7 +139,7 @@ const AdminView = () => {
         <div className="space-y-6">
           {data.orders.length === 0 ? <p className="text-gray-500">No hay pedidos registrados.</p> : (
             data.orders.map(order => (
-              <div key={order.id} className="bg-white/90 shadow-sm border-gray-100 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center">
+              <div key={order.id} className="bg-white/90 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center">
                 <div className="mb-4 md:mb-0">
                   <span className="text-primary text-xs tracking-widest uppercase block mb-1">Pedido #{order.id}</span>
                   <p className="text-gray-900">Cliente: {order.user?.name || `ID: ${order.user_id}`}</p>
@@ -172,7 +172,7 @@ const AdminView = () => {
         <div className="space-y-6">
           {data.reservations.length === 0 ? <p className="text-gray-500">No hay reservas registradas.</p> : (
             data.reservations.map(res => (
-              <div key={res.id} className="bg-white/90 shadow-sm border-gray-100 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center">
+              <div key={res.id} className="bg-white/90 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center">
                 <div className="mb-4 md:mb-0">
                   <span className="text-primary text-xs tracking-widest uppercase block mb-1">Reserva #{res.id}</span>
                   <p className="text-gray-900">Cliente: {res.user?.name || `ID: ${res.user_id}`}</p>
@@ -202,7 +202,7 @@ const AdminView = () => {
       return (
         <div className="space-y-8">
           {/* Add Dish Form */}
-          <form onSubmit={handleAddDish} className="bg-white/90 shadow-sm border-gray-100 border border-gray-200 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
+          <form onSubmit={handleAddDish} className="bg-white/90 border border-gray-200 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
             <h3 className="col-span-full font-heading text-primary text-lg mb-2">Añadir Nuevo Plato</h3>
             <div>
               <label className="text-gray-500 text-[10px] uppercase tracking-widest block mb-1">Nombre</label>
@@ -261,7 +261,7 @@ const AdminView = () => {
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
       {/* Sidebar */}
-      <aside className="w-64 bg-white/90 shadow-sm border-gray-100 backdrop-blur-xl border-r border-gray-100 hidden md:flex flex-col relative z-20 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
+      <aside className="w-64 bg-white/90 backdrop-blur-xl border-r border-gray-100 hidden md:flex flex-col relative z-20 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
         <div className="p-10 border-b border-gray-100 flex flex-col items-center justify-center">
           <span className="text-primary text-2xl mb-2 opacity-80 block font-light">✦</span>
           <span className="text-gray-900 font-heading tracking-[0.2em] text-lg font-light text-center">
@@ -370,7 +370,7 @@ const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-white/90 shadow-sm border-gray-100 border border-primary/40 p-6 flex flex-col gap-6 shadow-[0_0_30px_rgba(197,160,89,0.1)] relative mt-4 mb-4 rounded-sm">
+      <div className="bg-white/90 border border-primary/40 p-6 flex flex-col gap-6 shadow-[0_0_30px_rgba(197,160,89,0.1)] relative mt-4 mb-4 rounded-sm">
         <h4 className="text-primary font-heading uppercase text-xs tracking-widest absolute -top-3 left-6 bg-bg-body px-3 py-1 border border-primary/40 rounded-full">Editando Plato</h4>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mt-2">
@@ -407,7 +407,7 @@ const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
   }
 
   return (
-    <div className="bg-white/90 shadow-sm border-gray-100 border border-gray-100 p-4 flex justify-between items-center group">
+    <div className="bg-white/90 border border-gray-100 p-4 flex justify-between items-center group">
       <div>
         <h4 className="text-gray-900 font-heading">{item.name}</h4>
         <p className="text-gray-500 text-sm">{parseFloat(item.price).toFixed(2)}€</p>
@@ -462,7 +462,7 @@ const UserEditRow = ({ user, fetchData }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-white/90 shadow-sm border-gray-100 border border-primary/40 p-4 flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-white/90 border border-primary/40 p-4 flex flex-col md:flex-row gap-4 items-center">
         <input type="text" value={editUser.name} onChange={e => setEditUser({...editUser, name: e.target.value})} className="bg-transparent border-b border-gray-200 text-gray-900 p-2 text-sm flex-1" />
         <input type="email" value={editUser.email} onChange={e => setEditUser({...editUser, email: e.target.value})} className="bg-transparent border-b border-gray-200 text-gray-900 p-2 text-sm flex-1" />
         <select value={editUser.role} onChange={e => setEditUser({...editUser, role: e.target.value})} className="bg-white border border-gray-200 text-gray-900 p-2 text-sm">
@@ -480,7 +480,7 @@ const UserEditRow = ({ user, fetchData }) => {
   }
 
   return (
-    <div className="bg-white/90 shadow-sm border-gray-100 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center group">
+    <div className="bg-white/90 border border-gray-200 p-6 flex flex-col md:flex-row justify-between md:items-center group">
       <div className="mb-4 md:mb-0">
         <span className="text-primary text-xs tracking-widest uppercase block mb-1">Role: {user.role?.toUpperCase()}</span>
         <p className="text-gray-900">{user.name}</p>

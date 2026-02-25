@@ -57,7 +57,7 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   return (
-    <div className="animate-fade-in w-full max-w-3xl mx-auto bg-white/90 shadow-sm border-gray-100 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
+    <div className="animate-fade-in w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
       {/* Decorative top border */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
@@ -186,7 +186,7 @@ const ReservationForm = ({ compact = false }) => {
         </div>
 
         {success && (
-          <div className="mt-8 p-6 bg-white/90 shadow-sm border-gray-100 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
+          <div className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
             <span className="text-primary text-2xl mb-2">✦</span>
             <p className="text-gray-900 font-light tracking-wide leading-relaxed">
               Su petición de reserva ha sido recibida con éxito.<br/>

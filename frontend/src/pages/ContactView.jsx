@@ -94,7 +94,7 @@ const ContactView = () => {
 
           {/* Form - Takes 3 cols */}
           <div className="lg:col-span-3">
-            <div className="bg-white/90 shadow-sm border-gray-100 backdrop-blur-xl border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-12 md:p-16 rounded-sm relative">
+            <div className="bg-white/90 backdrop-blur-xl border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.5)] p-12 md:p-16 rounded-sm relative">
               {/* Corner accents */}
               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-primary/50"></div>
               <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-primary/50"></div>

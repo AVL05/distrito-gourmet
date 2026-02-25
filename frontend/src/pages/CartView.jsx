@@ -76,7 +76,7 @@ const CartView = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
-        <div className="backdrop-blur-xl bg-white/90 shadow-sm border-gray-100 border border-gray-200 p-16 rounded-sm max-w-2xl w-full animate-fade-in shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 flex flex-col items-center">
+        <div className="backdrop-blur-xl bg-white/90 border border-gray-200 p-16 rounded-sm max-w-2xl w-full animate-fade-in shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 flex flex-col items-center">
           <span className="text-primary text-5xl mb-8 opacity-60 font-light">✦</span>
           <h2 className="text-3xl font-heading text-gray-900 tracking-[0.2em] mb-6 drop-shadow-md">
             SU SELECCIÓN ESTÁ <span className="italic font-light text-primary">VACÍA</span>
@@ -115,7 +115,7 @@ const CartView = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="flex flex-col sm:flex-row items-center bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-6 hover:border-gray-200 hover:shadow-[0_0_30px_rgba(197,160,89,0.05)] transition-all duration-500"
+                className="flex flex-col sm:flex-row items-center bg-white/90 backdrop-blur-md border border-gray-100 p-6 hover:border-gray-200 hover:shadow-[0_0_30px_rgba(197,160,89,0.05)] transition-all duration-500"
               >
                 {/* Image */}
                 <div className="w-24 h-24 mb-6 sm:mb-0 sm:mr-8 flex-shrink-0 relative overflow-hidden">
@@ -144,7 +144,7 @@ const CartView = () => {
 
                 {/* Controls */}
                 <div className="flex items-center gap-8">
-                  <div className="flex items-center border border-gray-200 bg-white/90 shadow-sm border-gray-100">
+                  <div className="flex items-center border border-gray-200 bg-white/90">
                     <button
                       onClick={() => updateQuantity(item.id, -1)}
                       className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-white/10 transition-colors"
@@ -186,7 +186,7 @@ const CartView = () => {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white/90 shadow-sm border-gray-100 backdrop-blur-xl border border-primary/20 p-10 sticky top-32 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="bg-white/90 backdrop-blur-xl border border-primary/20 p-10 sticky top-32 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
               <h3 className="font-heading text-2xl text-gray-900 tracking-[0.1em] mb-8 pb-6 border-b border-primary/20 text-center font-light">
                 RESUMEN DE <span className="text-primary italic">PEDIDO</span>
               </h3>

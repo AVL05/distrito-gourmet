@@ -36,7 +36,7 @@ const DashboardView = () => {
         {/* Statistics / Quick Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in delay-100">
           {/* Reservations Card */}
-          <div className="group bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
+          <div className="group bg-white/90 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
             <Link to="/reservations" className="block h-full relative z-10">
               <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:scale-110 transition-transform duration-500">
@@ -55,7 +55,7 @@ const DashboardView = () => {
           </div>
 
           {/* Profile Card */}
-          <div className="group bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
+          <div className="group bg-white/90 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
             <Link to="/profile" className="block h-full relative z-10">
               <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:scale-110 transition-transform duration-500">
@@ -74,7 +74,7 @@ const DashboardView = () => {
           </div>
 
           {/* Favorites Card */}
-          <div className="group bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
+          <div className="group bg-white/90 backdrop-blur-md border border-gray-100 p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(197,160,89,0.1)] transition-all duration-500 cursor-pointer relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
             {/* <Link to="/favorites" className="block h-full relative z-10"> */}
             <div className="block h-full relative z-10 opacity-50">
@@ -96,7 +96,7 @@ const DashboardView = () => {
         </div>
 
         {/* Recent Activity Section */}
-        <div className="mt-16 bg-white/90 shadow-sm border-gray-100 backdrop-blur-md border border-gray-100 p-10 relative overflow-hidden animate-fade-in delay-200">
+        <div className="mt-16 bg-white/90 backdrop-blur-md border border-gray-100 p-10 relative overflow-hidden animate-fade-in delay-200">
           <div className="absolute left-0 top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-primary/30 to-transparent"></div>
 
           <h3 className="font-heading text-xl text-gray-900 mb-8 uppercase tracking-[4px] border-b border-gray-200 pb-4 font-light">

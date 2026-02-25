@@ -48,7 +48,7 @@ const RegisterView = () => {
       {/* Background ambient light */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
-      <div className="w-full max-w-xl bg-white/90 shadow-sm border-gray-100 backdrop-blur-xl p-12 md:p-16 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-sm relative z-10">
+      <div className="w-full max-w-xl bg-white/90 backdrop-blur-xl p-12 md:p-16 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-sm relative z-10">
         {/* Corner accents */}
         <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-primary/50"></div>
         <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-primary/50"></div>
