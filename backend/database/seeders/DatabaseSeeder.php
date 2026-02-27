@@ -54,25 +54,25 @@ class DatabaseSeeder extends Seeder
         // Dishes
         $dishes = [
             // Entrantes
-            ['name' => 'Tartar de Atún Rojo', 'description' => 'Atún salvaje, aguacate, sésamo tostado y emulsión de wasabi.', 'price' => 24.0, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Croquetas de Jamón Ibérico', 'description' => 'Cremosas por dentro, crujientes por fuera. Jamón de bellota 100%.', 'price' => 16.5, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1626645738196-c2a7c87a8f58?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Carpaccio de Wagyū', 'description' => 'Con lascas de parmesano reggiano de 24 meses y aceite de trufa.', 'price' => 28.0, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Ostras Gillardeau N.º 2', 'description' => 'Al natural con mignonette de chalota y perlas de yuzu.', 'price' => 38.0, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1614930335043-4e43ab44502d?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Zamburiñas al Josper', 'description' => 'Con emulsión de ají amarillo, salicornia y polvo de jamón ibérico.', 'price' => 26.0, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1554502444-464aebdca4fa?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Caviar Beluga Iraní', 'description' => 'Selección exclusiva 30g, acompañado de blinis artesanales y crema agria.', 'price' => 210.0, 'menu_category_id' => 1, 'image' => 'https://images.unsplash.com/photo-1625944230945-1b7dd12ce20f?auto=format&fit=crop&w=800&q=80'],
+            ['name' => 'Tartar de Atún Rojo', 'description' => 'Atún salvaje, aguacate, sésamo tostado y emulsión de wasabi.', 'price' => 24.0, 'menu_category_id' => 1],
+            ['name' => 'Croquetas de Jamón Ibérico', 'description' => 'Cremosas por dentro, crujientes por fuera. Jamón de bellota 100%.', 'price' => 16.5, 'menu_category_id' => 1],
+            ['name' => 'Carpaccio de Wagyū', 'description' => 'Con lascas de parmesano reggiano de 24 meses y aceite de trufa.', 'price' => 28.0, 'menu_category_id' => 1],
+            ['name' => 'Ostras Gillardeau N.º 2', 'description' => 'Al natural con mignonette de chalota y perlas de yuzu.', 'price' => 38.0, 'menu_category_id' => 1],
+            ['name' => 'Zamburiñas al Josper', 'description' => 'Con emulsión de ají amarillo, salicornia y polvo de jamón ibérico.', 'price' => 26.0, 'menu_category_id' => 1],
+            ['name' => 'Caviar Beluga Iraní', 'description' => 'Selección exclusiva 30g, acompañado de blinis artesanales y crema agria.', 'price' => 210.0, 'menu_category_id' => 1],
 
             // Principales
-            ['name' => 'Solomillo Rossini', 'description' => 'Foie gras fresco, reducción de Pedro Ximénez y trufa negra.', 'price' => 36.0, 'menu_category_id' => 2, 'image' => 'https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Lubina Salvaje', 'description' => 'A la espalda con verduras de temporada y refrito de ajos tiernos.', 'price' => 32.0, 'menu_category_id' => 2, 'image' => 'https://images.unsplash.com/photo-1532453288672-3a27e9be9efd?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Risotto de Setas', 'description' => 'Boletus edulis, trompetas de la muerte y aceite de trufa blanca.', 'price' => 22.0, 'menu_category_id' => 2, 'image' => 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Pichón de Bresse', 'description' => 'Pechuga sangrante, muslo confitado, parmentier de chirivía y trufa negra.', 'price' => 45.0, 'menu_category_id' => 2, 'image' => 'https://images.unsplash.com/photo-1514326640560-7d063ef2aed5?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Bogavante Azul Braseado', 'description' => 'Con mantequilla noisette, caviar cítrico y suculenta bisquet.', 'price' => 68.0, 'menu_category_id' => 2, 'image' => 'https://images.unsplash.com/photo-1553659971-ce4f09d6402f?auto=format&fit=crop&w=800&q=80'],
+            ['name' => 'Solomillo Rossini', 'description' => 'Foie gras fresco, reducción de Pedro Ximénez y trufa negra.', 'price' => 36.0, 'menu_category_id' => 2],
+            ['name' => 'Lubina Salvaje', 'description' => 'A la espalda con verduras de temporada y refrito de ajos tiernos.', 'price' => 32.0, 'menu_category_id' => 2],
+            ['name' => 'Risotto de Setas', 'description' => 'Boletus edulis, trompetas de la muerte y aceite de trufa blanca.', 'price' => 22.0, 'menu_category_id' => 2],
+            ['name' => 'Pichón de Bresse', 'description' => 'Pechuga sangrante, muslo confitado, parmentier de chirivía y trufa negra.', 'price' => 45.0, 'menu_category_id' => 2],
+            ['name' => 'Bogavante Azul Braseado', 'description' => 'Con mantequilla noisette, caviar cítrico y suculenta bisquet.', 'price' => 68.0, 'menu_category_id' => 2],
 
             // Postres
-            ['name' => 'Coulant de Chocolate', 'description' => 'Corazón fundido de cacao 70% con helado de vainilla Bourbon.', 'price' => 12.0, 'menu_category_id' => 3, 'image' => 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Tarta de Queso', 'description' => 'Estilo La Viña, cremosa y con un toque de queso azul.', 'price' => 10.0, 'menu_category_id' => 3, 'image' => 'https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Milhojas de Vainilla Tahití', 'description' => 'Crema diplomática, praliné de nuez pecán y helado artesanal.', 'price' => 14.0, 'menu_category_id' => 3, 'image' => 'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80'],
-            ['name' => 'Esfera de Oro Especiado', 'description' => 'Texturas de avellana, chocolate 85% y corazón líquido de maracuyá.', 'price' => 18.0, 'menu_category_id' => 3, 'image' => 'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80']
+            ['name' => 'Coulant de Chocolate', 'description' => 'Corazón fundido de cacao 70% con helado de vainilla Bourbon.', 'price' => 12.0, 'menu_category_id' => 3],
+            ['name' => 'Tarta de Queso', 'description' => 'Estilo La Viña, cremosa y con un toque de queso azul.', 'price' => 10.0, 'menu_category_id' => 3],
+            ['name' => 'Milhojas de Vainilla Tahití', 'description' => 'Crema diplomática, praliné de nuez pecán y helado artesanal.', 'price' => 14.0, 'menu_category_id' => 3],
+            ['name' => 'Esfera de Oro Especiado', 'description' => 'Texturas de avellana, chocolate 85% y corazón líquido de maracuyá.', 'price' => 18.0, 'menu_category_id' => 3]
         ];
         foreach ($dishes as $d) \App\Models\Dish::create($d);
 

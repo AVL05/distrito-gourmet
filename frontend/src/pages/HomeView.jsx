@@ -1,155 +1,169 @@
-import { Link } from "react-router-dom";
-import ReservationForm from "../components/ReservationForm";
+import { Link } from 'react-router-dom';
+import ReservationForm from '../components/ReservationForm';
+import AnimatedSection from '../components/animations/AnimatedSection';
 
 const HomeView = () => {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
-        {/* Background Image Overlay */}
+      <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
+        {/* Subtle, desaturated background image with heavy overlay */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}
-        >
-        </div>
+          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30 grayscale"
+          style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}></div>
+
+        {/* Gucci Style Grid Lines */}
+        <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
         <div className="relative z-10 px-4 max-w-5xl mx-auto animate-fade-in flex flex-col items-center justify-center h-full">
-          <div className="backdrop-blur-md bg-white/90 p-12 rounded-3xl border border-gray-200 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] flex flex-col items-center">
-            <span className="block text-primary text-xs md:text-sm uppercase tracking-[8px] mb-6 font-body opacity-90">
-              Tres Estrellas Michelin
-            </span>
-            <h1 className="text-6xl md:text-8xl font-heading text-text-main mb-8 tracking-[0.1em] font-light">
-              DISTRITO
-              <br />
-              <span className="italic text-5xl md:text-7xl text-primary font-serif">Gourmet</span>
-            </h1>
-            <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mb-10"></div>
-            <p className="text-lg md:text-xl text-gray-500 font-light mb-12 max-w-2xl mx-auto leading-relaxed tracking-wide">
-              Donde la alta cocina abraza sus raíces. Una experiencia sensorial
-              diseñada para trascender el tiempo y el espacio.
-            </p>
-            <div className="flex gap-6">
-              <Link
-                to="/reservations"
-                className="group relative px-12 py-4 bg-primary text-black font-body text-xs uppercase tracking-[3px] overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(197,160,89,0.4)]"
-              >
-                <div className="absolute inset-0 w-0 bg-white transition-all duration-[250ms] ease-out group-hover:w-full"></div>
-                <span className="relative text-black font-semibold tracking-[4px]">Reservar Mesa</span>
-              </Link>
-              <Link
-                to="/menu"
-                className="px-12 py-4 bg-transparent border border-gray-200 text-gray-900 font-body text-xs uppercase tracking-[3px] hover:border-primary hover:text-primary transition-all duration-300"
-              >
-                Menú Degustación
-              </Link>
-            </div>
+          <span className="block text-text-main text-[10px] md:text-xs uppercase tracking-[0.4em] mb-12 font-body font-medium">
+            / 01 Inspiración Florentina
+          </span>
+          <h1 className="text-5xl sm:text-7xl md:text-[8rem] leading-[0.85] font-heading text-text-main mb-6 tracking-tight">
+            Distrito
+            <br />
+            <span className="italic block mt-2 text-5xl sm:text-6xl md:text-[7rem] text-primary">Gourmet</span>
+          </h1>
+          <p className="text-sm md:text-base text-text-muted font-body font-light mb-16 max-w-lg mx-auto leading-loose tracking-widest uppercase">
+            Cocina Española Contemporánea
+          </p>
+          <div className="flex flex-col sm:flex-row gap-8 items-center">
+            <Link
+              to="/menu"
+              className="group relative px-6 text-text-main font-body text-[11px] uppercase tracking-[3px] transition-all">
+              <span className="relative z-10 font-bold group-hover:text-primary transition-colors pb-1 border-b border-text-main group-hover:border-primary">
+                Descubrir la Carta
+              </span>
+            </Link>
+            <Link
+              to="/reservations"
+              className="group relative px-10 py-4 bg-text-main text-bg-body font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center">
+              <div className="absolute inset-0 w-0 bg-primary/20 transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+              <span className="relative z-10 font-semibold transition-colors duration-300">Reservar Mesa</span>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Philosophy Section */}
-      <section className="py-32 bg-bg-body relative overflow-hidden">
-        {/* Decorative background circle */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-
-        <div className="container relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
-            <div className="text-left relative">
-              <div className="absolute -left-10 top-0 w-[1px] h-full bg-gradient-to-b from-transparent via-primary/50 to-transparent hidden md:block"></div>
-              <span className="block text-primary text-xs uppercase tracking-[4px] mb-4 font-body opacity-80">
-                Nuestra Esencia
+      <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
+        <AnimatedSection className="container relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
+            <div className="lg:col-span-5 text-left relative flex flex-col justify-center order-2 lg:order-1 px-0">
+              <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-8 font-body">
+                / 02 Identidad
               </span>
-              <h2 className="text-5xl font-heading text-gray-900 mb-10 leading-snug">
-                El Arte de la <br/> <span className="italic font-light text-primary-hover">Paciencia</span>
+              <h2 className="text-5xl md:text-7xl font-heading text-text-main mb-12 leading-[0.9] tracking-tight">
+                El Arte
+                <br />
+                <span className="italic text-primary">Contemporáneo</span>
               </h2>
-              <p className="text-gray-500 mb-8 leading-loose font-light text-lg">
-                En Distrito Gourmet, cada plato es el resultado de una búsqueda
-                incansable de la perfección. No solo cocinamos ingredientes;
-                narramos historias a través de texturas y aromas que evocan los
-                orígenes más profundos de nuestra tierra.
+              <div className="w-full h-[1px] bg-text-main/10 mb-10"></div>
+              <p className="text-text-muted mb-8 leading-relaxed font-body font-light text-[15px] tracking-wide">
+                En Distrito Gourmet, no solo cocinamos; curamos ingredientes. Un diálogo constante entre la tradición
+                española más profunda y la audacia de la técnica moderna.
               </p>
-              <p className="text-gray-500 mb-12 leading-loose font-light text-lg">
-                Nuestro espacio ha sido concebido matemáticamente para garantizar la acústica perfecta, desconectar del ruido
-                exterior y conectar con la esencia del momento presente. Un santuario para los cinco sentidos.
+              <p className="text-text-muted mb-12 leading-relaxed font-body font-light text-[15px] tracking-wide">
+                Cada receta está deconstruida, analizada matemáticamente y ensamblada de nuevo para provocar una
+                reacción emocional inesperada.
               </p>
               <Link
                 to="/menu"
-                className="group inline-flex items-center gap-4 text-gray-900 uppercase tracking-[3px] text-xs pb-2 border-b border-primary hover:text-primary transition-colors duration-300"
-              >
-                <span>Descubrir La Carta</span>
-                <span className="transform transition-transform group-hover:translate-x-2">→</span>
+                className="font-body text-[10px] uppercase tracking-[3px] text-text-main border-b border-text-main pb-1 self-start hover:text-primary hover:border-primary transition-colors">
+                Explorar Identidad
               </Link>
             </div>
 
-            {/* Visual Placeholder */}
-            <div className="relative h-[600px] w-full overflow-hidden shadow-xl group">
-              <div className="absolute inset-0 bg-[url('/bodega.png')] bg-cover bg-center group-hover:scale-105 transition-transform duration-[1.5s] ease-in-out"></div>
-              {/* Elegant floating badge */}
-              <div className="absolute bottom-8 right-8 z-20 bg-bg-surface/80 backdrop-blur-md border border-gray-200 p-6 rounded-xl">
-                <p className="font-heading text-primary text-2xl">10.000+</p>
-                <p className="text-xs uppercase tracking-[2px] text-gray-500 mt-1">Botellas en Bodega</p>
+            {/* Visual Arch Image Focus */}
+            <div className="lg:col-span-7 flex justify-center lg:justify-end order-1 lg:order-2 px-4 md:px-0">
+              <div className="w-full max-w-[500px] aspect-[3/4] overflow-hidden rounded-t-[250px] relative">
+                {/* Brand style frame border */}
+                <div className="absolute inset-0 border border-text-main/10 rounded-t-[250px] z-20 pointer-events-none"></div>
+                <img
+                  src="/bodega.png"
+                  alt="Interior bodegón"
+                  className="w-full h-full object-cover z-10 relative saturate-50 hover:saturate-100 transition-all duration-1000"
+                />
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Experience Section */}
-      <section className="py-24 bg-bg-surface border-y border-gray-100">
-        <div className="container text-center">
-          <span className="block text-primary text-xs uppercase tracking-[2px] mb-2 font-body">
-            Descubre
-          </span>
-          <h2 className="text-3xl md:text-4xl font-heading text-gray-900 mb-16">
-            Experiencia Sensorial
-          </h2>
+      <section className="py-24 md:py-32 bg-bg-body">
+        <AnimatedSection className="container px-4">
+          <div className="text-center mb-20">
+            <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 font-body">
+              / 03 La Visión
+            </span>
+            <h2 className="text-5xl md:text-6xl font-heading text-text-main leading-tight mb-4">
+              Arquitectura <span className="italic text-primary">Sensorial</span>
+            </h2>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="p-8 border border-gray-100 hover:border-primary/30 transition-colors duration-300">
-              <h3 className="text-xl font-heading text-gray-900 mb-4">
-                Materia Prima
-              </h3>
-              <p className="text-text-muted font-light">
-                Selección diaria de producto local de la más alta calidad.
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+            {/* Column 1 */}
+            <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 md:pl-0 flex flex-col justify-start">
+              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">01.</span>
+              <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Materia Prima</h3>
+              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+                Selección diaria de producto local de extrema calidad. Trato reverencial al productor y obsesión por la
+                frescura inmaculada.
               </p>
             </div>
-            <div className="p-8 border border-gray-100 hover:border-primary/30 transition-colors duration-300">
-              <h3 className="text-xl font-heading text-gray-900 mb-4">
-                Vinos de Autor
-              </h3>
-              <p className="text-text-muted font-light">
-                Maridaje exclusivo con bodegas boutique y referencias únicas.
+
+            {/* Column 2 */}
+            <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 flex flex-col justify-start">
+              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">02.</span>
+              <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Vinos de Autor</h3>
+              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+                Maridaje curado artesanalmente. Más de diez mil referencias descansan en una de las bodegas más
+                completas de Europa.
               </p>
             </div>
-            <div className="p-8 border border-gray-100 hover:border-primary/30 transition-colors duration-300">
-              <h3 className="text-xl font-heading text-gray-900 mb-4">Ambiente</h3>
-              <p className="text-text-muted font-light">
-                Diseño acústico e iluminación tenue para garantizar la
-                intimidad.
+
+            {/* Column 3 */}
+            <div className="p-8 md:p-12 md:pr-0 flex flex-col justify-start border-b md:border-b-0 border-text-main/10">
+              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">03.</span>
+              <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Espacio</h3>
+              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+                Un entorno diseñado en vacío absolouto. Madera noble, lino puro e iluminación escenográfica enfocada al
+                plato.
               </p>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
-      {/* Reservation Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 -skew-y-3 z-0 origin-top-left scale-110"></div>
-        <div className="container relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-heading text-gray-900 mb-6">
-              Reserva tu Mesa
+      {/* Reservation Section - High Contrast */}
+      <section className="py-24 md:py-32 bg-text-main text-bg-body">
+        <AnimatedSection className="container px-4">
+          <div className="max-w-4xl mx-auto text-center mb-16">
+            <span className="block text-bg-body/50 text-[10px] uppercase tracking-[4px] mb-6 font-body">
+              / 04 Reserva
+            </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-heading text-bg-body leading-tight mb-8">
+              Asegure su <span className="italic font-light text-primary">Mesa</span>
             </h2>
-            <p className="text-text-muted text-lg font-light max-w-2xl mx-auto">
-              Un número limitado de comensales por servicio para garantizar la
-              excelencia en cada detalle.
+            <div className="w-24 h-[1px] bg-bg-body/20 mx-auto mb-8"></div>
+            <p className="text-bg-body/70 text-sm md:text-base font-body font-light max-w-lg mx-auto tracking-wide leading-loose">
+              Cupo extremadamente estrictro y reducido por servicio para garantizar una experiencia sin interferencias.
             </p>
           </div>
 
-          <div className="flex justify-center">
-            <ReservationForm />
+          <div className="flex justify-center flex-col items-center">
+            <Link
+              to="/reservations"
+              className="group relative px-12 py-5 bg-transparent border border-bg-body text-bg-body font-body text-[11px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-transparent focus:outline-none w-full sm:w-auto text-center">
+              <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+              <span className="relative z-10 font-bold group-hover:text-text-main transition-colors duration-300">
+                Proceder a la Reserva
+              </span>
+            </Link>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
     </div>
   );

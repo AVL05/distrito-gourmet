@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Manrope:wght@200;300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -35,25 +35,25 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #F8F6F0;
+    background: #f8f6f0;
   }
   ::-webkit-scrollbar-thumb {
-    background: #D9D2C5;
+    background: #d9d2c5;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #B89065;
+    background: #b89065;
   }
 }
 
 @layer components {
   /* Minimalist Buttons */
   .btn {
-    @apply inline-block px-8 py-3 bg-transparent border border-gray-300 text-text-main font-body text-xs uppercase tracking-[2px] cursor-pointer transition-all duration-300;
+    @apply inline-block px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-xs uppercase tracking-[2px] cursor-pointer transition-all duration-300;
   }
 
   .btn:hover {
-    @apply border-primary-hover text-primary-hover bg-gray-50/50;
+    @apply border-primary-hover text-primary-hover bg-text-main/5;
   }
 
   .btn-primary {
@@ -65,7 +65,7 @@
   }
 
   .btn-outline {
-    @apply border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white;
+    @apply border border-text-main text-text-main hover:bg-text-main hover:text-white;
   }
 
   .btn-link {
@@ -73,7 +73,7 @@
   }
 
   .btn-sm {
-    @apply px-4 py-2 text-[10px] tracking-[1.5px] border border-gray-300 hover:bg-gray-50 hover:text-primary;
+    @apply px-4 py-2 text-[10px] tracking-[1.5px] border border-text-main/20 hover:bg-text-main/5 hover:text-primary;
   }
 
   .btn-text {
@@ -92,7 +92,7 @@
   input,
   select,
   textarea {
-    @apply bg-transparent border-none border-b border-gray-300 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-gray-400;
+    @apply bg-transparent border-none border-b border-text-main/20 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-text-muted/50;
   }
 
   label {

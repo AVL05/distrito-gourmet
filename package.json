@@ -1,0 +1,12 @@
+{
+  "name": "distrito-gourmet",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "cd backend && composer install && npm install && cd ../frontend && npm install",
+    "start": "node scripts/dev.js"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

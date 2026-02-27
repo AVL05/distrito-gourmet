@@ -1,27 +1,60 @@
-# Dependencies
+# ===========================
+# Dependencias
+# ===========================
+node_modules/
 frontend/node_modules/
 backend/vendor/
 
-# Environment files
+# ===========================
+# Variables de entorno
+# ===========================
+.env
 backend/.env
 
-# Build output
+# ===========================
+# Build / Producción
+# ===========================
 frontend/dist/
 
-# IDE
+# ===========================
+# IDE / Editores
+# ===========================
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS
+# ===========================
+# Sistema Operativo
+# ===========================
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Laravel
+# ===========================
+# Laravel (Backend)
+# ===========================
 backend/storage/*.key
 backend/storage/app/
 backend/storage/framework/
 backend/storage/logs/
 backend/bootstrap/cache/
 
-# SQLite
+# ===========================
+# Base de datos
+# ===========================
 backend/database/*.sqlite
+backend/database/*.sqlite-journal
+
+# ===========================
+# Logs y caché
+# ===========================
+*.log
+npm-debug.log*
+
+# ===========================
+# Lockfiles (opcional, descomentar si no se quieren trackear)
+# ===========================
+# package-lock.json
+# frontend/package-lock.json
+# backend/composer.lock
