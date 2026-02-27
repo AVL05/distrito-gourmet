@@ -8,7 +8,7 @@ const Preloader = () => {
     // Hold the preloader for 2.5 seconds to establish the luxury feel
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2800);
+    }, 1200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -19,7 +19,7 @@ const Preloader = () => {
           key="preloader"
           initial={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: '-100%' }}
-          transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
           className="fixed inset-0 z-[100] bg-bg-surface flex flex-col items-center justify-center overflow-hidden">
           {/* Subtle Grid Lines */}
           <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
@@ -28,7 +28,7 @@ const Preloader = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-            transition={{ duration: 1.5, ease: 'easeOut', delay: 0.2 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.1 }}
             className="relative z-10 flex flex-col items-center justify-center text-center">
             <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-8 font-body">
               / Casa de Alta Cocina

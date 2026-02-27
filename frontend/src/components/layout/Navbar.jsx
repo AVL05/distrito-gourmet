@@ -65,7 +65,7 @@ const Navbar = () => {
             onClick={() => setIsOpen(false)}
             className="relative flex items-center group transition-colors text-text-main"
             title="Selección">
-            <span className="uppercase text-[10px] tracking-[4px] font-body font-bold hidden md:block mr-2 group-hover:text-primary transition-colors">
+            <span className="uppercase text-[12px] tracking-[2px] font-body font-bold hidden md:block mr-2 group-hover:text-primary transition-colors">
               Selección
             </span>
             <svg
@@ -90,7 +90,7 @@ const Navbar = () => {
           <button
             className="flex items-center gap-3 text-text-main hover:text-primary transition-colors cursor-pointer group"
             onClick={toggleMenu}>
-            <span className="uppercase text-[10px] tracking-[4px] font-body font-bold hidden md:block group-hover:text-primary transition-colors">
+            <span className="uppercase text-[12px] tracking-[2px] font-body font-bold hidden md:block group-hover:text-primary transition-colors">
               {isOpen ? 'Cerrar' : 'Menú'}
             </span>
             <div className="text-2xl group-hover:scale-110 transition-transform">{isOpen ? <HiX /> : <HiMenu />}</div>
@@ -120,7 +120,7 @@ const Navbar = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-8 md:gap-0 mt-8 md:mt-0">
                 {/* Main Links */}
                 <div className="flex flex-col items-center md:items-end gap-6 md:gap-10 md:pr-24 md:border-r border-text-main/10 w-full">
-                  <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-2 font-body font-bold">
+                  <span className="block text-primary text-[12px] uppercase tracking-[3px] mb-2 font-body font-bold">
                     / Navegación
                   </span>
                   <NavLink
@@ -145,7 +145,7 @@ const Navbar = () => {
 
                 {/* Auth/User Links */}
                 <div className="flex flex-col items-center md:items-start gap-6 md:gap-8 md:pl-24 w-full justify-center">
-                  <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-2 font-body font-bold">
+                  <span className="block text-primary text-[12px] uppercase tracking-[3px] mb-2 font-body font-bold">
                     / Acceso Privado
                   </span>
                   {isAuthenticated() ? (
@@ -169,7 +169,7 @@ const Navbar = () => {
                           handleLogout();
                           setIsOpen(false);
                         }}
-                        className="text-[10px] font-body uppercase tracking-[3px] text-text-muted hover:text-text-main transition-colors mt-6 border-b border-text-main/10 hover:border-text-main pb-1">
+                        className="text-[12px] font-body uppercase tracking-[2px] text-text-muted hover:text-text-main transition-colors mt-6 border-b border-text-main/10 hover:border-text-main pb-1 font-medium">
                         Cerrar Sesión
                       </button>
                     </>
@@ -183,7 +183,7 @@ const Navbar = () => {
                       </NavLink>
                       <NavLink
                         to="/register"
-                        className="text-[10px] font-body uppercase tracking-[3px] text-text-muted hover:text-text-main transition-colors mt-6 border-b border-text-main/10 hover:border-text-main pb-1"
+                        className="text-[12px] font-body uppercase tracking-[2px] text-text-muted hover:text-text-main transition-colors mt-6 border-b border-text-main/10 hover:border-text-main pb-1 font-medium"
                         onClick={() => setIsOpen(false)}>
                         Solicitar Registro
                       </NavLink>

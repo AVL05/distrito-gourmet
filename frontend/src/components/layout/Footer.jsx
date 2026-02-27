@@ -12,7 +12,7 @@ const Footer = () => {
               <span className="text-primary opacity-80 text-xl">✦</span>
               DISTRITO<span className="italic text-primary-hover">GOURMET</span>
             </h3>
-            <p className="text-text-muted text-sm leading-loose max-w-sm font-light">
+            <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
               Experiencias culinarias únicas en el corazón de Valencia. Un santuario para los sentidos diseñado para
               paladares extraordinarios.
             </p>
@@ -20,11 +20,11 @@ const Footer = () => {
 
           <div className="md:w-7/12 grid grid-cols-1 sm:grid-cols-3 gap-12 w-full">
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/40 uppercase tracking-[4px] mb-6 relative inline-block">
+              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Ubicación
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
-              <p className="text-text-muted text-sm leading-loose font-light">
+              <p className="text-text-main/80 text-sm leading-loose font-medium">
                 Avenida de la Alta Gastronomía, 8
                 <br />
                 Distrito Financiero
@@ -33,11 +33,11 @@ const Footer = () => {
               </p>
             </div>
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/40 uppercase tracking-[4px] mb-6 relative inline-block">
+              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Comunicación
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
-              <p className="text-text-muted text-sm leading-loose font-light flex flex-col">
+              <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
                 <a href="tel:+34900000000" className="hover:text-primary transition-colors py-1">
                   +34 900 000 000
                 </a>
@@ -47,18 +47,18 @@ const Footer = () => {
               </p>
             </div>
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/40 uppercase tracking-[4px] mb-6 relative inline-block">
+              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Servicio
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
-              <p className="text-text-muted text-sm leading-loose font-light">
+              <p className="text-text-main/80 text-sm leading-loose font-medium">
                 <span className="block mb-1">
                   <span className="text-primary text-xs">M - D:</span> 13:30 a 15:30
                 </span>
                 <span className="block mb-2">
                   <span className="text-primary text-xs">M - S:</span> 20:30 a 22:30
                 </span>
-                <span className="text-text-main/40 italic">Lunes: Descanso del Chef</span>
+                <span className="text-text-main/75 italic">Lunes: Descanso del Chef</span>
               </p>
             </div>
           </div>
@@ -68,22 +68,22 @@ const Footer = () => {
           <div className="flex gap-4">
             <a
               href="#"
-              className="p-3 border border-text-main/10 rounded-full text-text-muted hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
+              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
               <FaFacebookF size={12} />
             </a>
             <a
               href="#"
-              className="p-3 border border-text-main/10 rounded-full text-text-muted hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
+              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
               <FaInstagram size={12} />
             </a>
             <a
               href="#"
-              className="p-3 border border-text-main/10 rounded-full text-text-muted hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
+              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
               <FaTwitter size={12} />
             </a>
           </div>
 
-          <div className="text-text-main/30 text-[10px] uppercase tracking-[3px] flex gap-8">
+          <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex gap-8 font-medium">
             <a href="#" className="hover:text-text-main transition-colors">
               Aviso Legal
             </a>
@@ -95,7 +95,7 @@ const Footer = () => {
             </a>
           </div>
 
-          <p className="text-text-main/30 text-[10px] uppercase tracking-[3px]">
+          <p className="text-text-main/70 text-[10px] uppercase tracking-[3px] font-medium">
             &copy; {new Date().getFullYear()} Distrito Gourmet. Todos los derechos reservados.
           </p>
         </div>

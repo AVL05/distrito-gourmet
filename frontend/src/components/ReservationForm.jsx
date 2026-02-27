@@ -1,59 +1,49 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const ReservationForm = ({ compact = false }) => {
   const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    people: "",
-    date: "",
-    time: "",
-    comments: "",
+    name: '',
+    phone: '',
+    people: '',
+    date: '',
+    time: '',
+    comments: '',
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const availableTimes = [
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "20:00",
-    "20:30",
-    "21:00",
-    "21:30",
-  ];
-  const today = new Date().toISOString().split("T")[0];
+  const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
+  const today = new Date().toISOString().split('T')[0];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
 
     // Simulation
     setTimeout(() => {
-      const reservations =
-        JSON.parse(localStorage.getItem("reservations")) || [];
-      reservations.push({ ...form, id: Date.now(), status: "pendiente" });
-      localStorage.setItem("reservations", JSON.stringify(reservations));
+      const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+      reservations.push({ ...form, id: Date.now(), status: 'pendiente' });
+      localStorage.setItem('reservations', JSON.stringify(reservations));
 
       setLoading(false);
       setSuccess(true);
       setForm({
-        name: "",
-        phone: "",
-        people: "",
-        date: "",
-        time: "",
-        comments: "",
+        name: '',
+        phone: '',
+        people: '',
+        date: '',
+        time: '',
+        comments: '',
       });
 
       setTimeout(() => setSuccess(false), 8000);
     }, 1500);
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -72,7 +62,7 @@ const ReservationForm = ({ compact = false }) => {
         )}
 
         <div className="mb-8 relative group">
-          <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+          <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
             Nombre Completo
           </label>
           <input
@@ -88,7 +78,7 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Teléfono
             </label>
             <input
@@ -102,7 +92,7 @@ const ReservationForm = ({ compact = false }) => {
             />
           </div>
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Comensales (Máx. 8)
             </label>
             <select
@@ -110,12 +100,13 @@ const ReservationForm = ({ compact = false }) => {
               value={form.people}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer"
-            >
-              <option value="" disabled>Seleccione número</option>
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer">
+              <option value="" disabled>
+                Seleccione número
+              </option>
               {[...Array(8)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
-                  {i + 1} persona{i + 1 > 1 ? "s" : ""}
+                  {i + 1} persona{i + 1 > 1 ? 's' : ''}
                 </option>
               ))}
             </select>
@@ -124,7 +115,7 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Fecha de la Experiencia
             </label>
             <input
@@ -138,7 +129,7 @@ const ReservationForm = ({ compact = false }) => {
             />
           </div>
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Turno
             </label>
             <select
@@ -146,10 +137,11 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer"
-            >
-              <option value="" disabled>Seleccione horario</option>
-              {availableTimes.map((time) => (
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer">
+              <option value="" disabled>
+                Seleccione horario
+              </option>
+              {availableTimes.map(time => (
                 <option key={time} value={time}>
                   Servicio de las {time}
                 </option>
@@ -159,7 +151,7 @@ const ReservationForm = ({ compact = false }) => {
         </div>
 
         <div className="mb-12 relative group">
-          <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+          <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
             Preferencias / Restricciones
           </label>
           <textarea
@@ -168,19 +160,17 @@ const ReservationForm = ({ compact = false }) => {
             onChange={handleChange}
             rows="2"
             placeholder="Alergias, celebraciones u otros detalles importantes para nuestro Maître..."
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-light"
-          ></textarea>
+            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-light"></textarea>
         </div>
 
         <div className="mt-10 flex justify-center">
           <button
             type="submit"
             className="group relative px-16 py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto min-w-[300px]"
-            disabled={loading}
-          >
+            disabled={loading}>
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
-            <span className="relative z-10 group-hover:text-black font-semibold transition-colors duration-300">
-              {loading ? "PROCESANDO..." : "SOLICITAR MESA"}
+            <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
+              {loading ? 'PROCESANDO...' : 'SOLICITAR MESA'}
             </span>
           </button>
         </div>
@@ -189,8 +179,11 @@ const ReservationForm = ({ compact = false }) => {
           <div className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
             <span className="text-primary text-2xl mb-2">✦</span>
             <p className="text-gray-900 font-light tracking-wide leading-relaxed">
-              Su petición de reserva ha sido recibida con éxito.<br/>
-              <span className="text-gray-500 text-sm mt-2 block">Nuestro equipo de recepción le contactará en breve para confirmar la disponibilidad.</span>
+              Su petición de reserva ha sido recibida con éxito.
+              <br />
+              <span className="text-gray-500 text-sm mt-2 block">
+                Nuestro equipo de recepción le contactará en breve para confirmar la disponibilidad.
+              </span>
             </p>
           </div>
         )}

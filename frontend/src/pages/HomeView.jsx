@@ -17,7 +17,7 @@ const HomeView = () => {
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
         <div className="relative z-10 px-4 max-w-5xl mx-auto animate-fade-in flex flex-col items-center justify-center h-full">
-          <span className="block text-text-main text-[10px] md:text-xs uppercase tracking-[0.4em] mb-12 font-body font-medium">
+          <span className="block text-text-main text-[12px] md:text-sm uppercase tracking-[0.3em] mb-12 font-body font-semibold">
             / 01 Inspiración Florentina
           </span>
           <h1 className="text-5xl sm:text-7xl md:text-[8rem] leading-[0.85] font-heading text-text-main mb-6 tracking-tight">
@@ -31,14 +31,14 @@ const HomeView = () => {
           <div className="flex flex-col sm:flex-row gap-8 items-center">
             <Link
               to="/menu"
-              className="group relative px-6 text-text-main font-body text-[11px] uppercase tracking-[3px] transition-all">
+              className="group relative px-6 text-text-main font-body text-[13px] uppercase tracking-[3px] transition-all">
               <span className="relative z-10 font-bold group-hover:text-primary transition-colors pb-1 border-b border-text-main group-hover:border-primary">
                 Descubrir la Carta
               </span>
             </Link>
             <Link
               to="/reservations"
-              className="group relative px-10 py-4 bg-text-main text-bg-body font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center">
+              className="group relative px-10 py-4 bg-text-main text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center">
               <div className="absolute inset-0 w-0 bg-primary/20 transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-semibold transition-colors duration-300">Reservar Mesa</span>
             </Link>
@@ -51,7 +51,7 @@ const HomeView = () => {
         <AnimatedSection className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
             <div className="lg:col-span-5 text-left relative flex flex-col justify-center order-2 lg:order-1 px-0">
-              <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-8 font-body">
+              <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-8 font-body font-medium">
                 / 02 Identidad
               </span>
               <h2 className="text-5xl md:text-7xl font-heading text-text-main mb-12 leading-[0.9] tracking-tight">
@@ -70,7 +70,7 @@ const HomeView = () => {
               </p>
               <Link
                 to="/menu"
-                className="font-body text-[10px] uppercase tracking-[3px] text-text-main border-b border-text-main pb-1 self-start hover:text-primary hover:border-primary transition-colors">
+                className="font-body text-[12px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 self-start hover:text-primary hover:border-primary transition-colors font-medium">
                 Explorar Identidad
               </Link>
             </div>
@@ -95,7 +95,7 @@ const HomeView = () => {
       <section className="py-24 md:py-32 bg-bg-body">
         <AnimatedSection className="container px-4">
           <div className="text-center mb-20">
-            <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 font-body">
+            <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 03 La Visión
             </span>
             <h2 className="text-5xl md:text-6xl font-heading text-text-main leading-tight mb-4">
@@ -106,7 +106,7 @@ const HomeView = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
             {/* Column 1 */}
             <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 md:pl-0 flex flex-col justify-start">
-              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">01.</span>
+              <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">01.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Materia Prima</h3>
               <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
                 Selección diaria de producto local de extrema calidad. Trato reverencial al productor y obsesión por la
@@ -116,7 +116,7 @@ const HomeView = () => {
 
             {/* Column 2 */}
             <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 flex flex-col justify-start">
-              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">02.</span>
+              <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">02.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Vinos de Autor</h3>
               <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
                 Maridaje curado artesanalmente. Más de diez mil referencias descansan en una de las bodegas más
@@ -126,7 +126,7 @@ const HomeView = () => {
 
             {/* Column 3 */}
             <div className="p-8 md:p-12 md:pr-0 flex flex-col justify-start border-b md:border-b-0 border-text-main/10">
-              <span className="text-4xl text-text-main/10 font-heading mb-6 block leading-none">03.</span>
+              <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">03.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Espacio</h3>
               <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
                 Un entorno diseñado en vacío absolouto. Madera noble, lino puro e iluminación escenográfica enfocada al
@@ -141,7 +141,7 @@ const HomeView = () => {
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
         <AnimatedSection className="container px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
-            <span className="block text-bg-body/50 text-[10px] uppercase tracking-[4px] mb-6 font-body">
+            <span className="block text-bg-body text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 04 Reserva
             </span>
             <h2 className="text-4xl sm:text-5xl md:text-6xl font-heading text-bg-body leading-tight mb-8">
@@ -156,7 +156,7 @@ const HomeView = () => {
           <div className="flex justify-center flex-col items-center">
             <Link
               to="/reservations"
-              className="group relative px-12 py-5 bg-transparent border border-bg-body text-bg-body font-body text-[11px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-transparent focus:outline-none w-full sm:w-auto text-center">
+              className="group relative px-12 py-5 bg-transparent border border-bg-body text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-transparent focus:outline-none w-full sm:w-auto text-center">
               <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold group-hover:text-text-main transition-colors duration-300">
                 Proceder a la Reserva

@@ -67,7 +67,7 @@ const MenuView = () => {
       {/* Header / Intro */}
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10 px-4">
         <div className="container text-center max-w-4xl mx-auto">
-          <span className="block text-primary text-[10px] sm:text-xs md:text-sm uppercase tracking-[8px] mb-6 animate-fade-in font-body opacity-90">
+          <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 animate-fade-in font-body font-bold">
             Gastronomía
           </span>
           <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 animate-fade-in text-text-main drop-shadow-sm leading-tight">
@@ -89,12 +89,12 @@ const MenuView = () => {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`uppercase text-[10px] sm:text-xs tracking-[3px] sm:tracking-[4px] transition-all duration-500 pb-2 relative group whitespace-nowrap ${
+                className={`uppercase text-[12px] sm:text-[13px] tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
                   activeCategory === cat.id ? 'text-primary' : 'text-text-muted hover:text-text-main'
                 }`}>
                 {cat.label}
                 <div
-                  className={`absolute bottom-0 left-0 h-[1px] bg-primary transition-all duration-500 ${activeCategory === cat.id ? 'w-full shadow-[0_0_10px_rgba(166,138,86,0.5)]' : 'w-0 group-hover:w-1/2'}`}></div>
+                  className={`absolute bottom-0 left-0 h-[1.5px] bg-primary transition-all duration-500 ${activeCategory === cat.id ? 'w-full shadow-[0_0_10px_rgba(166,138,86,0.5)]' : 'w-0 group-hover:w-1/2'}`}></div>
               </button>
             ))}
           </div>
@@ -123,7 +123,7 @@ const MenuView = () => {
                         {/* Brand Style Category Header */}
                         <div className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
                           <div className="flex-grow h-[1px] bg-text-main/10 hidden sm:block"></div>
-                          <span className="text-[10px] sm:text-xs tracking-[3px] font-body text-text-muted">
+                          <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">
                             / 0{index + 1}
                           </span>
                           <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
@@ -178,7 +178,7 @@ const DishRow = ({ item, addItem }) => (
             {item.price.toFixed(2)}€
           </span>
         </div>
-        <p className="text-text-muted text-sm md:text-base font-body font-light max-w-2xl leading-relaxed italic">
+        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80">
           {item.description}
         </p>
       </div>
@@ -190,7 +190,7 @@ const DishRow = ({ item, addItem }) => (
       </span>
       <button
         onClick={() => addItem(item)}
-        className="w-full md:w-auto relative px-8 py-3 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[3px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
+        className="w-full md:w-auto relative px-10 py-3 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300">Añadir</span>
       </button>

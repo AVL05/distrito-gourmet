@@ -25,8 +25,8 @@ const pageVariants = {
 };
 
 const pageTransition = {
-  duration: 2.0,
-  ease: [0.22, 1, 0.36, 1], // Custom slow cinematic ease
+  duration: 1.2,
+  ease: [0.22, 1, 0.36, 1],
 };
 
 const AnimatedPage = ({ children }) => {

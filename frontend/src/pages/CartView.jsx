@@ -75,18 +75,20 @@ const CartView = () => {
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
         <div className="bg-bg-surface border border-text-main/10 p-12 md:p-24 max-w-2xl w-full animate-fade-in relative z-10 flex flex-col items-center">
-          <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-8 font-body">/ 00 Vacío</span>
+          <span className="text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
+            / 00 Vacío
+          </span>
           <h2 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">
             Su Selección <br />
             <span className="italic font-light text-primary">Inactiva</span>
           </h2>
           <div className="w-16 h-[1px] bg-text-main/10 mb-8"></div>
-          <p className="text-text-muted font-body font-light mb-12 text-[14px] tracking-wide leading-relaxed">
+          <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
             Le invitamos a explorar nuestra carta y descubrir las creaciones que nuestro chef ha preparado para usted.
           </p>
           <Link
             to="/menu"
-            className="group relative px-8 py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[3px] overflow-hidden transition-all duration-500 hover:border-text-main">
+            className="group relative px-10 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 hover:border-text-main">
             <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-white font-bold transition-colors duration-300">
               Explorar la Carta
@@ -103,7 +105,7 @@ const CartView = () => {
 
       <div className="container max-w-6xl relative z-10">
         <div className="text-center mb-16 sm:mb-24 animate-fade-in relative">
-          <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 sm:mb-8 font-body">
+          <span className="block text-text-main text-[12px] uppercase tracking-[3px] mb-6 sm:mb-8 font-body font-bold">
             / 00 Resumen
           </span>
           <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight">
@@ -160,7 +162,7 @@ const CartView = () => {
             <div className="flex justify-start pt-6">
               <button
                 onClick={clearCart}
-                className="font-body text-[10px] uppercase tracking-[3px] text-text-muted border-b border-transparent hover:border-text-main hover:text-text-main transition-colors pb-1">
+                className="font-body text-[11px] uppercase tracking-[2px] text-text-muted border-b border-transparent hover:border-text-main hover:text-text-main transition-colors pb-1 font-medium">
                 Vaciar Selección
               </button>
             </div>
@@ -178,7 +180,7 @@ const CartView = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Servicio Extra</span>
-                  <span className="text-text-main uppercase text-[10px] tracking-widest mt-1">Premium</span>
+                  <span className="text-primary uppercase text-[11px] tracking-widest mt-1 font-bold">Premium</span>
                 </div>
                 <div className="flex justify-between text-text-main text-xl pt-6 border-t border-text-main/10 mt-6 font-normal">
                   <span>Total (IVA inc.)</span>
@@ -189,10 +191,10 @@ const CartView = () => {
               <button
                 onClick={handleCheckout}
                 disabled={isProcessing}
-                className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:border-text-main mb-8 disabled:opacity-50 disabled:cursor-not-allowed">
+                className="group relative w-full py-5 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all duration-500 hover:border-text-main mb-8 disabled:opacity-50 disabled:cursor-not-allowed">
                 <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                 <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
-                  {isProcessing ? 'PROCESANDO...' : 'TRAMITAR'}
+                  {isProcessing ? 'PROCESANDO...' : 'TRAMITAR COMPRA'}
                 </span>
               </button>
 

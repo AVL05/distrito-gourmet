@@ -49,7 +49,7 @@
 @layer components {
   /* Minimalist Buttons */
   .btn {
-    @apply inline-block px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-xs uppercase tracking-[2px] cursor-pointer transition-all duration-300;
+    @apply inline-block px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-[13px] uppercase tracking-[2px] cursor-pointer transition-all duration-300;
   }
 
   .btn:hover {
@@ -73,11 +73,11 @@
   }
 
   .btn-sm {
-    @apply px-4 py-2 text-[10px] tracking-[1.5px] border border-text-main/20 hover:bg-text-main/5 hover:text-primary;
+    @apply px-4 py-2 text-[11px] tracking-[1.5px] border border-text-main/20 hover:bg-text-main/5 hover:text-primary;
   }
 
   .btn-text {
-    @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-xs uppercase tracking-[1.5px] transition-colors duration-300 hover:text-main;
+    @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-[13px] uppercase tracking-[1.5px] transition-colors duration-300 hover:text-main;
   }
 
   /* Structural */
@@ -96,7 +96,7 @@
   }
 
   label {
-    @apply text-[10px] uppercase tracking-[1.5px] text-text-muted block mb-2;
+    @apply text-[12px] uppercase tracking-[2px] text-text-main block mb-2 font-bold;
   }
 }
 
