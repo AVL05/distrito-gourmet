@@ -9,9 +9,10 @@ const AdminView = () => {
   const [data, setData] = useState({ orders: [], menu: [], reservations: [], users: [], categories: [] });
   const [loading, setLoading] = useState(false);
 
-  // Modal / Form state for new Dish
+  // Estado del formulario para añadir nuevo plato
   const [newDish, setNewDish] = useState({ name: '', description: '', price: '', menu_category_id: '' });
 
+  // Secciones del panel de administración
   const sections = [
     { id: 'orders', label: 'Pedidos' },
     { id: 'reservations', label: 'Reservas' },
@@ -19,6 +20,7 @@ const AdminView = () => {
     { id: 'users', label: 'Usuarios' },
   ];
 
+  // Llamada a la API para obtener los datos de la sección activa
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -52,11 +54,12 @@ const AdminView = () => {
     }
   };
 
+  // Recargar datos cuando cambia la sección activa
   useEffect(() => {
     fetchData();
   }, [activeSection]);
 
-  // Orders Actions
+  // Cambiar estado de un pedido
   const handleUpdateOrderStatus = async (id, status) => {
     try {
       await axios.patch(`/admin/orders/${id}`, { status });
@@ -66,7 +69,7 @@ const AdminView = () => {
     }
   };
 
-  // Menu Actions
+  // Añadir nuevo plato a la carta
   const handleAddDish = async e => {
     e.preventDefault();
     if (!newDish.menu_category_id) {
@@ -105,6 +108,7 @@ const AdminView = () => {
     }
   };
 
+  // Eliminar plato con confirmación
   const handleDeleteDish = async id => {
     const result = await Swal.fire({
       title: '¿Confirmar eliminación?',
@@ -129,7 +133,7 @@ const AdminView = () => {
     }
   };
 
-  // Reservations Actions
+  // Cambiar estado de una reserva
   const handleUpdateReservationStatus = async (id, status) => {
     try {
       await axios.patch(`/admin/reservations/${id}`, { status });
@@ -139,6 +143,7 @@ const AdminView = () => {
     }
   };
 
+  // Renderizar contenido según la sección activa
   const renderContent = () => {
     if (loading) return <div className="text-text-muted animate-pulse">Cargando datos del servidor...</div>;
 
@@ -215,7 +220,7 @@ const AdminView = () => {
     if (activeSection === 'menu') {
       return (
         <div className="space-y-8">
-          {/* Add Dish Form */}
+          {/* Formulario para añadir plato */}
           <form
             onSubmit={handleAddDish}
             className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
@@ -278,7 +283,7 @@ const AdminView = () => {
             </button>
           </form>
 
-          {/* Dish List */}
+          {/* Lista de platos existentes */}
           <div className="grid grid-cols-1 gap-4">
             {data.menu.map(item => (
               <DishEditRow
@@ -311,13 +316,13 @@ const AdminView = () => {
 
   return (
     <div className="min-h-screen bg-bg-body flex relative overflow-hidden">
-      {/* Background ambient light */}
+      {/* Luz ambiental decorativa */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
-      {/* Sidebar */}
+      {/* Barra lateral (solo en desktop) */}
       <aside className="w-64 bg-bg-surface/90 backdrop-blur-xl border-r border-text-main/10 hidden md:flex flex-col relative z-20 shadow-[10px_0_30px_rgba(0,0,0,0.5)]">
         <div className="p-10 border-b border-text-main/10 flex flex-col items-center justify-center">
-          <span className="text-primary text-2xl mb-2 opacity-80 block font-light">?</span>
+          <span className="text-primary text-2xl mb-2 opacity-80 block font-light">✦</span>
           <span className="text-text-main font-heading tracking-[0.2em] text-lg font-light text-center">
             DG <span className="italic text-primary">MGMT</span>
           </span>
@@ -348,18 +353,19 @@ const AdminView = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
+      {/* Contenido principal */}
       <main className="flex-grow p-8 md:p-16 relative z-10 overflow-y-auto">
+        {/* Cabecera móvil */}
         <div className="flex md:hidden justify-between items-center mb-12 border-b border-text-main/10 pb-6">
           <span className="text-text-main font-heading tracking-[0.2em]">
-            <span className="text-primary mr-2">?</span> DG MGMT
+            <span className="text-primary mr-2">✦</span> DG MGMT
           </span>
           <button onClick={logout} className="text-[10px] uppercase tracking-[3px] text-red-400/70 hover:text-red-400">
             Salir
           </button>
         </div>
 
-        {/* Mobile Nav */}
+        {/* Navegación móvil */}
         <div className="md:hidden flex gap-4 overflow-x-auto mb-8 pb-4">
           {sections.map(s => (
             <button
@@ -384,16 +390,18 @@ const AdminView = () => {
           </p>
         </header>
 
-        <div className="animate-fade-in delay-100">{renderContent()}</div>
+        <div className="animate-fade-in">{renderContent()}</div>
       </main>
     </div>
   );
 };
 
+// Componente para editar/ver un plato en la lista de admin
 const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editDish, setEditDish] = useState({ ...item });
 
+  // Guardar cambios del plato editado
   const handleUpdate = async () => {
     try {
       await axios.put(`/admin/dishes/${item.id}`, editDish);
@@ -420,6 +428,7 @@ const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
     }
   };
 
+  // Vista de edición del plato
   if (isEditing) {
     return (
       <div className="bg-bg-surface/90 border border-primary/40 p-6 flex flex-col gap-6 shadow-[0_0_30px_rgba(197,160,89,0.1)] relative mt-4 mb-4 rounded-sm">
@@ -487,6 +496,7 @@ const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
     );
   }
 
+  // Vista normal del plato (modo lectura)
   return (
     <div className="bg-bg-surface/90 border border-text-main/10 p-4 flex justify-between items-center group">
       <div>
@@ -509,10 +519,12 @@ const DishEditRow = ({ item, fetchData, handleDeleteDish, categories }) => {
   );
 };
 
+// Componente para editar/ver un usuario en la lista de admin
 const UserEditRow = ({ user, fetchData }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState({ name: user.name, role: user.role, email: user.email, password: '' });
 
+  // Guardar cambios del usuario
   const handleUpdate = async () => {
     try {
       await axios.put(`/admin/users/${user.id}`, editUser);
@@ -539,6 +551,7 @@ const UserEditRow = ({ user, fetchData }) => {
     }
   };
 
+  // Eliminar usuario con confirmación
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: `Opciones de Eliminación`,
@@ -563,6 +576,7 @@ const UserEditRow = ({ user, fetchData }) => {
     }
   };
 
+  // Vista de edición
   if (isEditing) {
     return (
       <div className="bg-bg-surface/90 border border-primary/40 p-4 flex flex-col md:flex-row gap-4 items-center">
@@ -607,11 +621,12 @@ const UserEditRow = ({ user, fetchData }) => {
     );
   }
 
+  // Vista normal (modo lectura)
   return (
     <div className="bg-bg-surface/90 border border-text-main/10 p-6 flex flex-col md:flex-row justify-between md:items-center group">
       <div className="mb-4 md:mb-0">
         <span className="text-primary text-xs tracking-widest uppercase block mb-1">
-          Role: {user.role?.toUpperCase()}
+          Rol: {user.role?.toUpperCase()}
         </span>
         <p className="text-text-main">{user.name}</p>
         <p className="text-text-muted text-sm">{user.email}</p>
@@ -622,7 +637,8 @@ const UserEditRow = ({ user, fetchData }) => {
           className="text-primary hover:text-primary-hover text-xs uppercase tracking-[2px]">
           Editar
         </button>
-        {user.id !== 1 && ( // Protegemos de que el admin padre no pueda borrarse a sí mismo fácilmente desde aquí
+        {/* Proteger que el admin principal no pueda borrarse a sí mismo */}
+        {user.id !== 1 && (
           <button onClick={handleDelete} className="text-red-500 hover:text-red-400 text-xs uppercase tracking-[2px]">
             Eliminar
           </button>

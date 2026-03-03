@@ -1,5 +1,6 @@
 ﻿import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
 
+// Pie de página del sitio web
 const Footer = () => {
   return (
     <footer className="bg-bg-body relative border-t border-text-main/10 pt-20 pb-10 overflow-hidden">
@@ -7,6 +8,7 @@ const Footer = () => {
 
       <div className="container relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
+          {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">
             <h3 className="font-heading text-3xl md:text-3xl text-text-main tracking-[0.2em] mb-6 flex items-center gap-3 font-light">
               <span className="text-primary opacity-80 text-xl">✦</span>
@@ -18,6 +20,7 @@ const Footer = () => {
             </p>
           </div>
 
+          {/* Información de contacto */}
           <div className="md:w-7/12 grid grid-cols-1 sm:grid-cols-3 gap-12 w-full">
             <div className="text-left">
               <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
@@ -64,6 +67,7 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Barra inferior con redes sociales y links legales */}
         <div className="border-t border-text-main/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex gap-4">
             <a

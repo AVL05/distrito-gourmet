@@ -4,27 +4,33 @@ import axios from 'axios';
 
 const MenuView = () => {
   const { addItem } = useCartStore();
-  const [activeCategory, setActiveCategory] = useState('todos');
-  const [menuItems, setMenuItems] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('carta');
+  const [menuData, setMenuData] = useState({
+    dishes: [],
+    beverages: [],
+    wines: [],
+    tastingMenus: [],
+  });
   const [loading, setLoading] = useState(true);
 
+  // Categorías del menú para las pestañas de filtro
   const categories = [
-    { id: 'todos', label: 'Toda la Carta' },
-    { id: 'entrantes', label: 'Entrantes' },
-    { id: 'principales', label: 'Principales' },
-    { id: 'postres', label: 'Postres' },
-    { id: 'vinos', label: 'Bodega' },
+    { id: 'carta', label: 'Toda la Carta' },
+    { id: 'bebidas', label: 'Bebidas' },
+    { id: 'bodega', label: 'Bodega' },
+    { id: 'menus', label: 'Menús' },
   ];
 
+  // Llamada a la API para obtener todos los datos del menú
   useEffect(() => {
     const fetchMenu = async () => {
       try {
         const response = await axios.get('/dishes');
-        const { dishes, wines } = response.data;
+        const { dishes, wines, beverages, tasting_menus } = response.data;
 
-        // Normalize dishes
+        // Formatear platos
         const formattedDishes = dishes.map(d => ({
-          id: d.id, // Points directly to the Dish DB ID for cart checkout
+          id: d.id,
           item_type: 'dish',
           name: d.name,
           description: d.description,
@@ -33,18 +39,45 @@ const MenuView = () => {
           image: d.image,
         }));
 
-        // Normalize wines
+        // Formatear vinos
         const formattedWines = wines.map(w => ({
-          id: `w${w.id}`, // Add a prefix to wine to distinguish it in the checkout if needed
+          id: `w${w.id}`,
           item_type: 'wine',
           name: w.name,
-          description: w.pairing_notes || w.type,
+          description: w.pairing_notes || '',
           price: parseFloat(w.price_bottle),
-          category: 'vinos',
-          image: w.image, // Optional in DB, could be null
+          priceGlass: w.price_glass ? parseFloat(w.price_glass) : null,
+          wineType: w.type,
+          image: w.image,
         }));
 
-        setMenuItems([...formattedDishes, ...formattedWines]);
+        // Formatear bebidas
+        const formattedBeverages = beverages.map(b => ({
+          id: `b${b.id}`,
+          item_type: 'beverage',
+          name: b.name,
+          description: b.description || '',
+          price: parseFloat(b.price),
+          beverageType: b.type,
+        }));
+
+        // Formatear menús degustación
+        const formattedMenus = (tasting_menus || []).map(m => ({
+          id: `m${m.id}`,
+          item_type: 'tasting_menu',
+          name: m.name,
+          description: m.description || '',
+          price: parseFloat(m.price),
+          courses: m.courses,
+          dishes: m.dishes || [],
+        }));
+
+        setMenuData({
+          dishes: formattedDishes,
+          beverages: formattedBeverages,
+          wines: formattedWines,
+          tastingMenus: formattedMenus,
+        });
       } catch (e) {
         console.error('No se pudo cargar la carta', e);
       } finally {
@@ -54,17 +87,34 @@ const MenuView = () => {
     fetchMenu();
   }, []);
 
-  const filteredItems =
-    activeCategory === 'todos' ? menuItems : menuItems.filter(item => item.category === activeCategory);
+  // Categorías de platos para "Toda la Carta"
+  const dishCategories = ['entrantes', 'principales', 'postres'];
+  const getDishesForCategory = cat => menuData.dishes.filter(d => d.category === cat);
 
-  const getItemsByCategory = categoryId => menuItems.filter(item => item.category === categoryId);
+  // Tipos de bebidas para la pestaña de bebidas
+  const beverageTypes = [
+    { key: 'agua', label: 'Aguas' },
+    { key: 'refresco', label: 'Refrescos & Zumos' },
+    { key: 'cocktail', label: 'Cócteles' },
+    { key: 'cafe', label: 'Cafés & Infusiones' },
+  ];
+  const getBeveragesByType = type => menuData.beverages.filter(b => b.beverageType === type);
+
+  // Tipos de vinos para la pestaña de bodega
+  const wineTypes = [
+    { key: 'Tinto', label: 'Tintos' },
+    { key: 'Blanco', label: 'Blancos' },
+    { key: 'Espumoso', label: 'Espumosos & Champagne' },
+    { key: 'Rosado', label: 'Rosados' },
+  ];
+  const getWinesByType = type => menuData.wines.filter(w => w.wineType === type);
 
   return (
     <div className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
-      {/* Background ambient light */}
+      {/* Luz ambiental de fondo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
-      {/* Header / Intro */}
+      {/* Cabecera */}
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10 px-4">
         <div className="container text-center max-w-4xl mx-auto">
           <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 animate-fade-in font-body font-bold">
@@ -81,7 +131,7 @@ const MenuView = () => {
         </div>
       </div>
 
-      {/* Filter Tabs */}
+      {/* Pestañas de filtro */}
       <div className="sticky top-[72px] sm:top-[72px] md:top-28 z-40 bg-bg-body/90 backdrop-blur-xl border-b border-text-main/10 py-4 sm:py-5 mb-12 sm:mb-16 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
         <div className="container overflow-x-auto no-scrollbar">
           <div className="flex justify-start sm:justify-center min-w-max gap-8 sm:gap-12 md:gap-16 px-4">
@@ -101,7 +151,7 @@ const MenuView = () => {
         </div>
       </div>
 
-      {/* Menu Grid */}
+      {/* Contenido del menú según la categoría activa */}
       <div className="container relative z-10 px-4">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
@@ -110,54 +160,84 @@ const MenuView = () => {
           </div>
         ) : (
           <>
-            {activeCategory === 'todos' ? (
+            {/* TODA LA CARTA */}
+            {activeCategory === 'carta' && (
               <div className="space-y-32">
-                {categories
-                  .filter(c => c.id !== 'todos')
-                  .map((category, index) => {
-                    const items = getItemsByCategory(category.id);
-                    if (items.length === 0) return null;
+                {dishCategories.map((catKey, index) => {
+                  const items = getDishesForCategory(catKey);
+                  if (items.length === 0) return null;
+                  const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
 
-                    return (
-                      <div key={category.id} className="animate-fade-in mt-16 mb-24">
-                        {/* Brand Style Category Header */}
-                        <div className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
-                          <div className="flex-grow h-[1px] bg-text-main/10 hidden sm:block"></div>
-                          <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">
-                            / 0{index + 1}
-                          </span>
-                          <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
-                            <span className="italic">{category.label.split(' ')[0]}</span>{' '}
-                            {category.label.split(' ').slice(1).join(' ')}
-                          </h2>
-                          <div className="flex-grow h-[1px] bg-text-main/10"></div>
-                        </div>
-                        <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                          {items.map(item => (
-                            <DishRow key={item.id} item={item} addItem={addItem} />
-                          ))}
-                        </div>
+                  return (
+                    <div key={catKey} className="animate-fade-in mt-16 mb-24">
+                      <SectionHeader index={index} label={label} />
+                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <DishRow key={item.id} item={item} addItem={addItem} />
+                        ))}
                       </div>
-                    );
-                  })}
-              </div>
-            ) : (
-              <div className="flex flex-col w-full max-w-5xl mx-auto px-4 mt-8">
-                {filteredItems.map(item => (
-                  <DishRow key={item.id} item={item} addItem={addItem} />
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             )}
 
-            {/* Empty State */}
-            {filteredItems.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-32 text-center animate-fade-in">
-                <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
-                <p className="text-text-muted font-light tracking-wide text-base sm:text-lg max-w-md mx-auto">
-                  La colección para esta categoría se encuentra en desarrollo por nuestro Chef.
-                </p>
+            {/* BEBIDAS */}
+            {activeCategory === 'bebidas' && (
+              <div className="space-y-32">
+                {beverageTypes.map((bt, index) => {
+                  const items = getBeveragesByType(bt.key);
+                  if (items.length === 0) return null;
+
+                  return (
+                    <div key={bt.key} className="animate-fade-in mt-16 mb-24">
+                      <SectionHeader index={index} label={bt.label} />
+                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <DisplayRow key={item.id} item={item} />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
+
+            {/* BODEGA */}
+            {activeCategory === 'bodega' && (
+              <div className="space-y-32">
+                {wineTypes.map((wt, index) => {
+                  const items = getWinesByType(wt.key);
+                  if (items.length === 0) return null;
+
+                  return (
+                    <div key={wt.key} className="animate-fade-in mt-16 mb-24">
+                      <SectionHeader index={index} label={wt.label} />
+                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <WineDisplayRow key={item.id} item={item} />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* MENÚS DEGUSTACIÓN */}
+            {activeCategory === 'menus' && (
+              <div className="space-y-20 max-w-5xl mx-auto">
+                {menuData.tastingMenus.map((menu, index) => (
+                  <TastingMenuCard key={menu.id} menu={menu} index={index} />
+                ))}
+                {menuData.tastingMenus.length === 0 && <EmptyState />}
+              </div>
+            )}
+
+            {/* Estado vacío si no hay datos */}
+            {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
+            {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
+            {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
           </>
         )}
       </div>
@@ -165,6 +245,19 @@ const MenuView = () => {
   );
 };
 
+// Cabecera de sección con número e índice
+const SectionHeader = ({ index, label }) => (
+  <div className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
+    <div className="flex-grow h-[1px] bg-text-main/10 hidden sm:block"></div>
+    <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">/ 0{index + 1}</span>
+    <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
+      <span className="italic">{label.split(' ')[0]}</span> {label.split(' ').slice(1).join(' ')}
+    </h2>
+    <div className="flex-grow h-[1px] bg-text-main/10"></div>
+  </div>
+);
+
+// Fila de plato con botón de añadir al carrito
 const DishRow = ({ item, addItem }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -173,7 +266,6 @@ const DishRow = ({ item, addItem }) => (
           <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
-          {/* Price displayed inline on mobile */}
           <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€
           </span>
@@ -195,6 +287,128 @@ const DishRow = ({ item, addItem }) => (
         <span className="relative z-10 font-bold transition-colors duration-300">Añadir</span>
       </button>
     </div>
+  </div>
+);
+
+// Fila de solo lectura para bebidas
+const DisplayRow = ({ item }) => (
+  <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
+    <div className="flex items-center gap-8 w-full md:w-3/4">
+      <div className="flex-grow">
+        <div className="flex items-baseline gap-4 mb-2">
+          <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+            {item.name}
+          </h3>
+          <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
+            {item.price.toFixed(2)}€
+          </span>
+        </div>
+        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80">
+          {item.description}
+        </p>
+      </div>
+    </div>
+    <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
+      <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest">
+        {item.price.toFixed(2)}€
+      </span>
+    </div>
+  </div>
+);
+
+// Fila de solo lectura para vinos (con precio por botella y copa)
+const WineDisplayRow = ({ item }) => (
+  <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
+    <div className="flex items-center gap-8 w-full md:w-3/4">
+      <div className="flex-grow">
+        <div className="flex items-baseline gap-4 mb-2">
+          <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+            {item.name}
+          </h3>
+          <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
+            {item.price.toFixed(2)}€
+          </span>
+        </div>
+        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80">
+          {item.description}
+        </p>
+      </div>
+    </div>
+    <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
+      <div className="hidden md:flex flex-col items-end">
+        <span className="font-body font-light text-text-main text-xl tracking-widest">
+          {item.price.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ botella</span>
+        </span>
+        {item.priceGlass && (
+          <span className="font-body font-light text-text-muted text-base tracking-widest mt-1">
+            {item.priceGlass.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ copa</span>
+          </span>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
+// Tarjeta de menú degustación (solo lectura)
+const TastingMenuCard = ({ menu, index }) => (
+  <div className="animate-fade-in border border-text-main/10 bg-bg-body relative overflow-hidden">
+    {/* Línea decorativa superior */}
+    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+
+    <div className="p-8 sm:p-12 md:p-16">
+      {/* Cabecera del menú */}
+      <div className="text-center mb-12 sm:mb-16">
+        <span className="text-primary text-[11px] tracking-[4px] font-body font-bold uppercase mb-4 block">
+          {menu.courses} Tiempos
+        </span>
+        <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main mb-6 leading-tight">
+          <span className="italic">{menu.name.split(' ')[0]}</span> {menu.name.split(' ').slice(1).join(' ')}
+        </h2>
+        <div className="w-12 h-[1px] bg-primary/50 mx-auto mb-6"></div>
+        <p className="text-text-muted font-light leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
+          {menu.description}
+        </p>
+      </div>
+
+      {/* Lista de platos del menú */}
+      <div className="max-w-3xl mx-auto mb-12 sm:mb-16">
+        {menu.dishes.map((dish, i) => (
+          <div
+            key={`${menu.id}-${dish.id}-${i}`}
+            className="flex items-baseline gap-4 py-4 border-b border-text-main/5 last:border-0">
+            <span className="text-primary text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
+              {String(dish.pivot?.course_number || i + 1).padStart(2, '0')}
+            </span>
+            <div className="flex-grow">
+              <span className="font-heading text-xl sm:text-2xl text-text-main">{dish.name}</span>
+              {dish.pivot?.notes && <p className="text-text-muted text-sm font-body italic mt-1">{dish.pivot.notes}</p>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Precio del menú */}
+      <div className="text-center">
+        <span className="font-heading text-4xl sm:text-5xl text-text-main">{menu.price.toFixed(0)}€</span>
+        <span className="block text-text-muted text-[11px] tracking-[2px] font-body mt-1 uppercase">por persona</span>
+        <p className="text-text-muted/60 text-[11px] tracking-[1px] font-body mt-4 uppercase">
+          Disponible exclusivamente en sala
+        </p>
+      </div>
+    </div>
+
+    {/* Línea decorativa inferior */}
+    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+  </div>
+);
+
+// Estado vacío cuando no hay datos para mostrar
+const EmptyState = () => (
+  <div className="flex flex-col items-center justify-center py-32 text-center animate-fade-in">
+    <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
+    <p className="text-text-muted font-light tracking-wide text-base sm:text-lg max-w-md mx-auto">
+      La colección para esta categoría se encuentra en desarrollo por nuestro Chef.
+    </p>
   </div>
 );
 

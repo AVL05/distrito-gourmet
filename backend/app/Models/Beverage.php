@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// Modelo de vino
-class Wine extends Model
+// Modelo de bebida (refrescos, agua, cócteles, etc.)
+class Beverage extends Model
 {
     protected $guarded = [];
 }

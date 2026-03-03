@@ -1,18 +1,16 @@
 import { Link } from 'react-router-dom';
-import ReservationForm from '../components/ReservationForm';
-import AnimatedSection from '../components/animations/AnimatedSection';
 
 const HomeView = () => {
   return (
     <div className="w-full">
-      {/* Hero Section */}
+      {/* Sección Hero - Presentación principal */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
-        {/* Subtle, desaturated background image with heavy overlay */}
+        {/* Imagen de fondo con filtro */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30 grayscale"
           style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}></div>
 
-        {/* Gucci Style Grid Lines */}
+        {/* Líneas decorativas */}
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
@@ -46,9 +44,9 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* Philosophy Section */}
+      {/* Sección Filosofía */}
       <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
-        <AnimatedSection className="container relative z-10">
+        <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
             <div className="lg:col-span-5 text-left relative flex flex-col justify-center order-2 lg:order-1 px-0">
               <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-8 font-body font-medium">
@@ -75,10 +73,9 @@ const HomeView = () => {
               </Link>
             </div>
 
-            {/* Visual Arch Image Focus */}
+            {/* Imagen decorativa */}
             <div className="lg:col-span-7 flex justify-center lg:justify-end order-1 lg:order-2 px-4 md:px-0">
               <div className="w-full max-w-[500px] aspect-[3/4] overflow-hidden rounded-t-[250px] relative">
-                {/* Brand style frame border */}
                 <div className="absolute inset-0 border border-text-main/10 rounded-t-[250px] z-20 pointer-events-none"></div>
                 <img
                   src="/bodega.png"
@@ -88,12 +85,12 @@ const HomeView = () => {
               </div>
             </div>
           </div>
-        </AnimatedSection>
+        </div>
       </section>
 
-      {/* Experience Section */}
+      {/* Sección Experiencia */}
       <section className="py-24 md:py-32 bg-bg-body">
-        <AnimatedSection className="container px-4">
+        <div className="container px-4">
           <div className="text-center mb-20">
             <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 03 La Visión
@@ -104,7 +101,7 @@ const HomeView = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-            {/* Column 1 */}
+            {/* Columna 1 */}
             <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 md:pl-0 flex flex-col justify-start">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">01.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Materia Prima</h3>
@@ -114,7 +111,7 @@ const HomeView = () => {
               </p>
             </div>
 
-            {/* Column 2 */}
+            {/* Columna 2 */}
             <div className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 flex flex-col justify-start">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">02.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Vinos de Autor</h3>
@@ -124,7 +121,7 @@ const HomeView = () => {
               </p>
             </div>
 
-            {/* Column 3 */}
+            {/* Columna 3 */}
             <div className="p-8 md:p-12 md:pr-0 flex flex-col justify-start border-b md:border-b-0 border-text-main/10">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">03.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Espacio</h3>
@@ -134,12 +131,12 @@ const HomeView = () => {
               </p>
             </div>
           </div>
-        </AnimatedSection>
+        </div>
       </section>
 
-      {/* Reservation Section - High Contrast */}
+      {/* Sección Reserva */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
-        <AnimatedSection className="container px-4">
+        <div className="container px-4">
           <div className="max-w-4xl mx-auto text-center mb-16">
             <span className="block text-bg-body text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 04 Reserva
@@ -163,7 +160,7 @@ const HomeView = () => {
               </span>
             </Link>
           </div>
-        </AnimatedSection>
+        </div>
       </section>
     </div>
   );

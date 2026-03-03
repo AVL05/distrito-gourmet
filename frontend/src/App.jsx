@@ -1,5 +1,4 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import { useAuthStore } from './store/auth';
 import AdminView from './pages/AdminView';
@@ -12,16 +11,17 @@ import MenuView from './pages/MenuView';
 import RegisterView from './pages/RegisterView';
 import ReservationsView from './pages/ReservationsView';
 import ProfileView from './pages/ProfileView';
-import AnimatedPage from './components/animations/AnimatedPage';
-import Preloader from './components/animations/Preloader';
 
+// Componente para proteger rutas que requieren autenticación
 const ProtectedRoute = ({ children, requireAdmin }) => {
   const { isAuthenticated, isAdmin } = useAuthStore();
 
+  // Si no está logueado, redirigir al login
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 
+  // Si requiere admin y no lo es, redirigir al inicio
   if (requireAdmin && !isAdmin()) {
     return <Navigate to="/" replace />;
   }
@@ -30,106 +30,47 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 };
 
 const App = () => {
-  const location = useLocation();
-
   return (
-    <>
-      <Preloader />
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<MainLayout />}>
-            <Route
-              index
-              element={
-                <AnimatedPage>
-                  <HomeView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="login"
-              element={
-                <AnimatedPage>
-                  <LoginView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="register"
-              element={
-                <AnimatedPage>
-                  <RegisterView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="menu"
-              element={
-                <AnimatedPage>
-                  <MenuView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="reservations"
-              element={
-                <AnimatedPage>
-                  <ReservationsView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="cart"
-              element={
-                <AnimatedPage>
-                  <CartView />
-                </AnimatedPage>
-              }
-            />
-            <Route
-              path="contact"
-              element={
-                <AnimatedPage>
-                  <ContactView />
-                </AnimatedPage>
-              }
-            />
+    <Routes>
+      <Route path="/" element={<MainLayout />}>
+        {/* Rutas públicas */}
+        <Route index element={<HomeView />} />
+        <Route path="login" element={<LoginView />} />
+        <Route path="register" element={<RegisterView />} />
+        <Route path="menu" element={<MenuView />} />
+        <Route path="reservations" element={<ReservationsView />} />
+        <Route path="cart" element={<CartView />} />
+        <Route path="contact" element={<ContactView />} />
 
-            <Route
-              path="dashboard"
-              element={
-                <ProtectedRoute>
-                  <AnimatedPage>
-                    <DashboardView />
-                  </AnimatedPage>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <ProtectedRoute>
-                  <AnimatedPage>
-                    <ProfileView />
-                  </AnimatedPage>
-                </ProtectedRoute>
-              }
-            />
+        {/* Rutas protegidas (requieren login) */}
+        <Route
+          path="dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardView />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <ProfileView />
+            </ProtectedRoute>
+          }
+        />
 
-            <Route
-              path="admin"
-              element={
-                <ProtectedRoute requireAdmin={true}>
-                  <AnimatedPage>
-                    <AdminView />
-                  </AnimatedPage>
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
-      </AnimatePresence>
-    </>
+        {/* Ruta de admin (requiere login + rol admin) */}
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminView />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+    </Routes>
   );
 };
 

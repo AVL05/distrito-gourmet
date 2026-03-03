@@ -10,24 +10,25 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    // Obtener todos los usuarios (Solo Admin)
+    // Obtener todos los usuarios (solo admin)
     public function index()
     {
         $users = User::all();
         return response()->json($users);
     }
 
-    // Actualizar propio perfil o por Admin
+    // Actualizar perfil propio o actualizar usuario por admin
     public function update(Request $request, $id = null)
     {
         $userId = $id ? $id : auth()->id();
         $user = User::findOrFail($userId);
 
-        // Si es otro usuario, asegurar que quien lo cambia es admin
+        // Si intenta editar otro usuario, verificar que sea admin
         if ($userId != auth()->id() && auth()->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'No autorizado'], 403);
         }
 
+        // Validar datos del usuario
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
@@ -39,12 +40,14 @@ class UserController extends Controller
 
         $data = $request->only(['name', 'email', 'phone', 'allergies', 'preferences']);
 
+        // Si se envía contraseña nueva, encriptarla
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
+        // Solo un admin puede cambiar roles de usuario
         if ($request->filled('role') && auth()->user()->role === 'admin') {
-            $data['role'] = $request->role; // Sólo un admin puede nombrar a otro admin o cambiar roles
+            $data['role'] = $request->role;
         }
 
         $user->update($data);
@@ -52,7 +55,7 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario actualizado correctamente', 'user' => $user]);
     }
 
-    // Eliminar usuario
+    // Eliminar un usuario (solo admin)
     public function destroy($id)
     {
         try {

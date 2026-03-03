@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+// Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
   const [form, setForm] = useState({
     name: '',
@@ -12,15 +13,16 @@ const ReservationForm = ({ compact = false }) => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Horarios disponibles para reservar
   const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
   const today = new Date().toISOString().split('T')[0];
 
+  // Enviar reserva (simulación guardando en localStorage)
   const handleSubmit = e => {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
 
-    // Simulation
     setTimeout(() => {
       const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
       reservations.push({ ...form, id: Date.now(), status: 'pendiente' });
@@ -41,6 +43,7 @@ const ReservationForm = ({ compact = false }) => {
     }, 1500);
   };
 
+  // Actualizar campo del formulario
   const handleChange = e => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -48,7 +51,7 @@ const ReservationForm = ({ compact = false }) => {
 
   return (
     <div className="animate-fade-in w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
-      {/* Decorative top border */}
+      {/* Línea decorativa superior */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
       <form onSubmit={handleSubmit} className="relative z-10">
@@ -175,6 +178,7 @@ const ReservationForm = ({ compact = false }) => {
           </button>
         </div>
 
+        {/* Mensaje de éxito */}
         {success && (
           <div className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
             <span className="text-primary text-2xl mb-2">✦</span>
