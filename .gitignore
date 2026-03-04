@@ -10,6 +10,8 @@ backend/vendor/
 # ===========================
 .env
 backend/.env
+.env.docker
+pgdata
 
 # ===========================
 # Build / Producción

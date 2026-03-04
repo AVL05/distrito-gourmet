@@ -2,12 +2,31 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { FadeIn } from '@/motion';
+import { DURATION, EASING } from '@/motion';
 
 const AdminView = () => {
   const { logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState('orders');
   const [data, setData] = useState({ orders: [], menu: [], reservations: [], users: [], categories: [] });
   const [loading, setLoading] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+
+  // Variante para el contenido de las secciones
+  const sectionContentVariants = {
+    hidden: { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: DURATION.normal, ease: EASING.decelerate },
+    },
+    exit: {
+      opacity: 0,
+      y: -8,
+      transition: { duration: DURATION.fast, ease: EASING.accelerate },
+    },
+  };
 
   // Estado del formulario para añadir nuevo plato
   const [newDish, setNewDish] = useState({ name: '', description: '', price: '', menu_category_id: '' });
@@ -377,7 +396,7 @@ const AdminView = () => {
           ))}
         </div>
 
-        <header className="mb-12 animate-fade-in">
+        <FadeIn as="header" className="mb-12">
           <span className="block text-primary text-[10px] uppercase tracking-[5px] mb-3 font-body opacity-90">
             Panel de Control Central
           </span>
@@ -388,9 +407,18 @@ const AdminView = () => {
           <p className="text-text-muted font-light text-sm tracking-wide">
             Gestión en tiempo real de los servicios vinculados a la base de datos.
           </p>
-        </header>
+        </FadeIn>
 
-        <div className="animate-fade-in">{renderContent()}</div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeSection}
+            variants={shouldReduceMotion ? undefined : sectionContentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit">
+            {renderContent()}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
   );

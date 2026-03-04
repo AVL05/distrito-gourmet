@@ -2,6 +2,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../store/auth';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { PageTransition, FadeIn, Toast } from '@/motion';
 
 const RegisterView = () => {
   const [form, setForm] = useState({
@@ -12,6 +14,7 @@ const RegisterView = () => {
   });
   const { register, loading, error } = useAuthStore();
   const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -44,12 +47,12 @@ const RegisterView = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] bg-bg-body relative overflow-hidden py-24 px-4">
-      {/* Gucci Style Background Lines */}
+    <PageTransition className="flex flex-col items-center justify-center min-h-[85vh] bg-bg-body relative overflow-hidden py-24 px-4">
+      {/* Líneas de fondo decorativas */}
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
       <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-      <div className="w-full max-w-xl bg-bg-surface p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
+      <FadeIn className="w-full max-w-xl bg-bg-surface p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
         <div className="text-center mb-16">
           <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-6 block font-body">
             / Unirse al Club
@@ -126,22 +129,26 @@ const RegisterView = () => {
             </div>
           </div>
 
-          {error && (
-            <div className="p-4 bg-red-50 text-red-800 text-center text-xs font-body tracking-wider border border-red-100 animate-fade-in">
-              {error}
-            </div>
-          )}
+          <AnimatePresence>
+            {error && (
+              <Toast className="p-4 bg-red-50 text-red-800 text-center text-xs font-body tracking-wider border border-red-100">
+                {error}
+              </Toast>
+            )}
+          </AnimatePresence>
 
           <div className="pt-8">
-            <button
+            <motion.button
               type="submit"
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
               disabled={loading}>
               <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
               <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                 {loading ? 'PROCESANDO...' : 'SOLICITAR REGISTRO'}
               </span>
-            </button>
+            </motion.button>
           </div>
         </form>
 
@@ -153,8 +160,8 @@ const RegisterView = () => {
             Iniciar Sesión
           </Link>
         </div>
-      </div>
-    </div>
+      </FadeIn>
+    </PageTransition>
   );
 };
 

@@ -1,6 +1,9 @@
 ﻿import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { PageTransition, FadeIn, StaggerList, StaggerItem } from '@/motion';
+import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, DURATION, EASING } from '@/motion';
 
 const MenuView = () => {
   const { addItem } = useCartStore();
@@ -12,6 +15,7 @@ const MenuView = () => {
     tastingMenus: [],
   });
   const [loading, setLoading] = useState(true);
+  const shouldReduceMotion = useReducedMotion();
 
   // Categorías del menú para las pestañas de filtro
   const categories = [
@@ -109,25 +113,48 @@ const MenuView = () => {
   ];
   const getWinesByType = type => menuData.wines.filter(w => w.wineType === type);
 
+  // Variante para el contenido de las pestañas
+  const tabContentVariants = {
+    hidden: { opacity: 0, y: 12 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: DURATION.normal, ease: EASING.decelerate },
+    },
+    exit: {
+      opacity: 0,
+      y: -8,
+      transition: { duration: DURATION.fast, ease: EASING.accelerate },
+    },
+  };
+
   return (
-    <div className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
+    <PageTransition className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
       {/* Luz ambiental de fondo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
       {/* Cabecera */}
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10 px-4">
         <div className="container text-center max-w-4xl mx-auto">
-          <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 animate-fade-in font-body font-bold">
-            Gastronomía
-          </span>
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 animate-fade-in text-text-main drop-shadow-sm leading-tight">
-            La Carta
-          </h1>
-          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10 animate-fade-in"></div>
-          <p className="text-text-muted font-light leading-relaxed sm:leading-loose text-base sm:text-lg animate-fade-in max-w-2xl mx-auto">
-            Una selección de sabores diseñada para despertar los sentidos, desde los clásicos reinventados hasta las
-            creaciones más audaces de nuestro equipo a los mandos.
-          </p>
+          <FadeIn delay={0.05}>
+            <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 font-body font-bold">
+              Gastronomía
+            </span>
+          </FadeIn>
+          <FadeIn delay={0.15}>
+            <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 text-text-main drop-shadow-sm leading-tight">
+              La Carta
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.25}>
+            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"></div>
+          </FadeIn>
+          <FadeIn delay={0.3}>
+            <p className="text-text-muted font-light leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
+              Una selección de sabores diseñada para despertar los sentidos, desde los clásicos reinventados hasta las
+              creaciones más audaces de nuestro equipo a los mandos.
+            </p>
+          </FadeIn>
         </div>
       </div>
 
@@ -136,16 +163,24 @@ const MenuView = () => {
         <div className="container overflow-x-auto no-scrollbar">
           <div className="flex justify-start sm:justify-center min-w-max gap-8 sm:gap-12 md:gap-16 px-4">
             {categories.map(cat => (
-              <button
+              <motion.button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
                 className={`uppercase text-[12px] sm:text-[13px] tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
                   activeCategory === cat.id ? 'text-primary' : 'text-text-muted hover:text-text-main'
                 }`}>
                 {cat.label}
-                <div
-                  className={`absolute bottom-0 left-0 h-[1.5px] bg-primary transition-all duration-500 ${activeCategory === cat.id ? 'w-full shadow-[0_0_10px_rgba(166,138,86,0.5)]' : 'w-0 group-hover:w-1/2'}`}></div>
-              </button>
+                <motion.div
+                  className="absolute bottom-0 left-0 h-[1.5px] bg-primary"
+                  initial={false}
+                  animate={{
+                    width: activeCategory === cat.id ? '100%' : '0%',
+                    boxShadow: activeCategory === cat.id ? '0 0 10px rgba(166,138,86,0.5)' : '0 0 0px transparent',
+                  }}
+                  transition={{ duration: DURATION.normal, ease: EASING.smooth }}
+                />
+              </motion.button>
             ))}
           </div>
         </div>
@@ -159,106 +194,121 @@ const MenuView = () => {
             <p className="text-text-muted font-light tracking-wide text-lg">Sintonizando nuestra bodega...</p>
           </div>
         ) : (
-          <>
-            {/* TODA LA CARTA */}
-            {activeCategory === 'carta' && (
-              <div className="space-y-32">
-                {dishCategories.map((catKey, index) => {
-                  const items = getDishesForCategory(catKey);
-                  if (items.length === 0) return null;
-                  const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              variants={shouldReduceMotion ? undefined : tabContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit">
+              {/* TODA LA CARTA */}
+              {activeCategory === 'carta' && (
+                <div className="space-y-32">
+                  {dishCategories.map((catKey, index) => {
+                    const items = getDishesForCategory(catKey);
+                    if (items.length === 0) return null;
+                    const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
 
-                  return (
-                    <div key={catKey} className="animate-fade-in mt-16 mb-24">
-                      <SectionHeader index={index} label={label} />
-                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
-                          <DishRow key={item.id} item={item} addItem={addItem} />
-                        ))}
+                    return (
+                      <div key={catKey} className="mt-16 mb-24">
+                        <SectionHeader index={index} label={label} />
+                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                          {items.map(item => (
+                            <StaggerItem key={item.id}>
+                              <DishRow item={item} addItem={addItem} shouldReduceMotion={shouldReduceMotion} />
+                            </StaggerItem>
+                          ))}
+                        </StaggerList>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
 
-            {/* BEBIDAS */}
-            {activeCategory === 'bebidas' && (
-              <div className="space-y-32">
-                {beverageTypes.map((bt, index) => {
-                  const items = getBeveragesByType(bt.key);
-                  if (items.length === 0) return null;
+              {/* BEBIDAS */}
+              {activeCategory === 'bebidas' && (
+                <div className="space-y-32">
+                  {beverageTypes.map((bt, index) => {
+                    const items = getBeveragesByType(bt.key);
+                    if (items.length === 0) return null;
 
-                  return (
-                    <div key={bt.key} className="animate-fade-in mt-16 mb-24">
-                      <SectionHeader index={index} label={bt.label} />
-                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
-                          <DisplayRow key={item.id} item={item} />
-                        ))}
+                    return (
+                      <div key={bt.key} className="mt-16 mb-24">
+                        <SectionHeader index={index} label={bt.label} />
+                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                          {items.map(item => (
+                            <StaggerItem key={item.id}>
+                              <DisplayRow item={item} />
+                            </StaggerItem>
+                          ))}
+                        </StaggerList>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
 
-            {/* BODEGA */}
-            {activeCategory === 'bodega' && (
-              <div className="space-y-32">
-                {wineTypes.map((wt, index) => {
-                  const items = getWinesByType(wt.key);
-                  if (items.length === 0) return null;
+              {/* BODEGA */}
+              {activeCategory === 'bodega' && (
+                <div className="space-y-32">
+                  {wineTypes.map((wt, index) => {
+                    const items = getWinesByType(wt.key);
+                    if (items.length === 0) return null;
 
-                  return (
-                    <div key={wt.key} className="animate-fade-in mt-16 mb-24">
-                      <SectionHeader index={index} label={wt.label} />
-                      <div className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
-                          <WineDisplayRow key={item.id} item={item} />
-                        ))}
+                    return (
+                      <div key={wt.key} className="mt-16 mb-24">
+                        <SectionHeader index={index} label={wt.label} />
+                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                          {items.map(item => (
+                            <StaggerItem key={item.id}>
+                              <WineDisplayRow item={item} />
+                            </StaggerItem>
+                          ))}
+                        </StaggerList>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+                    );
+                  })}
+                </div>
+              )}
 
-            {/* MENÚS DEGUSTACIÓN */}
-            {activeCategory === 'menus' && (
-              <div className="space-y-20 max-w-5xl mx-auto">
-                {menuData.tastingMenus.map((menu, index) => (
-                  <TastingMenuCard key={menu.id} menu={menu} index={index} />
-                ))}
-                {menuData.tastingMenus.length === 0 && <EmptyState />}
-              </div>
-            )}
+              {/* MENÚS DEGUSTACIÓN */}
+              {activeCategory === 'menus' && (
+                <StaggerList className="space-y-20 max-w-5xl mx-auto">
+                  {menuData.tastingMenus.map((menu, index) => (
+                    <StaggerItem key={menu.id}>
+                      <TastingMenuCard menu={menu} index={index} />
+                    </StaggerItem>
+                  ))}
+                  {menuData.tastingMenus.length === 0 && <EmptyState />}
+                </StaggerList>
+              )}
 
-            {/* Estado vacío si no hay datos */}
-            {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
-            {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
-            {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
-          </>
+              {/* Estado vacío si no hay datos */}
+              {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
+              {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
+              {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
+            </motion.div>
+          </AnimatePresence>
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 };
 
 // Cabecera de sección con número e índice
 const SectionHeader = ({ index, label }) => (
-  <div className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
+  <FadeIn className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
     <div className="flex-grow h-[1px] bg-text-main/10 hidden sm:block"></div>
     <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">/ 0{index + 1}</span>
     <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
       <span className="italic">{label.split(' ')[0]}</span> {label.split(' ').slice(1).join(' ')}
     </h2>
     <div className="flex-grow h-[1px] bg-text-main/10"></div>
-  </div>
+  </FadeIn>
 );
 
 // Fila de plato con botón de añadir al carrito
-const DishRow = ({ item, addItem }) => (
+const DishRow = ({ item, addItem, shouldReduceMotion }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
@@ -280,12 +330,13 @@ const DishRow = ({ item, addItem }) => (
       <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest mb-4">
         {item.price.toFixed(2)}€
       </span>
-      <button
+      <motion.button
         onClick={() => addItem(item)}
+        whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
         className="w-full md:w-auto relative px-10 py-3 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300">Añadir</span>
-      </button>
+      </motion.button>
     </div>
   </div>
 );
@@ -351,7 +402,7 @@ const WineDisplayRow = ({ item }) => (
 
 // Tarjeta de menú degustación (solo lectura)
 const TastingMenuCard = ({ menu, index }) => (
-  <div className="animate-fade-in border border-text-main/10 bg-bg-body relative overflow-hidden">
+  <div className="border border-text-main/10 bg-bg-body relative overflow-hidden">
     {/* Línea decorativa superior */}
     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"></div>
 
@@ -404,12 +455,12 @@ const TastingMenuCard = ({ menu, index }) => (
 
 // Estado vacío cuando no hay datos para mostrar
 const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-32 text-center animate-fade-in">
+  <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
     <p className="text-text-muted font-light tracking-wide text-base sm:text-lg max-w-md mx-auto">
       La colección para esta categoría se encuentra en desarrollo por nuestro Chef.
     </p>
-  </div>
+  </FadeIn>
 );
 
 export default MenuView;

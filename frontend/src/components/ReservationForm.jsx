@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { FadeIn, Toast } from '@/motion';
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
@@ -12,6 +14,7 @@ const ReservationForm = ({ compact = false }) => {
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   // Horarios disponibles para reservar
   const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
@@ -50,7 +53,7 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   return (
-    <div className="animate-fade-in w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
+    <FadeIn className="w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
       {/* Línea decorativa superior */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
@@ -167,32 +170,36 @@ const ReservationForm = ({ compact = false }) => {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <button
+          <motion.button
             type="submit"
-            className="group relative px-16 py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto min-w-[300px]"
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+            className="group relative px-16 py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto min-w-[300px]"
             disabled={loading}>
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
               {loading ? 'PROCESANDO...' : 'SOLICITAR MESA'}
             </span>
-          </button>
+          </motion.button>
         </div>
 
-        {/* Mensaje de éxito */}
-        {success && (
-          <div className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
-            <span className="text-primary text-2xl mb-2">✦</span>
-            <p className="text-gray-900 font-light tracking-wide leading-relaxed">
-              Su petición de reserva ha sido recibida con éxito.
-              <br />
-              <span className="text-gray-500 text-sm mt-2 block">
-                Nuestro equipo de recepción le contactará en breve para confirmar la disponibilidad.
-              </span>
-            </p>
-          </div>
-        )}
+        {/* Mensaje de éxito con animación */}
+        <AnimatePresence>
+          {success && (
+            <Toast className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-2xl">
+              <span className="text-primary text-2xl mb-2">✦</span>
+              <p className="text-gray-900 font-light tracking-wide leading-relaxed">
+                Su petición de reserva ha sido recibida con éxito.
+                <br />
+                <span className="text-gray-500 text-sm mt-2 block">
+                  Nuestro equipo de recepción le contactará en breve para confirmar la disponibilidad.
+                </span>
+              </p>
+            </Toast>
+          )}
+        </AnimatePresence>
       </form>
-    </div>
+    </FadeIn>
   );
 };
 

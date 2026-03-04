@@ -1,13 +1,17 @@
 ﻿import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { motion, useReducedMotion } from 'framer-motion';
+import { FadeIn, StaggerList, StaggerItem } from '@/motion';
 
-// Pie de página del sitio web
+// Pie de página del sitio web con animaciones sutiles
 const Footer = () => {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <footer className="bg-bg-body relative border-t border-text-main/10 pt-20 pb-10 overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
 
       <div className="container relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
+        <FadeIn className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
           {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">
             <h3 className="font-heading text-3xl md:text-3xl text-text-main tracking-[0.2em] mb-6 flex items-center gap-3 font-light">
@@ -65,26 +69,25 @@ const Footer = () => {
               </p>
             </div>
           </div>
-        </div>
+        </FadeIn>
 
         {/* Barra inferior con redes sociales y links legales */}
         <div className="border-t border-text-main/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex gap-4">
-            <a
-              href="#"
-              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
-              <FaFacebookF size={12} />
-            </a>
-            <a
-              href="#"
-              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
-              <FaInstagram size={12} />
-            </a>
-            <a
-              href="#"
-              className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
-              <FaTwitter size={12} />
-            </a>
+            {[
+              { icon: FaFacebookF, label: 'Facebook' },
+              { icon: FaInstagram, label: 'Instagram' },
+              { icon: FaTwitter, label: 'Twitter' },
+            ].map(({ icon: Icon, label }) => (
+              <motion.a
+                key={label}
+                href="#"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.1, y: -2 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
+                className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300">
+                <Icon size={12} />
+              </motion.a>
+            ))}
           </div>
 
           <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex gap-8 font-medium">

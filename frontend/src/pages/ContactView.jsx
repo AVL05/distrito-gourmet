@@ -1,8 +1,11 @@
 ﻿import { useState } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { PageTransition, FadeIn, Toast } from '@/motion';
 
 const ContactView = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [sent, setSent] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -12,12 +15,12 @@ const ContactView = () => {
   };
 
   return (
-    <div className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
-      {/* Gucci ambient lines */}
+    <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
+      {/* Líneas decorativas de fondo */}
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-6xl relative z-10">
-        <div className="text-center mb-16 sm:mb-24 animate-fade-in relative">
+        <FadeIn className="text-center mb-16 sm:mb-24 relative">
           <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 sm:mb-8 font-body">
             / 05 Localización
           </span>
@@ -25,9 +28,9 @@ const ContactView = () => {
             Nuestra <span className="italic text-primary">Dirección</span>
           </h1>
           <div className="w-16 h-[1px] bg-text-main/10 mx-auto"></div>
-        </div>
+        </FadeIn>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 animate-fade-in delay-100 border border-text-main/10 bg-bg-surface">
+        <FadeIn delay={0.15} className="grid grid-cols-1 lg:grid-cols-5 gap-0 border border-text-main/10 bg-bg-surface">
           {/* Info - Takes 2 cols */}
           <div className="lg:col-span-2 flex flex-col justify-start space-y-12 sm:space-y-16 p-8 sm:p-12 md:p-16 border-b lg:border-b-0 lg:border-r border-text-main/10">
             <div>
@@ -148,27 +151,31 @@ const ContactView = () => {
                 </div>
 
                 <div className="pt-8">
-                  <button
+                  <motion.button
                     type="submit"
+                    whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main">
                     <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                       ENVIAR MENSAJE
                     </span>
-                  </button>
+                  </motion.button>
                 </div>
 
-                {sent && (
-                  <div className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-light tracking-wide animate-fade-in mt-6 font-body">
-                    Su mensaje ha sido enviado a nuestras oficinas. Le responderemos en un plazo máximo de 24 horas.
-                  </div>
-                )}
+                <AnimatePresence>
+                  {sent && (
+                    <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-light tracking-wide mt-6 font-body">
+                      Su mensaje ha sido enviado a nuestras oficinas. Le responderemos en un plazo máximo de 24 horas.
+                    </Toast>
+                  )}
+                </AnimatePresence>
               </form>
             </div>
           </div>
-        </div>
+        </FadeIn>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 
