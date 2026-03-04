@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, StaggerList, StaggerItem } from '@/motion';
+import { PageTransition, FadeIn, StaggerList, StaggerItem, ScrollReveal, TextReveal, LineReveal } from '@/motion';
 import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, DURATION, EASING } from '@/motion';
 
 const MenuView = () => {
@@ -133,7 +133,7 @@ const MenuView = () => {
       {/* Luz ambiental de fondo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
-      {/* Cabecera */}
+      {/* Cabecera con TextReveal inspirado en Adachi */}
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10 px-4">
         <div className="container text-center max-w-4xl mx-auto">
           <FadeIn delay={0.05}>
@@ -141,15 +141,21 @@ const MenuView = () => {
               Gastronomía
             </span>
           </FadeIn>
-          <FadeIn delay={0.15}>
-            <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 text-text-main drop-shadow-sm leading-tight">
-              La Carta
-            </h1>
+          <TextReveal
+            text="La Carta"
+            splitBy="char"
+            as="h1"
+            staggerDelay={0.05}
+            delay={0.15}
+            className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 text-text-main drop-shadow-sm leading-tight justify-center"
+          />
+          <FadeIn delay={0.4}>
+            <LineReveal
+              className="bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"
+              style={{ maxWidth: '4rem' }}
+            />
           </FadeIn>
-          <FadeIn delay={0.25}>
-            <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"></div>
-          </FadeIn>
-          <FadeIn delay={0.3}>
+          <FadeIn delay={0.5}>
             <p className="text-text-muted font-light leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
               Una selección de sabores diseñada para despertar los sentidos, desde los clásicos reinventados hasta las
               creaciones más audaces de nuestro equipo a los mandos.
@@ -296,15 +302,19 @@ const MenuView = () => {
 };
 
 // Cabecera de sección con número e índice
+// Cabecera de sección con animación ScrollReveal + LineReveal (estilo Gucci Osteria)
 const SectionHeader = ({ index, label }) => (
-  <FadeIn className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
-    <div className="flex-grow h-[1px] bg-text-main/10 hidden sm:block"></div>
+  <ScrollReveal
+    direction="up"
+    distance={30}
+    className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
+    <LineReveal className="flex-grow bg-text-main/10 hidden sm:block" delay={0.3} />
     <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">/ 0{index + 1}</span>
     <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
       <span className="italic">{label.split(' ')[0]}</span> {label.split(' ').slice(1).join(' ')}
     </h2>
-    <div className="flex-grow h-[1px] bg-text-main/10"></div>
-  </FadeIn>
+    <LineReveal className="flex-grow bg-text-main/10" delay={0.3} />
+  </ScrollReveal>
 );
 
 // Fila de plato con botón de añadir al carrito

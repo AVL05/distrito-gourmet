@@ -37,3 +37,17 @@ export {
   MotionButton,
   AnimatePresence,
 } from './MotionComponents';
+
+// Componentes avanzados de animación (inspirados en Lucky Folks, Gucci Osteria, Adachi)
+export {
+  TextReveal,
+  ScrollReveal,
+  ParallaxSection,
+  ParallaxImage,
+  ImageReveal,
+  Marquee,
+  SmoothCounter,
+  MagneticButton,
+  LineReveal,
+  ScrollProgress,
+} from './AdvancedComponents';

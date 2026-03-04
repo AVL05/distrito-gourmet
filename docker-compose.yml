@@ -1,5 +1,4 @@
-version: "3.8"
-
+# PostgreSQL + pgAdmin — el backend y frontend se ejecutan en local
 services:
 
   db:
@@ -14,39 +13,16 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  backend:
-    build: ./backend
-    container_name: distrito-backend
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: distrito-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
-      - "8000:80"
-    volumes:
-      - ./backend:/var/www/html
-    env_file:
-      - ./backend/.env.docker
+      - "5050:80"
     depends_on:
       - db
-    command: >
-      sh -c "
-      composer install &&
-      php artisan key:generate &&
-      php artisan migrate &&
-      apache2-foreground
-      "
-
-  frontend:
-    build: ./frontend
-    container_name: distrito-frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-    depends_on:
-      - backend
-    command: >
-      sh -c "
-      npm install &&
-      npm run dev -- --host
-      "
 
 volumes:
   pgdata:

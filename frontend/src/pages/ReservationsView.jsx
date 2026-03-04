@@ -1,7 +1,7 @@
 ﻿import ReservationForm from '@/components/ReservationForm';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, StaggerList, StaggerItem } from '@/motion';
+import { PageTransition, FadeIn, StaggerList, StaggerItem, ScrollReveal, TextReveal, LineReveal } from '@/motion';
 import { DURATION, EASING } from '@/motion';
 
 const ReservationsView = () => {
@@ -36,15 +36,19 @@ const ReservationsView = () => {
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-5xl relative z-10">
-        <FadeIn className="text-center mb-16 sm:mb-24 relative">
+        <ScrollReveal className="text-center mb-16 sm:mb-24 relative">
           <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 sm:mb-8 font-body">
             / 06 Sus Reservas
           </span>
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight">
-            Gestión <span className="italic text-primary">Personal</span>
-          </h1>
-          <div className="w-16 h-[1px] bg-text-main/10 mx-auto"></div>
-        </FadeIn>
+          <TextReveal
+            text="Gestión Personal"
+            splitBy="word"
+            as="h1"
+            staggerDelay={0.1}
+            className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight justify-center"
+          />
+          <LineReveal className="bg-text-main/10 mx-auto" style={{ maxWidth: '4rem' }} />
+        </ScrollReveal>
 
         {/* Tabs */}
         <div className="flex justify-center gap-8 sm:gap-12 mb-16 sm:mb-20">

@@ -1,6 +1,6 @@
 ﻿import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, Toast } from '@/motion';
+import { PageTransition, FadeIn, Toast, ScrollReveal, TextReveal, LineReveal } from '@/motion';
 
 const ContactView = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -20,15 +20,19 @@ const ContactView = () => {
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-6xl relative z-10">
-        <FadeIn className="text-center mb-16 sm:mb-24 relative">
+        <ScrollReveal className="text-center mb-16 sm:mb-24 relative">
           <span className="block text-text-muted text-[10px] uppercase tracking-[4px] mb-6 sm:mb-8 font-body">
             / 05 Localización
           </span>
-          <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight">
-            Nuestra <span className="italic text-primary">Dirección</span>
-          </h1>
-          <div className="w-16 h-[1px] bg-text-main/10 mx-auto"></div>
-        </FadeIn>
+          <TextReveal
+            text="Nuestra Dirección"
+            splitBy="word"
+            as="h1"
+            staggerDelay={0.1}
+            className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight justify-center"
+          />
+          <LineReveal className="bg-text-main/10 mx-auto" style={{ maxWidth: '4rem' }} />
+        </ScrollReveal>
 
         <FadeIn delay={0.15} className="grid grid-cols-1 lg:grid-cols-5 gap-0 border border-text-main/10 bg-bg-surface">
           {/* Info - Takes 2 cols */}

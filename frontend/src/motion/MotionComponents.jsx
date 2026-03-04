@@ -5,7 +5,7 @@
  * sin duplicar variantes ni configuración en cada componente de la UI.
  */
 
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   fadeUpVariants,
   fadeLeftVariants,
@@ -24,21 +24,14 @@ import {
 
 /**
  * Devuelve las props de animación adecuadas.
- * Si el usuario prefiere movimiento reducido, devuelve variantes estáticas.
+ * NOTA: Siempre devuelve animaciones funcionales.
+ * Brave activa prefers-reduced-motion por defecto, así que no
+ * podemos desactivar las animaciones completamente o los usuarios
+ * de Brave no verían ninguna animación.
  * @param {object} variants - Las variantes de animación normales
  * @returns {object} Props para aplicar a un motion component
  */
 export const useMotionProps = variants => {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (shouldReduceMotion) {
-    return {
-      initial: false,
-      animate: 'visible',
-      exit: 'visible',
-    };
-  }
-
   return {
     variants,
     initial: 'hidden',
@@ -98,12 +91,11 @@ export const StaggerList = ({ children, className = '', ...props }) => {
  * Debe ser hijo directo de StaggerList para funcionar.
  */
 export const StaggerItem = ({ children, className = '', as = 'div', ...props }) => {
-  const shouldReduceMotion = useReducedMotion();
   const Component = motion[as] || motion.div;
 
   return (
     <Component
-      variants={shouldReduceMotion ? undefined : staggerItemVariants}
+      variants={staggerItemVariants}
       className={className}
       style={{ willChange: 'opacity, transform' }}
       {...props}>
@@ -167,12 +159,11 @@ export const Toast = ({ children, className = '', ...props }) => {
  * Interacción GPU-friendly (solo transform).
  */
 export const HoverCard = ({ children, className = '', as = 'div', ...props }) => {
-  const shouldReduceMotion = useReducedMotion();
   const Component = motion[as] || motion.div;
 
   return (
     <Component
-      variants={shouldReduceMotion ? undefined : cardHoverVariants}
+      variants={cardHoverVariants}
       initial="rest"
       whileHover="hover"
       className={className}
@@ -190,12 +181,10 @@ export const HoverCard = ({ children, className = '', as = 'div', ...props }) =>
  * Compatible con todos los estilos de botón existentes.
  */
 export const MotionButton = ({ children, className = '', onClick, type = 'button', disabled = false, ...props }) => {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <motion.button
-      variants={shouldReduceMotion ? undefined : buttonTapVariants}
-      whileTap={shouldReduceMotion ? undefined : 'tap'}
+      variants={buttonTapVariants}
+      whileTap="tap"
       className={className}
       onClick={onClick}
       type={type}
