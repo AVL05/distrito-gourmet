@@ -4,23 +4,42 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     // Obtener los pedidos del usuario autenticado
     public function index()
     {
-        $orders = \App\Models\Order::where('user_id', auth()->id())->with('items.dish')->get();
+        $userId = Auth::id();
+        
+        // Actualización automática: si ha pasado la hora de recogida, marcarlo como entregado
+        \App\Models\Order::where('user_id', $userId)
+            ->whereIn('status', ['received', 'preparing', 'ready'])
+            ->where('pickup_time', '<', now())
+            ->update(['status' => 'delivered']);
+
+        $orders = \App\Models\Order::where('user_id', $userId)
+            ->with(['items.dish', 'items.wine'])
+            ->latest()
+            ->get();
+            
         return response()->json($orders);
     }
 
     // Crear un nuevo pedido
     public function store(Request $request)
     {
+        // Verificar autenticación explícitamente por seguridad
+        if (!Auth::check()) {
+            return response()->json(['message' => 'No autorizado'], 401);
+        }
+
         // Validar datos del pedido y sus artículos
         $request->validate([
             'total' => 'required|numeric',
-            'items' => 'required|array',
+            'payment_method' => 'required|string',
+            'items' => 'required|array|min:1',
             'items.*.db_id' => 'required|integer',
             'items.*.item_type' => 'required|string|in:dish,wine',
             'items.*.name' => 'required|string',
@@ -28,26 +47,37 @@ class OrderController extends Controller
             'items.*.price' => 'required|numeric',
         ]);
 
-        // Crear el pedido principal
-        $order = \App\Models\Order::create([
-            'user_id' => auth()->id(),
-            'total' => $request->total,
-            'status' => 'received'
-        ]);
+        return DB::transaction(function () use ($request) {
+            // Calcular hora de recogida (+45 minutos)
+            $pickupTime = now()->addMinutes(45);
 
-        // Crear cada artículo del pedido
-        foreach ($request->items as $item) {
-            \App\Models\OrderItem::create([
-                'order_id' => $order->id,
-                'dish_id' => $item['item_type'] === 'dish' ? $item['db_id'] : null,
-                'wine_id' => $item['item_type'] === 'wine' ? $item['db_id'] : null,
-                'item_name' => $item['name'],
-                'quantity' => $item['quantity'],
-                'price' => $item['price']
+            // Crear el pedido principal
+            $order = \App\Models\Order::create([
+                'user_id' => Auth::id(),
+                'total' => $request->total,
+                'status' => 'received',
+                'type' => 'gourmet_pickup',
+                'payment_method' => $request->payment_method,
+                'pickup_time' => $pickupTime
             ]);
-        }
 
-        return response()->json(['message' => 'Pedido creado correctamente', 'order' => $order->load('items')], 201);
+            // Crear cada artículo del pedido
+            foreach ($request->items as $item) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'dish_id' => $item['item_type'] === 'dish' ? $item['db_id'] : null,
+                    'wine_id' => $item['item_type'] === 'wine' ? $item['db_id'] : null,
+                    'item_name' => $item['name'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price']
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Pedido creado correctamente', 
+                'order' => $order->load('items')
+            ], 201);
+        });
     }
 
     // Obtener todos los pedidos (solo admin)

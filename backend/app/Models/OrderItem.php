@@ -14,4 +14,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Dish::class);
     }
+
+    // Relación: cada artículo puede estar vinculado a un vino
+    public function wine()
+    {
+        return $this->belongsTo(Wine::class);
+    }
 }

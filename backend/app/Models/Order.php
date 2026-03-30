@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 // Modelo de pedido
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'status', 'type', 'total', 'address', 'delivery_instructions'];
+    protected $fillable = ['user_id', 'status', 'type', 'payment_method', 'total', 'pickup_time', 'address', 'delivery_instructions'];
 
     // Relación: un pedido tiene muchos artículos
     public function items()

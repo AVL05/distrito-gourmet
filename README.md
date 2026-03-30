@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/Vite-7.3-646CFF?logo=vite&logoColor=white" alt="Vite"/>
   <img src="https://img.shields.io/badge/Laravel-12-F53C32?logo=laravel&logoColor=white" alt="Laravel"/>
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS"/>
-  <img src="https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white" alt="SQLite"/>
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white" alt="MySQL"/>
 </p>
 
 ---
@@ -21,7 +21,7 @@ El proyecto implementa una arquitectura moderna desacoplada:
 
 - **Frontend SPA** (Single Page Application) construido con React + Vite.
 - **API REST** independiente desarrollada con Laravel 12.
-- **Base de datos SQLite** embebida para máxima portabilidad.
+- **Base de datos MySQL** gestionada a través de Laragon para un entorno local robusto.
 
 ---
 
@@ -61,7 +61,7 @@ El proyecto implementa una arquitectura moderna desacoplada:
 | [Laravel](https://laravel.com)                      | 12.x    | Framework PHP para la API REST |
 | [Laravel Sanctum](https://laravel.com/docs/sanctum) | 4.x     | Autenticación por tokens SPA   |
 | [Eloquent ORM](https://laravel.com/docs/eloquent)   | —       | Mapeo objeto-relacional        |
-| [SQLite](https://www.sqlite.org)                    | 3       | Base de datos embebida         |
+| [MySQL](https://www.mysql.com)                      | 8.x     | Sistema base de datos relacional |
 
 ### Tipografías (Google Fonts)
 
@@ -279,7 +279,10 @@ El archivo `backend/.env` se crea copiando `.env.example`. Las variables clave:
 
 ```env
 APP_KEY=               # Se genera automáticamente con: php artisan key:generate
-DB_CONNECTION=sqlite   # Base de datos (opciones: sqlite, mysql, pgsql)
+DB_CONNECTION=mysql    # Conexión principal a MySQL
+DB_PORT=3306           # Puerto por defecto de Laragon
+DB_USERNAME=root       # Usuario por defecto de Laragon
+DB_PASSWORD=           # Contraseña en blanco por defecto
 SANCTUM_STATEFUL_DOMAINS=localhost:5173   # Dominio del frontend para auth
 ```
 
