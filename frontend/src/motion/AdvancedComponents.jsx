@@ -50,24 +50,38 @@ export const TextReveal = ({
     <Component
       ref={ref}
       className={className}
-      style={{ perspective: '600px', display: 'flex', flexWrap: 'wrap', overflow: 'hidden' }}
+      style={{
+        perspective: '600px',
+        display: 'flex',
+        flexWrap: 'wrap',
+        overflow: 'visible', // Permitimos desbordamiento horizontal para evitar cortes
+        willChange: 'transform',
+      }}
       aria-label={text}
       {...props}>
       {units.map((unit, i) => (
-        <motion.span
-          key={`${unit}-${i}`}
-          custom={i}
-          variants={unitVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
+        <span
+          key={`wrapper-${unit}-${i}`}
           style={{
             display: 'inline-block',
-            willChange: 'opacity, transform',
-            marginRight: splitBy === 'word' ? '0.3em' : '0',
+            overflow: 'hidden', // Máscara individual para cada unidad
+            padding: '0.05em 0.15em', // Espacio para acentos y rasgos tipográficos
+            margin: '-0.05em -0.15em',
+            marginRight: splitBy === 'word' ? '0.15em' : '0',
             whiteSpace: 'pre',
           }}>
-          {unit}
-        </motion.span>
+          <motion.span
+            custom={i}
+            variants={unitVariants}
+            initial="hidden"
+            animate={isInView ? 'visible' : 'hidden'}
+            style={{
+              display: 'inline-block',
+              willChange: 'opacity, transform',
+            }}>
+            {unit}
+          </motion.span>
+        </span>
       ))}
     </Component>
   );

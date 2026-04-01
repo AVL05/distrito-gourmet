@@ -7,6 +7,9 @@ import Navbar from '../components/layout/Navbar';
 const MainLayout = () => {
   const location = useLocation();
 
+  // Ocultar Footer en páginas de administración
+  const isAdminPage = location.pathname.startsWith('/admin');
+
   return (
     <div className="flex flex-col min-h-screen bg-bg-body text-text-main font-body">
       <Navbar />
@@ -15,7 +18,7 @@ const MainLayout = () => {
           <Outlet key={location.pathname} />
         </AnimatePresence>
       </main>
-      <Footer />
+      <div className="bg-bg-body z-10">{!isAdminPage && <Footer />}</div>
     </div>
   );
 };
