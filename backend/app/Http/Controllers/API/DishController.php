@@ -34,18 +34,20 @@ class DishController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'menu_category_id' => 'required|integer|exists:menu_categories,id',
+            'image' => 'nullable|string',
+            'allergens' => 'nullable|string',
+            'is_signature' => 'boolean',
+            'available' => 'boolean',
         ]);
 
-        $data = $request->all();
-        $dish = \App\Models\Dish::create($data);
-
-        return response()->json(['message' => 'Plato creado correctamente', 'dish' => $dish], 201);
+        $dish = \App\Models\Dish::create($request->all());
+        return response()->json(['message' => 'Plato creado correctamente', 'dish' => $dish->load('category')], 201);
     }
 
     // Obtener un plato por ID
     public function show($id)
     {
-        return response()->json(\App\Models\Dish::findOrFail($id));
+        return response()->json(\App\Models\Dish::with('category')->findOrFail($id));
     }
 
     // Actualizar un plato existente (solo admin)
@@ -57,13 +59,16 @@ class DishController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric',
             'menu_category_id' => 'required|integer|exists:menu_categories,id',
+            'image' => 'nullable|string',
+            'allergens' => 'nullable|string',
+            'is_signature' => 'boolean',
+            'available' => 'boolean',
         ]);
 
         $dish = \App\Models\Dish::findOrFail($id);
-        $data = $request->all();
-        $dish->update($data);
+        $dish->update($request->all());
 
-        return response()->json(['message' => 'Plato actualizado correctamente', 'dish' => $dish]);
+        return response()->json(['message' => 'Plato actualizado correctamente', 'dish' => $dish->load('category')]);
     }
 
     // Eliminar un plato (solo admin)

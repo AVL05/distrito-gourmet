@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { useReducedMotion } from 'framer-motion';
 import {
   PageTransition,
   FadeIn,
@@ -13,8 +12,6 @@ import {
 } from '@/motion';
 
 const HomeView = () => {
-  const shouldReduceMotion = useReducedMotion();
-
   return (
     <PageTransition className="w-full">
       {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
@@ -76,16 +73,14 @@ const HomeView = () => {
               </Link>
               {/* Botón magnético inspirado en Lucky Folks */}
               <MagneticButton as="div" strength={12} className="cursor-pointer">
-                <motion.div
-                  whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
-                  whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}>
+                <div>
                   <Link
                     to="/reservations"
                     className="group relative px-10 py-4 bg-text-main text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center inline-block">
                     <div className="absolute inset-0 w-0 bg-primary/20 transition-all duration-[400ms] ease-out group-hover:w-full"></div>
                     <span className="relative z-10 font-semibold transition-colors duration-300">Reservar Mesa</span>
                   </Link>
-                </motion.div>
+                </div>
               </MagneticButton>
             </div>
           </FadeIn>
@@ -268,9 +263,7 @@ const HomeView = () => {
 
           <ScrollReveal delay={0.2} className="flex justify-center flex-col items-center">
             <MagneticButton as="div" strength={10} className="cursor-pointer">
-              <motion.div
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}>
+              <div>
                 <Link
                   to="/reservations"
                   className="group relative px-12 py-5 bg-transparent border border-bg-body text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-transparent focus:outline-none w-full sm:w-auto text-center inline-block">
@@ -279,7 +272,7 @@ const HomeView = () => {
                     Proceder a la Reserva
                   </span>
                 </Link>
-              </motion.div>
+              </div>
             </MagneticButton>
           </ScrollReveal>
         </div>

@@ -89,7 +89,7 @@
     @apply py-24;
   }
 
-  input,
+  input:not([type='checkbox']):not([type='radio']),
   select,
   textarea {
     @apply bg-transparent border-none border-b border-text-main/20 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-text-muted/50;

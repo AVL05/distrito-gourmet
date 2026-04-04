@@ -1,17 +1,24 @@
 import { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { FadeIn, Toast } from '@/motion';
+import { motion, AnimatePresence, useReducedMotion, FadeIn, Toast } from '@/motion';
+import { useAuthStore } from '@/store/auth';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
+  const { user } = useAuthStore();
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
-    name: '',
+    name: user?.name || '',
     phone: '',
     people: '',
     date: '',
     time: '',
     comments: '',
   });
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -20,30 +27,59 @@ const ReservationForm = ({ compact = false }) => {
   const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
   const today = new Date().toISOString().split('T')[0];
 
-  // Enviar reserva (simulación guardando en localStorage)
-  const handleSubmit = e => {
+  // Enviar reserva (conexión real con API)
+  const handleSubmit = async e => {
     e.preventDefault();
+
+    if (!user) {
+      Swal.fire({
+        title: 'Atención',
+        text: 'Debe iniciar sesión para realizar una reserva.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Ir al Login',
+        cancelButtonText: 'Cerrar',
+        confirmButtonColor: '#c5a059',
+      }).then(result => {
+        if (result.isConfirmed) navigate('/login');
+      });
+      return;
+    }
+
     setLoading(true);
-    setSuccess(false);
 
-    setTimeout(() => {
-      const reservations = JSON.parse(localStorage.getItem('reservations')) || [];
-      reservations.push({ ...form, id: Date.now(), status: 'pendiente' });
-      localStorage.setItem('reservations', JSON.stringify(reservations));
+    try {
+      // Combinar fecha y hora para el formato del backend (ISO)
+      const reservationTime = `${form.date}T${form.time}:00`;
 
-      setLoading(false);
+      await axios.post('/reservations', {
+        reservation_time: reservationTime,
+        people: parseInt(form.people),
+        special_requests: form.comments,
+        experience_type: 'a_la_carte', // Default
+      });
+
       setSuccess(true);
-      setForm({
-        name: '',
-        phone: '',
+      setForm(prev => ({
+        ...prev,
         people: '',
         date: '',
         time: '',
         comments: '',
-      });
+      }));
 
       setTimeout(() => setSuccess(false), 8000);
-    }, 1500);
+    } catch (err) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.response?.data?.message || 'No se pudo procesar la reserva',
+        confirmButtonColor: '#c5a059',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Actualizar campo del formulario

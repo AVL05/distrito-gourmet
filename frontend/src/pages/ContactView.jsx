@@ -1,6 +1,15 @@
-﻿import { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, Toast, ScrollReveal, TextReveal, LineReveal } from '@/motion';
+import { useState } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  PageTransition,
+  FadeIn,
+  Toast,
+  ScrollReveal,
+  TextReveal,
+  LineReveal,
+} from '@/motion';
 
 const ContactView = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });

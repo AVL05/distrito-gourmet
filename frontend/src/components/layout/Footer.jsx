@@ -1,6 +1,5 @@
-﻿import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
-import { motion, useReducedMotion } from 'framer-motion';
-import { FadeIn, StaggerList, StaggerItem } from '@/motion';
+import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
+import { motion, useReducedMotion, FadeIn, StaggerList, StaggerItem } from '@/motion';
 
 // Pie de página del sitio web con animaciones sutiles
 const Footer = () => {

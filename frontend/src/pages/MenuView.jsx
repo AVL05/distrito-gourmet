@@ -1,9 +1,16 @@
-﻿import { useCartStore } from '@/store/cart';
+import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, StaggerList, StaggerItem, ScrollReveal, TextReveal, LineReveal } from '@/motion';
-import { fadeUpVariants, staggerContainerVariants, staggerItemVariants, DURATION, EASING } from '@/motion';
+import {
+  PageTransition,
+  FadeIn,
+  StaggerList,
+  StaggerItem,
+  ScrollReveal,
+  TextReveal,
+  LineReveal,
+  MotionButton,
+} from '@/motion';
 
 const MenuView = () => {
   const { addItem } = useCartStore();
@@ -15,7 +22,6 @@ const MenuView = () => {
     tastingMenus: [],
   });
   const [loading, setLoading] = useState(true);
-  const shouldReduceMotion = useReducedMotion();
 
   // Categorías del menú para las pestañas de filtro
   const categories = [
@@ -41,6 +47,8 @@ const MenuView = () => {
           price: parseFloat(d.price),
           category: d.category ? d.category.name.toLowerCase() : 'otros',
           image: d.image,
+          allergens: d.allergens,
+          isSignature: !!d.is_signature,
         }));
 
         // Formatear vinos
@@ -113,20 +121,7 @@ const MenuView = () => {
   ];
   const getWinesByType = type => menuData.wines.filter(w => w.wineType === type);
 
-  // Variante para el contenido de las pestañas
-  const tabContentVariants = {
-    hidden: { opacity: 0, y: 12 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: DURATION.normal, ease: EASING.decelerate },
-    },
-    exit: {
-      opacity: 0,
-      y: -8,
-      transition: { duration: DURATION.fast, ease: EASING.accelerate },
-    },
-  };
+  // Transición de pestañas manejada por PageTransition internamente al cambiar la key
 
   return (
     <PageTransition className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
@@ -169,24 +164,21 @@ const MenuView = () => {
         <div className="container overflow-x-auto no-scrollbar">
           <div className="flex justify-start sm:justify-center min-w-max gap-8 sm:gap-12 md:gap-16 px-4">
             {categories.map(cat => (
-              <motion.button
+              <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
                 className={`uppercase text-[12px] sm:text-[13px] tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
                   activeCategory === cat.id ? 'text-primary' : 'text-text-muted hover:text-text-main'
                 }`}>
                 {cat.label}
-                <motion.div
-                  className="absolute bottom-0 left-0 h-[1.5px] bg-primary"
-                  initial={false}
-                  animate={{
+                <div
+                  className="absolute bottom-0 left-0 h-[1.5px] bg-primary transition-all duration-500"
+                  style={{
                     width: activeCategory === cat.id ? '100%' : '0%',
-                    boxShadow: activeCategory === cat.id ? '0 0 10px rgba(166,138,86,0.5)' : '0 0 0px transparent',
+                    boxShadow: activeCategory === cat.id ? '0 0 10px rgba(166,138,86,0.5)' : 'none',
                   }}
-                  transition={{ duration: DURATION.normal, ease: EASING.smooth }}
                 />
-              </motion.button>
+              </button>
             ))}
           </div>
         </div>
@@ -200,101 +192,94 @@ const MenuView = () => {
             <p className="text-text-muted font-light tracking-wide text-lg">Sintonizando nuestra bodega...</p>
           </div>
         ) : (
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCategory}
-              variants={shouldReduceMotion ? undefined : tabContentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit">
-              {/* TODA LA CARTA */}
-              {activeCategory === 'carta' && (
-                <div className="space-y-32">
-                  {dishCategories.map((catKey, index) => {
-                    const items = getDishesForCategory(catKey);
-                    if (items.length === 0) return null;
-                    const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+          <PageTransition key={activeCategory}>
+            {/* TODA LA CARTA */}
+            {activeCategory === 'carta' && (
+              <div className="space-y-32">
+                {dishCategories.map((catKey, index) => {
+                  const items = getDishesForCategory(catKey);
+                  if (items.length === 0) return null;
+                  const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
 
-                    return (
-                      <div key={catKey} className="mt-16 mb-24">
-                        <SectionHeader index={index} label={label} />
-                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                          {items.map(item => (
-                            <StaggerItem key={item.id}>
-                              <DishRow item={item} addItem={addItem} shouldReduceMotion={shouldReduceMotion} />
-                            </StaggerItem>
-                          ))}
-                        </StaggerList>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                  return (
+                    <div key={catKey} className="mt-16 mb-24">
+                      <SectionHeader index={index} label={label} />
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <StaggerItem key={item.id}>
+                            <DishRow item={item} addItem={addItem} />
+                          </StaggerItem>
+                        ))}
+                      </StaggerList>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
-              {/* BEBIDAS */}
-              {activeCategory === 'bebidas' && (
-                <div className="space-y-32">
-                  {beverageTypes.map((bt, index) => {
-                    const items = getBeveragesByType(bt.key);
-                    if (items.length === 0) return null;
+            {/* BEBIDAS */}
+            {activeCategory === 'bebidas' && (
+              <div className="space-y-32">
+                {beverageTypes.map((bt, index) => {
+                  const items = getBeveragesByType(bt.key);
+                  if (items.length === 0) return null;
 
-                    return (
-                      <div key={bt.key} className="mt-16 mb-24">
-                        <SectionHeader index={index} label={bt.label} />
-                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                          {items.map(item => (
-                            <StaggerItem key={item.id}>
-                              <DisplayRow item={item} />
-                            </StaggerItem>
-                          ))}
-                        </StaggerList>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                  return (
+                    <div key={bt.key} className="mt-16 mb-24">
+                      <SectionHeader index={index} label={bt.label} />
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <StaggerItem key={item.id}>
+                            <DisplayRow item={item} />
+                          </StaggerItem>
+                        ))}
+                      </StaggerList>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
-              {/* BODEGA */}
-              {activeCategory === 'bodega' && (
-                <div className="space-y-32">
-                  {wineTypes.map((wt, index) => {
-                    const items = getWinesByType(wt.key);
-                    if (items.length === 0) return null;
+            {/* BODEGA */}
+            {activeCategory === 'bodega' && (
+              <div className="space-y-32">
+                {wineTypes.map((wt, index) => {
+                  const items = getWinesByType(wt.key);
+                  if (items.length === 0) return null;
 
-                    return (
-                      <div key={wt.key} className="mt-16 mb-24">
-                        <SectionHeader index={index} label={wt.label} />
-                        <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                          {items.map(item => (
-                            <StaggerItem key={item.id}>
-                              <WineDisplayRow item={item} />
-                            </StaggerItem>
-                          ))}
-                        </StaggerList>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                  return (
+                    <div key={wt.key} className="mt-16 mb-24">
+                      <SectionHeader index={index} label={wt.label} />
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                        {items.map(item => (
+                          <StaggerItem key={item.id}>
+                            <WineDisplayRow item={item} />
+                          </StaggerItem>
+                        ))}
+                      </StaggerList>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
-              {/* MENÚS DEGUSTACIÓN */}
-              {activeCategory === 'menus' && (
-                <StaggerList className="space-y-20 max-w-5xl mx-auto">
-                  {menuData.tastingMenus.map((menu, index) => (
-                    <StaggerItem key={menu.id}>
-                      <TastingMenuCard menu={menu} index={index} />
-                    </StaggerItem>
-                  ))}
-                  {menuData.tastingMenus.length === 0 && <EmptyState />}
-                </StaggerList>
-              )}
+            {/* MENÚS DEGUSTACIÓN */}
+            {activeCategory === 'menus' && (
+              <StaggerList className="space-y-20 max-w-5xl mx-auto">
+                {menuData.tastingMenus.map((menu, index) => (
+                  <StaggerItem key={menu.id}>
+                    <TastingMenuCard menu={menu} index={index} />
+                  </StaggerItem>
+                ))}
+                {menuData.tastingMenus.length === 0 && <EmptyState />}
+              </StaggerList>
+            )}
 
-              {/* Estado vacío si no hay datos */}
-              {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
-              {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
-              {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
-            </motion.div>
-          </AnimatePresence>
+            {/* Estado vacío si no hay datos */}
+            {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
+            {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
+            {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
+          </PageTransition>
         )}
       </div>
     </PageTransition>
@@ -318,21 +303,28 @@ const SectionHeader = ({ index, label }) => (
 );
 
 // Fila de plato con botón de añadir al carrito
-const DishRow = ({ item, addItem, shouldReduceMotion }) => (
+const DishRow = ({ item, addItem }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
         <div className="flex items-baseline gap-4 mb-2">
           <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
-            {item.name}
+            {item.name} {item.isSignature && <span className="text-primary text-xl ml-2 drop-shadow-glow">✦</span>}
           </h3>
           <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€
           </span>
         </div>
-        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80">
+        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80 mb-2">
           {item.description}
         </p>
+        <div className="flex flex-wrap gap-4">
+          {item.allergens && (
+            <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
+              Alérgenos: {item.allergens}
+            </span>
+          )}
+        </div>
       </div>
     </div>
 
@@ -340,13 +332,12 @@ const DishRow = ({ item, addItem, shouldReduceMotion }) => (
       <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest mb-4">
         {item.price.toFixed(2)}€
       </span>
-      <motion.button
+      <MotionButton
         onClick={() => addItem(item)}
-        whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
         className="w-full md:w-auto relative px-10 py-3 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300">Añadir</span>
-      </motion.button>
+      </MotionButton>
     </div>
   </div>
 );

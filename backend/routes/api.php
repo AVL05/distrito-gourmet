@@ -36,6 +36,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::group(['prefix' => 'admin'], function () {
         // Gestión de platos
         Route::apiResource('dishes', DishController::class)->except(['index', 'show']);
+        Route::apiResource('wines', \App\Http\Controllers\API\WineController::class);
+        Route::apiResource('beverages', \App\Http\Controllers\API\BeverageController::class);
+        Route::apiResource('tasting-menus', \App\Http\Controllers\API\TastingMenuController::class);
 
         // Gestión de reservas
         Route::get('/reservations', [ReservationController::class, 'all']);

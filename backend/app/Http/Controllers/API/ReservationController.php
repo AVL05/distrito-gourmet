@@ -21,15 +21,17 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'reservation_time' => 'required|date',
             'people' => 'required|integer|min:1',
-            'experience_type' => 'nullable|string'
+            'experience_type' => 'nullable|string',
+            'special_requests' => 'nullable|string',
+            'allergies_noted' => 'nullable|string'
         ]);
 
         $res = \App\Models\Reservation::create(array_merge($validated, [
             'user_id' => auth()->id(),
-            'status' => 'pending'
+            'status' => 'confirmed' // Auto-aceptar
         ]));
 
-        return response()->json(['message' => 'Reserva creada correctamente', 'reservation' => $res], 201);
+        return response()->json(['message' => 'Reserva confirmada correctamente', 'reservation' => $res], 201);
     }
 
     // Obtener todas las reservas (solo admin)

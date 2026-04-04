@@ -1,200 +1,286 @@
 /**
  * MotionComponents.jsx
- * Componentes de animación reutilizables envueltos con Framer Motion.
- * Proporcionan una API declarativa para animar elementos de forma consistente
- * sin duplicar variantes ni configuración en cada componente de la UI.
+ * Componentes de animación reutilizables con GSAP.
+ *
+ * FIX BRAVE/CHROME: No ponemos style={{ opacity: 0 }} en el HTML inicial.
+ * Usamos gsap.set() para ocultar + gsap.to() para revelar, con clearProps:'all'
+ * para limpiar estilos inline tras la animación y prevenir elementos invisibles.
  */
 
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  fadeUpVariants,
-  fadeLeftVariants,
-  fadeRightVariants,
-  fadeVariants,
-  scaleVariants,
-  staggerContainerVariants,
-  staggerItemVariants,
-  pageTransitionVariants,
-  toastVariants,
-  cardHoverVariants,
-  buttonTapVariants,
-} from './motionVariants';
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
-// ─── Hook para respetar prefers-reduced-motion ─────────────────────
+// Registrar plugins globalmente una sola vez
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-/**
- * Devuelve las props de animación adecuadas.
- * NOTA: Siempre devuelve animaciones funcionales.
- * Brave activa prefers-reduced-motion por defecto, así que no
- * podemos desactivar las animaciones completamente o los usuarios
- * de Brave no verían ninguna animación.
- * @param {object} variants - Las variantes de animación normales
- * @returns {object} Props para aplicar a un motion component
- */
-export const useMotionProps = variants => {
-  return {
-    variants,
-    initial: 'hidden',
-    animate: 'visible',
-    exit: 'exit',
+const DURATION = {
+  fast: 0.2,
+  normal: 0.45,
+  slow: 0.7,
+  stagger: 0.1,
+};
+
+const EASING = {
+  smooth: 'power2.out',
+  primary: 'power3.out',
+  back: 'back.out(1.7)',
+};
+
+/** Hook de compatibilidad (reemplaza useMotionProps de Framer Motion) */
+export const useMotionProps = _variants => ({});
+export const useReducedMotion = () => false;
+
+// ─── FadeIn ───────────────────────────────────────────────────────────────────
+
+export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', as: Component = 'div', ...props }) => {
+  const el = useRef(null);
+
+  useGSAP(
+    () => {
+      const fromVars = { opacity: 0, duration: DURATION.slow, ease: EASING.primary };
+      if (direction === 'up') fromVars.y = 36;
+      if (direction === 'down') fromVars.y = -36;
+      if (direction === 'left') fromVars.x = 36;
+      if (direction === 'right') fromVars.x = -36;
+
+      gsap.from(el.current, {
+        ...fromVars,
+        delay,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: el.current,
+          start: 'top 92%',
+          toggleActions: 'play none none none',
+        },
+      });
+    },
+    { scope: el }
+  );
+
+  return (
+    <Component ref={el} className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+// ─── StaggerList ──────────────────────────────────────────────────────────────
+
+export const StaggerList = ({ children, className = '', as: Component = 'div', ...props }) => {
+  const el = useRef(null);
+
+  useGSAP(
+    () => {
+      const kids = el.current?.children;
+      if (!kids || kids.length === 0) return;
+
+      gsap.from(kids, {
+        opacity: 0,
+        y: 24,
+        duration: DURATION.normal,
+        stagger: DURATION.stagger,
+        ease: EASING.primary,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: el.current,
+          start: 'top 88%',
+          toggleActions: 'play none none none',
+        },
+      });
+    },
+    { scope: el }
+  );
+
+  return (
+    <Component ref={el} className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+// ─── StaggerItem (wrapper de compatibilidad) ──────────────────────────────────
+
+export const StaggerItem = ({ children, className = '', as: Component = 'div', ...props }) => (
+  <Component className={className} {...props}>
+    {children}
+  </Component>
+);
+
+// ─── PageTransition ───────────────────────────────────────────────────────────
+
+export const PageTransition = ({ children, className = '', as: Component = 'div', ...props }) => {
+  const el = useRef(null);
+
+  useGSAP(
+    () => {
+      gsap.from(el.current, {
+        opacity: 0,
+        y: 24,
+        duration: DURATION.slow,
+        ease: EASING.primary,
+        clearProps: 'all',
+      });
+    },
+    { scope: el }
+  );
+
+  return (
+    <Component ref={el} className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+// ─── ScaleIn ──────────────────────────────────────────────────────────────────
+
+export const ScaleIn = ({ children, className = '', as: Component = 'div', delay = 0, ...props }) => {
+  const el = useRef(null);
+
+  useGSAP(
+    () => {
+      gsap.from(el.current, {
+        opacity: 0,
+        scale: 0.88,
+        duration: DURATION.normal,
+        ease: EASING.back,
+        delay,
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: el.current,
+          start: 'top 92%',
+          toggleActions: 'play none none none',
+        },
+      });
+    },
+    { scope: el }
+  );
+
+  return (
+    <Component ref={el} className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
+export const Toast = ({ children, className = '', as: Component = 'div', ...props }) => {
+  const el = useRef(null);
+
+  useGSAP(
+    () => {
+      gsap.from(el.current, {
+        opacity: 0,
+        y: 40,
+        scale: 0.92,
+        duration: DURATION.normal,
+        ease: EASING.back,
+        clearProps: 'all',
+      });
+    },
+    { scope: el }
+  );
+
+  return (
+    <Component ref={el} className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+// ─── HoverCard ────────────────────────────────────────────────────────────────
+
+export const HoverCard = ({ children, className = '', as: Component = 'div', ...props }) => {
+  const el = useRef(null);
+
+  const onMouseEnter = () => {
+    gsap.to(el.current, {
+      y: -8,
+      scale: 1.02,
+      duration: DURATION.normal,
+      ease: EASING.smooth,
+      overwrite: 'auto',
+    });
   };
-};
 
-// ─── Componente: FadeIn ────────────────────────────────────────────
-
-/**
- * Envuelve contenido con una animación fade-in desde abajo.
- * Dirección configurable: 'up' | 'left' | 'right' | 'none'
- */
-export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', as = 'div', ...props }) => {
-  const variantMap = {
-    up: fadeUpVariants,
-    left: fadeLeftVariants,
-    right: fadeRightVariants,
-    none: fadeVariants,
+  const onMouseLeave = () => {
+    gsap.to(el.current, {
+      y: 0,
+      scale: 1,
+      duration: DURATION.normal,
+      ease: EASING.smooth,
+      overwrite: 'auto',
+    });
   };
 
-  const selectedVariants = variantMap[direction] || fadeUpVariants;
-  const motionProps = useMotionProps(selectedVariants);
-  const Component = motion[as] || motion.div;
-
   return (
-    <Component
-      {...motionProps}
-      className={className}
-      style={{ willChange: 'opacity, transform' }}
-      transition={{ ...motionProps.variants?.visible?.transition, delay }}
-      {...props}>
+    <Component ref={el} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} {...props}>
       {children}
     </Component>
   );
 };
 
-// ─── Componente: StaggerList ───────────────────────────────────────
+// ─── MotionButton ─────────────────────────────────────────────────────────────
 
-/**
- * Contenedor con animación stagger progresiva para sus hijos.
- * Cada hijo directo se anima secuencialmente.
- */
-export const StaggerList = ({ children, className = '', ...props }) => {
-  const motionProps = useMotionProps(staggerContainerVariants);
-
-  return (
-    <motion.div {...motionProps} className={className} {...props}>
-      {children}
-    </motion.div>
-  );
-};
-
-/**
- * Item individual dentro de un StaggerList.
- * Debe ser hijo directo de StaggerList para funcionar.
- */
-export const StaggerItem = ({ children, className = '', as = 'div', ...props }) => {
-  const Component = motion[as] || motion.div;
-
-  return (
-    <Component
-      variants={staggerItemVariants}
-      className={className}
-      style={{ willChange: 'opacity, transform' }}
-      {...props}>
-      {children}
-    </Component>
-  );
-};
-
-// ─── Componente: PageTransition ────────────────────────────────────
-
-/**
- * Envuelve el contenido de cada página con transición fade + slide.
- * Usa AnimatePresence internamente para salidas suaves.
- */
-export const PageTransition = ({ children, className = '', ...props }) => {
-  const motionProps = useMotionProps(pageTransitionVariants);
-
-  return (
-    <motion.div {...motionProps} className={className} style={{ willChange: 'opacity, transform' }} {...props}>
-      {children}
-    </motion.div>
-  );
-};
-
-// ─── Componente: ScaleIn ───────────────────────────────────────────
-
-/**
- * Animación de escala sutil para modales, tooltips, dropdowns.
- * Escala desde 0.95 → 1 con fade.
- */
-export const ScaleIn = ({ children, className = '', ...props }) => {
-  const motionProps = useMotionProps(scaleVariants);
-
-  return (
-    <motion.div {...motionProps} className={className} style={{ willChange: 'opacity, transform' }} {...props}>
-      {children}
-    </motion.div>
-  );
-};
-
-// ─── Componente: Toast ─────────────────────────────────────────────
-
-/**
- * Notificación con entrada desde abajo con scale.
- * Pensado para mensajes de confirmación o error.
- */
-export const Toast = ({ children, className = '', ...props }) => {
-  const motionProps = useMotionProps(toastVariants);
-
-  return (
-    <motion.div {...motionProps} className={className} style={{ willChange: 'opacity, transform' }} {...props}>
-      {children}
-    </motion.div>
-  );
-};
-
-// ─── Componente: HoverCard ─────────────────────────────────────────
-
-/**
- * Card con efecto de elevación al pasar el cursor.
- * Interacción GPU-friendly (solo transform).
- */
-export const HoverCard = ({ children, className = '', as = 'div', ...props }) => {
-  const Component = motion[as] || motion.div;
-
-  return (
-    <Component
-      variants={cardHoverVariants}
-      initial="rest"
-      whileHover="hover"
-      className={className}
-      style={{ willChange: 'transform' }}
-      {...props}>
-      {children}
-    </Component>
-  );
-};
-
-// ─── Componente: MotionButton ──────────────────────────────────────
-
-/**
- * Botón con efecto tap/press sutil.
- * Compatible con todos los estilos de botón existentes.
- */
 export const MotionButton = ({ children, className = '', onClick, type = 'button', disabled = false, ...props }) => {
+  const btn = useRef(null);
+
+  const onMouseDown = () => gsap.to(btn.current, { scale: 0.95, duration: 0.1, ease: 'power2.in' });
+  const onMouseUp = () => gsap.to(btn.current, { scale: 1, duration: 0.15, ease: EASING.back });
+
   return (
-    <motion.button
-      variants={buttonTapVariants}
-      whileTap="tap"
+    <button
+      ref={btn}
       className={className}
       onClick={onClick}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseUp}
       type={type}
       disabled={disabled}
-      style={{ willChange: 'transform' }}
       {...props}>
       {children}
-    </motion.button>
+    </button>
   );
 };
 
-// Re-exportar AnimatePresence para uso centralizado
-export { AnimatePresence };
+// ─── AnimatePresence (stub de compatibilidad) ─────────────────────────────────
+export const AnimatePresence = ({ children }) => <>{children}</>;
+
+/** Proxy de compatibilidad para <motion.tag> */
+const motionProxy = new Proxy(
+  {},
+  {
+    get: (target, prop) => {
+      return ({ children, ...props }) => {
+        // Filtramos props de Framer Motion que no son válidas en el DOM
+        const validProps = { ...props };
+        [
+          'initial',
+          'animate',
+          'exit',
+          'variants',
+          'transition',
+          'whileHover',
+          'whileTap',
+          'layout',
+          'viewport',
+          'drag',
+          'dragConstraints',
+          'dragElastic',
+          'dragMomentum',
+          'onAnimationStart',
+          'onAnimationComplete',
+          'onUpdate',
+        ].forEach(key => delete validProps[key]);
+
+        const Component = prop;
+        return <Component {...validProps}>{children}</Component>;
+      };
+    },
+  }
+);
+
+export const motion = motionProxy;

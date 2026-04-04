@@ -1,19 +1,43 @@
-﻿import ReservationForm from '@/components/ReservationForm';
+import ReservationForm from '@/components/ReservationForm';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, StaggerList, StaggerItem, ScrollReveal, TextReveal, LineReveal } from '@/motion';
+import axios from 'axios';
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  PageTransition,
+  FadeIn,
+  StaggerList,
+  StaggerItem,
+  ScrollReveal,
+  TextReveal,
+  LineReveal,
+} from '@/motion';
 import { DURATION, EASING } from '@/motion';
 
 const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState('new');
   const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
-    const storedReservations = JSON.parse(localStorage.getItem('reservations')) || [];
-    // Sort by date desc (mock)
-    setReservations(storedReservations.reverse());
-  }, []);
+    if (activeTab === 'history') {
+      const fetchReservations = async () => {
+        setLoading(true);
+        try {
+          const res = await axios.get('/reservations');
+          // Ordenar por fecha descendente
+          setReservations(res.data.sort((a, b) => new Date(b.reservation_time) - new Date(a.reservation_time)));
+        } catch (err) {
+          console.error('Error al cargar reservas:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchReservations();
+    }
+  }, [activeTab]);
 
   // Variante para el contenido de las pestañas
   const tabContentVariants = {
@@ -96,7 +120,11 @@ const ReservationsView = () => {
               </div>
             ) : (
               <div className="space-y-6 max-w-4xl mx-auto font-body">
-                {reservations.length === 0 ? (
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-text-muted animate-pulse">
+                    <p>Consultando su agenda...</p>
+                  </div>
+                ) : reservations.length === 0 ? (
                   <FadeIn className="flex flex-col items-center justify-center text-center py-20 px-4 sm:px-8 border border-text-main/10 bg-bg-surface">
                     <span className="text-text-muted text-4xl mb-6 font-light">✦</span>
                     <p className="text-text-muted font-light tracking-wide text-sm">
@@ -111,7 +139,7 @@ const ReservationsView = () => {
                           <div>
                             <div className="flex items-end gap-6 mb-4">
                               <span className="font-heading text-3xl text-text-main">
-                                {new Date(res.date)
+                                {new Date(res.reservation_time)
                                   .toLocaleDateString('es-ES', {
                                     weekday: 'long',
                                     day: 'numeric',
@@ -120,28 +148,34 @@ const ReservationsView = () => {
                                   .replace(/^\w/, c => c.toUpperCase())}
                               </span>
                               <span className="text-primary font-body text-xl font-light tracking-widest relative top-[-4px]">
-                                {res.time}
+                                {new Date(res.reservation_time).toLocaleTimeString('es-ES', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
                               </span>
                             </div>
                             <div className="flex gap-8 text-[12px] text-text-muted font-light uppercase tracking-widest mt-4">
                               <span className="flex items-center gap-2">
                                 <span className="text-text-main/40">COMENSALES</span> {res.people}
                               </span>
-                              <span className="flex items-center gap-2">
-                                <span className="text-text-main/40">TELF</span> {res.phone}
-                              </span>
+                              {res.experience_type && (
+                                <span className="flex items-center gap-2">
+                                  <span className="text-text-main/40">TIPO</span>{' '}
+                                  {res.experience_type === 'tasting_menu' ? 'DEGUSTACIÓN' : 'CARTA'}
+                                </span>
+                              )}
                             </div>
-                            {res.comments && (
+                            {res.special_requests && (
                               <p className="mt-4 text-[13px] text-text-muted italic flex items-start gap-2">
                                 <span className="text-primary text-xl leading-none">"</span>
-                                {res.comments}
+                                {res.special_requests}
                               </p>
                             )}
                           </div>
 
                           <div className="flex flex-col items-end gap-3 shrink-0">
                             <div
-                              className={`text-[10px] uppercase tracking-[3px] font-bold ${res.status === 'confirmada' ? 'text-primary' : res.status === 'cancelada' ? 'text-red-800' : 'text-text-main'}`}>
+                              className={`text-[10px] uppercase tracking-[3px] font-bold ${res.status === 'confirmed' ? 'text-primary' : res.status === 'cancelled' ? 'text-red-800' : 'text-text-main'}`}>
                               {res.status.charAt(0).toUpperCase() + res.status.slice(1)}
                             </div>
                             <span className="text-text-muted/50 text-[10px] uppercase tracking-[2px]">

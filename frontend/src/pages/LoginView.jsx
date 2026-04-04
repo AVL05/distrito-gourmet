@@ -1,111 +1,98 @@
-﻿import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn, Toast } from '@/motion';
+import { useAuthStore } from '@/store/auth';
+import { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { PageTransition, FadeIn } from '@/motion';
 
 const LoginView = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, loading, error } = useAuthStore();
+  const { login } = useAuthStore();
   const navigate = useNavigate();
-  const shouldReduceMotion = useReducedMotion();
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const success = await login({ email, password });
-
-    if (success) {
-      const admin = useAuthStore.getState().isAdmin();
-      if (admin) {
-        navigate('/admin');
-      } else {
-        navigate('/dashboard');
-      }
+    try {
+      await login(formData);
+      Swal.fire({
+        icon: 'success',
+        title: 'Bienvenido',
+        text: 'Sesión iniciada correctamente',
+        background: '#fdfaf6',
+        color: '#2c302e',
+        confirmButtonColor: '#e76f51',
+      });
+      navigate('/dashboard');
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de Acceso',
+        text: 'Credenciales inválidas, por favor revise sus datos.',
+        background: '#fdfaf6',
+        color: '#2c302e',
+        confirmButtonColor: '#e76f51',
+      });
     }
   };
 
   return (
-    <PageTransition className="flex flex-col items-center justify-center min-h-[85vh] bg-bg-body relative overflow-hidden py-24">
-      {/* Líneas de fondo decorativas */}
-      <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
-      <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
-
-      <FadeIn className="w-full max-w-lg bg-bg-surface p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
-        <div className="text-center mb-16">
-          <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-6 block font-body">
-            / Acceso Privado
-          </span>
-          <h2 className="text-5xl font-heading text-text-main leading-tight mb-6">
-            Su <span className="italic text-primary">Acceso</span>
-          </h2>
-          <div className="w-16 h-[1px] bg-text-main/10 mx-auto mb-6"></div>
-          <p className="text-text-muted text-[13px] tracking-widest font-body uppercase">
-            Miembros de Distrito Gourmet
-          </p>
+    <PageTransition className="min-h-screen flex items-center justify-center bg-bg-body pt-20 px-4">
+      <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+        <div className="text-center mb-10">
+          <span className="text-primary text-[10px] uppercase tracking-[5px] font-body block mb-4">Acceso Premium</span>
+          <h1 className="font-heading text-4xl text-text-main uppercase tracking-widest">Identificación</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-10">
-          <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-              Correo Electrónico
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-light"
+              placeholder="su@email.com"
               required
-              placeholder=" "
-              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading"
             />
           </div>
-
-          <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-              Contraseña
-            </label>
+          <div className="space-y-2">
+            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">Contraseña</label>
             <input
               type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-light"
+              placeholder="••••••••"
               required
-              placeholder=" "
-              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading tracking-widest"
             />
           </div>
 
-          <AnimatePresence>
-            {error && (
-              <Toast className="p-4 bg-red-50 text-red-800 text-center text-xs font-body tracking-wider border border-red-100">
-                {error}
-              </Toast>
-            )}
-          </AnimatePresence>
-
-          <div className="pt-8">
-            <motion.button
-              type="submit"
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
-              whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-              className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
-              disabled={loading}>
-              <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
-              <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
-                {loading ? 'VERIFICANDO...' : 'ENTRAR'}
-              </span>
-            </motion.button>
-          </div>
+          <button
+            type="submit"
+            className="group relative w-full py-5 bg-text-main text-white font-body text-[11px] uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:bg-primary-hover">
+            <span className="relative z-10 font-bold">Iniciar Sesión</span>
+          </button>
         </form>
 
-        <div className="text-center mt-12 pt-12 border-t border-text-main/10">
-          <p className="text-text-muted text-[10px] uppercase tracking-[3px] mb-4 font-body">
-            ¿Aún no dispone de cuenta?
+        <div className="mt-12 pt-8 border-t border-text-main/5 text-center">
+          <p className="text-text-muted text-[11px] font-body tracking-[1px] mb-4 uppercase">
+            ¿No tiene una cuenta todavía?
           </p>
-          <Link
+          <NavLink
             to="/register"
-            className="text-text-main text-[10px] uppercase tracking-[3px] font-bold pb-1 group relative inline-block border-b border-text-main hover:text-primary hover:border-primary transition-colors">
-            Solicitar Acceso
-          </Link>
+            className="text-primary hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors">
+            Solicitar Registro
+          </NavLink>
         </div>
       </FadeIn>
     </PageTransition>

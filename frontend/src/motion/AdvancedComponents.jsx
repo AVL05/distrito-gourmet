@@ -1,195 +1,212 @@
 /**
  * AdvancedComponents.jsx
- * Animaciones avanzadas inspiradas en sitios premium de gastronomía.
+ * Componentes avanzados de animación con GSAP + ScrollTrigger.
  *
- * NOTA: Brave activa prefers-reduced-motion por defecto.
- * En lugar de eliminar las animaciones, las simplificamos (solo fade)
- * para que funcionen en todos los navegadores.
+ * FIX BRAVE/CHROMIUM: Eliminados todos los style={{ opacity: 0 }} del HTML.
+ * Usamos gsap.from() con clearProps:'all' para garantizar visibilidad.
+ * ScrollTrigger registrado aquí ya que este archivo inicia el plugin.
  */
 
-import { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, useSpring, useInView, useReducedMotion, useMotionValue } from 'framer-motion';
-import { DURATION, EASING } from './motionVariants';
+import { useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 
-// ─── 1. TextReveal ───────────────────────────────────────────────────
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+// ─── 1. TextReveal ────────────────────────────────────────────────────────────
 
 export const TextReveal = ({
   text,
   splitBy = 'word',
-  as = 'h2',
-  staggerDelay = 0.03,
+  as: Component = 'h2',
+  staggerDelay = 0.05,
   delay = 0,
   once = true,
   className = '',
   ...props
 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: '-10% 0px -10% 0px' });
-  const shouldReduceMotion = useReducedMotion();
-
+  const container = useRef(null);
   const units = splitBy === 'char' ? text.split('') : text.split(' ');
 
-  // Si reduced motion: solo fade simple, sin rotación ni Y
-  const unitVariants = {
-    hidden: shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20, rotateX: 40 },
-    visible: i => ({
-      opacity: 1,
-      y: 0,
-      rotateX: 0,
-      transition: {
-        delay: delay + i * (shouldReduceMotion ? 0.01 : staggerDelay),
-        duration: shouldReduceMotion ? 0.3 : DURATION.slow,
-        ease: EASING.decelerate,
-      },
-    }),
-  };
+  useGSAP(
+    () => {
+      const targets = container.current.querySelectorAll('.reveal-unit-inner');
 
-  const Component = motion[as] || motion.div;
+      gsap.from(targets, {
+        y: 40,
+        opacity: 0,
+        rotateX: 45,
+        duration: 0.8,
+        stagger: staggerDelay,
+        delay,
+        ease: 'power3.out',
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: container.current,
+          start: 'top 88%',
+          toggleActions: once ? 'play none none none' : 'play none none reverse',
+        },
+      });
+    },
+    { scope: container }
+  );
 
   return (
     <Component
-      ref={ref}
+      ref={container}
       className={className}
-      style={{
-        perspective: '600px',
-        display: 'flex',
-        flexWrap: 'wrap',
-        overflow: 'visible', // Permitimos desbordamiento horizontal para evitar cortes
-        willChange: 'transform',
-      }}
+      style={{ perspective: '800px', display: 'flex', flexWrap: 'wrap' }}
       aria-label={text}
       {...props}>
       {units.map((unit, i) => (
         <span
-          key={`wrapper-${unit}-${i}`}
+          key={`wrapper-${i}`}
+          className="reveal-unit-wrapper"
           style={{
             display: 'inline-block',
-            overflow: 'hidden', // Máscara individual para cada unidad
-            padding: '0.05em 0.15em', // Espacio para acentos y rasgos tipográficos
+            overflow: 'hidden',
+            padding: '0.05em 0.15em',
             margin: '-0.05em -0.15em',
-            marginRight: splitBy === 'word' ? '0.15em' : '0',
+            marginRight: splitBy === 'word' ? '0.25em' : '0',
             whiteSpace: 'pre',
           }}>
-          <motion.span
-            custom={i}
-            variants={unitVariants}
-            initial="hidden"
-            animate={isInView ? 'visible' : 'hidden'}
-            style={{
-              display: 'inline-block',
-              willChange: 'opacity, transform',
-            }}>
+          <span className="reveal-unit-inner" style={{ display: 'inline-block', willChange: 'opacity, transform' }}>
             {unit}
-          </motion.span>
+          </span>
         </span>
       ))}
     </Component>
   );
 };
 
-// ─── 2. ScrollReveal ─────────────────────────────────────────────────
+// ─── 2. ScrollReveal ──────────────────────────────────────────────────────────
 
 export const ScrollReveal = ({
   children,
   direction = 'up',
   distance = 60,
   delay = 0,
-  duration = 0.7,
+  duration = 0.8,
   once = true,
   className = '',
-  as = 'div',
+  as: Component = 'div',
   ...props
 }) => {
-  const shouldReduceMotion = useReducedMotion();
-  const Component = motion[as] || motion.div;
+  const el = useRef(null);
 
-  const directionMap = {
-    up: { y: distance },
-    down: { y: -distance },
-    left: { x: distance },
-    right: { x: -distance },
-    scale: { scale: 0.9 },
-  };
+  useGSAP(
+    () => {
+      const fromVars = {
+        opacity: 0,
+        duration,
+        delay,
+        ease: 'power2.out',
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: el.current,
+          start: 'top 92%',
+          toggleActions: once ? 'play none none none' : 'play none none reverse',
+        },
+      };
 
-  // Si reduced motion: solo fade, sin desplazamiento
-  const initialState = shouldReduceMotion ? { opacity: 0 } : { opacity: 0, ...directionMap[direction] };
+      if (direction === 'up') fromVars.y = distance;
+      if (direction === 'down') fromVars.y = -distance;
+      if (direction === 'left') fromVars.x = distance;
+      if (direction === 'right') fromVars.x = -distance;
+      if (direction === 'scale') fromVars.scale = 0.9;
 
-  const animateState = {
-    opacity: 1,
-    y: 0,
-    x: 0,
-    scale: 1,
-  };
+      gsap.from(el.current, fromVars);
+    },
+    { scope: el }
+  );
 
   return (
-    <Component
-      initial={initialState}
-      whileInView={animateState}
-      viewport={{ once, margin: '-50px 0px' }}
-      transition={{
-        duration: shouldReduceMotion ? 0.4 : duration,
-        delay,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-      className={className}
-      style={{ willChange: 'opacity, transform' }}
-      {...props}>
+    <Component ref={el} className={className} {...props}>
       {children}
     </Component>
   );
 };
 
-// ─── 3. ParallaxSection ──────────────────────────────────────────────
+// ─── 3. ParallaxSection ───────────────────────────────────────────────────────
 
-export const ParallaxSection = ({ children, speed = -20, className = '', as = 'div', ...props }) => {
-  const ref = useRef(null);
-  const shouldReduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
+export const ParallaxSection = ({ children, speed = 50, className = '', as: Component = 'div', ...props }) => {
+  const section = useRef(null);
+  const content = useRef(null);
 
-  // Si reduced motion: parallax a velocidad 0 (sin movimiento, pero estructura intacta)
-  const effectiveSpeed = shouldReduceMotion ? 0 : speed;
-  const y = useTransform(scrollYProgress, [0, 1], [effectiveSpeed, -effectiveSpeed]);
-  const smoothY = useSpring(y, { stiffness: 100, damping: 30 });
-
-  const Component = motion[as] || motion.div;
+  useGSAP(
+    () => {
+      gsap.to(content.current, {
+        y: -speed,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: section.current,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+    },
+    { scope: section }
+  );
 
   return (
-    <div ref={ref} className={`overflow-hidden ${className}`} {...props}>
-      <Component style={{ y: smoothY }}>{children}</Component>
+    <div ref={section} className={`overflow-hidden ${className}`} {...props}>
+      <Component ref={content}>{children}</Component>
     </div>
   );
 };
 
-// ─── 4. ParallaxImage ────────────────────────────────────────────────
+// ─── 4. ParallaxImage ─────────────────────────────────────────────────────────
 
-export const ParallaxImage = ({ src, alt = '', speed = 30, className = '', imageClassName = '', ...props }) => {
-  const ref = useRef(null);
-  const shouldReduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
+export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', imageClassName = '', ...props }) => {
+  const container = useRef(null);
+  const image = useRef(null);
 
-  const effectiveSpeed = shouldReduceMotion ? 0 : speed;
-  const y = useTransform(scrollYProgress, [0, 1], [-effectiveSpeed, effectiveSpeed]);
-  const scale = useTransform(scrollYProgress, [0, 0.5, 1], shouldReduceMotion ? [1, 1, 1] : [1.15, 1.05, 1.15]);
+  useGSAP(
+    () => {
+      // Parallax scrub
+      gsap.to(image.current, {
+        yPercent: speed / 10,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: container.current,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      });
+
+      // Reveal on enter
+      gsap.from(image.current, {
+        scale: 1.2,
+        duration: 1.5,
+        ease: 'power2.out',
+        clearProps: 'scale',
+        scrollTrigger: {
+          trigger: container.current,
+          start: 'top 92%',
+          toggleActions: 'play none none none',
+        },
+      });
+    },
+    { scope: container }
+  );
 
   return (
-    <div ref={ref} className={`overflow-hidden ${className}`} {...props}>
-      <motion.img
+    <div ref={container} className={`overflow-hidden ${className}`} {...props}>
+      <img
+        ref={image}
         src={src}
         alt={alt}
-        className={`w-full h-full object-cover ${imageClassName}`}
-        style={{ y, scale, willChange: 'transform' }}
+        className={`w-full h-full object-cover scale-[1.15] ${imageClassName}`}
+        style={{ willChange: 'transform' }}
       />
     </div>
   );
 };
 
-// ─── 5. ImageReveal ──────────────────────────────────────────────────
+// ─── 5. ImageReveal ───────────────────────────────────────────────────────────
 
 export const ImageReveal = ({
   src,
@@ -202,90 +219,88 @@ export const ImageReveal = ({
   imageClassName = '',
   ...props
 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: '-10% 0px' });
-  const shouldReduceMotion = useReducedMotion();
+  const container = useRef(null);
 
-  const clipPaths = {
-    left: { hidden: 'inset(0 100% 0 0)', visible: 'inset(0 0% 0 0)' },
-    right: { hidden: 'inset(0 0 0 100%)', visible: 'inset(0 0 0 0%)' },
-    bottom: { hidden: 'inset(100% 0 0 0)', visible: 'inset(0% 0 0 0)' },
-    center: { hidden: 'inset(50% 50% 50% 50%)', visible: 'inset(0% 0% 0% 0%)' },
-  };
+  useGSAP(
+    () => {
+      const clipPaths = {
+        left: { hidden: 'inset(0 100% 0 0)', visible: 'inset(0 0% 0 0)' },
+        right: { hidden: 'inset(0 0 0 100%)', visible: 'inset(0 0 0 0%)' },
+        bottom: { hidden: 'inset(100% 0 0 0)', visible: 'inset(0% 0 0 0)' },
+        center: { hidden: 'inset(50% 50% 50% 50%)', visible: 'inset(0% 0% 0% 0%)' },
+      };
+      const clip = clipPaths[revealFrom] || clipPaths.bottom;
 
-  const clip = clipPaths[revealFrom] || clipPaths.bottom;
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container.current,
+          start: 'top 88%',
+          toggleActions: once ? 'play none none none' : 'play none none reverse',
+        },
+      });
 
-  // Si reduced motion: solo fade en lugar de clip-path
-  if (shouldReduceMotion) {
-    return (
-      <div ref={ref} className={`overflow-hidden ${className}`} {...props}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.5, delay }}
-          className="w-full h-full">
-          <img src={src} alt={alt} className={`w-full h-full object-cover ${imageClassName}`} />
-        </motion.div>
-      </div>
-    );
-  }
+      tl.fromTo(
+        container.current,
+        { clipPath: clip.hidden, scale: 1.15 },
+        { clipPath: clip.visible, scale: 1, duration, delay, ease: 'expo.inOut', clearProps: 'all' }
+      );
+    },
+    { scope: container }
+  );
 
   return (
-    <div ref={ref} className={`overflow-hidden ${className}`} {...props}>
-      <motion.div
-        initial={{ clipPath: clip.hidden, scale: 1.2 }}
-        animate={isInView ? { clipPath: clip.visible, scale: 1 } : { clipPath: clip.hidden, scale: 1.2 }}
-        transition={{
-          clipPath: { duration, delay, ease: [0.77, 0, 0.175, 1] },
-          scale: { duration: duration * 1.2, delay, ease: [0.25, 0.46, 0.45, 0.94] },
-        }}
-        style={{ willChange: 'clip-path, transform' }}
-        className="w-full h-full">
-        <img src={src} alt={alt} className={`w-full h-full object-cover ${imageClassName}`} />
-      </motion.div>
+    <div
+      ref={container}
+      className={`overflow-hidden ${className}`}
+      style={{ willChange: 'clip-path, transform' }}
+      {...props}>
+      <img src={src} alt={alt} className={`w-full h-full object-cover ${imageClassName}`} />
     </div>
   );
 };
 
-// ─── 6. Marquee ──────────────────────────────────────────────────────
+// ─── 6. Marquee ───────────────────────────────────────────────────────────────
 
 export const Marquee = ({
   text,
-  speed = 25,
+  speed = 40,
   reverse = false,
   separator = '✦',
   className = '',
   textClassName = '',
   ...props
 }) => {
-  // Marquee SIEMPRE anima — no necesita reduced motion bypass
-  // Es un elemento decorativo pasivo, no interfiere con la usabilidad
+  const container = useRef(null);
+  const track = useRef(null);
   const repeated = Array(6).fill(`${text} ${separator} `).join('');
 
+  useGSAP(
+    () => {
+      const xDist = track.current.offsetWidth / 2;
+
+      gsap.set(track.current, { x: reverse ? 0 : -xDist });
+
+      gsap.to(track.current, {
+        x: reverse ? -xDist : 0,
+        duration: speed,
+        ease: 'none',
+        repeat: -1,
+      });
+    },
+    { scope: container }
+  );
+
   return (
-    <div className={`overflow-hidden whitespace-nowrap ${className}`} {...props}>
-      <motion.div
-        className="inline-flex"
-        animate={{
-          x: reverse ? ['0%', '-50%'] : ['-50%', '0%'],
-        }}
-        transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: speed,
-            ease: 'linear',
-          },
-        }}
-        style={{ willChange: 'transform' }}>
+    <div ref={container} className={`overflow-hidden whitespace-nowrap ${className}`} {...props}>
+      <div ref={track} className="inline-flex">
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
-      </motion.div>
+      </div>
     </div>
   );
 };
 
-// ─── 7. SmoothCounter ────────────────────────────────────────────────
+// ─── 7. SmoothCounter ─────────────────────────────────────────────────────────
 
 export const SmoothCounter = ({
   target,
@@ -297,119 +312,121 @@ export const SmoothCounter = ({
   ...props
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: '-20% 0px' });
-  const [count, setCount] = useState(0);
+  const countObj = { value: 0 };
 
-  // Siempre anima el contador — es solo un incremento numérico
-  useEffect(() => {
-    if (!isInView) return;
-
-    let startTime;
-    const step = timestamp => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
-      const easedProgress = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.floor(easedProgress * target));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }, [isInView, target, duration]);
+  useGSAP(
+    () => {
+      gsap.to(countObj, {
+        value: target,
+        duration,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: ref.current,
+          start: 'top 92%',
+          toggleActions: once ? 'play none none none' : 'play none none reverse',
+        },
+        onUpdate: () => {
+          if (ref.current) ref.current.innerText = `${prefix}${Math.floor(countObj.value)}${suffix}`;
+        },
+      });
+    },
+    { scope: ref }
+  );
 
   return (
     <span ref={ref} className={className} {...props}>
-      {prefix}
-      {count}
-      {suffix}
+      {prefix}0{suffix}
     </span>
   );
 };
 
-// ─── 8. MagneticButton ───────────────────────────────────────────────
+// ─── 8. MagneticButton ────────────────────────────────────────────────────────
 
-export const MagneticButton = ({ children, strength = 15, className = '', onClick, as = 'button', ...props }) => {
-  const ref = useRef(null);
-  const shouldReduceMotion = useReducedMotion();
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 300, damping: 20 });
-  const springY = useSpring(y, { stiffness: 300, damping: 20 });
+export const MagneticButton = ({
+  children,
+  strength = 40,
+  className = '',
+  onClick,
+  as: Component = 'button',
+  ...props
+}) => {
+  const button = useRef(null);
 
-  // Si reduced motion: fuerza magnética más suave
-  const effectiveStrength = shouldReduceMotion ? strength * 0.3 : strength;
+  const onMouseMove = e => {
+    const { clientX, clientY } = e;
+    const { left, top, width, height } = button.current.getBoundingClientRect();
+    const x = clientX - (left + width / 2);
+    const y = clientY - (top + height / 2);
 
-  const handleMouseMove = e => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set((e.clientX - centerX) / (rect.width / effectiveStrength));
-    y.set((e.clientY - centerY) / (rect.height / effectiveStrength));
+    gsap.to(button.current, {
+      x: x * (strength / 100),
+      y: y * (strength / 100),
+      duration: 0.6,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
   };
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
+  const onMouseLeave = () => {
+    gsap.to(button.current, {
+      x: 0,
+      y: 0,
+      duration: 0.8,
+      ease: 'elastic.out(1, 0.3)',
+      overwrite: 'auto',
+    });
   };
-
-  const Component = motion[as] || motion.button;
 
   return (
     <Component
-      ref={ref}
+      ref={button}
       className={className}
       onClick={onClick}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        x: springX,
-        y: springY,
-        willChange: 'transform',
-      }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      style={{ willChange: 'transform', display: 'inline-block' }}
       {...props}>
       {children}
     </Component>
   );
 };
 
-// ─── 9. LineReveal ───────────────────────────────────────────────────
+// ─── 9. LineReveal ────────────────────────────────────────────────────────────
 
 export const LineReveal = ({
   orientation = 'horizontal',
   delay = 0,
-  duration = 1.0,
+  duration = 1.2,
   once = true,
   className = '',
   ...props
 }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once, margin: '-10% 0px' });
-  const shouldReduceMotion = useReducedMotion();
-
+  const line = useRef(null);
   const isHorizontal = orientation === 'horizontal';
 
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      initial={{
+  useGSAP(
+    () => {
+      gsap.from(line.current, {
         scaleX: isHorizontal ? 0 : 1,
         scaleY: isHorizontal ? 1 : 0,
-        opacity: shouldReduceMotion ? 0 : 1,
-      }}
-      animate={
-        isInView
-          ? { scaleX: 1, scaleY: 1, opacity: 1 }
-          : {
-              scaleX: isHorizontal ? 0 : 1,
-              scaleY: isHorizontal ? 1 : 0,
-              opacity: shouldReduceMotion ? 0 : 1,
-            }
-      }
-      transition={{
-        duration: shouldReduceMotion ? 0.3 : duration,
+        duration,
         delay,
-        ease: [0.77, 0, 0.175, 1],
-      }}
+        ease: 'expo.out',
+        clearProps: 'all',
+        scrollTrigger: {
+          trigger: line.current,
+          start: 'top 92%',
+          toggleActions: once ? 'play none none none' : 'play none none reverse',
+        },
+      });
+    },
+    { scope: line }
+  );
+
+  return (
+    <div
+      ref={line}
+      className={className}
       style={{
         transformOrigin: 'left center',
         willChange: 'transform',
@@ -421,17 +438,32 @@ export const LineReveal = ({
   );
 };
 
-// ─── 10. ScrollProgress ──────────────────────────────────────────────
+// ─── 10. ScrollProgress ───────────────────────────────────────────────────────
 
 export const ScrollProgress = ({ className = '', ...props }) => {
-  // Siempre se muestra — es un indicador funcional, no decorativo
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+  const line = useRef(null);
+
+  useGSAP(() => {
+    gsap.fromTo(
+      line.current,
+      { scaleX: 0 },
+      {
+        scaleX: 1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: document.body,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.3,
+        },
+      }
+    );
+  });
 
   return (
-    <motion.div
+    <div
+      ref={line}
       className={`fixed top-0 left-0 right-0 h-[2px] bg-primary z-[100] origin-left ${className}`}
-      style={{ scaleX }}
       {...props}
     />
   );

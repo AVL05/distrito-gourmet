@@ -2,8 +2,7 @@ import { useAuthStore } from '@/store/auth';
 import { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { motion, useReducedMotion } from 'framer-motion';
-import { PageTransition, FadeIn } from '@/motion';
+import { motion, useReducedMotion, PageTransition, FadeIn } from '@/motion';
 
 const ProfileView = () => {
   const { user } = useAuthStore();
