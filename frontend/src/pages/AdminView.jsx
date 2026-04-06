@@ -1,3 +1,10 @@
+/**
+ * @file AdminView.jsx
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Panel de administración central para la gestión integral del restaurante (pedidos, reservas, carta, bodega, usuarios).
+ */
+
 import { useAuthStore } from '@/store/auth';
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
@@ -5,6 +12,10 @@ import Swal from 'sweetalert2';
 import { motion, AnimatePresence, useReducedMotion, FadeIn } from '@/motion';
 import { DURATION, EASING } from '@/motion';
 
+/**
+ * @component AdminView
+ * @description Interfaz de administración con navegación por pestañas. Gestiona la lógica de CRUD para los principales recursos del sistema.
+ */
 const AdminView = () => {
   const { logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState('orders');
@@ -49,17 +60,24 @@ const AdminView = () => {
   };
 
   // Estados de formularios para añadir nuevos elementos
-  const [newDish, setNewDish] = useState({ 
-    name: '', 
-    description: '', 
-    price: '', 
+  const [newDish, setNewDish] = useState({
+    name: '',
+    description: '',
+    price: '',
     menu_category_id: '',
     image: '',
     allergens: '',
     is_signature: false,
-    available: true
+    available: true,
   });
-  const [newWine, setNewWine] = useState({ name: '', winery: '', type: 'Red', price_bottle: '', vintage: '', pairing_notes: '' });
+  const [newWine, setNewWine] = useState({
+    name: '',
+    winery: '',
+    type: 'Red',
+    price_bottle: '',
+    vintage: '',
+    pairing_notes: '',
+  });
   const [newBeverage, setNewBeverage] = useState({ name: '', type: 'agua', price: '', description: '' });
   const [newTastingMenu, setNewTastingMenu] = useState({ name: '', description: '', price: '', courses: 1 });
 
@@ -144,14 +162,11 @@ const AdminView = () => {
         const res = await axios.get('/admin/beverages');
         setData(d => ({ ...d, beverages: res.data }));
       } else if (activeSection === 'tasting_menus') {
-        const [menusRes, dishesRes] = await Promise.all([
-          axios.get('/admin/tasting-menus'),
-          axios.get('/dishes')
-        ]);
-        setData(d => ({ 
-          ...d, 
-          tasting_menus: menusRes.data, 
-          menu: dishesRes.data.dishes || [] 
+        const [menusRes, dishesRes] = await Promise.all([axios.get('/admin/tasting-menus'), axios.get('/dishes')]);
+        setData(d => ({
+          ...d,
+          tasting_menus: menusRes.data,
+          menu: dishesRes.data.dishes || [],
         }));
       } else if (activeSection === 'users') {
         const res = await axios.get('/admin/users');
@@ -276,69 +291,155 @@ const AdminView = () => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              handleAddItem('dishes', newDish, () => setNewDish({ 
-                name: '', description: '', price: '', menu_category_id: data.categories[0]?.id || '',
-                image: '', allergens: '', is_signature: false, available: true
-              }), 'Plato añadido');
+              handleAddItem(
+                'dishes',
+                newDish,
+                () =>
+                  setNewDish({
+                    name: '',
+                    description: '',
+                    price: '',
+                    menu_category_id: data.categories[0]?.id || '',
+                    image: '',
+                    allergens: '',
+                    is_signature: false,
+                    available: true,
+                  }),
+                'Plato añadido'
+              );
             }}
             className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-end shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
-            
+
             <h3 className="col-span-full font-heading text-primary text-xl mb-2 flex items-center gap-3">
               <span className="w-1 h-6 bg-primary"></span>
               Añadir Nuevo Plato a la Carta
             </h3>
 
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Nombre del Plato</label>
-              <input required type="text" placeholder="Ej: Ostras al Carbón..." value={newDish.name} onChange={e => setNewDish({ ...newDish, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors" />
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
+                Nombre del Plato
+              </label>
+              <input
+                required
+                type="text"
+                placeholder="Ej: Ostras al Carbón..."
+                value={newDish.name}
+                onChange={e => setNewDish({ ...newDish, name: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
 
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Categoría</label>
-              <select required value={newDish.menu_category_id} onChange={e => setNewDish({ ...newDish, menu_category_id: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1.5 focus:border-primary outline-none text-sm cursor-pointer appearance-none">
-                <option value="" disabled>Seleccionar...</option>
-                {data.categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              <select
+                required
+                value={newDish.menu_category_id}
+                onChange={e => setNewDish({ ...newDish, menu_category_id: e.target.value })}
+                className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1.5 focus:border-primary outline-none text-sm cursor-pointer appearance-none">
+                <option value="" disabled>
+                  Seleccionar...
+                </option>
+                {data.categories.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Precio (€)</label>
-              <input required type="number" step="0.01" placeholder="0.00" value={newDish.price} onChange={e => setNewDish({ ...newDish, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors" />
+              <input
+                required
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                value={newDish.price}
+                onChange={e => setNewDish({ ...newDish, price: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Descripción / Historia</label>
-              <input required type="text" placeholder="Breve historia o ingredientes clave..." value={newDish.description} onChange={e => setNewDish({ ...newDish, description: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors" />
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
+                Descripción / Historia
+              </label>
+              <input
+                required
+                type="text"
+                placeholder="Breve historia o ingredientes clave..."
+                value={newDish.description}
+                onChange={e => setNewDish({ ...newDish, description: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
 
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">URL Imagen</label>
-              <input type="text" placeholder="https://..." value={newDish.image} onChange={e => setNewDish({ ...newDish, image: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors" />
+              <input
+                type="text"
+                placeholder="https://..."
+                value={newDish.image}
+                onChange={e => setNewDish({ ...newDish, image: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Alérgenos (separados por coma)</label>
-              <input type="text" placeholder="Gluten, Lácteos..." value={newDish.allergens} onChange={e => setNewDish({ ...newDish, allergens: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors" />
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
+                Alérgenos (separados por coma)
+              </label>
+              <input
+                type="text"
+                placeholder="Gluten, Lácteos..."
+                value={newDish.allergens}
+                onChange={e => setNewDish({ ...newDish, allergens: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
 
             <div className="flex items-center gap-6 pb-2">
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" checked={newDish.is_signature} onChange={e => setNewDish({ ...newDish, is_signature: e.target.checked })} className="w-4 h-4 accent-primary" />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Plato Estrella</span>
+                <input
+                  type="checkbox"
+                  checked={newDish.is_signature}
+                  onChange={e => setNewDish({ ...newDish, is_signature: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                  Plato Estrella
+                </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
-                <input type="checkbox" checked={newDish.available} onChange={e => setNewDish({ ...newDish, available: e.target.checked })} className="w-4 h-4 accent-primary" />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Disponible</span>
+                <input
+                  type="checkbox"
+                  checked={newDish.available}
+                  onChange={e => setNewDish({ ...newDish, available: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                  Disponible
+                </span>
               </label>
             </div>
 
-            <button type="submit" className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-[3px] text-[10px] transition-all p-3.5 w-full shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)] md:col-span-3 lg:col-span-1">
+            <button
+              type="submit"
+              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-[3px] text-[10px] transition-all p-3.5 w-full shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)] md:col-span-3 lg:col-span-1">
               Confirmar Alta
             </button>
           </form>
           <div className="grid grid-cols-1 gap-4">
-            {data.menu.map(item => <DishEditRow key={item.id} item={item} fetchData={fetchData} handleDelete={() => handleDeleteItem('dishes', item.id, item.name)} categories={data.categories} />)}
+            {data.menu.map(item => (
+              <DishEditRow
+                key={item.id}
+                item={item}
+                fetchData={fetchData}
+                handleDelete={() => handleDeleteItem('dishes', item.id, item.name)}
+                categories={data.categories}
+              />
+            ))}
           </div>
         </div>
       );
@@ -350,30 +451,74 @@ const AdminView = () => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              handleAddItem('tasting-menus', newTastingMenu, () => setNewTastingMenu({ name: '', description: '', price: '', courses: 1 }), 'Menú añadido');
+              handleAddItem(
+                'tasting-menus',
+                newTastingMenu,
+                () => setNewTastingMenu({ name: '', description: '', price: '', courses: 1 }),
+                'Menú añadido'
+              );
             }}
             className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             <h3 className="col-span-full font-heading text-primary text-lg mb-2">Añadir Menú Degustación</h3>
             <div className="col-span-1 lg:col-span-2">
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Nombre</label>
-              <input required type="text" value={newTastingMenu.name} onChange={e => setNewTastingMenu({ ...newTastingMenu, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="text"
+                value={newTastingMenu.name}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, name: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio (€)</label>
-              <input required type="number" step="0.01" value={newTastingMenu.price} onChange={e => setNewTastingMenu({ ...newTastingMenu, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newTastingMenu.price}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, price: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Nº Pasos</label>
-              <input required type="number" value={newTastingMenu.courses} onChange={e => setNewTastingMenu({ ...newTastingMenu, courses: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="number"
+                value={newTastingMenu.courses}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, courses: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
-            <button type="submit" className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">Añadir</button>
+            <button
+              type="submit"
+              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">
+              Añadir
+            </button>
             <div className="col-span-full mt-2">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Descripción corta</label>
-              <input required type="text" value={newTastingMenu.description} onChange={e => setNewTastingMenu({ ...newTastingMenu, description: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">
+                Descripción corta
+              </label>
+              <input
+                required
+                type="text"
+                value={newTastingMenu.description}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, description: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
           </form>
           <div className="grid grid-cols-1 gap-4">
-            {data.tasting_menus.map(item => <TastingMenuEditRow key={item.id} item={item} fetchData={fetchData} handleDelete={() => handleDeleteItem('tasting-menus', item.id, item.name)} allAvailableDishes={data.menu} />)}
+            {data.tasting_menus.map(item => (
+              <TastingMenuEditRow
+                key={item.id}
+                item={item}
+                fetchData={fetchData}
+                handleDelete={() => handleDeleteItem('tasting-menus', item.id, item.name)}
+                allAvailableDishes={data.menu}
+              />
+            ))}
           </div>
         </div>
       );
@@ -385,21 +530,40 @@ const AdminView = () => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              handleAddItem('wines', newWine, () => setNewWine({ name: '', winery: '', type: 'Red', price_bottle: '' }), 'Vino añadido');
+              handleAddItem(
+                'wines',
+                newWine,
+                () => setNewWine({ name: '', winery: '', type: 'Red', price_bottle: '' }),
+                'Vino añadido'
+              );
             }}
             className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
             <h3 className="col-span-full font-heading text-primary text-lg mb-2">Añadir Nuevo Vino</h3>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Nombre</label>
-              <input required type="text" value={newWine.name} onChange={e => setNewWine({ ...newWine, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="text"
+                value={newWine.name}
+                onChange={e => setNewWine({ ...newWine, name: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Bodega</label>
-              <input type="text" value={newWine.winery} onChange={e => setNewWine({ ...newWine, winery: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                type="text"
+                value={newWine.winery}
+                onChange={e => setNewWine({ ...newWine, winery: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Tipo</label>
-              <select value={newWine.type} onChange={e => setNewWine({ ...newWine, type: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none text-sm">
+              <select
+                value={newWine.type}
+                onChange={e => setNewWine({ ...newWine, type: e.target.value })}
+                className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none text-sm">
                 <option value="Red">Tinto</option>
                 <option value="White">Blanco</option>
                 <option value="Rose">Rosado</option>
@@ -408,13 +572,33 @@ const AdminView = () => {
               </select>
             </div>
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio Botella (€)</label>
-              <input required type="number" step="0.01" value={newWine.price_bottle} onChange={e => setNewWine({ ...newWine, price_bottle: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">
+                Precio Botella (€)
+              </label>
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newWine.price_bottle}
+                onChange={e => setNewWine({ ...newWine, price_bottle: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
-            <button type="submit" className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">Añadir</button>
+            <button
+              type="submit"
+              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">
+              Añadir
+            </button>
           </form>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {data.wines.map(item => <WineEditRow key={item.id} item={item} fetchData={fetchData} handleDelete={() => handleDeleteItem('wines', item.id, item.name)} />)}
+            {data.wines.map(item => (
+              <WineEditRow
+                key={item.id}
+                item={item}
+                fetchData={fetchData}
+                handleDelete={() => handleDeleteItem('wines', item.id, item.name)}
+              />
+            ))}
           </div>
         </div>
       );
@@ -426,17 +610,31 @@ const AdminView = () => {
           <form
             onSubmit={e => {
               e.preventDefault();
-              handleAddItem('beverages', newBeverage, () => setNewBeverage({ name: '', type: 'agua', price: '' }), 'Bebida añadida');
+              handleAddItem(
+                'beverages',
+                newBeverage,
+                () => setNewBeverage({ name: '', type: 'agua', price: '' }),
+                'Bebida añadida'
+              );
             }}
             className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <h3 className="col-span-full font-heading text-primary text-lg mb-2">Añadir Nueva Bebida</h3>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Nombre</label>
-              <input required type="text" value={newBeverage.name} onChange={e => setNewBeverage({ ...newBeverage, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="text"
+                value={newBeverage.name}
+                onChange={e => setNewBeverage({ ...newBeverage, name: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Tipo</label>
-              <select value={newBeverage.type} onChange={e => setNewBeverage({ ...newBeverage, type: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none text-sm">
+              <select
+                value={newBeverage.type}
+                onChange={e => setNewBeverage({ ...newBeverage, type: e.target.value })}
+                className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none text-sm">
                 <option value="agua">Agua</option>
                 <option value="refresco">Refresco</option>
                 <option value="cocktail">Cóctel</option>
@@ -446,12 +644,30 @@ const AdminView = () => {
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio (€)</label>
-              <input required type="number" step="0.01" value={newBeverage.price} onChange={e => setNewBeverage({ ...newBeverage, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none" />
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newBeverage.price}
+                onChange={e => setNewBeverage({ ...newBeverage, price: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none"
+              />
             </div>
-            <button type="submit" className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">Añadir</button>
+            <button
+              type="submit"
+              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-widest text-xs transition-colors p-3 w-full">
+              Añadir
+            </button>
           </form>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {data.beverages.map(item => <BeverageEditRow key={item.id} item={item} fetchData={fetchData} handleDelete={() => handleDeleteItem('beverages', item.id, item.name)} />)}
+            {data.beverages.map(item => (
+              <BeverageEditRow
+                key={item.id}
+                item={item}
+                fetchData={fetchData}
+                handleDelete={() => handleDeleteItem('beverages', item.id, item.name)}
+              />
+            ))}
           </div>
         </div>
       );
@@ -579,10 +795,10 @@ const AdminView = () => {
 // Componente para editar/ver un plato en la lista de admin
 const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editDish, setEditDish] = useState({ 
-    ...item, 
-    is_signature: !!item.is_signature, 
-    available: !!item.available 
+  const [editDish, setEditDish] = useState({
+    ...item,
+    is_signature: !!item.is_signature,
+    available: !!item.available,
   });
 
   const handleUpdate = async () => {
@@ -602,44 +818,95 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Nombre</label>
-            <input type="text" value={editDish.name} onChange={e => setEditDish({ ...editDish, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={editDish.name}
+              onChange={e => setEditDish({ ...editDish, name: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Precio (€)</label>
-            <input type="number" step="0.01" value={editDish.price} onChange={e => setEditDish({ ...editDish, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="number"
+              step="0.01"
+              value={editDish.price}
+              onChange={e => setEditDish({ ...editDish, price: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div className="lg:col-span-2">
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Descripción</label>
-            <input type="text" value={editDish.description} onChange={e => setEditDish({ ...editDish, description: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={editDish.description}
+              onChange={e => setEditDish({ ...editDish, description: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">URL Imagen</label>
-            <input type="text" value={editDish.image || ''} onChange={e => setEditDish({ ...editDish, image: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={editDish.image || ''}
+              onChange={e => setEditDish({ ...editDish, image: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Alérgenos</label>
-            <input type="text" value={editDish.allergens || ''} onChange={e => setEditDish({ ...editDish, allergens: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={editDish.allergens || ''}
+              onChange={e => setEditDish({ ...editDish, allergens: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Categoría</label>
-            <select value={editDish.menu_category_id} onChange={e => setEditDish({ ...editDish, menu_category_id: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm outline-none focus:border-primary">
-              {categories?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            <select
+              value={editDish.menu_category_id}
+              onChange={e => setEditDish({ ...editDish, menu_category_id: e.target.value })}
+              className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm outline-none focus:border-primary">
+              {categories?.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex items-center gap-4 pt-4">
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={editDish.is_signature} onChange={e => setEditDish({ ...editDish, is_signature: e.target.checked })} className="accent-primary" />
+              <input
+                type="checkbox"
+                checked={editDish.is_signature}
+                onChange={e => setEditDish({ ...editDish, is_signature: e.target.checked })}
+                className="accent-primary"
+              />
               <span className="text-[10px] uppercase tracking-widest text-text-muted">Estrella</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={editDish.available} onChange={e => setEditDish({ ...editDish, available: e.target.checked })} className="accent-primary" />
+              <input
+                type="checkbox"
+                checked={editDish.available}
+                onChange={e => setEditDish({ ...editDish, available: e.target.checked })}
+                className="accent-primary"
+              />
               <span className="text-[10px] uppercase tracking-widest text-text-muted">Disponible</span>
             </label>
           </div>
         </div>
         <div className="flex justify-end gap-6 border-t border-text-main/10 pt-4">
-          <button onClick={() => setIsEditing(false)} className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">Cancelar</button>
-          <button onClick={handleUpdate} className="bg-primary text-black px-6 py-2 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">Guardar Cambios</button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">
+            Cancelar
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="bg-primary text-black px-6 py-2 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">
+            Guardar Cambios
+          </button>
         </div>
       </div>
     );
@@ -648,18 +915,34 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   return (
     <div className="bg-bg-surface/90 border border-text-main/10 p-4 flex justify-between items-center group hover:border-primary/30 transition-all">
       <div className="flex items-center gap-4">
-        {item.image && <img src={item.image} alt="" className="w-12 h-12 object-cover grayscale group-hover:grayscale-0 transition-all" />}
+        {item.image && (
+          <img
+            src={item.image}
+            alt=""
+            className="w-12 h-12 object-cover grayscale group-hover:grayscale-0 transition-all"
+          />
+        )}
         <div>
           <h4 className="text-text-main font-heading flex items-center gap-2">
             {item.name}
             {item.is_signature && <span className="text-primary text-[10px]">✦</span>}
           </h4>
-          <p className="text-text-muted text-[10px] uppercase tracking-wider">{item.category?.name} | {parseFloat(item.price).toFixed(2)}€</p>
+          <p className="text-text-muted text-[10px] uppercase tracking-wider">
+            {item.category?.name} | {parseFloat(item.price).toFixed(2)}€
+          </p>
         </div>
       </div>
       <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={() => setIsEditing(true)} className="text-primary text-[10px] uppercase tracking-widest hover:underline">Editar</button>
-        <button onClick={handleDelete} className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">Eliminar</button>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="text-primary text-[10px] uppercase tracking-widest hover:underline">
+          Editar
+        </button>
+        <button
+          onClick={handleDelete}
+          className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">
+          Eliminar
+        </button>
       </div>
     </div>
   );
@@ -681,25 +964,25 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
     }
   };
 
-  const addDishToMenu = (dishId) => {
+  const addDishToMenu = dishId => {
     if (!dishId) return;
     const dish = allAvailableDishes.find(d => d.id === parseInt(dishId));
     if (!dish) return;
-    
+
     // Evitar duplicados si se prefiere, aunque el pivot lo permite.
     const exists = edit.dishes.find(d => d.id === dish.id);
     if (exists) return;
 
     setEdit({
       ...edit,
-      dishes: [...edit.dishes, { ...dish, pivot: { course_number: edit.dishes.length + 1, notes: '' } }]
+      dishes: [...edit.dishes, { ...dish, pivot: { course_number: edit.dishes.length + 1, notes: '' } }],
     });
   };
 
-  const removeDishFromMenu = (id) => {
+  const removeDishFromMenu = id => {
     setEdit({
       ...edit,
-      dishes: edit.dishes.filter(d => d.id !== id)
+      dishes: edit.dishes.filter(d => d.id !== id),
     });
   };
 
@@ -709,19 +992,42 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-end">
           <div className="lg:col-span-2">
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Nombre del Menú</label>
-            <input type="text" value={edit.name} onChange={e => setEdit({ ...edit, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={edit.name}
+              onChange={e => setEdit({ ...edit, name: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Precio (€)</label>
-            <input type="number" step="0.01" value={edit.price} onChange={e => setEdit({ ...edit, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="number"
+              step="0.01"
+              value={edit.price}
+              onChange={e => setEdit({ ...edit, price: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Nº Pasos (Total)</label>
-            <input type="number" value={edit.courses} onChange={e => setEdit({ ...edit, courses: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="number"
+              value={edit.courses}
+              onChange={e => setEdit({ ...edit, courses: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div className="lg:col-span-4">
-            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Descripción General</label>
-            <input type="text" value={edit.description} onChange={e => setEdit({ ...edit, description: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
+              Descripción General
+            </label>
+            <input
+              type="text"
+              value={edit.description}
+              onChange={e => setEdit({ ...edit, description: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
         </div>
 
@@ -730,52 +1036,64 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
           <h5 className="text-primary text-[10px] uppercase tracking-[3px] mb-4">Composición del Menú</h5>
           <div className="space-y-3 mb-6">
             {edit.dishes.map((dish, idx) => (
-              <div key={dish.id} className="flex flex-col md:flex-row gap-4 items-center bg-text-main/5 p-3 border border-text-main/5">
+              <div
+                key={dish.id}
+                className="flex flex-col md:flex-row gap-4 items-center bg-text-main/5 p-3 border border-text-main/5">
                 <span className="text-primary font-bold text-xs">#{idx + 1}</span>
                 <div className="flex-grow">
                   <p className="text-text-main text-sm font-heading">{dish.name}</p>
                 </div>
                 <div className="flex gap-4">
-                   <div className="w-20">
-                      <label className="text-[8px] uppercase text-text-muted block">Paso №</label>
-                      <input 
-                        type="number" 
-                        value={dish.pivot?.course_number || idx + 1} 
-                        onChange={e => {
-                          const newDishes = [...edit.dishes];
-                          newDishes[idx] = { ...dish, pivot: { ...dish.pivot, course_number: e.target.value } };
-                          setEdit({ ...edit, dishes: newDishes });
-                        }}
-                        className="bg-transparent border-b border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary" 
-                      />
-                   </div>
-                   <div className="flex-grow min-w-[150px]">
-                      <label className="text-[8px] uppercase text-text-muted block">Nota (opcional)</label>
-                      <input 
-                        type="text" 
-                        placeholder="ej: Versión mini..."
-                        value={dish.pivot?.notes || ''} 
-                        onChange={e => {
-                          const newDishes = [...edit.dishes];
-                          newDishes[idx] = { ...dish, pivot: { ...dish.pivot, notes: e.target.value } };
-                          setEdit({ ...edit, dishes: newDishes });
-                        }}
-                        className="bg-transparent border-b border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary" 
-                      />
-                   </div>
+                  <div className="w-20">
+                    <label className="text-[8px] uppercase text-text-muted block">Paso №</label>
+                    <input
+                      type="number"
+                      value={dish.pivot?.course_number || idx + 1}
+                      onChange={e => {
+                        const newDishes = [...edit.dishes];
+                        newDishes[idx] = { ...dish, pivot: { ...dish.pivot, course_number: e.target.value } };
+                        setEdit({ ...edit, dishes: newDishes });
+                      }}
+                      className="bg-transparent border-b border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary"
+                    />
+                  </div>
+                  <div className="flex-grow min-w-[150px]">
+                    <label className="text-[8px] uppercase text-text-muted block">Nota (opcional)</label>
+                    <input
+                      type="text"
+                      placeholder="ej: Versión mini..."
+                      value={dish.pivot?.notes || ''}
+                      onChange={e => {
+                        const newDishes = [...edit.dishes];
+                        newDishes[idx] = { ...dish, pivot: { ...dish.pivot, notes: e.target.value } };
+                        setEdit({ ...edit, dishes: newDishes });
+                      }}
+                      className="bg-transparent border-b border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary"
+                    />
+                  </div>
                 </div>
-                <button onClick={() => removeDishFromMenu(dish.id)} className="text-red-500/70 hover:text-red-500 text-[10px] uppercase tracking-widest px-2">Remover</button>
+                <button
+                  onClick={() => removeDishFromMenu(dish.id)}
+                  className="text-red-500/70 hover:text-red-500 text-[10px] uppercase tracking-widest px-2">
+                  Remover
+                </button>
               </div>
             ))}
           </div>
 
           <div className="flex gap-4 items-end">
             <div className="flex-grow">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Vincular un plato existente...</label>
-              <select onChange={e => addDishToMenu(e.target.value)} className="w-full bg-bg-surface border border-text-main/10 text-text-main text-sm p-2 outline-none focus:border-primary">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">
+                Vincular un plato existente...
+              </label>
+              <select
+                onChange={e => addDishToMenu(e.target.value)}
+                className="w-full bg-bg-surface border border-text-main/10 text-text-main text-sm p-2 outline-none focus:border-primary">
                 <option value="">Seleccionar plato...</option>
                 {allAvailableDishes.map(d => (
-                  <option key={d.id} value={d.id}>{d.name} ({d.category?.name})</option>
+                  <option key={d.id} value={d.id}>
+                    {d.name} ({d.category?.name})
+                  </option>
                 ))}
               </select>
             </div>
@@ -783,8 +1101,16 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
         </div>
 
         <div className="flex justify-end gap-6 border-t border-text-main/10 pt-4">
-          <button onClick={() => setIsEditing(false)} className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">Cancelar</button>
-          <button onClick={handleUpdate} className="bg-primary text-black px-8 py-2.5 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">Guardar Configuración</button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">
+            Cancelar
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="bg-primary text-black px-8 py-2.5 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">
+            Guardar Configuración
+          </button>
         </div>
       </div>
     );
@@ -794,17 +1120,31 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
     <div className="bg-bg-surface/90 border border-text-main/10 p-5 flex flex-col md:flex-row justify-between md:items-center group hover:border-primary/50 transition-all">
       <div className="mb-4 md:mb-0">
         <h4 className="text-text-main font-heading text-lg">{item.name}</h4>
-        <p className="text-text-muted text-xs tracking-widest uppercase mb-2">{item.courses} Pasos | {parseFloat(item.price).toFixed(2)}€</p>
+        <p className="text-text-muted text-xs tracking-widest uppercase mb-2">
+          {item.courses} Pasos | {parseFloat(item.price).toFixed(2)}€
+        </p>
         <p className="text-text-muted text-sm italic opacity-70 border-l border-primary/30 pl-4">{item.description}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {item.dishes?.map(d => (
-            <span key={d.id} className="text-[8px] border border-text-main/10 px-2 py-0.5 text-text-muted uppercase tracking-tighter">{d.name}</span>
+            <span
+              key={d.id}
+              className="text-[8px] border border-text-main/10 px-2 py-0.5 text-text-muted uppercase tracking-tighter">
+              {d.name}
+            </span>
           ))}
         </div>
       </div>
       <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={() => setIsEditing(true)} className="text-primary text-[10px] uppercase tracking-widest hover:underline">Gestionar Platos</button>
-        <button onClick={handleDelete} className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">Eliminar</button>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="text-primary text-[10px] uppercase tracking-widest hover:underline">
+          Gestionar Platos
+        </button>
+        <button
+          onClick={handleDelete}
+          className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">
+          Eliminar
+        </button>
       </div>
     </div>
   );
@@ -832,15 +1172,30 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-2">
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Nombre del Vino</label>
-            <input type="text" value={edit.name} onChange={e => setEdit({ ...edit, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="Nombre" />
+            <input
+              type="text"
+              value={edit.name}
+              onChange={e => setEdit({ ...edit, name: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="Nombre"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Bodega</label>
-            <input type="text" value={edit.winery || ''} onChange={e => setEdit({ ...edit, winery: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="Bodega" />
+            <input
+              type="text"
+              value={edit.winery || ''}
+              onChange={e => setEdit({ ...edit, winery: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="Bodega"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Tipo</label>
-            <select value={edit.type} onChange={e => setEdit({ ...edit, type: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none">
+            <select
+              value={edit.type}
+              onChange={e => setEdit({ ...edit, type: e.target.value })}
+              className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none">
               <option value="Red">Tinto</option>
               <option value="White">Blanco</option>
               <option value="Rose">Rosado</option>
@@ -849,24 +1204,62 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Año / Cosecha</label>
-            <input type="text" value={edit.vintage || ''} onChange={e => setEdit({ ...edit, vintage: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="2018..." />
+            <input
+              type="text"
+              value={edit.vintage || ''}
+              onChange={e => setEdit({ ...edit, vintage: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="2018..."
+            />
           </div>
           <div>
-            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio Botella (€)</label>
-            <input type="number" step="0.01" value={edit.price_bottle} onChange={e => setEdit({ ...edit, price_bottle: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="0.00" />
+            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">
+              Precio Botella (€)
+            </label>
+            <input
+              type="number"
+              step="0.01"
+              value={edit.price_bottle}
+              onChange={e => setEdit({ ...edit, price_bottle: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="0.00"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio Copa (€)</label>
-            <input type="number" step="0.01" value={edit.price_glass || ''} onChange={e => setEdit({ ...edit, price_glass: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="Opcional" />
+            <input
+              type="number"
+              step="0.01"
+              value={edit.price_glass || ''}
+              onChange={e => setEdit({ ...edit, price_glass: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="Opcional"
+            />
           </div>
           <div className="lg:col-span-2">
-            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Notas de Maridaje / Info</label>
-            <input type="text" value={edit.pairing_notes || ''} onChange={e => setEdit({ ...edit, pairing_notes: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="Notas de cata..." />
+            <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">
+              Notas de Maridaje / Info
+            </label>
+            <input
+              type="text"
+              value={edit.pairing_notes || ''}
+              onChange={e => setEdit({ ...edit, pairing_notes: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="Notas de cata..."
+            />
           </div>
         </div>
         <div className="flex justify-end gap-6 border-t border-text-main/10 pt-4">
-          <button onClick={() => setIsEditing(false)} className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">Cancelar</button>
-          <button onClick={handleUpdate} className="bg-primary text-black px-6 py-2 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">Guardar Cambios</button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">
+            Cancelar
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="bg-primary text-black px-6 py-2 font-bold text-[10px] uppercase tracking-widest hover:bg-white transition-colors">
+            Guardar Cambios
+          </button>
         </div>
       </div>
     );
@@ -875,17 +1268,31 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
   return (
     <div className="bg-bg-surface/90 border border-text-main/10 p-4 flex justify-between items-center group hover:border-primary/30 transition-all">
       <div>
-        <h4 className="text-text-main font-heading text-base">{item.name} <span className="text-text-muted text-[10px] ml-2 italic">({item.vintage || 'S/A'})</span></h4>
-        <p className="text-text-muted text-[10px] uppercase tracking-widest">{item.winery} | {item.type}</p>
+        <h4 className="text-text-main font-heading text-base">
+          {item.name} <span className="text-text-muted text-[10px] ml-2 italic">({item.vintage || 'S/A'})</span>
+        </h4>
+        <p className="text-text-muted text-[10px] uppercase tracking-widest">
+          {item.winery} | {item.type}
+        </p>
       </div>
       <div className="flex gap-6 items-center">
         <div className="text-right">
           <span className="text-text-main text-sm block font-bold">{parseFloat(item.price_bottle).toFixed(2)}€</span>
-          {item.price_glass && <span className="text-text-muted text-[10px]">{parseFloat(item.price_glass).toFixed(2)}€ / copa</span>}
+          {item.price_glass && (
+            <span className="text-text-muted text-[10px]">{parseFloat(item.price_glass).toFixed(2)}€ / copa</span>
+          )}
         </div>
         <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity ml-4">
-          <button onClick={() => setIsEditing(true)} className="text-primary text-[10px] uppercase tracking-widest hover:underline">Editar</button>
-          <button onClick={handleDelete} className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">Borrar</button>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-primary text-[10px] uppercase tracking-widest hover:underline">
+            Editar
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">
+            Borrar
+          </button>
         </div>
       </div>
     </div>
@@ -914,15 +1321,29 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Nombre</label>
-            <input type="text" value={edit.name} onChange={e => setEdit({ ...edit, name: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="text"
+              value={edit.name}
+              onChange={e => setEdit({ ...edit, name: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Precio (€)</label>
-            <input type="number" step="0.01" value={edit.price} onChange={e => setEdit({ ...edit, price: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" />
+            <input
+              type="number"
+              step="0.01"
+              value={edit.price}
+              onChange={e => setEdit({ ...edit, price: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+            />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Tipo</label>
-            <select value={edit.type} onChange={e => setEdit({ ...edit, type: e.target.value })} className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none">
+            <select
+              value={edit.type}
+              onChange={e => setEdit({ ...edit, type: e.target.value })}
+              className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none">
               <option value="agua">Agua</option>
               <option value="refresco">Refresco</option>
               <option value="cocktail">Cóctel</option>
@@ -931,12 +1352,26 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-1">Descripción</label>
-            <input type="text" value={edit.description || ''} onChange={e => setEdit({ ...edit, description: e.target.value })} className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none" placeholder="Opcional" />
+            <input
+              type="text"
+              value={edit.description || ''}
+              onChange={e => setEdit({ ...edit, description: e.target.value })}
+              className="w-full bg-transparent border-b border-text-main/10 text-text-main p-1 text-sm focus:border-primary outline-none"
+              placeholder="Opcional"
+            />
           </div>
         </div>
         <div className="flex justify-end gap-6 border-t border-text-main/10 pt-3">
-          <button onClick={() => setIsEditing(false)} className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">Cancelar</button>
-          <button onClick={handleUpdate} className="text-primary hover:text-text-main text-[10px] uppercase tracking-[2px] font-bold">Guardar</button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="text-text-muted hover:text-text-main text-[10px] uppercase tracking-[2px]">
+            Cancelar
+          </button>
+          <button
+            onClick={handleUpdate}
+            className="text-primary hover:text-text-main text-[10px] uppercase tracking-[2px] font-bold">
+            Guardar
+          </button>
         </div>
       </div>
     );
@@ -951,8 +1386,16 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
       <div className="flex gap-4 items-center">
         <span className="text-text-main font-bold">{parseFloat(item.price).toFixed(2)}€</span>
         <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-          <button onClick={() => setIsEditing(true)} className="text-primary text-[10px] uppercase tracking-widest hover:underline">Editar</button>
-          <button onClick={handleDelete} className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">Eliminar</button>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="text-primary text-[10px] uppercase tracking-widest hover:underline">
+            Editar
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-red-500/70 text-[10px] uppercase tracking-widest hover:text-red-500">
+            Eliminar
+          </button>
         </div>
       </div>
     </div>

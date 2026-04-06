@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file OrderController.php
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Controlador para la gestión de pedidos de la tienda Gourmet. Maneja la creación, listado y actualización de estados del pedido.
+ */
 
 namespace App\Http\Controllers\API;
 
@@ -6,13 +12,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class OrderController extends Controller
 {
-    // Obtener los pedidos del usuario autenticado
+    /**
+     * @function index
+     * @description Obtiene el historial de pedidos del usuario autenticado, actualizando automáticamente el estado si ha pasado la hora de recogida.
+     */
     public function index()
     {
         $userId = Auth::id();
-        
+
         // Actualización automática: si ha pasado la hora de recogida, marcarlo como entregado
         \App\Models\Order::where('user_id', $userId)
             ->whereIn('status', ['received', 'preparing', 'ready'])
@@ -23,11 +33,14 @@ class OrderController extends Controller
             ->with(['items.dish', 'items.wine'])
             ->latest()
             ->get();
-            
+
         return response()->json($orders);
     }
 
-    // Crear un nuevo pedido
+    /**
+     * @function store
+     * @description Crea un nuevo pedido realizando múltiples inserciones (pedido e ítems) dentro de una transacción de base de datos para asegurar la integridad de los datos.
+     */
     public function store(Request $request)
     {
         // Verificar autenticación explícitamente por seguridad
@@ -74,20 +87,26 @@ class OrderController extends Controller
             }
 
             return response()->json([
-                'message' => 'Pedido creado correctamente', 
+                'message' => 'Pedido creado correctamente',
                 'order' => $order->load('items')
             ], 201);
         });
     }
 
-    // Obtener todos los pedidos (solo admin)
+    /**
+     * @function all
+     * @description Lista todos los pedidos del sistema para la vista de administración, ordenados por fecha de creación.
+     */
     public function all()
     {
         $orders = \App\Models\Order::with('user', 'items')->latest()->get();
         return response()->json($orders);
     }
 
-    // Actualizar el estado de un pedido (solo admin)
+    /**
+     * @function updateStatus
+     * @description Permite al administrador cambiar el estado logístico del pedido (preparando, listo, entregado).
+     */
     public function updateStatus(Request $request, $id)
     {
         $order = \App\Models\Order::findOrFail($id);

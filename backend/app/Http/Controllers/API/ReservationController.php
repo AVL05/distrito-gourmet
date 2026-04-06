@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file ReservationController.php
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Gestión de las reservas de mesas para los clientes desde el entorno API.
+ */
 
 namespace App\Http\Controllers\API;
 
@@ -7,14 +13,20 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
-    // Obtener las reservas del usuario autenticado
+    /**
+     * @function index
+     * @description Lista las reservas históricas o futuras asociadas al usuario autenticado.
+     */
     public function index()
     {
         $reservations = \App\Models\Reservation::where('user_id', auth()->id())->get();
         return response()->json($reservations);
     }
 
-    // Crear una nueva reserva
+    /**
+     * @function store
+     * @description Crea una reserva tras validar los campos recibidos y asigna el estado 'confirmed' por defecto.
+     */
     public function store(Request $request)
     {
         // Validar datos de la reserva
@@ -34,14 +46,20 @@ class ReservationController extends Controller
         return response()->json(['message' => 'Reserva confirmada correctamente', 'reservation' => $res], 201);
     }
 
-    // Obtener todas las reservas (solo admin)
+    /**
+     * @function all
+     * @description Recupera el listado completo de reservas registradas para el panel de administración.
+     */
     public function all()
     {
         $reservations = \App\Models\Reservation::with('user')->orderBy('reservation_time', 'desc')->get();
         return response()->json($reservations);
     }
 
-    // Actualizar el estado de una reserva (solo admin)
+    /**
+     * @function updateStatus
+     * @description Permite a un administrador modificar el estado (confirmado, llegado, cancelado) de una reserva.
+     */
     public function updateStatus(Request $request, $id)
     {
         $res = \App\Models\Reservation::findOrFail($id);

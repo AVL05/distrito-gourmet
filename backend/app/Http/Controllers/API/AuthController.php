@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file AuthController.php
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Controlador encargado de gestionar la autenticación de usuarios (registro, login, logout).
+ */
 
 namespace App\Http\Controllers\API;
 
@@ -10,7 +16,10 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Registrar un nuevo usuario
+    /**
+     * @function register
+     * @description Procesa el registro de nuevos usuarios, asignándoles el rol de 'client' por defecto.
+     */
     public function register(Request $request)
     {
         // Validar datos del formulario de registro
@@ -37,7 +46,10 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // Iniciar sesión
+    /**
+     * @function login
+     * @description Autentica al usuario mediante email y password, devolviendo un token de acceso personal.
+     */
     public function login(Request $request)
     {
         // Validar email y contraseña
@@ -49,7 +61,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Verificar que las credenciales son correctas
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales son incorrectas.'],
             ]);
@@ -64,14 +76,20 @@ class AuthController extends Controller
         ]);
     }
 
-    // Cerrar sesión (eliminar token actual)
+    /**
+     * @function logout
+     * @description Cierra la sesión activa revocando el token de acceso del usuario autenticado.
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Sesión cerrada correctamente']);
     }
 
-    // Obtener datos del usuario autenticado
+    /**
+     * @function user
+     * @description Recupera el perfil del usuario autenticado actualmente por el token Bearer.
+     */
     public function user(Request $request)
     {
         return $request->user();

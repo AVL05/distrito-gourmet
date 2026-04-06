@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file DishController.php
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Controlador para gestionar los platos de la carta y el menú degustación del restaurante.
+ */
 
 namespace App\Http\Controllers\API;
 
@@ -7,7 +13,10 @@ use Illuminate\Http\Request;
 
 class DishController extends Controller
 {
-    // Obtener toda la carta: platos, vinos, bebidas y menús degustación
+    /**
+     * @function index
+     * @description Obtiene el listado completo de la carta, incluyendo categorías, platos, vinos, bebidas y menús degustación.
+     */
     public function index()
     {
         $dishes = \App\Models\Dish::with('category')->get();
@@ -25,7 +34,10 @@ class DishController extends Controller
         ]);
     }
 
-    // Crear un nuevo plato (solo admin)
+    /**
+     * @function store
+     * @description Crea un nuevo plato validando los campos y vinculándolo a una categoría existente.
+     */
     public function store(Request $request)
     {
         // Validar datos del plato
@@ -44,13 +56,19 @@ class DishController extends Controller
         return response()->json(['message' => 'Plato creado correctamente', 'dish' => $dish->load('category')], 201);
     }
 
-    // Obtener un plato por ID
+    /**
+     * @function show
+     * @description Recupera la información detallada de un plato por ID.
+     */
     public function show($id)
     {
         return response()->json(\App\Models\Dish::with('category')->findOrFail($id));
     }
 
-    // Actualizar un plato existente (solo admin)
+    /**
+     * @function update
+     * @description Actualiza los datos de un plato existente tras validar las entradas.
+     */
     public function update(Request $request, $id)
     {
         // Validar datos actualizados
@@ -71,7 +89,10 @@ class DishController extends Controller
         return response()->json(['message' => 'Plato actualizado correctamente', 'dish' => $dish->load('category')]);
     }
 
-    // Eliminar un plato (solo admin)
+    /**
+     * @function destroy
+     * @description Elimina permanentemente un plato de la base de datos por su ID.
+     */
     public function destroy($id)
     {
         \App\Models\Dish::destroy($id);

@@ -1,3 +1,10 @@
+/**
+ * @file MenuView.jsx
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Vista de la carta interactiva del restaurante. Permite filtrar por categorías (platos, bebidas, bodega, menús) y añadir productos al carrito mediante un estado global (Zustand).
+ */
+
 import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -12,6 +19,10 @@ import {
   MotionButton,
 } from '@/motion';
 
+/**
+ * @component MenuView
+ * @description Componente principal que gestiona el estado de la carta, recuperando datos del backend y formateándolos para su visualización categorizada.
+ */
 const MenuView = () => {
   const { addItem } = useCartStore();
   const [activeCategory, setActiveCategory] = useState('carta');
@@ -286,8 +297,10 @@ const MenuView = () => {
   );
 };
 
-// Cabecera de sección con número e índice
-// Cabecera de sección con animación ScrollReveal + LineReveal (estilo Gucci Osteria)
+/**
+ * @component SectionHeader
+ * @description Cabecera visual para cada sección del menú con animaciones ScrollReveal.
+ */
 const SectionHeader = ({ index, label }) => (
   <ScrollReveal
     direction="up"
@@ -302,7 +315,10 @@ const SectionHeader = ({ index, label }) => (
   </ScrollReveal>
 );
 
-// Fila de plato con botón de añadir al carrito
+/**
+ * @component DishRow
+ * @description Fila individual para un plato de la carta con opción de compra.
+ */
 const DishRow = ({ item, addItem }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -342,7 +358,10 @@ const DishRow = ({ item, addItem }) => (
   </div>
 );
 
-// Fila de solo lectura para bebidas
+/**
+ * @component DisplayRow
+ * @description Fila informativa para bebidas y artículos sin opción de carrito directa.
+ */
 const DisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -368,7 +387,10 @@ const DisplayRow = ({ item }) => (
   </div>
 );
 
-// Fila de solo lectura para vinos (con precio por botella y copa)
+/**
+ * @component WineDisplayRow
+ * @description Representación visual para los vinos, mostrando precios por copa y botella.
+ */
 const WineDisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -401,7 +423,10 @@ const WineDisplayRow = ({ item }) => (
   </div>
 );
 
-// Tarjeta de menú degustación (solo lectura)
+/**
+ * @component TastingMenuCard
+ * @description Tarjeta informativa para menús degustación, listando los pasos incluidos.
+ */
 const TastingMenuCard = ({ menu, index }) => (
   <div className="border border-text-main/10 bg-bg-body relative overflow-hidden">
     {/* Línea decorativa superior */}
@@ -454,7 +479,10 @@ const TastingMenuCard = ({ menu, index }) => (
   </div>
 );
 
-// Estado vacío cuando no hay datos para mostrar
+/**
+ * @component EmptyState
+ * @description Estado visual cuando una categoría de menú no tiene elementos disponibles.
+ */
 const EmptyState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>

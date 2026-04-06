@@ -1,3 +1,10 @@
+/**
+ * @file HomeView.jsx
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Vista principal (Landing Page) del proyecto Distrito Gourmet. Implementa animaciones avanzadas de entrada y scroll mediante GSAP y Framer Motion.
+ */
+
 import { Link } from 'react-router-dom';
 import {
   PageTransition,
@@ -11,6 +18,11 @@ import {
   ScrollProgress,
 } from '@/motion';
 
+/**
+ * @component HomeView
+ * @description Estructura la página de inicio en secciones visuales: Hero, Filosofía, Experiencia y Reserva.
+ * Utiliza componentes de movimiento personalizados para lograr una estética premium.
+ */
 const HomeView = () => {
   return (
     <PageTransition className="w-full">

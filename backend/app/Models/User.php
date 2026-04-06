@@ -1,8 +1,13 @@
 <?php
+/**
+ * @file User.php
+ * @author Alex V. (DAW)
+ * @date 2026-04-06
+ * @description Modelo de elocuencia para la entidad Usuarios. Define roles, atributos protegidos y la integración con Sanctum para autenticación API.
+ */
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,9 +19,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * @var array $fillable
+     * @description Atributos que se pueden asignar masivamente para evitar vulnerabilidades de asignación masiva inadvertida.
      */
     protected $fillable = [
         'name',
@@ -26,9 +30,8 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * @var array $hidden
+     * @description Campos que se ocultan automáticamente al convertir el objeto a JSON (seguridad de contraseñas).
      */
     protected $hidden = [
         'password',
@@ -36,9 +39,8 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * @function casts
+     * @description Define la conversión de tipos de datos al recuperar valores de la base de datos (ej. hashing automático de passwords).
      */
     protected function casts(): array
     {
