@@ -7,6 +7,9 @@ if [ ! -f .env ]; then
     cp .env.example .env
 fi
 
+# Descubrir paquetes y generar autoload en caliente
+php artisan package:discover --ansi
+
 # Optimizar Laravel para Producción
 php artisan config:cache
 php artisan route:cache
