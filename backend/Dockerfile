@@ -37,8 +37,9 @@ COPY . .
 # Instalar dependencias de Composer (optimizado para producción)
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Configurar permisos para Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Configurar permisos para Laravel (asegurando que las carpetas existan)
+RUN mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache
 
 # Copiar configuración de Nginx personalizada
 COPY nginx.conf /etc/nginx/nginx.conf
