@@ -2,7 +2,7 @@ import axios from 'axios';
 import { create } from 'zustand';
 
 // Configuración base de axios para conectar con la API de Laravel
-axios.defaults.baseURL = 'http://127.0.0.1:8000/api';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 axios.defaults.headers.common['Accept'] = 'application/json';
 
 // Recuperar token guardado en localStorage para mantener la sesión
