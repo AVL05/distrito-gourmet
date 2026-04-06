@@ -1,7 +1,7 @@
 import { useAuthStore } from '@/store/auth';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import { HiClock, HiShoppingBag, HiCheckCircle } from 'react-icons/hi';
 import { PageTransition, FadeIn, StaggerList, StaggerItem, HoverCard } from '@/motion';
 import gsap from 'gsap';

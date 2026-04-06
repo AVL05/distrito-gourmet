@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/store/auth';
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import Swal from 'sweetalert2';
 import { motion, useReducedMotion, PageTransition, FadeIn } from '@/motion';
 

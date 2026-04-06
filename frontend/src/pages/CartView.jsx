@@ -4,7 +4,7 @@ import { HiMinus, HiPlus, HiTrash, HiCreditCard, HiCash, HiArrowLeft, HiCheckCir
 import { FaPaypal } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import Swal from 'sweetalert2';
 import { PageTransition, FadeIn } from '@/motion';
 

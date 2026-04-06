@@ -7,7 +7,7 @@
 
 import ReservationForm from '@/components/ReservationForm';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import {
   motion,
   AnimatePresence,

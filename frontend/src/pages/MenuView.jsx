@@ -7,7 +7,7 @@
 
 import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import {
   PageTransition,
   FadeIn,

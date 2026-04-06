@@ -7,7 +7,7 @@
 
 import { useAuthStore } from '@/store/auth';
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import axios from '@/services/api';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence, useReducedMotion, FadeIn } from '@/motion';
 import { DURATION, EASING } from '@/motion';
