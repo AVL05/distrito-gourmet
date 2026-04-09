@@ -5,8 +5,8 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
     ports:
-      # Si falla el puerto 80, cámbialo a "8080:80" y detén el nginx del host
-      - "80:80"
+      # Puerto alternativo para evitar conflicto con el nginx del sistema
+      - "8080:80"
     depends_on:
       - frontend
       - backend
@@ -22,7 +22,6 @@ services:
       context: ./backend
     expose:
       - "8000"
-    # Estas variables sobrescriben al .env cuando se ejecuta en Docker
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
