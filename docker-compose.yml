@@ -5,8 +5,8 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
     ports:
-      # Puerto alternativo para evitar conflicto con el nginx del sistema
-      - "8080:80"
+      # Puerto alternativo (8001) ya que 80 y 8080 están ocupados
+      - "8001:80"
     depends_on:
       - frontend
       - backend
