@@ -4,21 +4,29 @@ services:
     image: nginx:latest
     volumes:
       - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
     depends_on:
       - frontend
       - backend
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.distrito.rule=Host(`distrito.local`)"
-      - "traefik.http.services.distrito.loadbalancer.server.port=80"
+    restart: always
 
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+    restart: always
 
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
     expose:
       - "8000"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    depends_on:
+      - db
+    restart: always
 
   db:
     image: mysql:8.0
@@ -29,6 +37,7 @@ services:
       MYSQL_PASSWORD: secret
     volumes:
       - db_data:/var/lib/mysql
+    restart: always
 
 volumes:
   db_data:
