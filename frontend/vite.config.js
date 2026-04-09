@@ -1,4 +1,9 @@
+/* eslint-env node */
+/* global process */
 import react from "@vitejs/plugin-react";
+
+
+
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig, loadEnv } from "vite";
@@ -25,6 +30,11 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [react()],
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.js',
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -32,3 +42,4 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
