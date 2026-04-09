@@ -5,6 +5,7 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
     ports:
+      # Si falla el puerto 80, cámbialo a "8080:80" y detén el nginx del host
       - "80:80"
     depends_on:
       - frontend
@@ -21,9 +22,20 @@ services:
       context: ./backend
     expose:
       - "8000"
+    # Estas variables sobrescriben al .env cuando se ejecuta en Docker
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
+      - APP_URL=http://localhost
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=distrito_gourmet
+      - DB_USERNAME=distrito_user
+      - DB_PASSWORD=distrito_pass
+      - SESSION_DRIVER=database
+      - CACHE_STORE=database
+      - QUEUE_CONNECTION=database
     depends_on:
       - db
     restart: always
@@ -32,9 +44,9 @@ services:
     image: mysql:8.0
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: distrito
-      MYSQL_USER: user
-      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: distrito_gourmet
+      MYSQL_USER: distrito_user
+      MYSQL_PASSWORD: distrito_pass
     volumes:
       - db_data:/var/lib/mysql
     restart: always
