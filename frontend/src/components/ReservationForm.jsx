@@ -10,6 +10,7 @@ const ReservationForm = ({ compact = false }) => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
+  // Estado principal que guarda los datos introducidos en el formulario
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: '',
@@ -19,6 +20,7 @@ const ReservationForm = ({ compact = false }) => {
     comments: '',
   });
 
+  // Estados para controlar si está cargando y si se envió con éxito
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -31,6 +33,7 @@ const ReservationForm = ({ compact = false }) => {
   const handleSubmit = async e => {
     e.preventDefault();
 
+    // Comprobar que el usuario ha iniciado sesión antes de reservar
     if (!user) {
       Swal.fire({
         title: 'Atención',
@@ -49,7 +52,7 @@ const ReservationForm = ({ compact = false }) => {
     setLoading(true);
 
     try {
-      // Combinar fecha y hora para el formato del backend (ISO)
+      // Unir fecha y hora para enviarlo correctamente a la base de datos
       const reservationTime = `${form.date}T${form.time}:00`;
 
       await axios.post('/reservations', {
@@ -59,6 +62,7 @@ const ReservationForm = ({ compact = false }) => {
         experience_type: 'a_la_carte', // Default
       });
 
+      // Mostrar mensaje de confirmación y vaciar el formulario
       setSuccess(true);
       setForm(prev => ({
         ...prev,
@@ -70,6 +74,7 @@ const ReservationForm = ({ compact = false }) => {
 
       setTimeout(() => setSuccess(false), 8000);
     } catch (err) {
+      // Si hay error, lo mostramos por pantalla
       console.error(err);
       Swal.fire({
         icon: 'error',
@@ -89,6 +94,7 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   return (
+    // Contenedor principal con efecto de aparición
     <FadeIn className="w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-10 md:p-14 border border-gray-200 shadow-[0_0_50px_rgba(0,0,0,0.6)] rounded-sm relative overflow-hidden">
       {/* Línea decorativa superior */}
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
@@ -104,6 +110,7 @@ const ReservationForm = ({ compact = false }) => {
         )}
 
         <div className="mb-8 relative group">
+          {/* Campo: Nombre del cliente */}
           <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
             Nombre Completo
           </label>
@@ -120,6 +127,7 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
           <div className="relative group">
+            {/* Campo: Teléfono de contacto */}
             <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Teléfono
             </label>
@@ -134,6 +142,7 @@ const ReservationForm = ({ compact = false }) => {
             />
           </div>
           <div className="relative group">
+            {/* Desplegable: Número de comensales */}
             <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Comensales (Máx. 8)
             </label>
@@ -157,6 +166,7 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
           <div className="relative group">
+            {/* Campo: Fecha para la reserva */}
             <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Fecha de la Experiencia
             </label>
@@ -171,6 +181,7 @@ const ReservationForm = ({ compact = false }) => {
             />
           </div>
           <div className="relative group">
+            {/* Desplegable: Turnos disponibles */}
             <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
               Turno
             </label>
@@ -193,6 +204,7 @@ const ReservationForm = ({ compact = false }) => {
         </div>
 
         <div className="mb-12 relative group">
+          {/* Campo opcional para alergias o comentarios */}
           <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
             Preferencias / Restricciones
           </label>
@@ -205,6 +217,7 @@ const ReservationForm = ({ compact = false }) => {
             className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-light"></textarea>
         </div>
 
+        {/* Botón para enviar el formulario de reserva */}
         <div className="mt-10 flex justify-center">
           <motion.button
             type="submit"

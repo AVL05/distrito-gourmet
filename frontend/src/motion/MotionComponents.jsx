@@ -24,6 +24,7 @@ export const useMotionProps = _variants => ({});
 export const useReducedMotion = () => false;
 
 // ─── FadeIn ───────────────────────────────────────────────────────────────────
+// Componente que hace aparecer elementos suavemente y puede desplazarlos desde una dirección (arriba, abajo, izquierda, derecha)
 
 export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', as: Component = 'div', ...props }) => {
   const el = useRef(null);
@@ -58,6 +59,7 @@ export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', 
 };
 
 // ─── StaggerList ──────────────────────────────────────────────────────────────
+// Contenedor que anima a sus elementos hijos de forma secuencial (uno tras otro)
 
 export const StaggerList = ({ children, className = '', as: Component = 'div', ...props }) => {
   const el = useRef(null);
@@ -92,6 +94,7 @@ export const StaggerList = ({ children, className = '', as: Component = 'div', .
 };
 
 // ─── StaggerItem (wrapper de compatibilidad) ──────────────────────────────────
+// Elemento individual dentro de un StaggerList
 
 export const StaggerItem = ({ children, className = '', as: Component = 'div', ...props }) => (
   <Component className={className} {...props}>
@@ -100,6 +103,7 @@ export const StaggerItem = ({ children, className = '', as: Component = 'div', .
 );
 
 // ─── PageTransition ───────────────────────────────────────────────────────────
+// Componente para animar la transición suave al cambiar entre distintas páginas
 
 export const PageTransition = ({ children, className = '', as: Component = 'div', ...props }) => {
   const el = useRef(null);
@@ -125,6 +129,7 @@ export const PageTransition = ({ children, className = '', as: Component = 'div'
 };
 
 // ─── ScaleIn ──────────────────────────────────────────────────────────────────
+// Hace aparecer un elemento haciéndolo crecer ligeramente (efecto zoom o escala)
 
 export const ScaleIn = ({ children, className = '', as: Component = 'div', delay = 0, ...props }) => {
   const el = useRef(null);
@@ -156,6 +161,7 @@ export const ScaleIn = ({ children, className = '', as: Component = 'div', delay
 };
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
+// Animación para notificaciones o mensajes flotantes (como alertas de éxito o error)
 
 export const Toast = ({ children, className = '', as: Component = 'div', ...props }) => {
   const el = useRef(null);
@@ -182,6 +188,7 @@ export const Toast = ({ children, className = '', as: Component = 'div', ...prop
 };
 
 // ─── HoverCard ────────────────────────────────────────────────────────────────
+// Tarjeta que se eleva ligeramente cuando pasas el ratón por encima
 
 export const HoverCard = ({ children, className = '', as: Component = 'div', ...props }) => {
   const el = useRef(null);
@@ -214,6 +221,7 @@ export const HoverCard = ({ children, className = '', as: Component = 'div', ...
 };
 
 // ─── MotionButton ─────────────────────────────────────────────────────────────
+// Botón con un sutil efecto de "hundirse" al hacer clic sobre él
 
 export const MotionButton = ({ children, className = '', onClick, type = 'button', disabled = false, ...props }) => {
   const btn = useRef(null);

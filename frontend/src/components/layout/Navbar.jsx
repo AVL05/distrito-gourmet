@@ -7,7 +7,14 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(useGSAP);
 
-// Navbar premium reconstruido con GSAP.
+/**
+ * Navbar Component
+ *
+ * Barra de navegación principal del sitio, rediseñada con animaciones GSAP.
+ * Gestiona un menú modal a pantalla completa, cambios visuales al hacer scroll,
+ * y muestra accesos dinámicos basados en la sesión del usuario y los elementos del carrito.
+ *
+ */
 const Navbar = () => {
   const { isAuthenticated, isAdmin, logout } = useAuthStore();
   const { totalItems } = useCartStore();
@@ -20,14 +27,14 @@ const Navbar = () => {
   const linksRef = useRef(null);
   const bottomInfoRef = useRef(null);
 
-  // Detectar scroll para cambiar estilo del navbar
+  // Detectar el evento scroll de la ventana para cambiar el estilo visual del navbar (fondo semi-transparente vs transparente)
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Bloquear scroll del body cuando el menú está abierto
+  // Efecto secundario: Deshabilitar el scroll vertical del documento cuando el menú modal a pantalla completa está abierto
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
     return () => {
@@ -35,6 +42,7 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  // Hook personalizado de GSAP para manejar la secuencia de animaciones del menú de navegación
   useGSAP(
     () => {
       if (isOpen) {
@@ -88,6 +96,9 @@ const Navbar = () => {
     { dependencies: [isOpen], scope: menuRef }
   );
 
+  /**
+   * Finaliza la sesión del usuario actual y lo redirige a la vista de inicio de sesión.
+   */
   const handleLogout = () => {
     logout();
     navigate('/login');

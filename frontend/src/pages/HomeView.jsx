@@ -11,13 +11,15 @@ import {
   ScrollProgress,
 } from '@/motion';
 
-// Estructura la página de inicio en secciones visuales: Hero, Filosofía, Experiencia y Reserva.
+// Vista principal (Página de Inicio)
+// Estructura la página en varias secciones visuales: Hero (bienvenida), Filosofía, Experiencia y Reserva.
 const HomeView = () => {
   return (
     <PageTransition className="w-full">
       {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
       <ScrollProgress />
 
+      {/* SECCIÓN 1: Hero (Pantalla principal de bienvenida) */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
         {/* Imagen de fondo con filtro */}
         <div
@@ -102,6 +104,7 @@ const HomeView = () => {
         />
       </div>
 
+      {/* SECCIÓN 2: Filosofía / Identidad del restaurante */}
       <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -158,6 +161,8 @@ const HomeView = () => {
           </div>
         </div>
       </section>
+
+      {/* SECCIÓN 3: La Visión (Pilares del restaurante) */}
       <section className="py-24 md:py-32 bg-bg-body">
         <div className="container px-4">
           <ScrollReveal className="text-center mb-20">
@@ -219,6 +224,7 @@ const HomeView = () => {
         </div>
       </section>
 
+      {/* SECCIÓN 4: Llamada a la acción para reservar */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
         <div className="container px-4">
           <ScrollReveal className="max-w-4xl mx-auto text-center mb-16">

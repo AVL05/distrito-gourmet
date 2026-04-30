@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react';
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 // ─── 1. TextReveal ────────────────────────────────────────────────────────────
+// Revela un texto animando cada letra o palabra de manera individual
 
 export const TextReveal = ({
   text,
@@ -72,6 +73,7 @@ export const TextReveal = ({
 };
 
 // ─── 2. ScrollReveal ──────────────────────────────────────────────────────────
+// Hace aparecer contenido a medida que el usuario hace scroll hacia abajo
 
 export const ScrollReveal = ({
   children,
@@ -120,6 +122,7 @@ export const ScrollReveal = ({
 };
 
 // ─── 3. ParallaxSection ───────────────────────────────────────────────────────
+// Crea un efecto visual donde el contenido se mueve a distinta velocidad que la página al hacer scroll
 
 export const ParallaxSection = ({ children, speed = 50, className = '', as: Component = 'div', ...props }) => {
   const section = useRef(null);
@@ -149,6 +152,7 @@ export const ParallaxSection = ({ children, speed = 50, className = '', as: Comp
 };
 
 // ─── 4. ParallaxImage ─────────────────────────────────────────────────────────
+// Efecto parallax específico para imágenes, moviéndolas ligeramente dentro de su contenedor al hacer scroll
 
 export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', imageClassName = '', ...props }) => {
   const container = useRef(null);
@@ -198,6 +202,7 @@ export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', image
 };
 
 // ─── 5. ImageReveal ───────────────────────────────────────────────────────────
+// Descubre una imagen progresivamente (como si se quitara una capa o cortina que la tapa)
 
 export const ImageReveal = ({
   src,
@@ -251,6 +256,7 @@ export const ImageReveal = ({
 };
 
 // ─── 6. Marquee ───────────────────────────────────────────────────────────────
+// Texto en movimiento continuo de un lado a otro de la pantalla (como un ticker de noticias)
 
 export const Marquee = ({
   text,
@@ -292,6 +298,7 @@ export const Marquee = ({
 };
 
 // ─── 7. SmoothCounter ─────────────────────────────────────────────────────────
+// Animación que incrementa números de manera animada hasta una cifra (ej. para estadísticas)
 
 export const SmoothCounter = ({
   target,
@@ -332,6 +339,7 @@ export const SmoothCounter = ({
 };
 
 // ─── 8. MagneticButton ────────────────────────────────────────────────────────
+// Botón interactivo que es "atraído" por el puntero del ratón cuando pasas por encima
 
 export const MagneticButton = ({
   children,
@@ -383,6 +391,7 @@ export const MagneticButton = ({
 };
 
 // ─── 9. LineReveal ────────────────────────────────────────────────────────────
+// Anima una línea decorativa haciéndola crecer de forma fluida (horizontal o verticalmente)
 
 export const LineReveal = ({
   orientation = 'horizontal',
@@ -430,6 +439,7 @@ export const LineReveal = ({
 };
 
 // ─── 10. ScrollProgress ───────────────────────────────────────────────────────
+// Barra de carga fija en la parte superior que muestra cuánto scroll hemos hecho en la página actual
 
 export const ScrollProgress = ({ className = '', ...props }) => {
   const line = useRef(null);

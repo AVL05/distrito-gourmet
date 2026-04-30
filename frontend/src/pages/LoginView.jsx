@@ -4,22 +4,27 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { PageTransition, FadeIn } from '@/motion';
 
+// Componente para la vista de inicio de sesión
 const LoginView = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
+  // Estado local para guardar los datos del formulario
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
+  // Función para actualizar los datos mientras el usuario escribe
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  // Función para enviar los datos de inicio de sesión
   const handleSubmit = async e => {
     e.preventDefault();
     try {
+      // Intentar iniciar sesión llamando a la tienda de autenticación
       await login(formData);
       Swal.fire({
         icon: 'success',
@@ -31,6 +36,7 @@ const LoginView = () => {
       });
       navigate('/dashboard');
     } catch (error) {
+      console.error(error);
       Swal.fire({
         icon: 'error',
         title: 'Error de Acceso',
@@ -43,7 +49,9 @@ const LoginView = () => {
   };
 
   return (
+    // Contenedor principal con animación de transición de página
     <PageTransition className="min-h-screen flex items-center justify-center bg-bg-body pt-20 px-4">
+      {/* Tarjeta de inicio de sesión */}
       <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
         <div className="text-center mb-10">
