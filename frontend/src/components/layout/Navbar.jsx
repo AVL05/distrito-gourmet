@@ -7,9 +7,7 @@ import { useGSAP } from '@gsap/react';
 
 gsap.registerPlugin(useGSAP);
 
-/**
- * Navbar premium reconstruido con GSAP.
- */
+// Navbar premium reconstruido con GSAP.
 const Navbar = () => {
   const { isAuthenticated, isAdmin, logout } = useAuthStore();
   const { totalItems } = useCartStore();

@@ -1,12 +1,3 @@
-/**
- * MotionComponents.jsx
- * Componentes de animación reutilizables con GSAP.
- *
- * FIX BRAVE/CHROME: No ponemos style={{ opacity: 0 }} en el HTML inicial.
- * Usamos gsap.set() para ocultar + gsap.to() para revelar, con clearProps:'all'
- * para limpiar estilos inline tras la animación y prevenir elementos invisibles.
- */
-
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';

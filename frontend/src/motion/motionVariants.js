@@ -1,10 +1,3 @@
-/**
- * motionVariants.js
- * Sistema centralizado de variantes de animación para Framer Motion.
- * Todas las animaciones del proyecto deben importar sus variantes desde aquí
- * para mantener consistencia visual y facilitar el mantenimiento.
- */
-
 // ─── Constantes de Duración ────────────────────────────────────────
 // Duraciones estandarizadas entre 150ms y 400ms para mantener consistencia
 

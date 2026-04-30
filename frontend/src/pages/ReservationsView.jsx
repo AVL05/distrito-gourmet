@@ -1,15 +1,7 @@
-/**
- * @file ReservationsView.jsx
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Vista de gestión de reservas del cliente. Permite solicitar nuevas mesas y consultar el historial de reservas confirmadas, pendientes o canceladas.
- */
-
 import ReservationForm from '@/components/ReservationForm';
 import { useEffect, useState } from 'react';
 import axios from '@/services/api';
 import {
-  motion,
   AnimatePresence,
   useReducedMotion,
   PageTransition,
@@ -22,20 +14,14 @@ import {
 } from '@/motion';
 import { DURATION, EASING } from '@/motion';
 
-/**
- * @component ReservationsView
- * @description Gestiona las pestañas de 'Nueva Reserva' e 'Historial'. Orquestra la comunicación con la API para recuperar las reservas del usuario autenticado.
- */
+// Gestiona las pestañas de 'Nueva Reserva' e 'Historial'. Orquestra la comunicación con la API para recuperar las reservas del usuario autenticado.
 const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState('new');
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  /**
-   * @effect
-   * @description Carga las reservas del usuario cuando se activa la pestaña de historial.
-   */
+  // Carga las reservas del usuario cuando se activa la pestaña de historial.
   useEffect(() => {
     if (activeTab === 'history') {
       const fetchReservations = async () => {

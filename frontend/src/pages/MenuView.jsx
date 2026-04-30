@@ -1,10 +1,3 @@
-/**
- * @file MenuView.jsx
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Vista de la carta interactiva del restaurante. Permite filtrar por categorías (platos, bebidas, bodega, menús) y añadir productos al carrito mediante un estado global (Zustand).
- */
-
 import { useCartStore } from '@/store/cart';
 import { useState, useEffect } from 'react';
 import axios from '@/services/api';
@@ -19,10 +12,7 @@ import {
   MotionButton,
 } from '@/motion';
 
-/**
- * @component MenuView
- * @description Componente principal que gestiona el estado de la carta, recuperando datos del backend y formateándolos para su visualización categorizada.
- */
+// Componente principal que gestiona el estado de la carta, recuperando datos del backend y formateándolos para su visualización categorizada.
 const MenuView = () => {
   const { addItem } = useCartStore();
   const [activeCategory, setActiveCategory] = useState('carta');
@@ -297,10 +287,7 @@ const MenuView = () => {
   );
 };
 
-/**
- * @component SectionHeader
- * @description Cabecera visual para cada sección del menú con animaciones ScrollReveal.
- */
+// Cabecera visual para cada sección del menú con animaciones ScrollReveal.
 const SectionHeader = ({ index, label }) => (
   <ScrollReveal
     direction="up"
@@ -315,10 +302,7 @@ const SectionHeader = ({ index, label }) => (
   </ScrollReveal>
 );
 
-/**
- * @component DishRow
- * @description Fila individual para un plato de la carta con opción de compra.
- */
+// Fila individual para un plato de la carta con opción de compra.
 const DishRow = ({ item, addItem }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -358,10 +342,7 @@ const DishRow = ({ item, addItem }) => (
   </div>
 );
 
-/**
- * @component DisplayRow
- * @description Fila informativa para bebidas y artículos sin opción de carrito directa.
- */
+// Fila informativa para bebidas y artículos sin opción de carrito directa.
 const DisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -387,10 +368,7 @@ const DisplayRow = ({ item }) => (
   </div>
 );
 
-/**
- * @component WineDisplayRow
- * @description Representación visual para los vinos, mostrando precios por copa y botella.
- */
+// Representación visual para los vinos, mostrando precios por copa y botella.
 const WineDisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
@@ -423,11 +401,8 @@ const WineDisplayRow = ({ item }) => (
   </div>
 );
 
-/**
- * @component TastingMenuCard
- * @description Tarjeta informativa para menús degustación, listando los pasos incluidos.
- */
-const TastingMenuCard = ({ menu, index }) => (
+// Tarjeta informativa para menús degustación, listando los pasos incluidos.
+const TastingMenuCard = ({ menu }) => (
   <div className="border border-text-main/10 bg-bg-body relative overflow-hidden">
     {/* Línea decorativa superior */}
     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"></div>
@@ -479,10 +454,7 @@ const TastingMenuCard = ({ menu, index }) => (
   </div>
 );
 
-/**
- * @component EmptyState
- * @description Estado visual cuando una categoría de menú no tiene elementos disponibles.
- */
+// Estado visual cuando una categoría de menú no tiene elementos disponibles.
 const EmptyState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>

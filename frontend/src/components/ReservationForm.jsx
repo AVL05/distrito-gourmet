@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion, FadeIn, Toast } from '@/motion';
+import { AnimatePresence, useReducedMotion, FadeIn, Toast } from '@/motion';
 import { useAuthStore } from '@/store/auth';
 import axios from '@/services/api';
 import Swal from 'sweetalert2';

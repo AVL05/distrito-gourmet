@@ -258,7 +258,9 @@ const CartView = () => {
                       <method.icon size={28} />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-heading text-xl mb-1">{method.name}</h4>
+                      <h4 className={`font-heading text-xl mb-1 ${paymentMethod === method.id ? 'text-white' : ''}`}>
+                        {method.name}
+                      </h4>
                       <p
                         className={`text-[11px] uppercase tracking-wider opacity-60 font-medium ${paymentMethod === method.id ? 'text-white' : 'text-text-muted'}`}>
                         {method.desc}

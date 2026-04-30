@@ -1,21 +1,11 @@
-/**
- * @file AdminView.jsx
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Panel de administración central para la gestión integral del restaurante (pedidos, reservas, carta, bodega, usuarios).
- */
-
 import { useAuthStore } from '@/store/auth';
 import { useState, useEffect, useCallback } from 'react';
 import axios from '@/services/api';
 import Swal from 'sweetalert2';
-import { motion, AnimatePresence, useReducedMotion, FadeIn } from '@/motion';
+import { AnimatePresence, useReducedMotion, FadeIn } from '@/motion';
 import { DURATION, EASING } from '@/motion';
 
-/**
- * @component AdminView
- * @description Interfaz de administración con navegación por pestañas. Gestiona la lógica de CRUD para los principales recursos del sistema.
- */
+// Interfaz de administración con navegación por pestañas. Gestiona la lógica de CRUD para los principales recursos del sistema.
 const AdminView = () => {
   const { logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState('orders');
@@ -961,6 +951,7 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
       fetchData();
     } catch (err) {
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar' });
+      console.error(err.response?.data?.message || `Error al actualizar`);
     }
   };
 
@@ -1163,6 +1154,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
       fetchData();
     } catch (err) {
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar' });
+      console.error(err.response?.data?.message || `Error al actualizar`);
     }
   };
 
@@ -1312,6 +1304,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
       fetchData();
     } catch (err) {
       Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo actualizar' });
+      console.error('Error al actualizar la bebida:', err);
     }
   };
 

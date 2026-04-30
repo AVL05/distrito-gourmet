@@ -1,12 +1,3 @@
-/**
- * AdvancedComponents.jsx
- * Componentes avanzados de animación con GSAP + ScrollTrigger.
- *
- * FIX BRAVE/CHROMIUM: Eliminados todos los style={{ opacity: 0 }} del HTML.
- * Usamos gsap.from() con clearProps:'all' para garantizar visibilidad.
- * ScrollTrigger registrado aquí ya que este archivo inicia el plugin.
- */
-
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';

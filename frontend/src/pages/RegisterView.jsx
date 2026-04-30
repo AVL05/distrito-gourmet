@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../store/auth';
-import { motion, AnimatePresence, useReducedMotion, PageTransition, FadeIn, Toast } from '@/motion';
+import { useReducedMotion, PageTransition, FadeIn } from '@/motion';
 
 const RegisterView = () => {
   const [form, setForm] = useState({

@@ -1,10 +1,3 @@
-/**
- * @file HomeView.jsx
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Vista principal (Landing Page) del proyecto Distrito Gourmet. Implementa animaciones avanzadas de entrada y scroll mediante GSAP y Framer Motion.
- */
-
 import { Link } from 'react-router-dom';
 import {
   PageTransition,
@@ -18,21 +11,13 @@ import {
   ScrollProgress,
 } from '@/motion';
 
-/**
- * @component HomeView
- * @description Estructura la página de inicio en secciones visuales: Hero, Filosofía, Experiencia y Reserva.
- * Utiliza componentes de movimiento personalizados para lograr una estética premium.
- */
+// Estructura la página de inicio en secciones visuales: Hero, Filosofía, Experiencia y Reserva.
 const HomeView = () => {
   return (
     <PageTransition className="w-full">
       {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
       <ScrollProgress />
 
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO — Animación de texto split + parallax de fondo
-          Inspirado en Adachi (texto grande con reveal) y Lucky Folks (character split)
-          ═══════════════════════════════════════════════════════════════ */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
         {/* Imagen de fondo con filtro */}
         <div
@@ -99,10 +84,6 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          MARQUEE — Banda de texto horizontal infinito
-          Inspirado en Lucky Folks (texto diagonal que se mueve horizontalmente)
-          ═══════════════════════════════════════════════════════════════ */}
       <div className="overflow-hidden">
         <Marquee
           text="Cocina de Autor"
@@ -121,10 +102,6 @@ const HomeView = () => {
         />
       </div>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          FILOSOFÍA — ScrollReveal + ParallaxImage
-          Inspirado en Gucci Osteria (imagen con parallax en arco + texto fade)
-          ═══════════════════════════════════════════════════════════════ */}
       <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -136,8 +113,6 @@ const HomeView = () => {
               <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-8 font-body font-medium">
                 / 02 Identidad
               </span>
-
-              {/* Título con word reveal (estilo Adachi) */}
               <TextReveal
                 text="El Arte Contemporáneo"
                 splitBy="word"
@@ -163,7 +138,6 @@ const HomeView = () => {
               </Link>
             </ScrollReveal>
 
-            {/* Imagen con Parallax (estilo Gucci Osteria — arco con movimiento) */}
             <ScrollReveal
               direction="right"
               distance={80}
@@ -184,11 +158,6 @@ const HomeView = () => {
           </div>
         </div>
       </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          EXPERIENCIA — ScrollReveal staggered columns
-          Inspirado en Gucci Osteria (secciones que entran en viewport)
-          ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 md:py-32 bg-bg-body">
         <div className="container px-4">
           <ScrollReveal className="text-center mb-20">
@@ -250,10 +219,6 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          RESERVA — ScrollReveal + MagneticButton
-          Inspirado en la combinación de Gucci Osteria (elegancia) y Lucky Folks (interactividad)
-          ═══════════════════════════════════════════════════════════════ */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
         <div className="container px-4">
           <ScrollReveal className="max-w-4xl mx-auto text-center mb-16">
