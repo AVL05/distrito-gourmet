@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -19,7 +20,6 @@ const EASING = {
   back: 'back.out(1.7)',
 };
 
-/** Hook de compatibilidad (reemplaza useMotionProps de Framer Motion) */
 export const useMotionProps = _variants => ({});
 export const useReducedMotion = () => false;
 
