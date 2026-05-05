@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { useAuthStore } from '../store/auth';
-import { useReducedMotion, PageTransition, FadeIn } from '@/motion';
+import { useReducedMotion, PageTransition, FadeIn, AnimatePresence, Toast, motion } from '@/motion';
 
 const RegisterView = () => {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
@@ -37,6 +38,7 @@ const RegisterView = () => {
     const success = await register({
       name: form.name,
       email: form.email,
+      phone: form.phone,
       password: form.password,
     });
 
@@ -89,6 +91,21 @@ const RegisterView = () => {
               type="email"
               name="email"
               value={form.email}
+              onChange={handleChange}
+              required
+              placeholder=" "
+              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading"
+            />
+          </div>
+
+          <div className="relative group">
+            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
+              Teléfono de Contacto
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
               onChange={handleChange}
               required
               placeholder=" "

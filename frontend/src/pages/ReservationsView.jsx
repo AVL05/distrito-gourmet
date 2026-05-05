@@ -11,6 +11,7 @@ import {
   ScrollReveal,
   TextReveal,
   LineReveal,
+  motion,
 } from '@/motion';
 import { DURATION, EASING } from '@/motion';
 

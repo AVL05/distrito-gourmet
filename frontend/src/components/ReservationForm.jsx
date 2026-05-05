@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence, useReducedMotion, FadeIn, Toast } from '@/motion';
+import { AnimatePresence, useReducedMotion, FadeIn, Toast, motion } from '@/motion';
 import { useAuthStore } from '@/store/auth';
 import axios from '@/services/api';
 import Swal from 'sweetalert2';
@@ -13,7 +13,7 @@ const ReservationForm = ({ compact = false }) => {
   // Estado principal que guarda los datos introducidos en el formulario
   const [form, setForm] = useState({
     name: user?.name || '',
-    phone: '',
+    phone: user?.phone || '',
     people: '',
     date: '',
     time: '',
@@ -23,11 +23,13 @@ const ReservationForm = ({ compact = false }) => {
   // Estados para controlar si está cargando y si se envió con éxito
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [serverMessage, setServerMessage] = useState('');
   const shouldReduceMotion = useReducedMotion();
 
   // Horarios disponibles para reservar
   const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA');
+  const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 2)).toLocaleDateString('en-CA');
 
   // Enviar reserva (conexión real con API)
   const handleSubmit = async e => {
@@ -55,7 +57,7 @@ const ReservationForm = ({ compact = false }) => {
       // Unir fecha y hora para enviarlo correctamente a la base de datos
       const reservationTime = `${form.date}T${form.time}:00`;
 
-      await axios.post('/reservations', {
+      const response = await axios.post('/reservations', {
         reservation_time: reservationTime,
         people: parseInt(form.people),
         special_requests: form.comments,
@@ -63,6 +65,7 @@ const ReservationForm = ({ compact = false }) => {
       });
 
       // Mostrar mensaje de confirmación y vaciar el formulario
+      setServerMessage(response.data.message);
       setSuccess(true);
       setForm(prev => ({
         ...prev,
@@ -167,9 +170,14 @@ const ReservationForm = ({ compact = false }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-8">
           <div className="relative group">
             {/* Campo: Fecha para la reserva */}
-            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
-              Fecha de la Experiencia
-            </label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="text-[12px] uppercase tracking-[2px] text-primary transition-colors group-focus-within:text-primary font-bold mb-0">
+                Fecha de la Experiencia
+              </label>
+              <span className="text-[9px] uppercase tracking-[2px] text-text-muted/60 italic">
+                Agenda abierta a 2 meses
+              </span>
+            </div>
             <input
               type="date"
               name="date"
@@ -177,7 +185,8 @@ const ReservationForm = ({ compact = false }) => {
               onChange={handleChange}
               required
               min={today}
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [color-scheme:dark] text-lg font-light cursor-pointer"
+              max={maxDate}
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-light cursor-pointer"
             />
           </div>
           <div className="relative group">
@@ -238,10 +247,12 @@ const ReservationForm = ({ compact = false }) => {
             <Toast className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-2xl">
               <span className="text-primary text-2xl mb-2">✦</span>
               <p className="text-gray-900 font-light tracking-wide leading-relaxed">
-                Su petición de reserva ha sido recibida con éxito.
+                {serverMessage || 'Su petición de reserva ha sido recibida con éxito.'}
                 <br />
-                <span className="text-gray-500 text-sm mt-2 block">
-                  Nuestro equipo de recepción le contactará en breve para confirmar la disponibilidad.
+                <span className="text-gray-500 text-sm mt-2 block italic opacity-70">
+                  {serverMessage.includes('PENDIENTE')
+                    ? 'Nuestro equipo revisará la capacidad y le notificará por email.'
+                    : 'Le esperamos para brindarle una experiencia inolvidable.'}
                 </span>
               </p>
             </Toast>

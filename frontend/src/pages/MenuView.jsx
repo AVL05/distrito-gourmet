@@ -50,6 +50,8 @@ const MenuView = () => {
           image: d.image,
           allergens: d.allergens,
           isSignature: !!d.is_signature,
+          max_per_order: d.max_per_order,
+          isPerUnit: !!d.is_per_unit,
         }));
 
         // Formatear vinos
@@ -62,6 +64,7 @@ const MenuView = () => {
           priceGlass: w.price_glass ? parseFloat(w.price_glass) : null,
           wineType: w.type,
           image: w.image,
+          max_per_order: w.max_per_order,
         }));
 
         // Formatear bebidas
@@ -309,10 +312,10 @@ const DishRow = ({ item, addItem }) => (
       <div className="flex-grow">
         <div className="flex items-baseline gap-4 mb-2">
           <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
-            {item.name} {item.isSignature && <span className="text-primary text-xl ml-2 drop-shadow-glow">✦</span>}
+            {item.name}
           </h3>
           <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
-            {item.price.toFixed(2)}€
+            {item.price.toFixed(2)}€{!!item.isPerUnit && ' / UD.'}
           </span>
         </div>
         <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80 mb-2">
@@ -330,7 +333,7 @@ const DishRow = ({ item, addItem }) => (
 
     <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center shrink-0 w-full md:w-auto mt-4 md:mt-0">
       <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest mb-4">
-        {item.price.toFixed(2)}€
+        {item.price.toFixed(2)}€{!!item.isPerUnit && <span className="text-[12px] ml-1 opacity-60">/ UD.</span>}
       </span>
       <MotionButton
         onClick={() => addItem(item)}

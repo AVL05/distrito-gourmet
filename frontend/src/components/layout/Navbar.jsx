@@ -233,12 +233,6 @@ const Navbar = () => {
                       className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors">
                       Área Personal
                     </NavLink>
-                    <NavLink
-                      to="/profile"
-                      onClick={closeMenu}
-                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors">
-                      Perfil
-                    </NavLink>
                     <button
                       onClick={() => {
                         handleLogout();

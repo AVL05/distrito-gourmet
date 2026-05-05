@@ -29,7 +29,9 @@ export const useAuthStore = create((set, get) => ({
       return true;
     } catch (err) {
       set({
-        error: err.response?.data?.message || err.response?.data?.email?.[0] || 'Error al iniciar sesion',
+        error: err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat()[0]
+          : err.response?.data?.message || 'Error al iniciar sesión',
         loading: false,
       });
       return false;
@@ -50,7 +52,9 @@ export const useAuthStore = create((set, get) => ({
       return true;
     } catch (err) {
       set({
-        error: err.response?.data?.message || 'Error al registrarse',
+        error: err.response?.data?.errors
+          ? Object.values(err.response.data.errors).flat()[0]
+          : err.response?.data?.message || 'Error al registrarse',
         loading: false,
       });
       return false;

@@ -28,6 +28,8 @@ const OrderItem = ({ order }) => {
         return 'text-green-500 bg-green-500/10 border-green-500/20';
       case 'delivered':
         return 'text-primary bg-primary/10 border-primary/20';
+      case 'cancelled':
+        return 'text-red-500 bg-red-500/10 border-red-500/20';
       default:
         return 'text-text-muted bg-text-muted/10 border-text-main/10';
     }
@@ -43,6 +45,8 @@ const OrderItem = ({ order }) => {
         return 'Listo para Recogida';
       case 'delivered':
         return 'Recogido';
+      case 'cancelled':
+        return 'Cancelado';
       default:
         return status;
     }
@@ -198,7 +202,9 @@ const DashboardView = () => {
               <br />
               <span className="italic text-primary-hover font-light">{user?.name || 'Huésped'}</span>
             </h1>
-            <p className="text-text-muted font-light mt-4 tracking-wide text-sm">{user?.email}</p>
+            <p className="text-text-muted font-light mt-4 tracking-wide text-sm">
+              {user?.email} {user?.phone && ` | ${user.phone}`}
+            </p>
           </div>
           <button
             onClick={logout}

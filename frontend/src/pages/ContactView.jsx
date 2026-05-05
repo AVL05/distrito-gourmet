@@ -8,6 +8,7 @@ import {
   ScrollReveal,
   TextReveal,
   LineReveal,
+  motion,
 } from '@/motion';
 
 const ContactView = () => {

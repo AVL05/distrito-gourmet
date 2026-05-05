@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import Swal from 'sweetalert2';
 
 // Store del carrito de compras usando Zustand
 export const useCartStore = create((set, get) => ({
@@ -18,6 +19,20 @@ export const useCartStore = create((set, get) => ({
       let newItems;
 
       if (existingItem) {
+        // Comprobar límite máximo si existe
+        if (existingItem.max_per_order && existingItem.quantity >= existingItem.max_per_order) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'warning',
+            title: `Límite alcanzado: máx. ${existingItem.max_per_order} por pedido`,
+            showConfirmButton: false,
+            timer: 3000,
+            background: '#fdfaf6',
+            color: '#2c302e',
+          });
+          return { items: state.items };
+        }
         // Si el producto ya está, incrementar cantidad
         newItems = state.items.map(item => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
       } else {
@@ -43,6 +58,20 @@ export const useCartStore = create((set, get) => ({
       const newItems = state.items
         .map(item => {
           if (item.id === productId) {
+            // Comprobar límite máximo si delta es positivo
+            if (delta > 0 && item.max_per_order && item.quantity >= item.max_per_order) {
+              Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: `Límite alcanzado: máx. ${item.max_per_order} por pedido`,
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#fdfaf6',
+                color: '#2c302e',
+              });
+              return item;
+            }
             const newQuantity = Math.max(0, item.quantity + delta);
             return { ...item, quantity: newQuantity };
           }

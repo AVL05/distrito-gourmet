@@ -15,6 +15,28 @@ const CartView = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState('cart'); // 'cart' or 'checkout'
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [pickupTime, setPickupTime] = useState('');
+
+  const pickupOptions = [
+    { label: '13:00 (Comida)', value: '13:00' },
+    { label: '14:00 (Comida)', value: '14:00' },
+    { label: '20:00 (Cena)', value: '20:00' },
+    { label: '21:00 (Cena)', value: '21:00' },
+  ];
+
+  const isTimePassed = timeStr => {
+    const now = new Date();
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const target = new Date();
+    target.setHours(hours, minutes, 0, 0);
+    return now > target;
+  };
+
+  // Seleccionar automáticamente la primera hora disponible
+  useState(() => {
+    const firstAvailable = pickupOptions.find(opt => !isTimePassed(opt.value));
+    if (firstAvailable) setPickupTime(firstAvailable.value);
+  }, []);
 
   const cartItems = useCartStore(state => state.items);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -39,7 +61,7 @@ const CartView = () => {
   const handleCheckout = async () => {
     setIsProcessing(true);
     try {
-      const response = await axios.post('/orders', {
+      await axios.post('/orders', {
         items: cartItems.map(item => ({
           db_id: item.id.toString().startsWith('w') ? parseInt(item.id.replace('w', '')) : parseInt(item.id),
           item_type: item.item_type || 'dish',
@@ -49,11 +71,11 @@ const CartView = () => {
         })),
         total: total,
         payment_method: paymentMethod,
+        pickup_time: pickupTime,
       });
 
-      const { order } = response.data;
-      const pickupDate = new Date(order.pickup_time);
-      const timeString = pickupDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      // Usamos directamente el pickupTime seleccionado para evitar desfases de zona horaria en la confirmación
+      const timeString = pickupTime;
 
       clearCart();
       Swal.fire({
@@ -148,7 +170,7 @@ const CartView = () => {
                       <div className="text-left">
                         <h3 className="font-heading text-3xl text-text-main mb-2 leading-tight">{item.name}</h3>
                         <p className="text-text-muted font-body font-light text-[13px] tracking-widest uppercase">
-                          {item.price.toFixed(2)}€ / Ud.
+                          {item.price.toFixed(2)}€{item.isPerUnit && ' / Ud.'}
                         </p>
                       </div>
                     </div>
@@ -281,6 +303,22 @@ const CartView = () => {
                   Finalización
                 </h3>
                 <div className="space-y-4 mb-10 text-[14px]">
+                  <div className="mb-6">
+                    <label className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-3 font-bold">
+                      Hora de Recogida
+                    </label>
+                    <select
+                      value={pickupTime}
+                      onChange={e => setPickupTime(e.target.value)}
+                      className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-none focus:border-primary transition-colors font-body text-sm cursor-pointer">
+                      {pickupOptions.map(opt => (
+                        <option key={opt.value} value={opt.value} disabled={isTimePassed(opt.value)}>
+                          {opt.label} {isTimePassed(opt.value) ? '(No disponible)' : ''}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <div className="flex justify-between text-text-muted">
                     <span>Subtotal Pedido</span>
                     <span>{total.toFixed(2)}€</span>

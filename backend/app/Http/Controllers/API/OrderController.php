@@ -58,11 +58,21 @@ class OrderController extends Controller
             'items.*.name' => 'required|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.price' => 'required|numeric',
+            'pickup_time' => 'nullable|string',
         ]);
 
         return DB::transaction(function () use ($request) {
-            // Calcular hora de recogida (+45 minutos)
+            // Calcular hora de recogida
             $pickupTime = now()->addMinutes(45);
+
+            if ($request->has('pickup_time') && !empty($request->pickup_time)) {
+                try {
+                    // Nos aseguramos de que sea la fecha de hoy con la hora solicitada
+                    $pickupTime = \Carbon\Carbon::today()->setTimeFromTimeString($request->input('pickup_time'));
+                } catch (\Exception $e) {
+                    $pickupTime = now()->addMinutes(45);
+                }
+            }
 
             // Crear el pedido principal
             $order = \App\Models\Order::create([

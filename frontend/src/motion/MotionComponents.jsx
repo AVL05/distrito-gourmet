@@ -249,35 +249,40 @@ export const MotionButton = ({ children, className = '', onClick, type = 'button
 export const AnimatePresence = ({ children }) => <>{children}</>;
 
 /** Proxy de compatibilidad para <motion.tag> */
+const componentCache = {};
+
 const motionProxy = new Proxy(
   {},
   {
     get: (target, prop) => {
-      return ({ children, ...props }) => {
-        // Filtramos props de Framer Motion que no son válidas en el DOM
-        const validProps = { ...props };
-        [
-          'initial',
-          'animate',
-          'exit',
-          'variants',
-          'transition',
-          'whileHover',
-          'whileTap',
-          'layout',
-          'viewport',
-          'drag',
-          'dragConstraints',
-          'dragElastic',
-          'dragMomentum',
-          'onAnimationStart',
-          'onAnimationComplete',
-          'onUpdate',
-        ].forEach(key => delete validProps[key]);
+      if (!componentCache[prop]) {
+        componentCache[prop] = ({ children, ...props }) => {
+          // Filtramos props de Framer Motion que no son válidas en el DOM
+          const validProps = { ...props };
+          [
+            'initial',
+            'animate',
+            'exit',
+            'variants',
+            'transition',
+            'whileHover',
+            'whileTap',
+            'layout',
+            'viewport',
+            'drag',
+            'dragConstraints',
+            'dragElastic',
+            'dragMomentum',
+            'onAnimationStart',
+            'onAnimationComplete',
+            'onUpdate',
+          ].forEach(key => delete validProps[key]);
 
-        const Component = prop;
-        return <Component {...validProps}>{children}</Component>;
-      };
+          const Component = prop;
+          return <Component {...validProps}>{children}</Component>;
+        };
+      }
+      return componentCache[prop];
     },
   }
 );

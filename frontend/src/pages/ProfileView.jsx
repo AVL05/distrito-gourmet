@@ -2,13 +2,14 @@ import { useAuthStore } from '@/store/auth';
 import { useState } from 'react';
 import axios from '@/services/api';
 import Swal from 'sweetalert2';
-import { useReducedMotion, PageTransition, FadeIn } from '@/motion';
+import { useReducedMotion, PageTransition, FadeIn, motion } from '@/motion';
 
 const ProfileView = () => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    phone: user?.phone || '',
     password: '',
   });
   const shouldReduceMotion = useReducedMotion();
@@ -81,6 +82,18 @@ const ProfileView = () => {
               value={formData.email}
               onChange={e => setFormData({ ...formData, email: e.target.value })}
               required
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+            />
+          </div>
+
+          <div className="relative group">
+            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+              Teléfono de Contacto
+            </label>
+            <input
+              type="tel"
+              value={formData.phone}
+              onChange={e => setFormData({ ...formData, phone: e.target.value })}
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
             />
           </div>
