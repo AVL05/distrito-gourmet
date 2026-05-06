@@ -37,55 +37,61 @@ const MenuView = () => {
     const fetchMenu = async () => {
       try {
         const response = await axios.get('/dishes');
-        const { dishes, wines, beverages, tasting_menus } = response.data;
+        const { platos, vinos, bebidas, menus_degustacion } = response.data;
 
         // Formatear platos
-        const formattedDishes = dishes.map(d => ({
-          id: d.id,
-          item_type: 'dish',
-          name: d.name,
-          description: d.description,
-          price: parseFloat(d.price),
-          category: d.category ? d.category.name.toLowerCase() : 'otros',
-          image: d.image,
-          allergens: d.allergens,
-          isSignature: !!d.is_signature,
-          max_per_order: d.max_per_order,
-          isPerUnit: !!d.is_per_unit,
-        }));
+        const formattedDishes = (platos || [])
+          .filter(d => !!d.disponible && !!d.visible_en_carta)
+          .map(d => ({
+            id: d.id,
+            item_type: 'plato',
+            name: d.nombre,
+            description: d.descripcion,
+            price: parseFloat(d.precio),
+            category: d.categoria ? d.categoria.nombre.toLowerCase() : 'otros',
+            image: d.imagen,
+            allergens: d.alergenos,
+            max_per_order: d.maximo_por_pedido,
+            isPerUnit: !!d.es_por_unidad,
+          }));
 
         // Formatear vinos
-        const formattedWines = wines.map(w => ({
+        const formattedWines = (vinos || []).map(w => ({
           id: `w${w.id}`,
-          item_type: 'wine',
-          name: w.name,
-          description: w.pairing_notes || '',
-          price: parseFloat(w.price_bottle),
-          priceGlass: w.price_glass ? parseFloat(w.price_glass) : null,
-          wineType: w.type,
-          image: w.image,
-          max_per_order: w.max_per_order,
+          item_type: 'vino',
+          name: w.nombre,
+          description: w.notas_maridaje || '',
+          price: parseFloat(w.precio_botella),
+          priceGlass: w.precio_copa ? parseFloat(w.precio_copa) : null,
+          wineType: w.tipo,
+          image: w.imagen,
+          max_per_order: w.maximo_por_pedido,
         }));
 
         // Formatear bebidas
-        const formattedBeverages = beverages.map(b => ({
+        const formattedBeverages = (bebidas || []).map(b => ({
           id: `b${b.id}`,
-          item_type: 'beverage',
-          name: b.name,
-          description: b.description || '',
-          price: parseFloat(b.price),
-          beverageType: b.type,
+          item_type: 'bebida',
+          name: b.nombre,
+          description: b.descripcion || '',
+          price: parseFloat(b.precio),
+          beverageType: b.tipo,
         }));
 
         // Formatear menús degustación
-        const formattedMenus = (tasting_menus || []).map(m => ({
+        const formattedMenus = (menus_degustacion || []).map(m => ({
           id: `m${m.id}`,
-          item_type: 'tasting_menu',
-          name: m.name,
-          description: m.description || '',
-          price: parseFloat(m.price),
-          courses: m.courses,
-          dishes: m.dishes || [],
+          item_type: 'menu_degustacion',
+          name: m.nombre,
+          description: m.descripcion || '',
+          price: parseFloat(m.precio),
+          courses: m.pasos,
+          duration: m.duracion_estimada_minutos,
+          isVegetarian: !!m.alternativa_vegetariana,
+          isSeasonal: !!m.menu_de_temporada,
+          pairing_available: !!m.precio_maridaje,
+          pairing_price: m.precio_maridaje ? parseFloat(m.precio_maridaje) : 0,
+          dishes: m.platos || [],
         }));
 
         setMenuData({
@@ -307,39 +313,42 @@ const SectionHeader = ({ index, label }) => (
 
 // Fila individual para un plato de la carta con opción de compra.
 const DishRow = ({ item, addItem }) => (
-  <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
-    <div className="flex items-center gap-8 w-full md:w-3/4">
+  <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
+    <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
       <div className="flex-grow">
-        <div className="flex items-baseline gap-4 mb-2">
-          <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€{!!item.isPerUnit && ' / UD.'}
           </span>
         </div>
-        <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80 mb-2">
-          {item.description}
-        </p>
-        <div className="flex flex-wrap gap-4">
+        {item.description && (
+          <p className="text-text-main text-sm md:text-base font-body font-medium max-w-2xl leading-relaxed italic opacity-80 mb-3">
+            {item.description}
+          </p>
+        )}
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
           {item.allergens && (
             <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
               Alérgenos: {item.allergens}
             </span>
           )}
+
         </div>
       </div>
     </div>
 
-    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center shrink-0 w-full md:w-auto mt-4 md:mt-0">
+    <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center shrink-0 w-full md:w-auto mt-2 md:mt-0">
       <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest mb-4">
         {item.price.toFixed(2)}€{!!item.isPerUnit && <span className="text-[12px] ml-1 opacity-60">/ UD.</span>}
       </span>
       <MotionButton
         onClick={() => addItem(item)}
-        className="w-full md:w-auto relative px-10 py-3 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
+        className="w-full md:w-auto relative px-8 py-3 bg-transparent border border-text-main/30 text-text-main font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out hover:w-full z-0"></div>
-        <span className="relative z-10 font-bold transition-colors duration-300">Añadir</span>
+        <span className="relative z-10 font-bold transition-colors duration-300">Añadir al Carrito</span>
       </MotionButton>
     </div>
   </div>
@@ -413,9 +422,21 @@ const TastingMenuCard = ({ menu }) => (
     <div className="p-8 sm:p-12 md:p-16">
       {/* Cabecera del menú */}
       <div className="text-center mb-12 sm:mb-16">
-        <span className="text-primary text-[11px] tracking-[4px] font-body font-bold uppercase mb-4 block">
-          {menu.courses} Tiempos
-        </span>
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <span className="text-primary text-[11px] tracking-[4px] font-body font-bold uppercase">
+            {menu.courses} Tiempos
+          </span>
+          {menu.isSeasonal && (
+            <span className="text-text-muted text-[9px] tracking-[2px] border border-text-main/20 px-2 py-0.5 uppercase">
+              Temporada
+            </span>
+          )}
+          {menu.isVegetarian && (
+            <span className="text-green-800/60 text-[9px] tracking-[2px] border border-green-800/20 px-2 py-0.5 uppercase">
+              Veggie OK
+            </span>
+          )}
+        </div>
         <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main mb-6 leading-tight">
           <span className="italic">{menu.name.split(' ')[0]}</span> {menu.name.split(' ').slice(1).join(' ')}
         </h2>
@@ -423,6 +444,11 @@ const TastingMenuCard = ({ menu }) => (
         <p className="text-text-muted font-light leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
           {menu.description}
         </p>
+        {menu.duration && (
+          <span className="block text-text-muted/40 text-[10px] tracking-[3px] uppercase mt-6">
+            Duración estimada: {menu.duration} min.
+          </span>
+        )}
       </div>
 
       {/* Lista de platos del menú */}
@@ -432,7 +458,7 @@ const TastingMenuCard = ({ menu }) => (
             key={`${menu.id}-${dish.id}-${i}`}
             className="flex items-baseline gap-4 py-4 border-b border-text-main/5 last:border-0">
             <span className="text-primary text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
-              {String(dish.pivot?.course_number || i + 1).padStart(2, '0')}
+              {String(dish.pivot?.numero_paso || i + 1).padStart(2, '0')}
             </span>
             <div className="flex-grow">
               <span className="font-heading text-xl sm:text-2xl text-text-main">{dish.name}</span>
@@ -442,14 +468,23 @@ const TastingMenuCard = ({ menu }) => (
         ))}
       </div>
 
-      {/* Precio del menú */}
-      <div className="text-center">
-        <span className="font-heading text-4xl sm:text-5xl text-text-main">{menu.price.toFixed(0)}€</span>
-        <span className="block text-text-muted text-[11px] tracking-[2px] font-body mt-1 uppercase">por persona</span>
-        <p className="text-text-muted/60 text-[11px] tracking-[1px] font-body mt-4 uppercase">
-          Disponible exclusivamente en sala
-        </p>
+      {/* Precio del menú y maridaje opcional */}
+      <div className="text-center flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 border-t border-text-main/10 pt-12">
+        <div className="text-center">
+          <span className="font-heading text-4xl sm:text-5xl text-text-main">{menu.price.toFixed(0)}€</span>
+          <span className="block text-text-muted text-[11px] tracking-[2px] font-body mt-1 uppercase">por persona</span>
+        </div>
+
+        {menu.pairing_available && (
+          <div className="text-center border-l border-text-main/10 pl-8 sm:pl-16">
+            <span className="font-heading text-4xl sm:text-5xl text-primary">{menu.pairing_price.toFixed(0)}€</span>
+            <span className="block text-primary text-[11px] tracking-[2px] font-body mt-1 uppercase font-bold">Maridaje sugerido</span>
+          </div>
+        )}
       </div>
+      <p className="text-text-muted/60 text-[11px] tracking-[1px] font-body mt-4 uppercase text-center">
+        Disponible exclusivamente en sala
+      </p>
     </div>
 
     {/* Línea decorativa inferior */}

@@ -4,6 +4,7 @@ import axios from '@/services/api';
 import Swal from 'sweetalert2';
 import { AnimatePresence, useReducedMotion, FadeIn, motion } from '@/motion';
 import { DURATION, EASING } from '@/motion';
+import { HiTrash } from 'react-icons/hi';
 
 // Interfaz de administración con navegación por pestañas. Gestiona la lógica de CRUD para los principales recursos del sistema.
 const AdminView = () => {
@@ -51,25 +52,57 @@ const AdminView = () => {
 
   // Estados de formularios para añadir nuevos elementos
   const [newDish, setNewDish] = useState({
-    name: '',
-    description: '',
-    price: '',
-    menu_category_id: '',
-    image: '',
-    allergens: '',
-    is_signature: false,
-    available: true,
+    nombre: '',
+    descripcion: '',
+    precio: '',
+    categoria_menu_id: '',
+    imagen: '',
+    alergenos: '',
+    disponible: true,
+    visible_en_carta: true,
+    visible_en_degustacion: true,
+    disponible_para_llevar: true,
+    es_por_unidad: false,
+    maximo_por_pedido: '',
   });
   const [newWine, setNewWine] = useState({
-    name: '',
-    winery: '',
-    type: 'Red',
-    price_bottle: '',
-    vintage: '',
-    pairing_notes: '',
+    nombre: '',
+    bodega: '',
+    añada: '',
+    pais: 'España',
+    region: '',
+    uva: '',
+    tipo: 'Tinto',
+    notas_maridaje: '',
+    descripcion: '',
+    porcentaje_alcohol: '',
+    temperatura_servicio: '',
+    precio_botella: '',
+    precio_copa: '',
+    disponible: true,
+    destacado: false,
+    maximo_por_pedido: '',
   });
-  const [newBeverage, setNewBeverage] = useState({ name: '', type: 'agua', price: '', description: '' });
-  const [newTastingMenu, setNewTastingMenu] = useState({ name: '', description: '', price: '', courses: 1 });
+  const [newBeverage, setNewBeverage] = useState({
+    nombre: '',
+    tipo: 'agua',
+    precio: '',
+    descripcion: '',
+    imagen: '',
+    disponible: true,
+    destacado: false
+  });
+  const [newTastingMenu, setNewTastingMenu] = useState({
+    nombre: '',
+    descripcion: '',
+    precio: '',
+    precio_maridaje: '',
+    pasos: 1,
+    duracion_estimada_minutos: 60,
+    alternativa_vegetariana: false,
+    menu_de_temporada: false,
+    maridaje_disponible: false
+  });
 
   // Handlers genéricos para añadir elementos
   const handleAddItem = async (endpoint, itemData, resetState, successMsg) => {
@@ -141,9 +174,15 @@ const AdminView = () => {
         setData(d => ({ ...d, reservations: res.data }));
       } else if (activeSection === 'menu') {
         const res = await axios.get('/dishes');
-        setData(d => ({ ...d, menu: res.data.dishes || [], categories: res.data.categories || [] }));
-        if (res.data.categories?.length > 0 && !newDish.menu_category_id) {
-          setNewDish(prev => ({ ...prev, menu_category_id: res.data.categories[0].id }));
+        const sortedDishes = (res.data.platos || []).sort((a, b) => {
+          const order = { 'entrantes': 1, 'principales': 2, 'postres': 3 };
+          const orderA = order[a.categoria?.nombre.toLowerCase()] || 99;
+          const orderB = order[b.categoria?.nombre.toLowerCase()] || 99;
+          return orderA - orderB;
+        });
+        setData(d => ({ ...d, menu: sortedDishes, categories: res.data.categorias || [] }));
+        if (res.data.categorias?.length > 0 && !newDish.categoria_menu_id) {
+          setNewDish(prev => ({ ...prev, categoria_menu_id: res.data.categorias[0].id }));
         }
       } else if (activeSection === 'wines') {
         const res = await axios.get('/admin/wines');
@@ -153,10 +192,16 @@ const AdminView = () => {
         setData(d => ({ ...d, beverages: res.data }));
       } else if (activeSection === 'tasting_menus') {
         const [menusRes, dishesRes] = await Promise.all([axios.get('/admin/tasting-menus'), axios.get('/dishes')]);
+        const sortedDishes = (dishesRes.data.platos || []).sort((a, b) => {
+          const order = { 'entrantes': 1, 'principales': 2, 'postres': 3 };
+          const orderA = order[a.categoria?.nombre.toLowerCase()] || 99;
+          const orderB = order[b.categoria?.nombre.toLowerCase()] || 99;
+          return orderA - orderB;
+        });
         setData(d => ({
           ...d,
           tasting_menus: menusRes.data,
-          menu: dishesRes.data.dishes || [],
+          menu: sortedDishes,
         }));
       } else if (activeSection === 'users') {
         const res = await axios.get('/admin/users');
@@ -174,7 +219,7 @@ const AdminView = () => {
     } finally {
       setLoading(false);
     }
-  }, [activeSection, newDish.menu_category_id]);
+  }, [activeSection, newDish.categoria_menu_id]);
 
   // Recargar datos cuando cambia la sección activa
   useEffect(() => {
@@ -206,48 +251,43 @@ const AdminView = () => {
     if (loading) return <div className="text-text-muted animate-pulse">Cargando datos del servidor...</div>;
 
     if (activeSection === 'orders') {
-      const activeOrders = data.orders.filter(o => !['delivered', 'cancelled'].includes(o.status));
-      const finishedOrders = data.orders.filter(o => ['delivered', 'cancelled'].includes(o.status));
+      const activeOrders = data.orders.filter(o => !['Entregado', 'Cancelado'].includes(o.estado));
+      const finishedOrders = data.orders.filter(o => ['Entregado', 'Cancelado'].includes(o.estado));
 
       const renderOrderCard = order => (
         <div
           key={order.id}
           className={`bg-bg-surface/90 border p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden ${
-            order.status === 'received'
+            order.estado === 'Pendiente'
               ? 'border-primary/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]'
-              : order.status === 'cancelled'
+              : order.estado === 'cancelled'
                 ? 'border-red-500/20 opacity-60 grayscale-[0.5]'
                 : 'border-text-main/5 hover:border-text-main/20'
           }`}>
           <div className="mb-4">
             <div className="flex justify-between items-start mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-primary text-[9px] uppercase tracking-[3px] font-bold">Pedido #{order.id}</span>
-                {order.pickup_time && (
-                  <span className="bg-primary/10 text-primary text-[9px] px-2 py-0.5 rounded-full font-bold">
-                    RECOGIDA: {new Date(order.pickup_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                )}
+              <div className="flex flex-col">
+                <span className="text-primary text-[9px] uppercase tracking-[3px] font-bold">#{order.numero_pedido || order.id}</span>
               </div>
               <div
                 className={`w-2 h-2 rounded-full ${
-                  order.status === 'received'
+                  order.estado === 'Pendiente'
                     ? 'bg-blue-500 animate-pulse'
-                    : order.status === 'preparing'
+                    : order.estado === 'Preparando'
                       ? 'bg-amber-500'
-                      : order.status === 'ready'
+                      : order.estado === 'Listo'
                         ? 'bg-green-500'
-                        : order.status === 'cancelled'
+                        : order.estado === 'Cancelado'
                           ? 'bg-red-500'
                           : 'bg-text-muted/30'
                 }`}></div>
             </div>
-            <p className="text-text-main font-heading text-lg mb-1">{order.user?.name || `ID: ${order.user_id}`}</p>
+            <p className="text-text-main font-heading text-lg mb-1">{order.usuario?.nombre || `ID: ${order.usuario_id}`}</p>
             <p className="text-text-muted text-[11px] mb-4 opacity-70">Total: {parseFloat(order.total).toFixed(2)}€</p>
 
             <div className="bg-black/5 p-3 rounded-sm border border-text-main/5">
               <p className="text-text-main text-[11px] font-light leading-relaxed italic opacity-80">
-                {order.items?.map(i => `${i.quantity}x ${i.item_name}`).join(', ')}
+                {order.detalles?.map(i => `${i.cantidad}x ${i.plato?.nombre || i.vino?.nombre || 'Producto'}`).join(', ')}
               </p>
             </div>
           </div>
@@ -255,14 +295,14 @@ const AdminView = () => {
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-text-main/5">
             <span className="text-[10px] uppercase tracking-widest text-text-muted">Logística</span>
             <select
-              value={order.status}
+              value={order.estado}
               onChange={e => handleUpdateOrderStatus(order.id, e.target.value)}
               className="bg-bg-surface border border-text-main/10 text-text-main rounded p-1.5 pr-8 text-[11px] uppercase tracking-widest outline-none">
-              <option value="received">Recibido</option>
-              <option value="preparing">Preparando</option>
-              <option value="ready">Listo para Recogida</option>
-              <option value="delivered">Entregado</option>
-              <option value="cancelled">Cancelado</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Preparando">Preparando</option>
+              <option value="Listo">Listo</option>
+              <option value="Entregado">Entregado</option>
+              <option value="Cancelado">Cancelado</option>
             </select>
           </div>
         </div>
@@ -303,58 +343,56 @@ const AdminView = () => {
     }
 
     if (activeSection === 'reservations') {
-      const pending = data.reservations.filter(r => r.status === 'pending');
-      const confirmed = data.reservations.filter(r => r.status === 'confirmed');
-      const cancelled = data.reservations.filter(r => r.status === 'cancelled');
+      const pending = data.reservations.filter(r => r.estado === 'Pendiente');
+      const confirmed = data.reservations.filter(r => r.estado === 'Confirmada');
+      const cancelled = data.reservations.filter(r => r.estado === 'Cancelada');
 
       const renderCard = res => (
         <div
           key={res.id}
           className={`bg-bg-surface/90 border p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden ${
-            res.status === 'pending'
+            res.estado === 'Pendiente'
               ? 'border-primary/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]'
               : 'border-text-main/5 hover:border-text-main/20'
           }`}>
-          {res.status === 'pending' && (
+          {res.estado === 'Pendiente' && (
             <div className="absolute top-0 right-0 w-16 h-16 bg-primary/5 rounded-full blur-xl -mr-8 -mt-8"></div>
           )}
 
           <div className="mb-4">
             <div className="flex justify-between items-start mb-2">
-              <span className="text-primary text-[9px] uppercase tracking-[3px] font-bold">Reserva #{res.id}</span>
+              <span className="text-primary text-[9px] uppercase tracking-[3px] font-bold">Reserva #{res.codigo_reserva || res.id}</span>
               <div
                 className={`w-2 h-2 rounded-full ${
-                  res.status === 'pending' ? 'bg-primary animate-pulse' : res.status === 'confirmed' ? 'bg-green-500' : 'bg-red-500'
+                  res.estado === 'Pendiente' ? 'bg-primary animate-pulse' : res.estado === 'Confirmada' ? 'bg-green-500' : 'bg-red-500'
                 }`}></div>
             </div>
-            <p className="text-text-main font-heading text-lg mb-1">{res.user?.name || `ID: ${res.user_id}`}</p>
+            <p className="text-text-main font-heading text-lg mb-1">{res.usuario?.nombre || `ID: ${res.usuario_id}`}</p>
             <p className="text-text-muted text-[11px] mb-4 opacity-70">
-              Registrado: {new Date(res.created_at).toLocaleDateString()}
+              Registrado: {new Date(res.creado_a).toLocaleDateString()}
             </p>
 
             <div className="space-y-2 bg-black/5 p-3 rounded-sm border border-text-main/5">
               <div className="flex items-center gap-3">
                 <span className="text-text-main text-xs font-bold uppercase tracking-widest opacity-40">FECHA:</span>
                 <span className="text-text-main text-sm font-light">
-                  {new Date(res.reservation_time).toLocaleString('es-ES', {
+                  {new Date(res.fecha_reserva + 'T00:00:00').toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: 'long',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
+                  })} - {res.hora_reserva ? res.hora_reserva.slice(0, 5) : ''}
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-text-main text-xs font-bold uppercase tracking-widest opacity-40">COMENSALES:</span>
-                <span className="text-text-main text-sm font-light">{res.people} comensales</span>
+                <span className="text-text-main text-sm font-light">{res.comensales} comensales</span>
               </div>
               <div className="flex items-center gap-3 mt-2 pt-2 border-t border-text-main/5">
                 <span className="text-primary text-[10px] font-bold uppercase tracking-widest">MESA:</span>
                 <input
                   type="text"
                   placeholder="Sin asignar"
-                  defaultValue={res.table_number || ''}
-                  onBlur={e => handleUpdateReservation(res.id, { table_number: e.target.value })}
+                  defaultValue={res.mesa_id || ''}
+                  onBlur={e => handleUpdateReservation(res.id, { mesa_id: e.target.value })}
                   className="bg-transparent border-0 border-b border-primary/20 text-text-main text-xs p-0 focus:ring-0 focus:border-primary transition-all w-full placeholder:text-text-muted/30"
                 />
               </div>
@@ -364,14 +402,14 @@ const AdminView = () => {
           <div className="flex items-center justify-between mt-4 pt-4 border-t border-text-main/5">
             <span className="text-[10px] uppercase tracking-widest text-text-muted">Estado</span>
             <select
-              value={res.status}
-              onChange={e => handleUpdateReservation(res.id, { status: e.target.value })}
+              value={res.estado}
+              onChange={e => handleUpdateReservation(res.id, { estado: e.target.value })}
               className={`bg-bg-surface border border-text-main/10 text-text-main rounded p-1.5 pr-8 text-[11px] uppercase tracking-widest outline-none transition-all ${
-                res.status === 'pending' ? 'border-primary/40 text-primary' : ''
+                res.estado === 'Pendiente' ? 'border-primary/40 text-primary' : ''
               }`}>
-              <option value="pending">Pendiente</option>
-              <option value="confirmed">Confirmada</option>
-              <option value="cancelled">Cancelada</option>
+              <option value="Pendiente">Pendiente</option>
+              <option value="Confirmada">Confirmada</option>
+              <option value="Cancelada">Cancelada</option>
             </select>
           </div>
         </div>
@@ -434,19 +472,21 @@ const AdminView = () => {
                 newDish,
                 () =>
                   setNewDish({
-                    name: '',
-                    description: '',
-                    price: '',
-                    menu_category_id: data.categories[0]?.id || '',
-                    allergens: '',
-                    available: true,
-                    max_per_order: '',
-                    is_per_unit: false,
+                    nombre: '',
+                    precio: '',
+                    categoria_menu_id: data.categories[0]?.id || '',
+                    alergenos: '',
+                    disponible: true,
+                    visible_en_carta: true,
+                    visible_en_degustacion: true,
+                    disponible_para_llevar: true,
+                    es_por_unidad: false,
+                    maximo_por_pedido: '',
                   }),
                 'Plato añadido'
               );
             }}
-            className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-end shadow-2xl relative overflow-hidden">
+            className="bg-bg-surface/90 border border-text-main/10 p-6 grid grid-cols-1 md:grid-cols-4 gap-6 items-end shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
 
             <h3 className="col-span-full font-heading text-primary text-xl mb-2 flex items-center gap-3">
@@ -454,7 +494,7 @@ const AdminView = () => {
               Añadir Nuevo Plato a la Carta
             </h3>
 
-            <div>
+            <div className="md:col-span-2">
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
                 Nombre del Plato
               </label>
@@ -462,8 +502,8 @@ const AdminView = () => {
                 required
                 type="text"
                 placeholder="Ej: Ostras al Carbón..."
-                value={newDish.name}
-                onChange={e => setNewDish({ ...newDish, name: e.target.value })}
+                value={newDish.nombre}
+                onChange={e => setNewDish({ ...newDish, nombre: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
@@ -472,18 +512,28 @@ const AdminView = () => {
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Categoría</label>
               <select
                 required
-                value={newDish.menu_category_id}
-                onChange={e => setNewDish({ ...newDish, menu_category_id: e.target.value })}
+                value={newDish.categoria_menu_id}
+                onChange={e => setNewDish({ ...newDish, categoria_menu_id: e.target.value })}
                 className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-1.5 pr-8 focus:border-primary outline-none text-sm cursor-pointer appearance-none">
                 <option value="" disabled>
                   Seleccionar...
                 </option>
                 {data.categories.map(c => (
                   <option key={c.id} value={c.id}>
-                    {c.name}
+                    {c.nombre}
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="col-span-full">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Composición del Plato (Descripción)</label>
+              <textarea
+                placeholder="Describa los ingredientes y la esencia del plato..."
+                value={newDish.descripcion}
+                onChange={e => setNewDish({ ...newDish, descripcion: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors min-h-[80px] resize-none"
+              />
             </div>
 
             <div>
@@ -493,78 +543,85 @@ const AdminView = () => {
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                value={newDish.price}
-                onChange={e => setNewDish({ ...newDish, price: e.target.value })}
+                value={newDish.precio}
+                onChange={e => setNewDish({ ...newDish, precio: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
 
-            <div className="col-span-1 md:col-span-2">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
-                Descripción / Historia
-              </label>
-              <input
-                required
-                type="text"
-                placeholder="Breve historia o ingredientes clave..."
-                value={newDish.description}
-                onChange={e => setNewDish({ ...newDish, description: e.target.value })}
-                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
-              />
-            </div>
-
-            <div className="col-span-1 md:col-span-2">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">
-                Alérgenos (separados por coma)
-              </label>
+            <div className="md:col-span-1">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Alérgenos</label>
               <input
                 type="text"
                 placeholder="Gluten, Lácteos..."
-                value={newDish.allergens}
-                onChange={e => setNewDish({ ...newDish, allergens: e.target.value })}
+                value={newDish.alergenos}
+                onChange={e => setNewDish({ ...newDish, alergenos: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
 
-            <div>
+            <div className="md:col-span-1">
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2">Máx. por Pedido</label>
               <input
                 type="number"
                 placeholder="Sin límite"
-                value={newDish.max_per_order}
-                onChange={e => setNewDish({ ...newDish, max_per_order: e.target.value })}
+                value={newDish.maximo_por_pedido}
+                onChange={e => setNewDish({ ...newDish, maximo_por_pedido: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
 
-            <div className="flex items-center gap-6 pb-2">
+            <div className="col-span-full flex flex-wrap gap-x-10 gap-y-6 pt-6 pb-2 border-t border-text-main/5">
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
-                  checked={newDish.is_per_unit}
-                  onChange={e => setNewDish({ ...newDish, is_per_unit: e.target.checked })}
+                  checked={newDish.es_por_unidad}
+                  onChange={e => setNewDish({ ...newDish, es_por_unidad: e.target.checked })}
                   className="w-4 h-4 accent-primary"
                 />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                  Precio por Unidad
-                </span>
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">P/ Unidad</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer group">
                 <input
                   type="checkbox"
-                  checked={newDish.available}
-                  onChange={e => setNewDish({ ...newDish, available: e.target.checked })}
+                  checked={newDish.disponible_para_llevar}
+                  onChange={e => setNewDish({ ...newDish, disponible_para_llevar: e.target.checked })}
                   className="w-4 h-4 accent-primary"
                 />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                  Disponible
-                </span>
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Takeaway</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newDish.disponible}
+                  onChange={e => setNewDish({ ...newDish, disponible: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Disponible</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newDish.visible_en_carta}
+                  onChange={e => setNewDish({ ...newDish, visible_en_carta: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Ver en Carta</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newDish.visible_en_degustacion}
+                  onChange={e => setNewDish({ ...newDish, visible_en_degustacion: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Ver en Degustación</span>
               </label>
             </div>
 
             <button
               type="submit"
-              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-[3px] text-[10px] transition-all p-3.5 w-full shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)] md:col-span-3 lg:col-span-1">
+              className="bg-primary hover:bg-bg-surface text-black font-bold uppercase tracking-[3px] text-[10px] transition-all p-3.5 w-full shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)] col-span-full">
               Confirmar Alta
             </button>
           </form>
@@ -574,7 +631,7 @@ const AdminView = () => {
                 key={item.id}
                 item={item}
                 fetchData={fetchData}
-                handleDelete={() => handleDeleteItem('dishes', item.id, item.name)}
+                handleDelete={() => handleDeleteItem('dishes', item.id, item.nombre)}
                 categories={data.categories}
               />
             ))}
@@ -592,13 +649,23 @@ const AdminView = () => {
               handleAddItem(
                 'tasting-menus',
                 newTastingMenu,
-                () => setNewTastingMenu({ name: '', description: '', price: '', courses: 1 }),
+                () => setNewTastingMenu({
+                  nombre: '',
+                  descripcion: '',
+                  precio: '',
+                  precio_maridaje: '',
+                  pasos: 1,
+                  duracion_estimada_minutos: 60,
+                  alternativa_vegetariana: false,
+                  menu_de_temporada: false,
+                  maridaje_disponible: false
+                }),
                 'Menú añadido'
               );
             }}
             className="bg-bg-surface/90 border border-text-main/10 p-8 grid grid-cols-1 md:grid-cols-4 gap-8 items-end shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
-            
+
             <h3 className="col-span-full font-heading text-primary text-xl mb-4 flex items-center gap-3">
               <span className="w-1 h-6 bg-primary"></span>
               Diseñar Nuevo Menú Degustación
@@ -610,8 +677,8 @@ const AdminView = () => {
                 required
                 type="text"
                 placeholder="Ej: Menú Esencia..."
-                value={newTastingMenu.name}
-                onChange={e => setNewTastingMenu({ ...newTastingMenu, name: e.target.value })}
+                value={newTastingMenu.nombre}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, nombre: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
@@ -622,8 +689,8 @@ const AdminView = () => {
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                value={newTastingMenu.price}
-                onChange={e => setNewTastingMenu({ ...newTastingMenu, price: e.target.value })}
+                value={newTastingMenu.precio}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, precio: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
@@ -633,22 +700,84 @@ const AdminView = () => {
                 required
                 type="number"
                 placeholder="7"
-                value={newTastingMenu.courses}
-                onChange={e => setNewTastingMenu({ ...newTastingMenu, courses: e.target.value })}
+                value={newTastingMenu.pasos}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, pasos: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
-            <div className="md:col-span-3">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Descripción General / Relato</label>
+
+            <div className="md:col-span-1">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Duración (min)</label>
               <input
-                required
-                type="text"
-                placeholder="Un viaje por los sabores de la tierra..."
-                value={newTastingMenu.description}
-                onChange={e => setNewTastingMenu({ ...newTastingMenu, description: e.target.value })}
+                type="number"
+                placeholder="120"
+                value={newTastingMenu.duracion_estimada_minutos}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, duracion_estimada_minutos: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
+
+            <div className="md:col-span-3 flex items-center gap-8">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newTastingMenu.maridaje_disponible}
+                  onChange={e => setNewTastingMenu({ ...newTastingMenu, maridaje_disponible: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                  Maridaje disponible
+                </span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newTastingMenu.alternativa_vegetariana}
+                  onChange={e => setNewTastingMenu({ ...newTastingMenu, alternativa_vegetariana: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                  Opción Vegetariana
+                </span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newTastingMenu.menu_de_temporada}
+                  onChange={e => setNewTastingMenu({ ...newTastingMenu, menu_de_temporada: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                  Menú de Temporada
+                </span>
+              </label>
+            </div>
+
+            {newTastingMenu.maridaje_disponible && (
+              <div className="md:col-span-1">
+                <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Precio Maridaje (€)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  placeholder="45.00"
+                  value={newTastingMenu.precio_maridaje}
+                  onChange={e => setNewTastingMenu({ ...newTastingMenu, precio_maridaje: e.target.value })}
+                  className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+                />
+              </div>
+            )}
+
+            <div className="md:col-span-3">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Relato del Menú</label>
+              <textarea
+                rows="1"
+                placeholder="Un viaje sensorial por..."
+                value={newTastingMenu.descripcion}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, descripcion: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors resize-none"
+              />
+            </div>
+
             <button
               type="submit"
               className="bg-primary hover:bg-white text-black font-bold uppercase tracking-[3px] text-[10px] transition-all p-3.5 w-full shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)]">
@@ -661,7 +790,7 @@ const AdminView = () => {
                 key={item.id}
                 item={item}
                 fetchData={fetchData}
-                handleDelete={() => handleDeleteItem('tasting-menus', item.id, item.name)}
+                handleDelete={() => handleDeleteItem('tasting-menus', item.id, item.nombre)}
                 allAvailableDishes={data.menu}
               />
             ))}
@@ -679,11 +808,13 @@ const AdminView = () => {
               handleAddItem(
                 'wines',
                 newWine,
-                () => setNewWine({ name: '', winery: '', type: 'Red', price_bottle: '' }),
+                () => setNewWine({
+                  name: '', winery: '', vintage: '', country: 'España', region: '', grape: '', type: 'Tinto', pairing_notes: '', description: '', alcohol_percentage: '', temperature_service: '', price_bottle: '', price_glass: '', available: true, featured: false, max_per_order: ''
+                }),
                 'Vino añadido'
               );
             }}
-            className="bg-bg-surface/90 border border-text-main/10 p-8 grid grid-cols-1 md:grid-cols-4 gap-8 items-end shadow-2xl relative overflow-hidden">
+            className="bg-bg-surface/90 border border-text-main/10 p-8 grid grid-cols-1 md:grid-cols-4 gap-6 items-end shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl -mr-16 -mt-16 pointer-events-none"></div>
 
             <h3 className="col-span-full font-heading text-primary text-xl mb-4 flex items-center gap-3">
@@ -703,13 +834,13 @@ const AdminView = () => {
               />
             </div>
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Bodega / D.O.</label>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Bodega</label>
               <input
                 type="text"
-                placeholder="Ribera del Duero..."
+                placeholder="Vega Sicilia..."
                 value={newWine.winery}
                 onChange={e => setNewWine({ ...newWine, winery: e.target.value })}
-                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors font-bold"
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
             </div>
             <div>
@@ -718,15 +849,58 @@ const AdminView = () => {
                 value={newWine.type}
                 onChange={e => setNewWine({ ...newWine, type: e.target.value })}
                 className="w-full bg-bg-surface border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none text-sm appearance-none cursor-pointer">
-                <option value="Red">Tinto</option>
-                <option value="White">Blanco</option>
-                <option value="Rose">Rosado</option>
-                <option value="Sparkling">Espumoso</option>
-                <option value="Sweet">Dulce</option>
+                <option value="Tinto">Tinto</option>
+                <option value="Blanco">Blanco</option>
+                <option value="Rosado">Rosado</option>
+                <option value="Espumoso">Espumoso</option>
+                <option value="Dulce">Dulce</option>
               </select>
             </div>
-            <div className="md:col-span-3">
-              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Precio Botella (€)</label>
+
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Región / D.O.</label>
+              <input
+                type="text"
+                placeholder="Ribera del Duero..."
+                value={newWine.region}
+                onChange={e => setNewWine({ ...newWine, region: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Uva</label>
+              <input
+                type="text"
+                placeholder="Tempranillo..."
+                value={newWine.grape}
+                onChange={e => setNewWine({ ...newWine, grape: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Año</label>
+              <input
+                type="text"
+                placeholder="2018"
+                value={newWine.vintage}
+                onChange={e => setNewWine({ ...newWine, vintage: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Alcohol (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                placeholder="14.5"
+                value={newWine.alcohol_percentage}
+                onChange={e => setNewWine({ ...newWine, alcohol_percentage: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">P. Botella (€)</label>
               <input
                 required
                 type="number"
@@ -736,6 +910,37 @@ const AdminView = () => {
                 onChange={e => setNewWine({ ...newWine, price_bottle: e.target.value })}
                 className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
               />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">P. Copa (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Opcional"
+                value={newWine.price_glass}
+                onChange={e => setNewWine({ ...newWine, price_glass: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
+            </div>
+            <div className="flex items-center gap-6 pb-2">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newWine.featured}
+                  onChange={e => setNewWine({ ...newWine, featured: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Destacado</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={newWine.available}
+                  onChange={e => setNewWine({ ...newWine, available: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Disponible</span>
+              </label>
             </div>
             <button
               type="submit"
@@ -958,130 +1163,155 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editDish, setEditDish] = useState({
     ...item,
-    available: !!item.available,
-    max_per_order: item.max_per_order || '',
-    is_per_unit: !!item.is_per_unit,
+    disponible: !!item.disponible,
+    maximo_por_pedido: item.maximo_por_pedido || '',
+    es_por_unidad: !!item.es_por_unidad,
   });
 
   const handleUpdate = async () => {
     try {
       const payload = { ...editDish };
-      delete payload.category;
-      delete payload.created_at;
-      delete payload.updated_at;
+      delete payload.categoria;
+      delete payload.creado_a;
+      delete payload.actualizado_a;
 
       await axios.put(`/admin/dishes/${item.id}`, payload);
       Swal.fire({ icon: 'success', title: 'Plato Actualizado', timer: 1500, showConfirmButton: false });
       setIsEditing(false);
       fetchData();
     } catch (err) {
-      Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || 'No se pudo actualizar' });
+      Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.mensaje || 'No se pudo actualizar' });
     }
   };
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative z-20 overflow-hidden">
+      <div className="bg-bg-surface border border-primary/30 p-10 flex flex-col gap-10 shadow-[0_20px_50px_rgba(0,0,0,0.3)] relative z-20 overflow-hidden h-full">
         <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
 
         <div className="flex justify-between items-start">
-          <h4 className="text-primary font-heading text-xl uppercase tracking-widest">Editando Plato</h4>
+          <h4 className="text-primary font-heading text-2xl uppercase tracking-[0.1em]">Editando Plato</h4>
           <span className="text-[10px] text-text-muted font-bold tracking-[3px]">ID #{item.id}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-          <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+          <div className="space-y-6">
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Nombre del Manjar</label>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Nombre del Manjar</label>
               <input
                 type="text"
-                value={editDish.name}
-                onChange={e => setEditDish({ ...editDish, name: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+                value={editDish.nombre}
+                onChange={e => setEditDish({ ...editDish, nombre: e.target.value })}
+                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary outline-none transition-all"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio (€)</label>
+                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Precio (€)</label>
                 <input
                   type="number"
                   step="0.01"
-                  value={editDish.price}
-                  onChange={e => setEditDish({ ...editDish, price: e.target.value })}
+                  value={editDish.precio}
+                  onChange={e => setEditDish({ ...editDish, precio: e.target.value })}
                   className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
                 />
               </div>
               <div>
-                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Máx. Pedido</label>
+                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Máx. Pedido</label>
                 <input
                   type="number"
-                  value={editDish.max_per_order || ''}
-                  onChange={e => setEditDish({ ...editDish, max_per_order: e.target.value })}
+                  value={editDish.maximo_por_pedido || ''}
+                  onChange={e => setEditDish({ ...editDish, maximo_por_pedido: e.target.value })}
                   className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                   placeholder="Sin límite"
                 />
               </div>
             </div>
-          </div>
-
-          <div className="space-y-4">
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Descripción / Historia</label>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Descripción / Composición</label>
               <textarea
-                rows="3"
-                value={editDish.description}
-                onChange={e => setEditDish({ ...editDish, description: e.target.value })}
-                className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all resize-none italic"
+                value={editDish.descripcion || ''}
+                onChange={e => setEditDish({ ...editDish, descripcion: e.target.value })}
+                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all min-h-[80px] resize-none"
+                placeholder="¿Qué lleva este plato?"
               />
             </div>
           </div>
 
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-4 border-t border-text-main/5">
+          <div className="space-y-6">
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Categoría</label>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Categoría</label>
               <select
-                value={editDish.menu_category_id}
-                onChange={e => setEditDish({ ...editDish, menu_category_id: e.target.value })}
+                value={editDish.categoria_menu_id}
+                onChange={e => setEditDish({ ...editDish, categoria_menu_id: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm outline-none focus:border-primary appearance-none cursor-pointer">
                 {categories?.map(c => (
-                  <option key={c.id} value={c.id} className="bg-bg-surface">{c.name}</option>
+                  <option key={c.id} value={c.id} className="bg-bg-surface">{c.nombre}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Alérgenos</label>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-3 font-bold opacity-70">Alérgenos</label>
               <input
                 type="text"
-                value={editDish.allergens || ''}
-                onChange={e => setEditDish({ ...editDish, allergens: e.target.value })}
+                value={editDish.alergenos || ''}
+                onChange={e => setEditDish({ ...editDish, alergenos: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                 placeholder="Gluten, Lácteos..."
               />
             </div>
-            <div className="flex flex-col gap-3 pb-1">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={editDish.is_per_unit}
-                  onChange={e => setEditDish({ ...editDish, is_per_unit: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
-                />
-                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors">Precio p/ Unidad</span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={editDish.available}
-                  onChange={e => setEditDish({ ...editDish, available: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
-                />
-                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors">Disponible en carta</span>
-              </label>
-            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-8 mt-4">
+        <div className="md:col-span-2 flex flex-wrap gap-x-10 gap-y-6 pb-2 pt-8 border-t border-text-main/5">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={editDish.es_por_unidad}
+              onChange={e => setEditDish({ ...editDish, es_por_unidad: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">P/ Unidad</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={editDish.disponible_para_llevar}
+              onChange={e => setEditDish({ ...editDish, disponible_para_llevar: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Takeaway</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={editDish.disponible}
+              onChange={e => setEditDish({ ...editDish, disponible: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Disponible</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={editDish.visible_en_carta}
+              onChange={e => setEditDish({ ...editDish, visible_en_carta: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Ver en Carta</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input
+              type="checkbox"
+              checked={editDish.visible_en_degustacion}
+              onChange={e => setEditDish({ ...editDish, visible_en_degustacion: e.target.checked })}
+              className="w-4 h-4 accent-primary"
+            />
+            <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors whitespace-nowrap">Ver en Degustación</span>
+          </label>
+        </div>
+
+        <div className="flex justify-end gap-8 mt-4 pt-6 border-t border-text-main/5">
           <button
             onClick={() => setIsEditing(false)}
             className="text-text-muted hover:text-text-main text-[11px] uppercase tracking-[3px] font-bold transition-colors">
@@ -1089,7 +1319,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
           </button>
           <button
             onClick={handleUpdate}
-            className="bg-primary hover:bg-white text-black px-10 py-3.5 font-bold text-[11px] uppercase tracking-[4px] transition-all shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)]">
+            className="bg-primary hover:bg-white text-black px-12 py-4 font-bold text-[11px] uppercase tracking-[4px] transition-all shadow-[0_10px_20px_rgba(197,160,89,0.2)] hover:shadow-[0_15px_30px_rgba(197,160,89,0.4)]">
             Guardar Cambios
           </button>
         </div>
@@ -1098,18 +1328,19 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   }
 
   return (
-    <div className={`group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] ${!item.available ? 'grayscale opacity-60' : ''}`}>
-      {!item.available && (
-        <div className="absolute top-4 right-4 bg-red-500/10 text-red-500 text-[8px] px-2 py-1 uppercase tracking-widest font-bold border border-red-500/20 z-10">
-          No Disponible
-        </div>
-      )}
-
+    <div className={`group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] ${!item.disponible ? 'opacity-80' : ''}`}>
       <div>
         <div className="flex justify-between items-start mb-6">
-          <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
-            {item.category?.name}
-          </span>
+          <div className="flex flex-col gap-2">
+            <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
+              {item.categoria?.nombre}
+            </span>
+            {!item.disponible && (
+              <div className="bg-primary/10 text-primary text-[7px] px-2 py-0.5 uppercase tracking-widest font-bold border border-primary/20 w-fit">
+                Solo en Menús
+              </div>
+            )}
+          </div>
           <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <button
               onClick={() => setIsEditing(true)}
@@ -1125,29 +1356,25 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
         </div>
 
         <h4 className="text-text-main font-heading text-2xl mb-3 leading-tight group-hover:text-primary transition-colors">
-          {item.name}
+          {item.nombre}
         </h4>
-        
-        <p className="text-text-muted text-sm font-light italic leading-relaxed mb-8 opacity-70 line-clamp-3">
-          "{item.description}"
-        </p>
       </div>
 
       <div className="pt-6 border-t border-text-main/5 flex justify-between items-end">
         <div>
           <div className="flex items-baseline gap-1">
-            <span className="text-text-main font-heading text-2xl">{parseFloat(item.price).toFixed(2)}€</span>
-            {!!item.is_per_unit && <span className="text-text-muted text-[10px] uppercase tracking-widest ml-1">/ UD.</span>}
+            <span className="text-text-main font-heading text-2xl">{parseFloat(item.precio).toFixed(2)}€</span>
+            {!!item.es_por_unidad && <span className="text-text-muted text-[10px] uppercase tracking-widest ml-1">/ UD.</span>}
           </div>
-          {!!item.max_per_order && (
+          {!!item.maximo_por_pedido && (
             <p className="text-[9px] text-primary/60 uppercase tracking-[2px] mt-1 font-bold">
-              Máx. {item.max_per_order} p/ pedido
+              Máx. {item.maximo_por_pedido} p/ pedido
             </p>
           )}
         </div>
-        {item.allergens && (
+        {item.alergenos && (
           <div className="flex flex-wrap gap-1 justify-end max-w-[120px]">
-            {item.allergens.split(',').map(a => (
+            {item.alergenos.split(',').map(a => (
               <span key={a} className="text-[8px] bg-text-main/5 text-text-muted px-2 py-0.5 uppercase tracking-tighter rounded-sm">
                 {a.trim()}
               </span>
@@ -1162,7 +1389,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
 // Componente para editar Menú Degustación
 const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [edit, setEdit] = useState({ ...item, dishes: item.dishes || [] });
+  const [edit, setEdit] = useState({ ...item, platos: item.platos || [] });
 
   const handleUpdate = async () => {
     try {
@@ -1177,21 +1404,21 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
 
   const addDishToMenu = dishId => {
     if (!dishId) return;
-    const dish = allAvailableDishes.find(d => d.id === parseInt(dishId));
-    if (!dish) return;
-    const exists = edit.dishes.find(d => d.id === dish.id);
-    if (exists) return;
+    const plato = allAvailableDishes.find(d => d.id === parseInt(dishId));
+    if (!plato) return;
 
     setEdit({
       ...edit,
-      dishes: [...edit.dishes, { ...dish, pivot: { course_number: edit.dishes.length + 1, notes: '' } }],
+      platos: [...edit.platos, { ...plato, pivot: { numero_paso: edit.platos.length + 1, notas: '' } }],
     });
   };
 
-  const removeDishFromMenu = id => {
+  const removeDishFromMenu = index => {
+    const newPlatos = [...edit.platos];
+    newPlatos.splice(index, 1);
     setEdit({
       ...edit,
-      dishes: edit.dishes.filter(d => d.id !== id),
+      platos: newPlatos,
     });
   };
 
@@ -1199,7 +1426,7 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
     return (
       <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative z-20">
         <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-        
+
         <div className="flex justify-between items-start">
           <h4 className="text-primary font-heading text-xl uppercase tracking-widest">Configurando Menú Degustación</h4>
           <span className="text-[10px] text-text-muted font-bold tracking-[3px]">ID #{item.id}</span>
@@ -1211,8 +1438,8 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Título del Menú</label>
               <input
                 type="text"
-                value={edit.name}
-                onChange={e => setEdit({ ...edit, name: e.target.value })}
+                value={edit.nombre}
+                onChange={e => setEdit({ ...edit, nombre: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-lg font-heading focus:border-primary outline-none transition-all"
               />
             </div>
@@ -1220,8 +1447,8 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Relato / Descripción</label>
               <textarea
                 rows="3"
-                value={edit.description}
-                onChange={e => setEdit({ ...edit, description: e.target.value })}
+                value={edit.descripcion}
+                onChange={e => setEdit({ ...edit, descripcion: e.target.value })}
                 className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all resize-none italic"
               />
             </div>
@@ -1231,8 +1458,8 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio Persona (€)</label>
               <input
                 type="number"
-                value={edit.price}
-                onChange={e => setEdit({ ...edit, price: e.target.value })}
+                value={edit.precio}
+                onChange={e => setEdit({ ...edit, precio: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-xl font-heading focus:border-primary outline-none transition-all"
               />
             </div>
@@ -1240,10 +1467,71 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Número de Pasos</label>
               <input
                 type="number"
-                value={edit.courses}
-                onChange={e => setEdit({ ...edit, courses: e.target.value })}
+                value={edit.pasos}
+                onChange={e => setEdit({ ...edit, pasos: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
               />
+            </div>
+            <div className="pt-4 grid grid-cols-1 gap-4">
+              <div className="flex flex-wrap gap-6">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={!!edit.precio_maridaje}
+                    onChange={e => setEdit({ ...edit, maridaje_disponible: e.target.checked })}
+                    className="w-4 h-4 accent-primary"
+                  />
+                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                    Maridaje disponible
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={edit.alternativa_vegetariana}
+                    onChange={e => setEdit({ ...edit, alternativa_vegetariana: e.target.checked })}
+                    className="w-4 h-4 accent-primary"
+                  />
+                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                    Opción Vegetariana
+                  </span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={edit.menu_de_temporada}
+                    onChange={e => setEdit({ ...edit, menu_de_temporada: e.target.checked })}
+                    className="w-4 h-4 accent-primary"
+                  />
+                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
+                    Menú de Temporada
+                  </span>
+                </label>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Duración (min)</label>
+                  <input
+                    type="number"
+                    value={edit.duracion_estimada_minutos || 60}
+                    onChange={e => setEdit({ ...edit, duracion_estimada_minutos: e.target.value })}
+                    className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+                  />
+                </div>
+                {!!edit.maridaje_disponible && (
+                  <div>
+                    <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio Maridaje (€)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={edit.precio_maridaje || ''}
+                      onChange={e => setEdit({ ...edit, precio_maridaje: e.target.value })}
+                      className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -1253,63 +1541,71 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
             <h5 className="text-primary text-[11px] uppercase tracking-[3px] font-bold">Secuencia de Pases</h5>
             <div className="flex items-center gap-4 min-w-[300px]">
               <select
-                onChange={e => addDishToMenu(e.target.value)}
+                value=""
+                onChange={e => {
+                  addDishToMenu(e.target.value);
+                  e.target.value = "";
+                }}
                 className="flex-grow bg-text-main/5 border border-text-main/10 text-text-main text-[11px] p-2 outline-none focus:border-primary appearance-none cursor-pointer uppercase tracking-widest">
                 <option value="">+ Añadir pase al menú</option>
                 {allAvailableDishes.map(d => (
-                  <option key={d.id} value={d.id} className="bg-bg-surface font-sans">{d.name} ({d.category?.name})</option>
+                  <option key={d.id} value={d.id} className="bg-bg-surface font-sans">{d.nombre} ({d.categoria?.nombre})</option>
                 ))}
               </select>
             </div>
           </div>
 
           <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-            {edit.dishes.length === 0 && (
+            {edit.platos.length === 0 && (
               <p className="text-center py-8 text-text-muted italic text-sm opacity-50 border-2 border-dashed border-text-main/5">
                 No hay platos asignados a este menú todavía.
               </p>
             )}
-            {edit.dishes.map((dish, idx) => (
+            {edit.platos.map((plato, idx) => (
               <div
-                key={`${dish.id}-${idx}`}
-                className="flex items-center gap-6 bg-text-main/5 p-4 group/item hover:bg-text-main/10 transition-all border-l-2 border-primary/20 hover:border-primary">
-                <span className="text-primary font-heading text-xl opacity-40 w-8">{(idx + 1).toString().padStart(2, '0')}</span>
-                <div className="flex-grow">
-                  <p className="text-text-main text-sm font-heading tracking-wide uppercase">{dish.name}</p>
-                </div>
-                <div className="flex items-center gap-8">
-                  <div className="w-16">
-                    <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Pase №</label>
-                    <input
-                      type="number"
-                      value={dish.pivot?.course_number || idx + 1}
-                      onChange={e => {
-                        const newDishes = [...edit.dishes];
-                        newDishes[idx] = { ...dish, pivot: { ...dish.pivot, course_number: e.target.value } };
-                        setEdit({ ...edit, dishes: newDishes });
-                      }}
-                      className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 font-bold"
-                    />
+                key={`${plato.id}-${idx}`}
+                className="bg-text-main/5 p-4 group/item hover:bg-text-main/10 transition-all border-l-2 border-primary/20 hover:border-primary">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+                  <span className="text-primary font-heading text-xl opacity-40 w-8">{(idx + 1).toString().padStart(2, '0')}</span>
+
+                  <div className="flex-grow min-w-[150px]">
+                    <p className="text-text-main text-sm font-heading tracking-wide uppercase truncate">{plato.nombre}</p>
                   </div>
-                  <div className="w-48">
-                    <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Anotación Chef</label>
-                    <input
-                      type="text"
-                      placeholder="Ej: Maridaje sugerido..."
-                      value={dish.pivot?.notes || ''}
-                      onChange={e => {
-                        const newDishes = [...edit.dishes];
-                        newDishes[idx] = { ...dish, pivot: { ...dish.pivot, notes: e.target.value } };
-                        setEdit({ ...edit, dishes: newDishes });
-                      }}
-                      className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 italic"
-                    />
+
+                  <div className="flex flex-wrap items-center gap-6 flex-grow sm:flex-grow-0 ml-auto">
+                    <div className="w-20">
+                      <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Pase №</label>
+                      <input
+                        type="number"
+                        value={plato.pivot?.numero_paso || idx + 1}
+                        onChange={e => {
+                          const newPlatos = [...edit.platos];
+                          newPlatos[idx] = { ...plato, pivot: { ...plato.pivot, numero_paso: e.target.value } };
+                          setEdit({ ...edit, platos: newPlatos });
+                        }}
+                        className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 font-bold"
+                      />
+                    </div>
+                    <div className="min-w-[180px] flex-grow sm:flex-grow-0">
+                      <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Anotación Chef</label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Maridaje sugerido..."
+                        value={plato.pivot?.notas || ''}
+                        onChange={e => {
+                          const newPlatos = [...edit.platos];
+                          newPlatos[idx] = { ...plato, pivot: { ...plato.pivot, notas: e.target.value } };
+                          setEdit({ ...edit, platos: newPlatos });
+                        }}
+                        className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 italic"
+                      />
+                    </div>
+                    <button
+                      onClick={() => removeDishFromMenu(idx)}
+                      className="text-red-500/30 hover:text-red-500 transition-colors p-2 ml-auto sm:ml-0">
+                      <HiTrash size={16} />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => removeDishFromMenu(dish.id)}
-                    className="text-red-500/30 hover:text-red-500 transition-colors p-2">
-                    <HiTrash size={16} />
-                  </button>
                 </div>
               </div>
             ))}
@@ -1335,11 +1631,11 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
   return (
     <div className="group bg-bg-surface/90 border border-text-main/10 p-8 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
       <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-colors"></div>
-      
+
       <div>
         <div className="flex justify-between items-start mb-8">
           <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold">
-            {item.courses} Pasos • Gastronomía
+            {item.pasos} Pasos • Gastronomía
           </span>
           <div className="flex gap-5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <button onClick={() => setIsEditing(true)} className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">Gestionar</button>
@@ -1347,31 +1643,42 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
           </div>
         </div>
 
-        <h4 className="text-text-main font-heading text-3xl mb-4 leading-tight group-hover:text-primary transition-colors">{item.name}</h4>
+        <h4 className="text-text-main font-heading text-3xl mb-4 leading-tight group-hover:text-primary transition-colors">{item.nombre}</h4>
         <p className="text-text-muted text-sm font-light italic leading-relaxed border-l-2 border-primary/20 pl-5 mb-8 opacity-70 line-clamp-2">
-          "{item.description}"
+          "{item.descripcion}"
         </p>
 
         <div className="flex flex-wrap gap-2 mb-8 min-h-[40px]">
-          {item.dishes?.slice(0, 5).map(d => (
+          {item.platos?.slice(0, 5).map(d => (
             <span key={d.id} className="text-[9px] bg-text-main/5 text-text-muted px-2.5 py-1 uppercase tracking-widest border border-text-main/5">
-              {d.name}
+              {d.nombre}
             </span>
           ))}
-          {item.dishes?.length > 5 && (
+          {item.platos?.length > 5 && (
             <span className="text-[9px] text-primary/60 px-2.5 py-1 uppercase tracking-widest font-bold">
-              + {item.dishes.length - 5} más
+              + {item.platos.length - 5} más
             </span>
           )}
         </div>
       </div>
 
-      <div className="pt-8 border-t border-text-main/5 flex justify-between items-center">
+      <div className="pt-8 border-t border-text-main/5 flex justify-between items-end">
         <div>
-          <span className="text-text-main font-heading text-3xl">{parseFloat(item.price).toFixed(0)}€</span>
-          <span className="text-text-muted text-[10px] uppercase tracking-[3px] ml-3 opacity-60">por persona</span>
+          <div className="flex flex-col">
+            <span className="text-text-muted text-[8px] uppercase tracking-[2px] mb-1 opacity-60">Menú Degustación</span>
+            <span className="text-text-main font-heading text-3xl leading-none">{parseFloat(item.precio).toFixed(0)}€</span>
+          </div>
+          {!!item.precio_maridaje && (
+            <div className="mt-4 flex flex-col">
+              <span className="text-primary text-[8px] uppercase tracking-[2px] mb-1 font-bold">Maridaje Opcional</span>
+              <span className="text-primary font-heading text-xl leading-none">+{parseFloat(item.precio_maridaje).toFixed(0)}€</span>
+            </div>
+          )}
         </div>
-        <div className="w-10 h-[1px] bg-primary/30 group-hover:w-16 transition-all duration-500"></div>
+        <div className="text-right">
+          <span className="text-text-muted text-[9px] uppercase tracking-[3px] opacity-60 block mb-2">por persona</span>
+          <div className="w-10 h-[1px] bg-primary/30 group-hover:w-16 transition-all duration-500 ml-auto"></div>
+        </div>
       </div>
     </div>
   );
@@ -1385,15 +1692,15 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
   const handleUpdate = async () => {
     try {
       const payload = { ...edit };
-      delete payload.created_at;
-      delete payload.updated_at;
+      delete payload.creado_a;
+      delete payload.actualizado_a;
 
       await axios.put(`/admin/wines/${item.id}`, payload);
       Swal.fire({ icon: 'success', title: 'Vino Actualizado', timer: 1500, showConfirmButton: false });
       setIsEditing(false);
       fetchData();
     } catch (err) {
-      Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || 'No se pudo actualizar' });
+      Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.mensaje || 'No se pudo actualizar' });
     }
   };
 
@@ -1401,7 +1708,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
     return (
       <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative z-20">
         <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-        
+
         <div className="flex justify-between items-start">
           <h4 className="text-primary font-heading text-xl uppercase tracking-widest">Editando Bodega</h4>
           <span className="text-[10px] text-text-muted font-bold tracking-[3px]">BOTELLA #{item.id}</span>
@@ -1413,8 +1720,8 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Nombre del Caldo</label>
               <input
                 type="text"
-                value={edit.name}
-                onChange={e => setEdit({ ...edit, name: e.target.value })}
+                value={edit.nombre}
+                onChange={e => setEdit({ ...edit, nombre: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
               />
             </div>
@@ -1423,8 +1730,8 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Bodega / Origen</label>
                 <input
                   type="text"
-                  value={edit.winery || ''}
-                  onChange={e => setEdit({ ...edit, winery: e.target.value })}
+                  value={edit.bodega || ''}
+                  onChange={e => setEdit({ ...edit, bodega: e.target.value })}
                   className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
                 />
               </div>
@@ -1432,8 +1739,8 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Año / Cosecha</label>
                 <input
                   type="text"
-                  value={edit.vintage || ''}
-                  onChange={e => setEdit({ ...edit, vintage: e.target.value })}
+                  value={edit.añada || ''}
+                  onChange={e => setEdit({ ...edit, añada: e.target.value })}
                   className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                 />
               </div>
@@ -1445,8 +1752,8 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Notas de Cata / Maridaje</label>
               <textarea
                 rows="3"
-                value={edit.pairing_notes || ''}
-                onChange={e => setEdit({ ...edit, pairing_notes: e.target.value })}
+                value={edit.notas_maridaje || ''}
+                onChange={e => setEdit({ ...edit, notas_maridaje: e.target.value })}
                 className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all resize-none italic"
               />
             </div>
@@ -1456,23 +1763,54 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Tipo de Vino</label>
               <select
-                value={edit.type}
-                onChange={e => setEdit({ ...edit, type: e.target.value })}
+                value={edit.tipo}
+                onChange={e => setEdit({ ...edit, tipo: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm outline-none focus:border-primary appearance-none cursor-pointer">
-                <option value="Red" className="bg-bg-surface">Tinto</option>
-                <option value="White" className="bg-bg-surface">Blanco</option>
-                <option value="Rose" className="bg-bg-surface">Rosado</option>
-                <option value="Sparkling" className="bg-bg-surface">Espumoso</option>
-                <option value="Sweet" className="bg-bg-surface">Dulce</option>
+                <option value="Tinto" className="bg-bg-surface">Tinto</option>
+                <option value="Blanco" className="bg-bg-surface">Blanco</option>
+                <option value="Rosado" className="bg-bg-surface">Rosado</option>
+                <option value="Espumoso" className="bg-bg-surface">Espumoso</option>
+                <option value="Dulce" className="bg-bg-surface">Dulce</option>
               </select>
             </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Región</label>
+              <input
+                type="text"
+                value={edit.region || ''}
+                onChange={e => setEdit({ ...edit, region: e.target.value })}
+                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Uva</label>
+              <input
+                type="text"
+                value={edit.uva || ''}
+                onChange={e => setEdit({ ...edit, uva: e.target.value })}
+                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Alcohol (%)</label>
+              <input
+                type="number"
+                step="0.1"
+                value={edit.porcentaje_alcohol || ''}
+                onChange={e => setEdit({ ...edit, porcentaje_alcohol: e.target.value })}
+                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6 items-end pt-4 border-t border-text-main/5">
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">P. Botella (€)</label>
               <input
                 type="number"
                 step="0.01"
-                value={edit.price_bottle}
-                onChange={e => setEdit({ ...edit, price_bottle: e.target.value })}
+                value={edit.precio_botella}
+                onChange={e => setEdit({ ...edit, precio_botella: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
               />
             </div>
@@ -1481,18 +1819,38 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
               <input
                 type="number"
                 step="0.01"
-                value={edit.price_glass || ''}
-                onChange={e => setEdit({ ...edit, price_glass: e.target.value })}
+                value={edit.precio_copa || ''}
+                onChange={e => setEdit({ ...edit, precio_copa: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                 placeholder="Opcional"
               />
+            </div>
+            <div className="flex flex-col gap-3 pb-1">
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={edit.destacado}
+                  onChange={e => setEdit({ ...edit, destacado: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors">Destacado</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={edit.disponible}
+                  onChange={e => setEdit({ ...edit, disponible: e.target.checked })}
+                  className="w-4 h-4 accent-primary"
+                />
+                <span className="text-[11px] uppercase tracking-[1px] text-text-main/70 group-hover:text-primary transition-colors">Disponible</span>
+              </label>
             </div>
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Máx. Pedido</label>
               <input
                 type="number"
-                value={edit.max_per_order || ''}
-                onChange={e => setEdit({ ...edit, max_per_order: e.target.value })}
+                value={edit.maximo_por_pedido || ''}
+                onChange={e => setEdit({ ...edit, maximo_por_pedido: e.target.value })}
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                 placeholder="Sin límite"
               />
@@ -1523,7 +1881,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
       <div>
         <div className="flex justify-between items-start mb-6">
           <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
-            {item.type} {item.vintage && `• ${item.vintage}`}
+            {item.tipo} {item.añada && `• ${item.añada}`}
           </span>
           <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <button onClick={() => setIsEditing(true)} className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">Editar</button>
@@ -1531,12 +1889,12 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
           </div>
         </div>
 
-        <h4 className="text-text-main font-heading text-2xl mb-1 leading-tight group-hover:text-primary transition-colors">{item.name}</h4>
-        <p className="text-text-muted text-[10px] uppercase tracking-[2px] mb-4 font-bold opacity-50">{item.winery}</p>
-        
-        {item.pairing_notes && (
+        <h4 className="text-text-main font-heading text-2xl mb-1 leading-tight group-hover:text-primary transition-colors">{item.nombre}</h4>
+        <p className="text-text-muted text-[10px] uppercase tracking-[2px] mb-4 font-bold opacity-50">{item.bodega}</p>
+
+        {item.notas_maridaje && (
           <p className="text-text-muted text-sm font-light italic leading-relaxed mb-8 opacity-70 line-clamp-2">
-            "{item.pairing_notes}"
+            "{item.notas_maridaje}"
           </p>
         )}
       </div>
@@ -1544,19 +1902,19 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
       <div className="pt-6 border-t border-text-main/5 flex justify-between items-end">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-1">
-            <span className="text-text-main font-heading text-xl">{parseFloat(item.price_bottle).toFixed(2)}€</span>
+            <span className="text-text-main font-heading text-xl">{parseFloat(item.precio_botella).toFixed(2)}€</span>
             <span className="text-text-muted text-[8px] uppercase tracking-widest ml-1 opacity-50">Botella</span>
           </div>
-          {item.price_glass && (
+          {item.precio_copa && (
             <div className="flex items-baseline gap-1">
-              <span className="text-text-main font-heading text-lg opacity-80">{parseFloat(item.price_glass).toFixed(2)}€</span>
+              <span className="text-text-main font-heading text-lg opacity-80">{parseFloat(item.precio_copa).toFixed(2)}€</span>
               <span className="text-text-muted text-[8px] uppercase tracking-widest ml-1 opacity-50">Copa</span>
             </div>
           )}
         </div>
-        {item.max_per_order && (
+        {item.maximo_por_pedido && (
           <div className="text-right">
-            <p className="text-[9px] text-primary/60 uppercase tracking-[2px] font-bold">Máx. {item.max_per_order}</p>
+            <p className="text-[9px] text-primary/60 uppercase tracking-[2px] font-bold">Máx. {item.maximo_por_pedido}</p>
           </div>
         )}
       </div>
@@ -1589,8 +1947,8 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Nombre</label>
             <input
               type="text"
-              value={edit.name}
-              onChange={e => setEdit({ ...edit, name: e.target.value })}
+              value={edit.nombre}
+              onChange={e => setEdit({ ...edit, nombre: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
             />
           </div>
@@ -1599,16 +1957,16 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
             <input
               type="number"
               step="0.01"
-              value={edit.price}
-              onChange={e => setEdit({ ...edit, price: e.target.value })}
+              value={edit.precio}
+              onChange={e => setEdit({ ...edit, precio: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
             />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Tipo</label>
             <select
-              value={edit.type}
-              onChange={e => setEdit({ ...edit, type: e.target.value })}
+              value={edit.tipo}
+              onChange={e => setEdit({ ...edit, tipo: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none appearance-none cursor-pointer">
               <option value="agua">Agua</option>
               <option value="refresco">Refresco</option>
@@ -1620,11 +1978,31 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Descripción</label>
             <input
               type="text"
-              value={edit.description || ''}
-              onChange={e => setEdit({ ...edit, description: e.target.value })}
+              value={edit.descripcion || ''}
+              onChange={e => setEdit({ ...edit, descripcion: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all italic"
               placeholder="Ej: Con gas, sin cafeína..."
             />
+          </div>
+          <div className="flex items-center gap-6 pb-2">
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={edit.destacado}
+                onChange={e => setEdit({ ...edit, destacado: e.target.checked })}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Destacado</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={edit.disponible}
+                onChange={e => setEdit({ ...edit, disponible: e.target.checked })}
+                className="w-4 h-4 accent-primary"
+              />
+              <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">Disponible</span>
+            </label>
           </div>
         </div>
         <div className="flex justify-end gap-8 pt-4 border-t border-text-main/5">
@@ -1639,17 +2017,17 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
     <div className="group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
       <div>
         <div className="flex justify-between items-start mb-6">
-          <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">{item.type}</span>
+          <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">{item.tipo}</span>
           <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <button onClick={() => setIsEditing(true)} className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">Editar</button>
             <button onClick={handleDelete} className="text-red-500/50 hover:text-red-500 text-[10px] uppercase tracking-[2px] font-bold">Borrar</button>
           </div>
         </div>
-        <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary transition-colors">{item.name}</h4>
-        {item.description && <p className="text-text-muted text-sm font-light italic leading-relaxed opacity-70 mb-4">"{item.description}"</p>}
+        <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary transition-colors">{item.nombre}</h4>
+        {item.descripcion && <p className="text-text-muted text-sm font-light italic leading-relaxed opacity-70 mb-4">"{item.descripcion}"</p>}
       </div>
       <div className="pt-6 border-t border-text-main/5 flex justify-between items-end">
-        <span className="text-text-main font-heading text-2xl">{parseFloat(item.price).toFixed(2)}€</span>
+        <span className="text-text-main font-heading text-2xl">{parseFloat(item.precio).toFixed(2)}€</span>
         <div className="w-8 h-[1px] bg-primary/20 group-hover:w-12 transition-all"></div>
       </div>
     </div>
@@ -1659,7 +2037,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
 // Componente para editar/ver un usuario en la lista de admin
 const UserEditRow = ({ user, fetchData }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editUser, setEditUser] = useState({ name: user.name, role: user.role, email: user.email, phone: user.phone || '', password: '' });
+  const [editUser, setEditUser] = useState({ nombre: user.nombre, rol: user.rol, email: user.email, telefono: user.telefono || '', contrasena: '' });
 
   const handleUpdate = async () => {
     try {
@@ -1675,7 +2053,7 @@ const UserEditRow = ({ user, fetchData }) => {
   const handleDelete = async () => {
     const result = await Swal.fire({
       title: `Opciones de Eliminación`,
-      text: `¿Seguro que quiere eliminar permanentemente a ${user.name}?`,
+      text: `¿Seguro que quiere eliminar permanentemente a ${user.nombre}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#ef4444',
@@ -1702,8 +2080,8 @@ const UserEditRow = ({ user, fetchData }) => {
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Nombre Completo</label>
             <input
               type="text"
-              value={editUser.name}
-              onChange={e => setEditUser({ ...editUser, name: e.target.value })}
+              value={editUser.nombre}
+              onChange={e => setEditUser({ ...editUser, nombre: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
             />
           </div>
@@ -1720,18 +2098,18 @@ const UserEditRow = ({ user, fetchData }) => {
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Teléfono de Contacto</label>
             <input
               type="text"
-              value={editUser.phone}
-              onChange={e => setEditUser({ ...editUser, phone: e.target.value })}
+              value={editUser.telefono}
+              onChange={e => setEditUser({ ...editUser, telefono: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
             />
           </div>
           <div>
             <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Rol de Acceso</label>
             <select
-              value={editUser.role}
-              onChange={e => setEditUser({ ...editUser, role: e.target.value })}
+              value={editUser.rol}
+              onChange={e => setEditUser({ ...editUser, rol: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm outline-none focus:border-primary appearance-none cursor-pointer">
-              <option value="client">Cliente</option>
+              <option value="cliente">Cliente</option>
               <option value="admin">Administrador</option>
             </select>
           </div>
@@ -1740,8 +2118,8 @@ const UserEditRow = ({ user, fetchData }) => {
             <input
               type="password"
               placeholder="Dejar en blanco para mantener..."
-              value={editUser.password}
-              onChange={e => setEditUser({ ...editUser, password: e.target.value })}
+              value={editUser.contrasena}
+              onChange={e => setEditUser({ ...editUser, contrasena: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
             />
           </div>
@@ -1757,17 +2135,17 @@ const UserEditRow = ({ user, fetchData }) => {
   return (
     <div className="group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col md:flex-row justify-between items-center transition-all duration-500 relative overflow-hidden hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
       <div className="flex items-center gap-6">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-heading text-xl ${user.role === 'admin' ? 'bg-primary text-black shadow-[0_0_20px_rgba(197,160,89,0.3)]' : 'bg-text-main/5 text-text-muted'}`}>
-          {user.name.charAt(0)}
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-heading text-xl ${user.rol === 'admin' ? 'bg-primary text-black shadow-[0_0_20px_rgba(197,160,89,0.3)]' : 'bg-text-main/5 text-text-muted'}`}>
+          {user.nombre.charAt(0)}
         </div>
         <div>
           <div className="flex items-center gap-3 mb-1">
-            <h4 className="text-text-main font-heading text-xl">{user.name}</h4>
-            <span className={`text-[8px] uppercase tracking-[2px] px-2 py-0.5 rounded-sm font-bold ${user.role === 'admin' ? 'bg-primary/20 text-primary border border-primary/20' : 'bg-text-main/10 text-text-muted border border-text-main/10'}`}>
-              {user.role === 'admin' ? 'Administrador' : 'Cliente'}
+            <h4 className="text-text-main font-heading text-xl">{user.nombre}</h4>
+            <span className={`text-[8px] uppercase tracking-[2px] px-2 py-0.5 rounded-sm font-bold ${user.rol === 'admin' ? 'bg-primary/20 text-primary border border-primary/20' : 'bg-text-main/10 text-text-muted border border-text-main/10'}`}>
+              {user.rol === 'admin' ? 'Administrador' : 'Cliente'}
             </span>
           </div>
-          <p className="text-text-muted text-xs font-light tracking-wide">{user.email} {user.phone && `• ${user.phone}`}</p>
+          <p className="text-text-muted text-xs font-light tracking-wide">{user.email} {user.telefono && `• ${user.telefono}`}</p>
         </div>
       </div>
       <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0 mt-4 md:mt-0">

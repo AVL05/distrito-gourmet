@@ -13,7 +13,7 @@ export const useAuthStore = create((set, get) => ({
   error: null,
 
   isAuthenticated: () => !!get().token,
-  isAdmin: () => get().user?.role === 'admin',
+  isAdmin: () => get().user?.rol === 'admin',
 
   login: async credentials => {
     set({ loading: true, error: null });

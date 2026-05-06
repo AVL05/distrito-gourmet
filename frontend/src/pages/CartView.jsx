@@ -62,16 +62,16 @@ const CartView = () => {
     setIsProcessing(true);
     try {
       await axios.post('/orders', {
-        items: cartItems.map(item => ({
+        articulos: cartItems.map(item => ({
           db_id: item.id.toString().startsWith('w') ? parseInt(item.id.replace('w', '')) : parseInt(item.id),
-          item_type: item.item_type || 'dish',
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
+          tipo_item: item.item_type || 'plato',
+          nombre: item.name,
+          cantidad: item.quantity,
+          precio: item.price,
         })),
         total: total,
-        payment_method: paymentMethod,
-        pickup_time: pickupTime,
+        metodo_pago: paymentMethod,
+        hora_recogida: pickupTime,
       });
 
       // Usamos directamente el pickupTime seleccionado para evitar desfases de zona horaria en la confirmación
@@ -218,10 +218,6 @@ const CartView = () => {
                     <div className="flex justify-between">
                       <span>Subtotal</span>
                       <span>{total.toFixed(2)}€</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Servicio Extra</span>
-                      <span className="text-primary uppercase text-[11px] tracking-widest mt-1 font-bold">Premium</span>
                     </div>
                     <div className="flex justify-between text-text-main text-xl pt-6 border-t border-text-main/10 mt-6 font-normal">
                       <span>Total (IVA inc.)</span>

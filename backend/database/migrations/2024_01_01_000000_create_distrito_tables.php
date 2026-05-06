@@ -4,112 +4,195 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up()
     {
-        // Settings
-        Schema::create('settings', function (Blueprint $table) {
+        // Ajustes / Configuración
+        Schema::create('ajustes', function (Blueprint $table) {
             $table->id();
-            $table->string('key')->unique();
-            $table->text('value');
-            $table->timestamps();
+            $table->string('clave')->unique();
+            $table->text('valor');
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Restaurant Tables (Mesa)
-        Schema::create('restaurant_tables', function (Blueprint $table) {
+        // Mesas
+        Schema::create('mesas', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // e.g. "Mesa 1", "Chef's Table"
-            $table->integer('capacity');
-            $table->string('zone')->default('main_room'); // main_room, private, terrace, chef_table
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+            $table->string('numero_mesa')->unique();
+            $table->integer('capacidad');
+            $table->string('zona')->default('Salón Principal');
+            $table->enum('estado', ['Libre', 'Reservada', 'Ocupada', 'Mantenimiento'])->default('Libre');
+            $table->boolean('esta_activo')->default(true);
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Menu Categories (Menú Degustación, Carta VIP, etc)
-        Schema::create('menu_categories', function (Blueprint $table) {
+        // Categorías de Menú
+        Schema::create('categorias_menu', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->integer('order')->default(0);
-            $table->timestamps();
+            $table->string('nombre');
+            $table->text('descripcion')->nullable();
+            $table->integer('orden_visualizacion')->default(0);
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Dishes (Platos y Elaboraciones)
-        Schema::create('dishes', function (Blueprint $table) {
+        // Platos
+        Schema::create('platos', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description'); // Story behind the dish
-            $table->decimal('price', 10, 2);
-            $table->string('image')->nullable();
-            $table->foreignId('menu_category_id')->nullable()->constrained()->onDelete('set null');
-            $table->boolean('is_signature')->default(false); // Plato estrella
-            $table->string('allergens')->nullable(); // Trigo, Lácteos, etc.
-            $table->boolean('available')->default(true);
-            $table->timestamps();
+            $table->string('nombre');
+            $table->string('slug')->unique()->nullable();
+            $table->text('descripcion')->nullable();
+            $table->decimal('precio', 10, 2);
+            $table->foreignId('categoria_menu_id')->nullable()->constrained('categorias_menu')->onDelete('set null');
+            $table->string('alergenos')->nullable();
+            $table->boolean('disponible')->default(true);
+            $table->boolean('visible_en_carta')->default(true);
+            $table->boolean('visible_en_degustacion')->default(true);
+            $table->boolean('disponible_para_llevar')->default(true);
+            $table->boolean('es_por_unidad')->default(false);
+            $table->integer('maximo_por_pedido')->default(999);
         });
 
-        // Cellar / Wines (Bodega)
-        Schema::create('wines', function (Blueprint $table) {
+        // Vinos / Bodega
+        Schema::create('vinos', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('winery')->nullable();
-            $table->string('vintage')->nullable(); // Año
-            $table->string('type'); // Red, White, Sparkling, Sweet
-            $table->text('pairing_notes')->nullable();
-            $table->decimal('price_bottle', 10, 2)->nullable();
-            $table->decimal('price_glass', 10, 2)->nullable();
-            $table->timestamps();
+            $table->string('nombre');
+            $table->string('bodega')->nullable();
+            $table->string('añada')->nullable();
+            $table->string('pais')->nullable();
+            $table->string('region')->nullable();
+            $table->string('uva')->nullable();
+            $table->enum('tipo', ['Tinto', 'Blanco', 'Rosado', 'Espumoso', 'Dulce']);
+            $table->text('notas_maridaje')->nullable();
+            $table->text('descripcion')->nullable();
+            $table->string('imagen')->nullable();
+            $table->decimal('porcentaje_alcohol', 4, 2)->nullable();
+            $table->string('temperatura_servicio')->nullable();
+            $table->decimal('precio_botella', 10, 2)->nullable();
+            $table->decimal('precio_copa', 10, 2)->nullable();
+            $table->boolean('disponible')->default(true);
+            $table->boolean('destacado')->default(false);
+            $table->integer('maximo_por_pedido')->default(999);
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Reservations
-        Schema::create('reservations', function (Blueprint $table) {
+        // Reservas
+        Schema::create('reservas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('restaurant_table_id')->nullable()->constrained()->onDelete('set null');
-            $table->dateTime('reservation_time');
-            $table->integer('people');
-            $table->string('status')->default('pending'); // pending, confirmed, arrived, cancelled
-            $table->string('experience_type')->default('tasting_menu'); // tasting_menu, a_la_carte
-            $table->text('special_requests')->nullable();
-            $table->text('allergies_noted')->nullable();
-            $table->timestamps();
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            $table->foreignId('mesa_id')->nullable()->constrained('mesas')->onDelete('set null');
+            $table->string('codigo_reserva')->unique()->nullable();
+            $table->date('fecha_reserva')->nullable();
+            $table->time('hora_reserva')->nullable();
+            $table->integer('comensales')->default(1);
+            $table->unsignedBigInteger('menu_degustacion_id')->nullable();
+            $table->string('estado')->default('Pendiente'); // Pendiente, Confirmada, Cancelada
+            $table->text('peticiones_especiales')->nullable();
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Exclusive Orders / Takeaway (Gourmet box delivery)
-        Schema::create('orders', function (Blueprint $table) {
+        // Pedidos
+        Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('status')->default('received'); // received, preparing, ready, delivered
-            $table->string('type')->default('gourmet_pickup'); // gourmet_pickup, premium_delivery
-            $table->decimal('total', 10, 2);
-            $table->text('address')->nullable(); // For delivery
-            $table->text('delivery_instructions')->nullable();
-            $table->timestamps();
+            $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
+            $table->string('numero_pedido')->unique()->nullable();
+            $table->enum('estado', ['Pendiente', 'Preparando', 'Listo', 'Entregado', 'Cancelado'])->default('Pendiente');
+            $table->enum('tipo_pedido', ['Sala', 'Takeaway', 'Delivery'])->default('Sala');
+            $table->decimal('subtotal', 10, 2)->default(0);
+            $table->decimal('impuestos', 10, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
+            $table->text('direccion')->nullable();
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
 
-        // Order Items
-        Schema::create('order_items', function (Blueprint $table) {
+        // Detalles del Pedido
+        Schema::create('detalles_pedido', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('dish_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('wine_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('item_name'); // Snapshot of name
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2); // Snapshot of price
-            $table->timestamps();
+            $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
+            $table->foreignId('plato_id')->nullable()->constrained('platos')->onDelete('set null');
+            $table->unsignedBigInteger('vino_id')->nullable();
+            $table->unsignedBigInteger('bebida_id')->nullable();
+            $table->integer('cantidad');
+            $table->decimal('precio_unitario', 10, 2)->nullable();
+            $table->decimal('precio_total', 10, 2)->nullable();
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
+        });
+
+        // Bebidas
+        Schema::create('bebidas', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->text('descripcion')->nullable();
+            $table->enum('tipo', ['agua', 'refresco', 'cocktail', 'cafe']);
+            $table->string('imagen')->nullable();
+            $table->decimal('precio', 10, 2);
+            $table->boolean('disponible')->default(true);
+            $table->boolean('destacado')->default(false);
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
+        });
+
+        // Menús Degustación
+        Schema::create('menus_degustacion', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('slug')->unique()->nullable();
+            $table->text('descripcion')->nullable();
+            $table->string('imagen')->nullable();
+            $table->decimal('precio', 10, 2);
+            $table->decimal('precio_maridaje', 10, 2)->nullable();
+            $table->integer('pasos');
+            $table->integer('duracion_estimada_minutos')->nullable();
+            $table->boolean('disponible')->default(true);
+            $table->boolean('alternativa_vegetariana')->default(false);
+            $table->boolean('menu_de_temporada')->default(false);
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
+        });
+
+        // Platos de Menús Degustación
+        Schema::create('platos_menu_degustacion', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('menu_degustacion_id')->constrained('menus_degustacion')->onDelete('cascade');
+            $table->foreignId('plato_id')->constrained('platos')->onDelete('cascade');
+            $table->integer('numero_paso')->default(1);
+            $table->enum('tamaño_porcion', ['Snack', 'Pequeño', 'Medio', 'Completo'])->default('Pequeño');
+            $table->text('notas')->nullable();
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
+        });
+
+        // Maridajes Plato-Vino
+        Schema::create('maridajes_plato_vino', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('plato_id')->constrained('platos')->onDelete('cascade');
+            $table->foreignId('vino_id')->constrained('vinos')->onDelete('cascade');
+            $table->enum('nivel_recomendacion', ['Buena', 'Muy buena', 'Perfecta'])->default('Muy buena');
+            $table->text('notas')->nullable();
+            $table->timestamp('creado_a')->nullable();
+            $table->timestamp('actualizado_a')->nullable();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('order_items');
-        Schema::dropIfExists('orders');
-        Schema::dropIfExists('reservations');
-        Schema::dropIfExists('wines');
-        Schema::dropIfExists('dishes');
-        Schema::dropIfExists('menu_categories');
-        Schema::dropIfExists('restaurant_tables');
-        Schema::dropIfExists('settings');
+        Schema::dropIfExists('maridajes_plato_vino');
+        Schema::dropIfExists('platos_menu_degustacion');
+        Schema::dropIfExists('menus_degustacion');
+        Schema::dropIfExists('bebidas');
+        Schema::dropIfExists('detalles_pedido');
+        Schema::dropIfExists('pedidos');
+        Schema::dropIfExists('reservas');
+        Schema::dropIfExists('vinos');
+        Schema::dropIfExists('platos');
+        Schema::dropIfExists('categorias_menu');
+        Schema::dropIfExists('mesas');
+        Schema::dropIfExists('ajustes');
     }
 };

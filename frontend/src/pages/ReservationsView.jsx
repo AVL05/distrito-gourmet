@@ -30,7 +30,7 @@ const ReservationsView = () => {
         try {
           const res = await axios.get('/reservations');
           // Ordenar por fecha descendente
-          setReservations(res.data.sort((a, b) => new Date(b.reservation_time) - new Date(a.reservation_time)));
+          setReservations(res.data.sort((a, b) => new Date(b.fecha_reserva + 'T' + b.hora_reserva) - new Date(a.fecha_reserva + 'T' + a.hora_reserva)));
         } catch (err) {
           console.error('Error al cargar reservas:', err);
         } finally {
@@ -141,47 +141,44 @@ const ReservationsView = () => {
                           <div>
                             <div className="flex items-end gap-6 mb-4">
                               <span className="font-heading text-3xl text-text-main">
-                                {new Date(res.reservation_time)
-                                  .toLocaleDateString('es-ES', {
-                                    weekday: 'long',
-                                    day: 'numeric',
-                                    month: 'long',
-                                  })
-                                  .replace(/^\w/, c => c.toUpperCase())}
+                                {new Date(res.fecha_reserva)
+                                   .toLocaleDateString('es-ES', {
+                                     weekday: 'long',
+                                     day: 'numeric',
+                                     month: 'long',
+                                   })
+                                   .replace(/^\w/, c => c.toUpperCase())}
                               </span>
                               <span className="text-primary font-body text-xl font-light tracking-widest relative top-[-4px]">
-                                {new Date(res.reservation_time).toLocaleTimeString('es-ES', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
+                                {res.hora_reserva ? res.hora_reserva.slice(0, 5) : ''}
                               </span>
                             </div>
                             <div className="flex gap-8 text-[12px] text-text-muted font-light uppercase tracking-widest mt-4">
                               <span className="flex items-center gap-2">
-                                <span className="text-text-main/40">COMENSALES</span> {res.people}
+                                <span className="text-text-main/40">COMENSALES</span> {res.comensales}
                               </span>
-                              {res.experience_type && (
+                              {res.tipo_experiencia && (
                                 <span className="flex items-center gap-2">
                                   <span className="text-text-main/40">TIPO</span>{' '}
-                                  {res.experience_type === 'tasting_menu' ? 'DEGUSTACIÓN' : 'CARTA'}
+                                  {res.tipo_experiencia === 'menu_degustacion' ? 'DEGUSTACIÓN' : 'CARTA'}
                                 </span>
                               )}
                             </div>
-                            {res.special_requests && (
+                            {res.peticiones_especiales && (
                               <p className="mt-4 text-[13px] text-text-muted italic flex items-start gap-2">
                                 <span className="text-primary text-xl leading-none">"</span>
-                                {res.special_requests}
+                                {res.peticiones_especiales}
                               </p>
                             )}
                           </div>
 
                           <div className="flex flex-col items-end gap-3 shrink-0">
                             <div
-                              className={`text-[10px] uppercase tracking-[3px] font-bold ${res.status === 'confirmed' ? 'text-primary' : res.status === 'cancelled' ? 'text-red-800' : 'text-text-main'}`}>
-                              {res.status.charAt(0).toUpperCase() + res.status.slice(1)}
+                              className={`text-[10px] uppercase tracking-[3px] font-bold ${res.estado === 'Confirmada' ? 'text-primary' : res.estado === 'Cancelada' ? 'text-red-800' : 'text-text-main'}`}>
+                              {res.estado}
                             </div>
                             <span className="text-text-muted/50 text-[10px] uppercase tracking-[2px]">
-                              REF: #{res.id.toString().slice(-6)}
+                              REF: #{res.codigo_reserva || res.id}
                             </span>
                           </div>
                         </div>

@@ -13,22 +13,20 @@ const OrderItem = ({ order }) => {
   const [showDetails, setShowDetails] = useState(false);
   const detailsRef = useRef(null);
 
-  const date = new Date(order.created_at).toLocaleDateString();
-  const pickupTime = order.pickup_time
-    ? new Date(order.pickup_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    : null;
+  const date = new Date(order.creado_a).toLocaleDateString();
+  const pickupTime = order.hora_recogida ? order.hora_recogida.slice(0, 5) : null;
 
   const getStatusColor = status => {
     switch (status) {
-      case 'received':
+      case 'Recibido':
         return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-      case 'preparing':
+      case 'Preparando':
         return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'ready':
+      case 'Listo':
         return 'text-green-500 bg-green-500/10 border-green-500/20';
-      case 'delivered':
+      case 'Recogido':
         return 'text-primary bg-primary/10 border-primary/20';
-      case 'cancelled':
+      case 'Cancelado':
         return 'text-red-500 bg-red-500/10 border-red-500/20';
       default:
         return 'text-text-muted bg-text-muted/10 border-text-main/10';
@@ -37,15 +35,15 @@ const OrderItem = ({ order }) => {
 
   const getStatusLabel = status => {
     switch (status) {
-      case 'received':
+      case 'Recibido':
         return 'Recibido';
-      case 'preparing':
+      case 'Preparando':
         return 'Preparando';
-      case 'ready':
+      case 'Listo':
         return 'Listo para Recogida';
-      case 'delivered':
+      case 'Recogido':
         return 'Recogido';
-      case 'cancelled':
+      case 'Cancelado':
         return 'Cancelado';
       default:
         return status;
@@ -76,22 +74,22 @@ const OrderItem = ({ order }) => {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3 mb-2">
-              <span className="font-heading text-xl text-text-main uppercase tracking-tight">Pedido #{order.id}</span>
+              <span className="font-heading text-xl text-text-main uppercase tracking-tight">Pedido #{order.numero_pedido || order.id}</span>
               <span
-                className={`text-[9px] uppercase tracking-widest px-2.5 py-0.5 border rounded-full font-bold ${getStatusColor(order.status)}`}>
-                {getStatusLabel(order.status)}
+                className={`text-[9px] uppercase tracking-widest px-2.5 py-0.5 border rounded-full font-bold ${getStatusColor(order.estado)}`}>
+                {getStatusLabel(order.estado)}
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] font-body text-text-muted uppercase tracking-[1px]">
               <span className="flex items-center gap-1.5 font-medium">
                 <HiClock size={14} className="text-primary/70" /> {date}
               </span>
-              {pickupTime && order.status !== 'delivered' && (
+              {pickupTime && order.estado !== 'Recogido' && (
                 <span className="flex items-center gap-1.5 font-medium text-primary">
                   <HiCheckCircle size={14} /> Recogida a las {pickupTime}
                 </span>
               )}
-              {order.status === 'delivered' && (
+              {order.estado === 'Recogido' && (
                 <span className="flex items-center gap-1.5 font-medium text-primary opacity-70">
                   <HiCheckCircle size={14} /> Finalizado
                 </span>
@@ -117,25 +115,25 @@ const OrderItem = ({ order }) => {
           </p>
 
           <div className="space-y-3">
-            {order.items?.map((item, idx) => (
+            {order.detalles?.map((item, idx) => (
               <div
                 key={idx}
                 className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/[0.02] px-2 transition-colors">
                 <div className="flex items-center gap-4">
                   <span className="w-7 h-7 flex items-center justify-center bg-primary/5 text-[10px] font-bold text-primary border border-primary/10 rounded-full">
-                    {item.quantity}
+                    {item.cantidad}
                   </span>
                   <div className="flex flex-col">
                     <span className="text-text-main font-medium tracking-tight uppercase text-[13px]">
-                      {item.item_name}
+                      {item.nombre}
                     </span>
                     <span className="text-[10px] text-text-muted tracking-widest">
-                      {parseFloat(item.price).toFixed(2)}€ / Ud.
+                      {parseFloat(item.precio).toFixed(2)}€ / Ud.
                     </span>
                   </div>
                 </div>
                 <span className="text-text-main font-heading text-base font-medium">
-                  {(item.quantity * item.price).toFixed(2)}€
+                  {(item.cantidad * item.precio).toFixed(2)}€
                 </span>
               </div>
             ))}
@@ -148,9 +146,9 @@ const OrderItem = ({ order }) => {
               </span>
               <span className="text-[12px] font-medium italic opacity-70">
                 Abonado mediante:{' '}
-                {order.payment_method === 'card'
+                {order.metodo_pago === 'card'
                   ? 'Tarjeta Bancaria'
-                  : order.payment_method === 'paypal'
+                  : order.metodo_pago === 'paypal'
                     ? 'PayPal'
                     : 'Efectivo en Local'}
               </span>
@@ -200,11 +198,18 @@ const DashboardView = () => {
             <h1 className="font-heading text-4xl sm:text-5xl text-text-main uppercase tracking-widest leading-tight">
               Bienvenido,
               <br />
-              <span className="italic text-primary-hover font-light">{user?.name || 'Huésped'}</span>
+              <span className="italic text-primary-hover font-light">{user?.nombre || 'Huésped'}</span>
             </h1>
-            <p className="text-text-muted font-light mt-4 tracking-wide text-sm">
-              {user?.email} {user?.phone && ` | ${user.phone}`}
-            </p>
+            <div className="flex items-center gap-4 mt-4">
+              <p className="text-text-muted font-light tracking-wide text-sm">
+                {user?.email} {user?.telefono && ` | ${user.telefono}`}
+              </p>
+              {!!user?.es_vip && (
+                <span className="text-[9px] bg-primary text-black px-2 py-0.5 rounded-sm font-bold uppercase tracking-widest animate-pulse">
+                  Miembro VIP
+                </span>
+              )}
+            </div>
           </div>
           <button
             onClick={logout}

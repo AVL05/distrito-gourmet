@@ -14,7 +14,7 @@ const ReservationForm = ({ compact = false }) => {
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
-    people: '',
+    guests: '',
     date: '',
     time: '',
     comments: '',
@@ -54,14 +54,11 @@ const ReservationForm = ({ compact = false }) => {
     setLoading(true);
 
     try {
-      // Unir fecha y hora para enviarlo correctamente a la base de datos
-      const reservationTime = `${form.date}T${form.time}:00`;
-
       const response = await axios.post('/reservations', {
-        reservation_time: reservationTime,
-        people: parseInt(form.people),
-        special_requests: form.comments,
-        experience_type: 'a_la_carte', // Default
+        fecha_reserva: form.date,
+        hora_reserva: form.time,
+        comensales: parseInt(form.guests),
+        peticiones_especiales: form.comments,
       });
 
       // Mostrar mensaje de confirmación y vaciar el formulario
@@ -69,7 +66,7 @@ const ReservationForm = ({ compact = false }) => {
       setSuccess(true);
       setForm(prev => ({
         ...prev,
-        people: '',
+        guests: '',
         date: '',
         time: '',
         comments: '',
@@ -150,8 +147,8 @@ const ReservationForm = ({ compact = false }) => {
               Comensales (Máx. 8)
             </label>
             <select
-              name="people"
-              value={form.people}
+              name="guests"
+              value={form.guests}
               onChange={handleChange}
               required
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer">

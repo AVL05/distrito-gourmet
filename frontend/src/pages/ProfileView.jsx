@@ -7,9 +7,9 @@ import { useReducedMotion, PageTransition, FadeIn, motion } from '@/motion';
 const ProfileView = () => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    nombre: user?.nombre || '',
     email: user?.email || '',
-    phone: user?.phone || '',
+    telefono: user?.telefono || '',
     password: '',
   });
   const shouldReduceMotion = useReducedMotion();
@@ -53,6 +53,13 @@ const ProfileView = () => {
           <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
             Datos <span className="italic text-primary-hover font-light">Personales</span>
           </h2>
+          {!!user?.es_vip && (
+            <div className="mb-4">
+              <span className="text-[10px] bg-primary text-black px-3 py-1 font-bold uppercase tracking-[3px]">
+                Estatus: Cliente Distinguido (VIP)
+              </span>
+            </div>
+          )}
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
           <p className="text-gray-500 text-sm tracking-wide font-light">
             Gestione su información de contacto y credenciales.
@@ -66,8 +73,8 @@ const ProfileView = () => {
             </label>
             <input
               type="text"
-              value={formData.name}
-              onChange={e => setFormData({ ...formData, name: e.target.value })}
+              value={formData.nombre}
+              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
               required
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
             />
@@ -92,8 +99,8 @@ const ProfileView = () => {
             </label>
             <input
               type="tel"
-              value={formData.phone}
-              onChange={e => setFormData({ ...formData, phone: e.target.value })}
+              value={formData.telefono}
+              onChange={e => setFormData({ ...formData, telefono: e.target.value })}
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
             />
           </div>
