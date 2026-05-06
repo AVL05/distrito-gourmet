@@ -7,12 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        // Ajustes / Configuración
-        Schema::create('ajustes', function (Blueprint $table) {
-            $table->id();
-            $table->string('clave')->unique();
-            $table->text('valor');
-        });
+
 
         // Categorías de Menú
         Schema::create('categorias_menu', function (Blueprint $table) {
@@ -151,6 +146,5 @@ return new class extends Migration {
         Schema::dropIfExists('vinos');
         Schema::dropIfExists('platos');
         Schema::dropIfExists('categorias_menu');
-        Schema::dropIfExists('ajustes');
     }
 };

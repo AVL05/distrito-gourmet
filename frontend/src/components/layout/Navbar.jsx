@@ -130,7 +130,7 @@ const Navbar = () => {
           <NavLink
             to="/cart"
             onClick={closeMenu}
-            className="relative flex items-center group transition-colors text-text-main z-[70]"
+            className={`relative flex items-center group transition-colors z-[70] ${isOpen ? 'text-bg-body' : 'text-text-main'}`}
             title="Selección">
             <svg
               className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary"
@@ -154,7 +154,7 @@ const Navbar = () => {
             to="/"
             className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70]"
             onClick={closeMenu}>
-            <span className="font-heading text-lg md:text-2xl text-text-main uppercase tracking-[0.25em] leading-none">
+            <span className={`font-heading text-lg md:text-2xl uppercase tracking-[0.25em] leading-none transition-colors duration-500 ${isOpen ? 'text-bg-body' : 'text-text-main'}`}>
               Distrito
             </span>
             <span className="font-heading text-[10px] md:text-xs text-primary italic tracking-[0.3em] leading-none mt-[2px]">
@@ -167,13 +167,13 @@ const Navbar = () => {
             onClick={toggleMenu}
             aria-label={isOpen ? 'Cerrar menú' : 'Abrir menú'}>
             <span
-              className={`block h-[1.5px] bg-text-main origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? 'w-6 -rotate-45 translate-x-[2px]' : 'w-6'}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? 'bg-bg-body w-6 -rotate-45 translate-x-[2px]' : 'bg-text-main w-6'}`}
             />
             <span
-              className={`block h-[1.5px] bg-text-main transition-all duration-500 group-hover:bg-primary ${isOpen ? 'w-0 opacity-0' : 'w-4'}`}
+              className={`block h-[1.5px] transition-all duration-500 group-hover:bg-primary ${isOpen ? 'bg-bg-body w-0 opacity-0' : 'bg-text-main w-4'}`}
             />
             <span
-              className={`block h-[1.5px] bg-text-main origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? 'w-6 rotate-45 translate-x-[2px]' : 'w-5'}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? 'bg-bg-body w-6 rotate-45 translate-x-[2px]' : 'bg-text-main w-5'}`}
             />
           </button>
         </div>

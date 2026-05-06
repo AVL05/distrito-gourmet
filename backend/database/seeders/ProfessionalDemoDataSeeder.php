@@ -27,8 +27,7 @@ class ProfessionalDemoDataSeeder extends Seeder
             'bebidas',
             'reservas',
             'pedidos',
-            'detalles_pedido',
-            'ajustes'
+            'detalles_pedido'
         ];
 
         foreach ($tablas as $tabla) {
@@ -150,16 +149,6 @@ class ProfessionalDemoDataSeeder extends Seeder
         DB::table('reservas')->insert([
             ['usuario_id' => 2, 'codigo_reserva' => 'VIP-2026-001', 'fecha_reserva' => '2026-06-15', 'hora_reserva' => '21:00:00', 'comensales' => 2, 'menu_degustacion_id' => 3, 'estado' => 'Confirmada', 'peticiones_especiales' => 'Mesa privada y maridaje completo.'],
             ['usuario_id' => 3, 'codigo_reserva' => 'RSV-2026-014', 'fecha_reserva' => '2026-06-16', 'hora_reserva' => '14:30:00', 'comensales' => 2, 'menu_degustacion_id' => 1, 'estado' => 'Pendiente', 'peticiones_especiales' => 'Celebración aniversario.'],
-        ]);
-
-        // 11. Ajustes
-        DB::table('ajustes')->insert([
-            ['clave' => 'restaurant_name', 'valor' => 'Distrito Gourmet'],
-            ['clave' => 'restaurant_phone', 'valor' => '+34 960 000 000'],
-            ['clave' => 'restaurant_email', 'valor' => 'info@distritogourmet.com'],
-            ['clave' => 'takeaway_enabled', 'valor' => 'true'],
-            ['clave' => 'reservations_enabled', 'valor' => 'true'],
-            ['clave' => 'instagram_url', 'valor' => 'https://instagram.com/distritogourmet'],
         ]);
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
