@@ -21,7 +21,10 @@ class Pedido extends Model
         'subtotal',
         'impuestos',
         'total',
-        'direccion'
+        'direccion',
+        'hora_recogida',
+        'fecha_recogida',
+        'metodo_pago'
     ];
 
     public function usuario()

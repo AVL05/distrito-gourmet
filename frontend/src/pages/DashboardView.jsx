@@ -76,25 +76,25 @@ const OrderItem = ({ order }) => {
             <div className="flex flex-wrap items-center gap-3 mb-2">
               <span className="font-heading text-xl text-text-main uppercase tracking-tight">Pedido #{order.numero_pedido || order.id}</span>
               <span
-                className={`text-[9px] uppercase tracking-widest px-2.5 py-0.5 border rounded-full font-bold ${getStatusColor(order.estado)}`}>
+                className={`text-[10px] uppercase tracking-widest px-3 py-1 border rounded-full font-bold ${getStatusColor(order.estado)}`}>
                 {getStatusLabel(order.estado)}
               </span>
             </div>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] font-body text-text-muted uppercase tracking-[1px]">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] font-body text-text-muted uppercase tracking-[1px]">
               <span className="flex items-center gap-1.5 font-medium">
-                <HiClock size={14} className="text-primary/70" /> {date}
+                <HiClock size={16} className="text-primary/70" /> {date}
               </span>
               {pickupTime && order.estado !== 'Recogido' && (
                 <span className="flex items-center gap-1.5 font-medium text-primary">
-                  <HiCheckCircle size={14} /> Recogida a las {pickupTime}
+                  <HiCheckCircle size={16} /> Recogida a las {pickupTime}
                 </span>
               )}
               {order.estado === 'Recogido' && (
                 <span className="flex items-center gap-1.5 font-medium text-primary opacity-70">
-                  <HiCheckCircle size={14} /> Finalizado
+                  <HiCheckCircle size={16} /> Finalizado
                 </span>
               )}
-              <span className="font-bold text-text-main">Total: {parseFloat(order.total).toFixed(2)}€</span>
+              <span className="font-bold text-text-main text-sm">Total: {parseFloat(order.total).toFixed(2)}€</span>
             </div>
           </div>
         </div>
@@ -124,16 +124,20 @@ const OrderItem = ({ order }) => {
                     {item.cantidad}
                   </span>
                   <div className="flex flex-col">
-                    <span className="text-text-main font-medium tracking-tight uppercase text-[13px]">
-                      {item.nombre}
+                    <span className="text-text-main font-medium tracking-tight uppercase text-[15px]">
+                      {item.plato?.nombre || 
+                       item.vino?.nombre || 
+                       item.bebida?.nombre || 
+                       item.menu_degustacion?.nombre || 
+                       'Producto Gourmet'}
                     </span>
-                    <span className="text-[10px] text-text-muted tracking-widest">
-                      {parseFloat(item.precio).toFixed(2)}€ / Ud.
+                    <span className="text-[12px] text-text-muted tracking-widest mt-0.5">
+                      {(item.precio_unitario ? parseFloat(item.precio_unitario) : 0).toFixed(2)}€ / Ud.
                     </span>
                   </div>
                 </div>
-                <span className="text-text-main font-heading text-base font-medium">
-                  {(item.cantidad * item.precio).toFixed(2)}€
+                <span className="text-text-main font-heading text-lg font-medium">
+                  {(item.precio_total ? parseFloat(item.precio_total) : (item.cantidad * (item.precio_unitario || 0))).toFixed(2)}€
                 </span>
               </div>
             ))}

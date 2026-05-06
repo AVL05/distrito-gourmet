@@ -36,9 +36,9 @@ const RegisterView = () => {
     }
 
     const success = await register({
-      name: form.name,
+      nombre: form.name,
       email: form.email,
-      phone: form.phone,
+      telefono: form.phone,
       password: form.password,
     });
 

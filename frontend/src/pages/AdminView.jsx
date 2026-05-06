@@ -258,10 +258,10 @@ const AdminView = () => {
           <div className="mb-4">
             <div className="flex justify-between items-start mb-2">
               <div className="flex flex-col">
-                <span className="text-primary text-[9px] uppercase tracking-[3px] font-bold">#{order.numero_pedido || order.id}</span>
+                <span className="text-primary text-[11px] uppercase tracking-[3px] font-bold">#{order.numero_pedido || order.id}</span>
               </div>
               <div
-                className={`w-2 h-2 rounded-full ${
+                className={`w-2.5 h-2.5 rounded-full ${
                   order.estado === 'Pendiente'
                     ? 'bg-blue-500 animate-pulse'
                     : order.estado === 'Preparando'
@@ -273,22 +273,38 @@ const AdminView = () => {
                           : 'bg-text-muted/30'
                 }`}></div>
             </div>
-            <p className="text-text-main font-heading text-lg mb-1">{order.usuario?.nombre || `ID: ${order.usuario_id}`}</p>
-            <p className="text-text-muted text-[11px] mb-4 opacity-70">Total: {parseFloat(order.total).toFixed(2)}€</p>
+            <p className="text-text-main font-heading text-xl mb-1">{order.usuario?.nombre || `ID: ${order.usuario_id}`}</p>
+            <p className="text-text-muted text-[13px] mb-4 opacity-70 font-medium">Total: {parseFloat(order.total).toFixed(2)}€</p>
 
-            <div className="bg-black/5 p-3 rounded-sm border border-text-main/5">
-              <p className="text-text-main text-[11px] font-light leading-relaxed italic opacity-80">
-                {order.detalles?.map(i => `${i.cantidad}x ${i.plato?.nombre || i.vino?.nombre || 'Producto'}`).join(', ')}
+            <div className="flex flex-wrap gap-2 mb-4">
+              <div className="bg-primary/10 px-3 py-1.5 rounded-sm border border-primary/20 flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider text-primary font-bold">Recogida:</span>
+                <span className="text-sm font-heading text-primary">
+                  {order.fecha_recogida ? new Date(order.fecha_recogida).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }) : 'Hoy'} - {order.hora_recogida?.substring(0, 5) || 'Sin hora'}
+                </span>
+              </div>
+              <div className="bg-black/5 px-3 py-1.5 rounded-sm border border-text-main/5 flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider text-text-muted font-bold">Pago:</span>
+                <span className="text-sm font-body text-text-main uppercase tracking-tighter font-medium">{order.metodo_pago === 'card' ? 'Tarjeta' : order.metodo_pago === 'cash' ? 'Efectivo' : order.metodo_pago || 'Pendiente'}</span>
+              </div>
+            </div>
+
+            <div className="bg-black/5 p-4 rounded-sm border border-text-main/5">
+              <p className="text-text-main text-[14px] font-light leading-relaxed italic opacity-90">
+                {order.detalles?.map(i => {
+                  const nombre = i.plato?.nombre || i.vino?.nombre || i.bebida?.nombre || i.menu_degustacion?.nombre || 'Producto';
+                  return `${i.cantidad}x ${nombre}`;
+                }).join(', ')}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center justify-between mt-4 pt-4 border-t border-text-main/5">
-            <span className="text-[10px] uppercase tracking-widest text-text-muted">Logística</span>
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-text-main/5 gap-4">
+            <span className="text-[12px] uppercase tracking-widest text-text-muted hidden sm:block font-bold">Logística</span>
             <select
               value={order.estado}
               onChange={e => handleUpdateOrderStatus(order.id, e.target.value)}
-              className="bg-bg-surface border border-text-main/10 text-text-main rounded p-1.5 pr-8 text-[11px] uppercase tracking-widest outline-none">
+              className="bg-bg-surface border border-text-main/10 text-text-main rounded p-2 pr-8 text-[13px] uppercase tracking-widest outline-none w-full sm:w-auto font-medium">
               <option value="Pendiente">Pendiente</option>
               <option value="Preparando">Preparando</option>
               <option value="Listo">Listo</option>
@@ -306,7 +322,7 @@ const AdminView = () => {
               <div className="flex items-center gap-4 mb-8">
                 <h3 className="text-primary font-heading text-2xl tracking-[0.1em] uppercase">Pedidos Activos</h3>
                 <div className="h-[1px] flex-grow bg-gradient-to-r from-primary/30 to-transparent"></div>
-                <span className="bg-primary/10 text-primary px-3 py-1 text-[10px] rounded-full font-bold">
+                <span className="bg-primary/10 text-primary px-3 py-1 text-xs rounded-full font-bold">
                   {activeOrders.length} EN CURSO
                 </span>
               </div>
@@ -735,7 +751,7 @@ const AdminView = () => {
               Dar de Alta
             </button>
           </form>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {data.tasting_menus.map(item => (
               <TastingMenuEditRow
                 key={item.id}
@@ -1047,43 +1063,43 @@ const AdminView = () => {
       {/* Contenido principal */}
       <main className="flex-grow flex flex-col h-screen relative z-10 overflow-hidden">
         {/* Cabecera Fija (Header + Navegación móvil) */}
-        <div className="p-6 md:p-12 pb-4 md:pb-6 flex-shrink-0 border-b md:border-b-0 border-text-main/5">
+        <div className="p-4 md:p-12 pb-2 md:pb-6 flex-shrink-0 border-b md:border-b-0 border-text-main/5">
           {/* Cabecera móvil */}
-          <div className="flex md:hidden justify-between items-center mb-8 pb-4">
-            <span className="text-text-main font-heading tracking-[0.2em]">
-              <span className="text-primary mr-2">✦</span> DG MGMT
+          <div className="flex md:hidden justify-between items-center mb-6 pb-2 border-b border-text-main/5">
+            <span className="text-text-main font-heading tracking-[0.2em] text-sm">
+              <span className="text-primary mr-1">✦</span> DG MGMT
             </span>
             <button
               onClick={logout}
-              className="text-[10px] uppercase tracking-[3px] text-red-400/70 hover:text-red-400">
+              className="text-[9px] uppercase tracking-[3px] text-red-400/60 hover:text-red-400 font-bold">
               Salir
             </button>
           </div>
 
           {/* Navegación móvil */}
-          <div className="md:hidden flex gap-4 overflow-x-auto mb-6 pb-2 scrollbar-hide">
+          <div className="md:hidden flex gap-4 overflow-x-auto mb-6 pb-3 scrollbar-hide -mx-4 px-4 sticky top-0 bg-bg-body z-30">
             {sections.map(s => (
               <button
                 key={s.id}
                 onClick={() => setActiveSection(s.id)}
-                className={`whitespace-nowrap uppercase tracking-widest text-[10px] pb-2 border-b-2 transition-all ${activeSection === s.id ? 'border-primary text-primary' : 'border-transparent text-text-muted'}`}>
+                className={`whitespace-nowrap uppercase tracking-[0.2em] text-[9px] py-2 px-3 rounded-full transition-all font-bold ${activeSection === s.id ? 'bg-primary text-black' : 'bg-text-main/5 text-text-muted hover:text-text-main'}`}>
                 {s.label}
               </button>
             ))}
           </div>
 
           <FadeIn as="header">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
               <div>
-                <span className="block text-primary text-[9px] uppercase tracking-[5px] mb-2 font-body opacity-90">
+                <span className="block text-primary text-[8px] sm:text-[9px] uppercase tracking-[4px] mb-2 font-body opacity-90">
                   Panel de Control Central
                 </span>
-                <h1 className="text-3xl md:text-4xl font-heading text-text-main uppercase tracking-widest mb-2 font-light leading-none">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading text-text-main uppercase tracking-widest mb-3 font-light leading-none">
                   {sections.find(s => s.id === activeSection)?.label}
                 </h1>
-                <div className="w-12 h-[1px] bg-gradient-to-r from-primary to-transparent"></div>
+                <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
               </div>
-              <p className="text-text-muted font-light text-[11px] tracking-wide max-w-xs md:text-right">
+              <p className="text-text-muted font-light text-[10px] sm:text-[11px] tracking-wide max-w-xs md:text-right opacity-60">
                 Gestión en tiempo real de los servicios vinculados a la base de datos.
               </p>
             </div>
@@ -1091,7 +1107,7 @@ const AdminView = () => {
         </div>
 
         {/* Zona Scrollable de Contenido */}
-        <div className="flex-grow overflow-y-auto px-6 md:px-12 pb-12 pt-2 custom-scrollbar">
+        <div className="flex-grow overflow-y-auto px-4 md:px-12 pb-12 pt-2 custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
@@ -1292,7 +1308,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
               </div>
             )}
           </div>
-          <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+          <div className="flex gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0">
             <button
               onClick={() => setIsEditing(true)}
               className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">
@@ -1375,91 +1391,103 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.4)] relative z-20">
-        <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+      <div className="lg:col-span-2 bg-bg-surface border border-primary/30 p-10 flex flex-col gap-10 shadow-[0_40px_80px_rgba(0,0,0,0.4)] relative z-20 animate-in fade-in zoom-in-95 duration-500">
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-primary shadow-[0_0_20px_rgba(197,160,89,0.3)]"></div>
 
         <div className="flex justify-between items-start">
           <h4 className="text-primary font-heading text-xl uppercase tracking-widest">Configurando Menú Degustación</h4>
           <span className="text-[10px] text-text-muted font-bold tracking-[3px]">ID #{item.id}</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-2 space-y-6">
-            <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Título del Menú</label>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 space-y-8">
+            <div className="group/field relative">
+              <label className="text-primary text-[9px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary">Título del Menú</label>
               <input
                 type="text"
                 value={edit.nombre}
                 onChange={e => setEdit({ ...edit, nombre: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-lg font-heading focus:border-primary outline-none transition-all"
+                className="w-full bg-text-main/5 border-b-2 border-text-main/10 text-text-main p-3 text-2xl font-heading focus:border-primary outline-none transition-all placeholder:opacity-30"
+                placeholder="Nombre del menú..."
               />
             </div>
-            <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Relato / Descripción</label>
+            <div className="group/field relative">
+              <label className="text-primary text-[9px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary">Relato / Descripción</label>
               <textarea
-                rows="3"
+                rows="4"
                 value={edit.descripcion}
                 onChange={e => setEdit({ ...edit, descripcion: e.target.value })}
-                className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all resize-none italic"
+                className="w-full bg-text-main/5 border-2 border-text-main/10 text-text-main p-4 text-sm focus:border-primary outline-none transition-all resize-none italic leading-relaxed"
+                placeholder="Describa la experiencia gastronómica..."
               />
             </div>
           </div>
-          <div className="space-y-6">
-            <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio Persona (€)</label>
-              <input
-                type="number"
-                value={edit.precio}
-                onChange={e => setEdit({ ...edit, precio: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-xl font-heading focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Número de Pasos</label>
-              <input
-                type="number"
-                value={edit.pasos}
-                onChange={e => setEdit({ ...edit, pasos: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
-              />
-            </div>
-            <div className="pt-4 grid grid-cols-1 gap-4">
-              <div className="flex flex-wrap gap-6">
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={edit._hasMaridaje || !!edit.precio_maridaje}
-                    onChange={e => {
-                      const hasM = e.target.checked;
-                      setEdit({ ...edit, _hasMaridaje: hasM, precio_maridaje: hasM ? edit.precio_maridaje : null });
-                    }}
-                    className="w-4 h-4 accent-primary"
-                  />
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                    Maridaje opcional
-                  </span>
-                </label>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-10 bg-black/5 p-6 rounded-sm border border-text-main/5">
+            <div className="space-y-8">
+              <div className="group/field">
+                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold opacity-60">Precio Persona (€)</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    value={edit.precio}
+                    onChange={e => setEdit({ ...edit, precio: e.target.value })}
+                    className="w-full bg-transparent border-b-2 border-text-main/10 text-text-main p-2 text-2xl font-heading focus:border-primary outline-none transition-all"
+                  />
+                  <span className="absolute right-0 bottom-2 text-text-muted opacity-30 font-heading text-xl">€</span>
+                </div>
+              </div>
+              <div className="group/field">
+                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold opacity-60">Número de Pasos</label>
+                <input
+                  type="number"
+                  value={edit.pasos}
+                  onChange={e => setEdit({ ...edit, pasos: e.target.value })}
+                  className="w-full bg-transparent border-b-2 border-text-main/10 text-text-main p-2 text-lg focus:border-primary outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-text-main/5 space-y-8">
+              <label className="flex items-start gap-4 cursor-pointer group">
+                <div className="mt-0.5">
+                  <div className={`w-5 h-5 border-2 flex items-center justify-center transition-all ${edit._hasMaridaje || !!edit.precio_maridaje ? 'bg-primary border-primary' : 'bg-transparent border-text-main/20'}`}>
+                    { (edit._hasMaridaje || !!edit.precio_maridaje) && <div className="w-2 h-2 bg-white rounded-full"></div> }
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={edit._hasMaridaje || !!edit.precio_maridaje}
+                      onChange={e => {
+                        const hasM = e.target.checked;
+                        setEdit({ ...edit, _hasMaridaje: hasM, precio_maridaje: hasM ? (edit.precio_maridaje || 0) : null });
+                      }}
+                    />
+                  </div>
+                </div>
+                <span className={`text-[10px] uppercase tracking-[2px] font-bold leading-tight transition-colors ${edit._hasMaridaje || !!edit.precio_maridaje ? 'text-primary' : 'text-text-muted group-hover:text-text-main'}`}>
+                  Maridaje opcional
+                </span>
+              </label>
+
+              <div className="space-y-6">
                 <div>
-                  <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Duración (min)</label>
+                  <label className="text-text-muted text-[9px] uppercase tracking-[2px] block mb-2 font-bold opacity-60">Duración (min)</label>
                   <input
                     type="number"
                     value={edit.duracion_estimada_minutos || 60}
                     onChange={e => setEdit({ ...edit, duracion_estimada_minutos: e.target.value })}
-                    className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
+                    className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 text-sm focus:border-primary outline-none transition-all font-bold"
                   />
                 </div>
                 {!!(edit._hasMaridaje || edit.precio_maridaje) && (
-                  <div>
-                    <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio Maridaje (€)</label>
+                  <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="text-primary text-[9px] uppercase tracking-[2px] block mb-2 font-bold opacity-80">Precio Maridaje (€)</label>
                     <input
                       type="number"
                       step="0.01"
                       value={edit.precio_maridaje || ''}
                       onChange={e => setEdit({ ...edit, precio_maridaje: e.target.value })}
-                      className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
+                      className="w-full bg-transparent border-b-2 border-primary/20 text-primary p-2 text-xl font-heading focus:border-primary outline-none transition-all font-bold"
                     />
                   </div>
                 )}
@@ -1468,22 +1496,31 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
           </div>
         </div>
 
-        <div className="border-t border-text-main/10 pt-8">
-          <div className="flex justify-between items-center mb-6">
-            <h5 className="text-primary text-[11px] uppercase tracking-[3px] font-bold">Secuencia de Pases</h5>
-            <div className="flex items-center gap-4 min-w-[300px]">
+        <div className="border-t border-text-main/10 pt-10">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
+            <div className="flex items-center gap-4">
+              <span className="w-1 h-6 bg-primary"></span>
+              <h5 className="text-text-main text-[12px] uppercase tracking-[4px] font-bold">Secuencia de Pases</h5>
+            </div>
+
+            <div className="relative w-full sm:max-w-md">
               <select
                 value=""
                 onChange={e => {
                   addDishToMenu(e.target.value);
                   e.target.value = "";
                 }}
-                className="flex-grow bg-text-main/5 border border-text-main/10 text-text-main text-[11px] p-2 outline-none focus:border-primary appearance-none cursor-pointer uppercase tracking-widest">
-                <option value="">+ Añadir pase al menú</option>
+                className="w-full bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 text-primary text-[10px] p-3 px-5 outline-none focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-[3px] font-bold">
+                <option value="" className="bg-bg-surface text-text-muted">+ Añadir pase al menú</option>
                 {allAvailableDishes.map(d => (
-                  <option key={d.id} value={d.id} className="bg-bg-surface font-sans">{d.nombre} ({d.categoria?.nombre})</option>
+                  <option key={d.id} value={d.id} className="bg-bg-surface text-text-main font-sans">{d.nombre} — {d.categoria?.nombre}</option>
                 ))}
               </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary/50">
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
             </div>
           </div>
 
@@ -1496,17 +1533,23 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
             {edit.platos.map((plato, idx) => (
               <div
                 key={`${plato.id}-${idx}`}
-                className="bg-text-main/5 p-4 group/item hover:bg-text-main/10 transition-all border-l-2 border-primary/20 hover:border-primary">
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-                  <span className="text-primary font-heading text-xl opacity-40 w-8">{(idx + 1).toString().padStart(2, '0')}</span>
+                className="bg-white/40 backdrop-blur-sm p-5 group/item hover:bg-white/60 transition-all border border-text-main/5 hover:border-primary/30 shadow-sm hover:shadow-md relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-primary/10 group-hover/item:bg-primary transition-colors"></div>
 
-                  <div className="flex-grow min-w-[150px]">
-                    <p className="text-text-main text-sm font-heading tracking-wide uppercase truncate">{plato.nombre}</p>
+                <div className="flex flex-wrap items-center gap-6">
+                  <div className="flex items-center gap-4">
+                    <span className="text-primary font-heading text-2xl opacity-20 w-8 tabular-nums">{(idx + 1).toString().padStart(2, '0')}</span>
+                    <div className="w-[2px] h-8 bg-text-main/5"></div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-6 flex-grow sm:flex-grow-0 ml-auto">
-                    <div className="w-20">
-                      <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Pase №</label>
+                  <div className="flex-grow min-w-[200px]">
+                    <p className="text-text-main text-[11px] uppercase tracking-[2px] font-bold mb-1 opacity-50">{plato.categoria?.nombre}</p>
+                    <p className="text-text-main text-base font-heading tracking-wide uppercase">{plato.nombre}</p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-8 ml-auto">
+                    <div className="w-16">
+                      <label className="text-[7px] uppercase text-text-muted block mb-1 tracking-[2px] font-bold opacity-60">Pase №</label>
                       <input
                         type="number"
                         value={plato.pivot?.numero_paso || idx + 1}
@@ -1515,26 +1558,26 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
                           newPlatos[idx] = { ...plato, pivot: { ...plato.pivot, numero_paso: e.target.value } };
                           setEdit({ ...edit, platos: newPlatos });
                         }}
-                        className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 font-bold"
+                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-sm w-full outline-none focus:border-primary pb-1 font-bold transition-colors text-center"
                       />
                     </div>
-                    <div className="min-w-[180px] flex-grow sm:flex-grow-0">
-                      <label className="text-[8px] uppercase text-text-muted block mb-1 tracking-widest font-bold">Anotación Chef</label>
+                    <div className="min-w-[240px]">
+                      <label className="text-[7px] uppercase text-text-muted block mb-1 tracking-[2px] font-bold opacity-60">Anotación del Chef</label>
                       <input
                         type="text"
-                        placeholder="Ej: Maridaje sugerido..."
+                        placeholder="Nota especial..."
                         value={plato.pivot?.notas || ''}
                         onChange={e => {
                           const newPlatos = [...edit.platos];
                           newPlatos[idx] = { ...plato, pivot: { ...plato.pivot, notas: e.target.value } };
                           setEdit({ ...edit, platos: newPlatos });
                         }}
-                        className="bg-transparent border-b border-text-main/20 text-text-main text-xs w-full outline-none focus:border-primary pb-1 italic"
+                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary pb-1 italic transition-colors"
                       />
                     </div>
                     <button
                       onClick={() => removeDishFromMenu(idx)}
-                      className="text-red-500/30 hover:text-red-500 transition-colors p-2 ml-auto sm:ml-0">
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500/5 text-red-500/40 hover:bg-red-500 hover:text-white transition-all">
                       <HiTrash size={16} />
                     </button>
                   </div>
@@ -1561,55 +1604,84 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
   }
 
   return (
-    <div className="group bg-bg-surface/90 border border-text-main/10 p-8 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
-      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-3xl -mr-12 -mt-12 group-hover:bg-primary/10 transition-colors"></div>
+    <div className="group bg-white border border-text-main/5 p-10 flex flex-col lg:flex-row gap-10 transition-all duration-700 relative overflow-hidden h-full hover:border-primary/30 hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)]">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:bg-primary/10 transition-all duration-1000"></div>
 
-      <div>
-        <div className="flex justify-between items-start mb-8">
-          <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold">
-            {item.pasos} Pasos • Gastronomía
-          </span>
-          <div className="flex gap-5 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-            <button onClick={() => setIsEditing(true)} className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">Gestionar</button>
-            <button onClick={handleDelete} className="text-red-500/50 hover:text-red-500 text-[10px] uppercase tracking-[2px] font-bold">Eliminar</button>
+      <div className="flex-grow flex flex-col justify-between lg:w-2/3">
+        <div>
+          <div className="flex justify-between items-start mb-8">
+            <div className="flex items-center gap-4">
+              <span className="bg-primary/10 text-primary text-[10px] uppercase tracking-[4px] font-bold px-4 py-1.5 rounded-full">
+                {item.pasos} Pasos
+              </span>
+              <span className="w-1 h-1 bg-text-main/20 rounded-full"></span>
+              <span className="text-text-muted text-[10px] uppercase tracking-[4px] font-medium opacity-60">Gastronomía</span>
+            </div>
+          </div>
+
+          <h4 className="text-text-main font-heading text-5xl mb-8 leading-tight group-hover:text-primary transition-colors duration-700">{item.nombre}</h4>
+
+          <div className="relative mb-10">
+            <p className="text-text-muted text-lg font-light italic leading-relaxed border-l-4 border-primary/20 pl-8 opacity-80 line-clamp-3">
+              "{item.descripcion}"
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3 mb-10 min-h-[44px]">
+            {item.platos?.slice(0, 6).map(d => (
+              <span key={d.id} className="text-[11px] bg-bg-body text-text-main/60 px-4 py-2 uppercase tracking-[2px] border border-text-main/5 font-medium hover:border-primary/30 hover:text-primary transition-all cursor-default">
+                {d.nombre}
+              </span>
+            ))}
+            {item.platos?.length > 6 && (
+              <span className="text-[11px] text-primary bg-primary/5 px-4 py-2 uppercase tracking-[2px] font-bold border border-primary/10">
+                + {item.platos.length - 6} más
+              </span>
+            )}
           </div>
         </div>
 
-        <h4 className="text-text-main font-heading text-3xl mb-4 leading-tight group-hover:text-primary transition-colors">{item.nombre}</h4>
-        <p className="text-text-muted text-sm font-light italic leading-relaxed border-l-2 border-primary/20 pl-5 mb-8 opacity-70 line-clamp-2">
-          "{item.descripcion}"
-        </p>
-
-        <div className="flex flex-wrap gap-2 mb-8 min-h-[40px]">
-          {item.platos?.slice(0, 5).map(d => (
-            <span key={d.id} className="text-[9px] bg-text-main/5 text-text-muted px-2.5 py-1 uppercase tracking-widest border border-text-main/5">
-              {d.nombre}
-            </span>
-          ))}
-          {item.platos?.length > 5 && (
-            <span className="text-[9px] text-primary/60 px-2.5 py-1 uppercase tracking-widest font-bold">
-              + {item.platos.length - 5} más
-            </span>
-          )}
+        <div className="pt-10 border-t border-text-main/5 flex justify-between items-end">
+          <div className="flex gap-12">
+            <div className="flex flex-col">
+              <span className="text-text-muted text-[10px] uppercase tracking-[3px] mb-3 font-bold opacity-30">Menú Completo</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-text-main font-heading text-5xl leading-none">{parseFloat(item.precio).toFixed(0)}</span>
+                <span className="text-text-main font-heading text-2xl opacity-40">€</span>
+              </div>
+            </div>
+            {!!item.precio_maridaje && (
+              <div className="flex flex-col relative pl-12">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-10 bg-text-main/10"></div>
+                <span className="text-primary text-[10px] uppercase tracking-[3px] mb-3 font-bold">Maridaje sugerido</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-primary font-heading text-3xl leading-none">+{parseFloat(item.precio_maridaje).toFixed(0)}</span>
+                  <span className="text-primary font-heading text-lg opacity-40">€</span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="pt-8 border-t border-text-main/5 flex justify-between items-end">
-        <div>
-          <div className="flex flex-col">
-            <span className="text-text-muted text-[8px] uppercase tracking-[2px] mb-1 opacity-60">Menú Degustación</span>
-            <span className="text-text-main font-heading text-3xl leading-none">{parseFloat(item.precio).toFixed(0)}€</span>
-          </div>
-          {!!item.precio_maridaje && (
-            <div className="mt-4 flex flex-col">
-              <span className="text-primary text-[8px] uppercase tracking-[2px] mb-1 font-bold">Maridaje Opcional</span>
-              <span className="text-primary font-heading text-xl leading-none">+{parseFloat(item.precio_maridaje).toFixed(0)}€</span>
-            </div>
-          )}
+      <div className="lg:w-1/3 flex flex-col justify-between items-end border-l border-text-main/5 lg:pl-10 pt-8 lg:pt-0">
+        <div className="flex flex-col gap-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-x-0 md:translate-x-4 md:group-hover:translate-x-0 w-full">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="w-full bg-text-main text-white hover:bg-primary px-6 py-4 text-[11px] uppercase tracking-[4px] font-bold transition-all shadow-xl flex items-center justify-center gap-3">
+            <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+            Gestionar Menú
+          </button>
+          <button
+            onClick={handleDelete}
+            className="w-full border border-red-500/20 text-red-500/50 hover:bg-red-500 hover:text-white px-6 py-4 text-[11px] uppercase tracking-[4px] font-bold transition-all">
+            Eliminar Registro
+          </button>
         </div>
-        <div className="text-right">
-          <span className="text-text-muted text-[9px] uppercase tracking-[3px] opacity-60 block mb-2">por persona</span>
-          <div className="w-10 h-[1px] bg-primary/30 group-hover:w-16 transition-all duration-500 ml-auto"></div>
+
+        <div className="text-right flex flex-col items-end w-full mt-auto pb-4">
+          <span className="text-text-muted text-[11px] uppercase tracking-[5px] opacity-40 block mb-4 font-bold">Reserva Exclusiva</span>
+          <div className="w-20 h-[3px] bg-primary/20 group-hover:w-full transition-all duration-1000 group-hover:bg-primary"></div>
         </div>
       </div>
     </div>
@@ -2053,7 +2125,7 @@ const UserEditRow = ({ user, fetchData }) => {
           <p className="text-text-muted text-xs font-light tracking-wide">{user.email} {user.telefono && `• ${user.telefono}`}</p>
         </div>
       </div>
-      <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0 mt-4 md:mt-0">
+      <div className="flex gap-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform translate-x-0 md:translate-x-4 md:group-hover:translate-x-0 mt-6 md:mt-0 w-full md:w-auto border-t md:border-t-0 border-text-main/5 pt-4 md:pt-0">
         <button onClick={() => setIsEditing(true)} className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold">Editar Perfil</button>
         {user.id !== 1 && (
           <button onClick={handleDelete} className="text-red-500/50 hover:text-red-500 text-[10px] uppercase tracking-[2px] font-bold">Eliminar</button>

@@ -26,7 +26,7 @@ class PedidoController extends Controller
         $userId = Auth::id();
 
         $pedidos = Pedido::where('usuario_id', $userId)
-            ->with(['detalles.plato', 'detalles.vino'])
+            ->with(['detalles.plato', 'detalles.vino', 'detalles.bebida', 'detalles.menu_degustacion'])
             ->latest()
             ->get();
 
@@ -46,20 +46,22 @@ class PedidoController extends Controller
         $request->validate([
             'total' => 'required|numeric',
             'metodo_pago' => 'required|string',
+            'hora_recogida' => 'nullable|string',
+            'fecha_recogida' => 'nullable|date',
             'articulos' => 'required|array|min:1',
             'articulos.*.db_id' => 'required|integer',
-            'articulos.*.tipo_item' => 'required|string|in:plato,vino',
+            'articulos.*.tipo_item' => 'required|string|in:plato,vino,bebida,menu_degustacion',
             'articulos.*.nombre' => 'required|string',
             'articulos.*.cantidad' => 'required|integer|min:1',
             'articulos.*.precio' => 'required|numeric',
         ]);
 
         return DB::transaction(function () use ($request) {
-            $total = (float)$request->total;
+            $total = (float) $request->total;
             $subtotal = round($total / 1.10, 2);
             $impuestos = round($total - $subtotal, 2);
 
-            // Crear el pedido principal siguiendo el nuevo esquema SQL
+            // Crear el pedido principal
             $pedido = Pedido::create([
                 'usuario_id' => Auth::id(),
                 'numero_pedido' => 'DG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4)),
@@ -68,15 +70,20 @@ class PedidoController extends Controller
                 'subtotal' => $subtotal,
                 'impuestos' => $impuestos,
                 'total' => $total,
-                'direccion' => $request->direccion ?? null
+                'direccion' => $request->direccion ?? null,
+                'hora_recogida' => $request->hora_recogida,
+                'fecha_recogida' => $request->fecha_recogida,
+                'metodo_pago' => $request->metodo_pago,
             ]);
 
-            // Crear cada artículo del pedido con los nuevos nombres de columna
+            // Crear cada artículo del pedido
             foreach ($request->articulos as $item) {
                 DetallePedido::create([
                     'pedido_id' => $pedido->id,
                     'plato_id' => $item['tipo_item'] === 'plato' ? $item['db_id'] : null,
                     'vino_id' => $item['tipo_item'] === 'vino' ? $item['db_id'] : null,
+                    'bebida_id' => $item['tipo_item'] === 'bebida' ? $item['db_id'] : null,
+                    'menu_degustacion_id' => $item['tipo_item'] === 'menu_degustacion' ? $item['db_id'] : null,
                     'cantidad' => $item['cantidad'],
                     'precio_unitario' => $item['precio'],
                     'precio_total' => $item['precio'] * $item['cantidad']
@@ -96,7 +103,9 @@ class PedidoController extends Controller
      */
     public function all()
     {
-        $pedidos = Pedido::with('usuario', 'detalles')->latest()->get();
+        $pedidos = Pedido::with(['usuario', 'detalles.plato', 'detalles.vino', 'detalles.bebida', 'detalles.menu_degustacion'])
+            ->latest()
+            ->get();
         return response()->json($pedidos);
     }
 

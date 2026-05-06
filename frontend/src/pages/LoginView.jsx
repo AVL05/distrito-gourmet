@@ -25,26 +25,52 @@ const LoginView = () => {
     e.preventDefault();
     try {
       // Intentar iniciar sesión llamando a la tienda de autenticación
-      await login(formData);
-      Swal.fire({
-        icon: 'success',
-        title: 'Bienvenido',
-        text: 'Sesión iniciada correctamente',
-        background: '#fdfaf6',
-        color: '#2c302e',
-        confirmButtonColor: '#e76f51',
-      });
-      navigate('/dashboard');
+      const success = await login(formData);
+
+      if (success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Bienvenido',
+          text: 'Sesión iniciada correctamente',
+          background: '#fdfaf6',
+          color: '#2c302e',
+          confirmButtonColor: '#e76f51',
+          timer: 1500,
+        });
+        navigate('/dashboard');
+      } else {
+        // Si el login falla, el error ya está en el store (o lo sacamos del catch interno de auth.js)
+        // Pero como login() devuelve false, manejamos el error aquí
+        const errorMsg = useAuthStore.getState().error;
+        console.log('Login error message:', errorMsg); // Para depuración
+
+        const isNotFound = errorMsg?.toLowerCase().includes('no existe') ||
+                           errorMsg?.toLowerCase().includes('no registrado') ||
+                           errorMsg?.toLowerCase().includes('invalid') ||
+                           errorMsg?.toLowerCase().includes('records') ||
+                           errorMsg?.toLowerCase().includes('credenciales');
+
+        Swal.fire({
+          icon: 'error',
+          title: isNotFound ? 'Usuario no encontrado' : 'Error de Acceso',
+          text: isNotFound
+            ? 'El correo electrónico no está registrado en nuestro sistema. Por favor, regístrese para continuar.'
+            : errorMsg || 'Credenciales inválidas, por favor revise sus datos.',
+          background: '#fdfaf6',
+          color: '#2c302e',
+          confirmButtonColor: '#e76f51',
+          showCancelButton: isNotFound,
+          cancelButtonText: 'Cerrar',
+          confirmButtonText: isNotFound ? 'Ir a Registro' : 'Reintentar',
+        }).then((result) => {
+          if (isNotFound && result.isConfirmed) {
+            navigate('/register');
+          }
+        });
+      }
     } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error de Acceso',
-        text: 'Credenciales inválidas, por favor revise sus datos.',
-        background: '#fdfaf6',
-        color: '#2c302e',
-        confirmButtonColor: '#e76f51',
-      });
+      // Este catch solo se activará si hay un error crítico no manejado en el store
+      console.error('Error crítico:', error);
     }
   };
 

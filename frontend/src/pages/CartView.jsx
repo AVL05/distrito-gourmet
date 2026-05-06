@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/auth';
 import { HiMinus, HiPlus, HiTrash, HiCreditCard, HiCash, HiArrowLeft, HiCheckCircle } from 'react-icons/hi';
 import { FaPaypal } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from '@/services/api';
 import Swal from 'sweetalert2';
 import { PageTransition, FadeIn } from '@/motion';
@@ -17,26 +17,59 @@ const CartView = () => {
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [pickupTime, setPickupTime] = useState('');
 
-  const pickupOptions = [
-    { label: '13:00 (Comida)', value: '13:00' },
-    { label: '14:00 (Comida)', value: '14:00' },
-    { label: '20:00 (Cena)', value: '20:00' },
-    { label: '21:00 (Cena)', value: '21:00' },
-  ];
-
-  const isTimePassed = timeStr => {
+  // Generar opciones de recogida dinámicas para hoy y mañana
+  const generatePickupOptions = () => {
+    const options = [];
     const now = new Date();
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const target = new Date();
-    target.setHours(hours, minutes, 0, 0);
-    return now > target;
+
+    // Intervalos de 30 min entre 13:00-15:30 y 20:00-22:30
+    const timeRanges = [
+      { start: 13, end: 15.5, label: 'Comida' },
+      { start: 20, end: 22.5, label: 'Cena' }
+    ];
+
+    // Función auxiliar para añadir slots de un día
+    const addSlotsForDay = (date, isToday) => {
+      timeRanges.forEach(range => {
+        for (let h = range.start; h <= range.end; h += 0.5) {
+          const hours = Math.floor(h);
+          const minutes = (h % 1) * 60;
+          const timeDate = new Date(date);
+          timeDate.setHours(hours, minutes, 0, 0);
+
+          if (timeDate > now || !isToday) {
+            const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+            const dayLabel = isToday ? 'Hoy' : 'Mañana';
+            options.push({
+              label: `${dayLabel} - ${timeStr} (${range.label})`,
+              value: `${isToday ? 'today' : 'tomorrow'}-${timeStr}`,
+              actualTime: timeStr,
+              date: isToday ? 'hoy' : 'mañana'
+            });
+          }
+        }
+      });
+    };
+
+    addSlotsForDay(now, true);
+    // Si quedan menos de 3 opciones hoy, o ya es tarde, añadir mañana
+    if (options.length < 5) {
+      const tomorrow = new Date();
+      tomorrow.setDate(now.getDate() + 1);
+      addSlotsForDay(tomorrow, false);
+    }
+
+    return options;
   };
 
+  const pickupOptions = generatePickupOptions();
+
   // Seleccionar automáticamente la primera hora disponible
-  useState(() => {
-    const firstAvailable = pickupOptions.find(opt => !isTimePassed(opt.value));
-    if (firstAvailable) setPickupTime(firstAvailable.value);
-  }, []);
+  useEffect(() => {
+    if (pickupOptions.length > 0 && !pickupTime) {
+      setPickupTime(pickupOptions[0].value);
+    }
+  }, [pickupOptions, pickupTime]);
 
   const cartItems = useCartStore(state => state.items);
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -60,22 +93,35 @@ const CartView = () => {
 
   const handleCheckout = async () => {
     setIsProcessing(true);
-    try {
-      await axios.post('/orders', {
-        articulos: cartItems.map(item => ({
-          db_id: item.id.toString().startsWith('w') ? parseInt(item.id.replace('w', '')) : parseInt(item.id),
-          tipo_item: item.item_type || 'plato',
-          nombre: item.name,
-          cantidad: item.quantity,
-          precio: item.price,
-        })),
-        total: total,
-        metodo_pago: paymentMethod,
-        hora_recogida: pickupTime,
+    if (!pickupTime) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Hora requerida',
+        text: 'Por favor, seleccione una hora de recogida.',
+        background: '#fdfaf6',
+        color: '#2c302e',
+        confirmButtonColor: '#e76f51',
       });
+      setIsProcessing(false);
+      return;
+    }
 
-      // Usamos directamente el pickupTime seleccionado para evitar desfases de zona horaria en la confirmación
-      const timeString = pickupTime;
+    const payload = {
+      articulos: cartItems.map(item => ({
+        db_id: parseInt(item.id.toString().replace(/\D/g, '')) || 0,
+        tipo_item: item.item_type || 'plato',
+        nombre: item.name,
+        cantidad: item.quantity,
+        precio: parseFloat(item.price),
+      })),
+      total: parseFloat(total),
+      metodo_pago: paymentMethod,
+      hora_recogida: (pickupTime.split('-')[1] || pickupTime),
+      fecha_recogida: pickupTime.startsWith('today') ? new Date().toISOString().split('T')[0] : new Date(Date.now() + 86400000).toISOString().split('T')[0],
+    };
+
+    try {
+      await axios.post('/orders', payload);
 
       clearCart();
       Swal.fire({
@@ -86,7 +132,7 @@ const CartView = () => {
             <p class="mb-4">Su solicitud ha sido procesada con éxito mediante <b>${paymentMethod === 'card' ? 'Tarjeta' : paymentMethod === 'cash' ? 'Efectivo' : 'PayPal'}</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
               <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Hora Estimada de Recogida</p>
-              <p class="text-4xl font-heading text-primary">${timeString}</p>
+              <p class="text-4xl font-heading text-primary">${pickupOptions.find(o => o.value === pickupTime)?.label || pickupTime}</p>
               <p class="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos en nuestro local.</p>
             </div>
           </div>
@@ -308,8 +354,8 @@ const CartView = () => {
                       onChange={e => setPickupTime(e.target.value)}
                       className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-none focus:border-primary transition-colors font-body text-sm cursor-pointer">
                       {pickupOptions.map(opt => (
-                        <option key={opt.value} value={opt.value} disabled={isTimePassed(opt.value)}>
-                          {opt.label} {isTimePassed(opt.value) ? '(No disponible)' : ''}
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
                         </option>
                       ))}
                     </select>

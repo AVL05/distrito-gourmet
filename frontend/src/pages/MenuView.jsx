@@ -461,8 +461,8 @@ const TastingMenuCard = ({ menu }) => (
               {String(dish.pivot?.numero_paso || i + 1).padStart(2, '0')}
             </span>
             <div className="flex-grow">
-              <span className="font-heading text-xl sm:text-2xl text-text-main">{dish.name}</span>
-              {dish.pivot?.notes && <p className="text-text-muted text-sm font-body italic mt-1">{dish.pivot.notes}</p>}
+              <span className="font-heading text-xl sm:text-2xl text-text-main">{dish.nombre || dish.name}</span>
+              {(dish.pivot?.notas || dish.pivot?.notes) && <p className="text-text-muted text-sm font-body italic mt-1">{dish.pivot?.notas || dish.pivot?.notes}</p>}
             </div>
           </div>
         ))}
