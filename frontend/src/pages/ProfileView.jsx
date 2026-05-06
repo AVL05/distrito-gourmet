@@ -49,9 +49,9 @@ const ProfileView = () => {
 
       <FadeIn className="w-full max-w-2xl bg-white/90 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         <div className="text-center mb-12">
-          <span className="text-primary text-3xl mb-4 opacity-80 block font-light">✧</span>
+          <span className="text-primary text-3xl mb-4 opacity-80 block font-normal">✧</span>
           <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
-            Datos <span className="italic text-primary-hover font-light">Personales</span>
+            Datos <span className="italic text-primary-hover font-normal">Personales</span>
           </h2>
           <div className="mb-4">
             <span className="text-[10px] bg-black text-white px-3 py-1 font-bold uppercase tracking-[3px]">
@@ -59,7 +59,7 @@ const ProfileView = () => {
             </span>
           </div>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
-          <p className="text-gray-500 text-sm tracking-wide font-light">
+          <p className="text-gray-500 text-sm tracking-wide font-normal">
             Gestione su información de contacto y credenciales.
           </p>
         </div>
@@ -74,7 +74,7 @@ const ProfileView = () => {
               value={formData.nombre}
               onChange={e => setFormData({ ...formData, nombre: e.target.value })}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -87,7 +87,7 @@ const ProfileView = () => {
               value={formData.email}
               onChange={e => setFormData({ ...formData, email: e.target.value })}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -99,7 +99,7 @@ const ProfileView = () => {
               type="tel"
               value={formData.telefono}
               onChange={e => setFormData({ ...formData, telefono: e.target.value })}
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -112,7 +112,7 @@ const ProfileView = () => {
               placeholder="Deje en blanco para mantener la actual"
               value={formData.password}
               onChange={e => setFormData({ ...formData, password: e.target.value })}
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 

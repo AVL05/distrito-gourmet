@@ -49,7 +49,7 @@ const ContactView = () => {
             <div>
               <h3 className="font-heading text-2xl text-text-main mb-6">Ubicación</h3>
               <div>
-                <p className="text-text-muted font-body font-light leading-relaxed text-[15px] tracking-wide mb-6">
+                <p className="text-text-muted font-body font-normal leading-relaxed text-[15px] tracking-wide mb-6">
                   Distrito Financiero
                   <br />
                   Avenida de la Alta Gastronomía, 8
@@ -68,7 +68,7 @@ const ContactView = () => {
 
             <div>
               <h3 className="font-heading text-2xl text-text-main mb-6">Comunicación</h3>
-              <div className="text-text-muted font-body font-light leading-relaxed text-[14px]">
+              <div className="text-text-muted font-body font-normal leading-relaxed text-[14px]">
                 <p className="mb-4">
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Mesa y Reservas
@@ -96,7 +96,7 @@ const ContactView = () => {
 
             <div>
               <h3 className="font-heading text-2xl text-text-main mb-6">Horario</h3>
-              <div className="grid grid-cols-2 gap-8 text-text-muted font-body font-light text-[14px] tracking-wide">
+              <div className="grid grid-cols-2 gap-8 text-text-muted font-body font-normal text-[14px] tracking-wide">
                 <div>
                   <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">
                     Comidas
@@ -119,7 +119,7 @@ const ContactView = () => {
               <h3 className="font-heading text-3xl sm:text-4xl text-text-main mb-4 leading-tight">
                 Atención <span className="italic text-primary">Personalizada</span>
               </h3>
-              <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-light tracking-wide mb-10 sm:mb-12">
+              <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-normal tracking-wide mb-10 sm:mb-12">
                 Nuestro equipo de Guest Relations le atenderá con la extrema diligencia que precisa su consulta.
               </p>
 
@@ -178,7 +178,7 @@ const ContactView = () => {
 
                 <AnimatePresence>
                   {sent && (
-                    <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-light tracking-wide mt-6 font-body">
+                    <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
                       Su mensaje ha sido enviado a nuestras oficinas. Le responderemos en un plazo máximo de 24 horas.
                     </Toast>
                   )}

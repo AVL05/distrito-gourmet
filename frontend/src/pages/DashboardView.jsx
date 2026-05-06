@@ -125,10 +125,10 @@ const OrderItem = ({ order }) => {
                   </span>
                   <div className="flex flex-col">
                     <span className="text-text-main font-medium tracking-tight uppercase text-[15px]">
-                      {item.plato?.nombre || 
-                       item.vino?.nombre || 
-                       item.bebida?.nombre || 
-                       item.menu_degustacion?.nombre || 
+                      {item.plato?.nombre ||
+                       item.vino?.nombre ||
+                       item.bebida?.nombre ||
+                       item.menu_degustacion?.nombre ||
                        'Producto Gourmet'}
                     </span>
                     <span className="text-[12px] text-text-muted tracking-widest mt-0.5">
@@ -202,10 +202,10 @@ const DashboardView = () => {
             <h1 className="font-heading text-4xl sm:text-5xl text-text-main uppercase tracking-widest leading-tight">
               Bienvenido,
               <br />
-              <span className="italic text-primary-hover font-light">{user?.nombre || 'Huésped'}</span>
+              <span className="italic text-primary-hover font-normal">{user?.nombre || 'Huésped'}</span>
             </h1>
             <div className="flex items-center gap-4 mt-4">
-              <p className="text-text-muted font-light tracking-wide text-sm">
+              <p className="text-text-muted font-normal tracking-wide text-sm">
                 {user?.email} {user?.telefono && ` | ${user.telefono}`}
               </p>
               <span className="text-[9px] bg-black text-white px-2 py-0.5 rounded-sm font-bold uppercase tracking-widest">
@@ -225,13 +225,13 @@ const DashboardView = () => {
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
               <Link to="/reservations" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
                   ✦
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
                   Mis <span className="italic text-primary-hover">Reservas</span>
                 </h3>
-                <p className="text-text-muted text-sm font-light leading-relaxed mb-8">
+                <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
                   Gestione sus futuras experiencias gastronómicas y consulte el historial de visitas.
                 </p>
                 <div className="mt-auto">
@@ -248,13 +248,13 @@ const DashboardView = () => {
             <StaggerItem>
               <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-8 sm:p-10 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.25)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
                 <Link to="/admin" className="block h-full relative z-10">
-                  <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:rotate-12 transition-transform duration-500">
+                  <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:rotate-12 transition-transform duration-500">
                     ⚙
                   </span>
                   <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
                     Panel de <span className="italic text-primary-hover">Administración</span>
                   </h3>
-                  <p className="text-text-muted text-sm font-light leading-relaxed mb-8">
+                  <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
                     Gestión completa de la carta, reservas de clientes y usuarios del sistema.
                   </p>
                   <div className="mt-auto">
@@ -271,13 +271,13 @@ const DashboardView = () => {
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
               <Link to="/profile" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
                   ✧
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
                   Datos <span className="italic text-primary-hover">Personales</span>
                 </h3>
-                <p className="text-text-muted text-sm font-light leading-relaxed mb-8">
+                <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
                   Actualice sus preferencias, alergias y configuración de contacto.
                 </p>
                 <div className="mt-auto">
@@ -293,13 +293,13 @@ const DashboardView = () => {
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-8 sm:p-10 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
               <Link to="/menu" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
                   ⋆
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
                   Carta <span className="italic text-primary-hover">Gourmet</span>
                 </h3>
-                <p className="text-text-muted text-sm font-light leading-relaxed mb-8">
+                <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
                   Explore nuestras nuevas creaciones y realice su pedido para disfrutar en casa.
                 </p>
                 <div className="mt-auto">
@@ -316,7 +316,7 @@ const DashboardView = () => {
           delay={0.3}
           className="mt-16 bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12 border-b border-text-main/10 pb-6">
-            <h3 className="font-heading text-2xl text-text-main uppercase tracking-[4px] font-light">
+            <h3 className="font-heading text-2xl text-text-main uppercase tracking-[4px] font-normal">
               Historial de <span className="italic text-primary-hover font-normal">Pedidos</span>
             </h3>
             {orders.length > 0 && (
@@ -343,8 +343,8 @@ const DashboardView = () => {
                 <div className="w-16 h-16 bg-text-main/5 border border-text-main/10 flex items-center justify-center text-text-main/20 rounded-full mb-8">
                   <HiShoppingBag size={32} />
                 </div>
-                <p className="text-text-main font-heading text-2xl mb-4 italic font-light">Sin Registros</p>
-                <p className="text-text-muted font-body font-light text-sm max-w-xs mx-auto mb-10 leading-relaxed">
+                <p className="text-text-main font-heading text-2xl mb-4 italic font-normal">Sin Registros</p>
+                <p className="text-text-muted font-body font-normal text-sm max-w-xs mx-auto mb-10 leading-relaxed">
                   Aún no ha realizado ningún pedido gourmet para llevar.
                 </p>
                 <Link

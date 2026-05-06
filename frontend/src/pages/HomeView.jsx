@@ -56,7 +56,7 @@ const HomeView = () => {
           />
 
           <FadeIn delay={0.9}>
-            <p className="text-sm md:text-base text-text-muted font-body font-light mb-16 max-w-lg mx-auto leading-loose tracking-widest uppercase">
+            <p className="text-sm md:text-base text-text-muted font-body font-normal mb-16 max-w-lg mx-auto leading-loose tracking-widest uppercase">
               Cocina Española Contemporánea
             </p>
           </FadeIn>
@@ -126,11 +126,11 @@ const HomeView = () => {
 
               <LineReveal className="bg-text-main/10 mb-10" duration={1.2} delay={0.3} />
 
-              <p className="text-text-muted mb-8 leading-relaxed font-body font-light text-[15px] tracking-wide">
+              <p className="text-text-muted mb-8 leading-relaxed font-body font-normal text-[15px] tracking-wide">
                 En Distrito Gourmet, no solo cocinamos; curamos ingredientes. Un diálogo constante entre la tradición
                 española más profunda y la audacia de la técnica moderna.
               </p>
-              <p className="text-text-muted mb-12 leading-relaxed font-body font-light text-[15px] tracking-wide">
+              <p className="text-text-muted mb-12 leading-relaxed font-body font-normal text-[15px] tracking-wide">
                 Cada receta está deconstruida, analizada matemáticamente y ensamblada de nuevo para provocar una
                 reacción emocional inesperada.
               </p>
@@ -187,7 +187,7 @@ const HomeView = () => {
               className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 md:pl-0 flex flex-col justify-start">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">01.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Materia Prima</h3>
-              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+              <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
                 Selección diaria de producto local de extrema calidad. Trato reverencial al productor y obsesión por la
                 frescura inmaculada.
               </p>
@@ -201,7 +201,7 @@ const HomeView = () => {
               className="md:border-r border-b md:border-b-0 border-text-main/10 p-8 md:p-12 flex flex-col justify-start">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">02.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Vinos de Autor</h3>
-              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+              <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
                 Maridaje curado artesanalmente. Más de diez mil referencias descansan en una de las bodegas más
                 completas de Europa.
               </p>
@@ -215,7 +215,7 @@ const HomeView = () => {
               className="p-8 md:p-12 md:pr-0 flex flex-col justify-start border-b md:border-b-0 border-text-main/10">
               <span className="text-5xl text-text-main/45 font-heading font-semibold mb-6 block leading-none">03.</span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">Espacio</h3>
-              <p className="text-text-muted font-body font-light text-[14px] leading-relaxed tracking-wide">
+              <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
                 Un entorno diseñado en vacío absolouto. Madera noble, lino puro e iluminación escenográfica enfocada al
                 plato.
               </p>
@@ -239,7 +239,7 @@ const HomeView = () => {
               className="text-4xl sm:text-5xl md:text-6xl font-heading text-bg-body leading-tight mb-8 justify-center"
             />
             <LineReveal className="bg-bg-body/20 mx-auto mb-8" style={{ width: '6rem' }} />
-            <p className="text-bg-body/70 text-sm md:text-base font-body font-light max-w-lg mx-auto tracking-wide leading-loose">
+            <p className="text-bg-body/70 text-sm md:text-base font-body font-normal max-w-lg mx-auto tracking-wide leading-loose">
               Cupo extremadamente estrictro y reducido por servicio para garantizar una experiencia sin interferencias.
             </p>
           </ScrollReveal>

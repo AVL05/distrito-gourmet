@@ -13,7 +13,7 @@ const Footer = () => {
         <FadeIn className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
           {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">
-            <h3 className="font-heading text-3xl md:text-3xl text-text-main tracking-[0.2em] mb-6 flex items-center gap-3 font-light">
+            <h3 className="font-heading text-3xl md:text-3xl text-text-main tracking-[0.2em] mb-6 flex items-center gap-3 font-normal">
               <span className="text-primary opacity-80 text-xl">✦</span>
               DISTRITO<span className="italic text-primary-hover">GOURMET</span>
             </h3>

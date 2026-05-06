@@ -1,3 +1,7 @@
+import typography from '@tailwindcss/typography';
+import forms from '@tailwindcss/forms';
+import aspectRatio from '@tailwindcss/aspect-ratio';
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -9,10 +13,10 @@ export default {
         'bg-body': '#FCFBF8', // Warm creamy textured background
         'bg-surface': '#FFFFFF', // Pure white for cards/layers
         'text-main': '#224032', // Deep brand green from 'DISTRITO' text
-        'text-muted': '#6D726D', // Complementary elegant gray
+        'text-muted': '#4A504A', // Darker elegant gray for better contrast
       },
       fontFamily: {
-        heading: ['"Cormorant Garamond"', 'serif'],
+        heading: ['"Playfair Display"', 'serif'],
         body: ['"Inter"', 'sans-serif'],
       },
       // Any animations
@@ -27,5 +31,5 @@ export default {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms'), require('@tailwindcss/aspect-ratio')],
+  plugins: [typography, forms, aspectRatio],
 };

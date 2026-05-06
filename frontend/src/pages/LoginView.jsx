@@ -93,7 +93,7 @@ const LoginView = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-light"
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-normal"
               placeholder="su@email.com"
               required
             />
@@ -105,7 +105,7 @@ const LoginView = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-light"
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-normal"
               placeholder="••••••••"
               required
             />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, useReducedMotion, FadeIn, Toast, motion } from '@/motion';
 import { useAuthStore } from '@/store/auth';
 import axios from '@/services/api';
@@ -12,13 +12,24 @@ const ReservationForm = ({ compact = false }) => {
 
   // Estado principal que guarda los datos introducidos en el formulario
   const [form, setForm] = useState({
-    name: user?.name || '',
-    phone: user?.phone || '',
+    name: user?.nombre || '',
+    phone: user?.telefono || '',
     guests: '',
     date: '',
     time: '',
     comments: '',
   });
+
+  // Sincronizar con el usuario si cambia (ej: login posterior)
+  useEffect(() => {
+    if (user) {
+      setForm(prev => ({
+        ...prev,
+        name: prev.name || user.nombre || '',
+        phone: prev.phone || user.telefono || '',
+      }));
+    }
+  }, [user]);
 
   // Estados para controlar si está cargando y si se envió con éxito
   const [loading, setLoading] = useState(false);
@@ -102,8 +113,8 @@ const ReservationForm = ({ compact = false }) => {
       <form onSubmit={handleSubmit} className="relative z-10">
         {!compact && (
           <div className="text-center mb-12">
-            <h3 className="font-heading text-3xl md:text-4xl text-gray-900 tracking-[0.2em] mb-4 drop-shadow-lg font-light">
-              Su <span className="italic font-light text-primary-hover">Reserva</span>
+            <h3 className="font-heading text-3xl md:text-4xl text-gray-900 tracking-[0.2em] mb-4 drop-shadow-lg font-normal">
+              Su <span className="italic font-normal text-primary-hover">Reserva</span>
             </h3>
             <div className="w-16 h-[1px] bg-primary mx-auto opacity-70"></div>
           </div>
@@ -121,7 +132,7 @@ const ReservationForm = ({ compact = false }) => {
             onChange={handleChange}
             required
             placeholder="Ej. Marqués de Salamanca"
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
           />
         </div>
 
@@ -138,7 +149,7 @@ const ReservationForm = ({ compact = false }) => {
               onChange={handleChange}
               required
               placeholder="+34 000 000 000"
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-light"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
           <div className="relative group">
@@ -151,7 +162,7 @@ const ReservationForm = ({ compact = false }) => {
               value={form.guests}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer">
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer">
               <option value="" disabled>
                 Seleccione número
               </option>
@@ -183,7 +194,7 @@ const ReservationForm = ({ compact = false }) => {
               required
               min={today}
               max={maxDate}
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-light cursor-pointer"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-normal cursor-pointer"
             />
           </div>
           <div className="relative group">
@@ -196,7 +207,7 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-light appearance-none cursor-pointer">
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer">
               <option value="" disabled>
                 Seleccione horario
               </option>
@@ -220,7 +231,7 @@ const ReservationForm = ({ compact = false }) => {
             onChange={handleChange}
             rows="2"
             placeholder="Alergias, celebraciones u otros detalles importantes para nuestro Maître..."
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-light"></textarea>
+            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-normal"></textarea>
         </div>
 
         {/* Botón para enviar el formulario de reserva */}
@@ -243,11 +254,11 @@ const ReservationForm = ({ compact = false }) => {
           {success && (
             <Toast className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-2xl">
               <span className="text-primary text-2xl mb-2">✦</span>
-              <p className="text-gray-900 font-light tracking-wide leading-relaxed">
+              <p className="text-gray-900 font-normal tracking-wide leading-relaxed">
                 {serverMessage || 'Su petición de reserva ha sido recibida con éxito.'}
                 <br />
                 <span className="text-gray-500 text-sm mt-2 block italic opacity-70">
-                  {serverMessage.includes('PENDIENTE')
+                  {serverMessage?.includes('PENDIENTE')
                     ? 'Nuestro equipo revisará la capacidad y le notificará por email.'
                     : 'Le esperamos para brindarle una experiencia inolvidable.'}
                 </span>

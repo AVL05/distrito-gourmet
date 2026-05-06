@@ -168,7 +168,7 @@ const CartView = () => {
           </span>
           <h2 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">
             Su Selección <br />
-            <span className="italic font-light text-primary">Inactiva</span>
+            <span className="italic font-normal text-primary">Inactiva</span>
           </h2>
           <div className="w-16 h-[1px] bg-text-main/10 mb-8"></div>
           <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
@@ -215,7 +215,7 @@ const CartView = () => {
                     <div className="flex items-center gap-8 w-full sm:w-auto">
                       <div className="text-left">
                         <h3 className="font-heading text-3xl text-text-main mb-2 leading-tight">{item.name}</h3>
-                        <p className="text-text-muted font-body font-light text-[13px] tracking-widest uppercase">
+                        <p className="text-text-muted font-body font-normal text-[13px] tracking-widest uppercase">
                           {item.price.toFixed(2)}€{item.isPerUnit && ' / Ud.'}
                         </p>
                       </div>
@@ -228,7 +228,7 @@ const CartView = () => {
                           className="w-10 h-10 flex items-center justify-center text-text-muted hover:text-text-main hover:bg-text-main/5 transition-colors">
                           <HiMinus size={12} />
                         </button>
-                        <span className="w-12 text-center text-[13px] font-light text-text-main font-body py-2 border-x border-text-main/20">
+                        <span className="w-12 text-center text-[13px] font-normal text-text-main font-body py-2 border-x border-text-main/20">
                           {item.quantity}
                         </span>
                         <button
@@ -260,7 +260,7 @@ const CartView = () => {
                   <h3 className="font-heading text-3xl text-text-main mb-8 pb-6 border-b border-text-main/10">
                     Resumen
                   </h3>
-                  <div className="space-y-6 mb-12 text-[14px] font-light font-body tracking-wide text-text-muted">
+                  <div className="space-y-6 mb-12 text-[14px] font-normal font-body tracking-wide text-text-muted">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
                       <span>{total.toFixed(2)}€</span>
@@ -297,7 +297,7 @@ const CartView = () => {
               <h1 className="font-heading text-5xl sm:text-6xl text-text-main mb-6">
                 Método de <span className="italic text-primary">Pago</span>
               </h1>
-              <p className="text-text-muted uppercase text-[11px] tracking-[4px] font-light">
+              <p className="text-text-muted uppercase text-[11px] tracking-[4px] font-normal">
                 Seleccione su preferencia de abono
               </p>
             </div>

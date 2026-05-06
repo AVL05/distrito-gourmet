@@ -128,8 +128,8 @@ const ReservationsView = () => {
                   </div>
                 ) : reservations.length === 0 ? (
                   <FadeIn className="flex flex-col items-center justify-center text-center py-20 px-4 sm:px-8 border border-text-main/10 bg-bg-surface">
-                    <span className="text-text-muted text-4xl mb-6 font-light">✦</span>
-                    <p className="text-text-muted font-light tracking-wide text-sm">
+                    <span className="text-text-muted text-4xl mb-6 font-normal">✦</span>
+                    <p className="text-text-muted font-normal tracking-wide text-sm">
                       Aún no constan reservas en su historial.
                     </p>
                   </FadeIn>
@@ -149,11 +149,11 @@ const ReservationsView = () => {
                                    })
                                    .replace(/^\w/, c => c.toUpperCase())}
                               </span>
-                              <span className="text-primary font-body text-xl font-light tracking-widest relative top-[-4px]">
+                              <span className="text-primary font-body text-xl font-normal tracking-widest relative top-[-4px]">
                                 {res.hora_reserva ? res.hora_reserva.slice(0, 5) : ''}
                               </span>
                             </div>
-                            <div className="flex gap-8 text-[12px] text-text-muted font-light uppercase tracking-widest mt-4">
+                            <div className="flex gap-8 text-[12px] text-text-muted font-normal uppercase tracking-widest mt-4">
                               <span className="flex items-center gap-2">
                                 <span className="text-text-main/40">COMENSALES</span> {res.comensales}
                               </span>

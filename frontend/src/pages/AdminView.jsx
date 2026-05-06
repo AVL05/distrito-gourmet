@@ -290,7 +290,7 @@ const AdminView = () => {
             </div>
 
             <div className="bg-black/5 p-4 rounded-sm border border-text-main/5">
-              <p className="text-text-main text-[14px] font-light leading-relaxed italic opacity-90">
+              <p className="text-text-main text-[14px] font-normal leading-relaxed italic opacity-90">
                 {order.detalles?.map(i => {
                   const nombre = i.plato?.nombre || i.vino?.nombre || i.bebida?.nombre || i.menu_degustacion?.nombre || 'Producto';
                   return `${i.cantidad}x ${nombre}`;
@@ -382,7 +382,7 @@ const AdminView = () => {
             <div className="space-y-2 bg-black/5 p-3 rounded-sm border border-text-main/5">
               <div className="flex items-center gap-3">
                 <span className="text-text-main text-xs font-bold uppercase tracking-widest opacity-40">FECHA:</span>
-                <span className="text-text-main text-sm font-light">
+                <span className="text-text-main text-sm font-normal">
                   {new Date(res.fecha_reserva + 'T00:00:00').toLocaleDateString('es-ES', {
                     day: '2-digit',
                     month: 'long',
@@ -391,7 +391,7 @@ const AdminView = () => {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-text-main text-xs font-bold uppercase tracking-widest opacity-40">COMENSALES:</span>
-                <span className="text-text-main text-sm font-light">{res.comensales} comensales</span>
+                <span className="text-text-main text-sm font-normal">{res.comensales} comensales</span>
               </div>
               <div className="flex items-center gap-3 mt-2 pt-2 border-t border-text-main/5">
                 <span className="text-primary text-[10px] font-bold uppercase tracking-widest">MESA:</span>
@@ -1029,8 +1029,8 @@ const AdminView = () => {
       {/* Barra lateral (solo en desktop) */}
       <aside className="w-64 bg-bg-surface/90 backdrop-blur-xl border-r border-text-main/10 hidden md:flex flex-col relative z-20 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex-shrink-0">
         <div className="p-8 border-b border-text-main/10 flex flex-col items-center justify-center">
-          <span className="text-primary text-2xl mb-2 opacity-80 block font-light">✦</span>
-          <span className="text-text-main font-heading tracking-[0.2em] text-lg font-light text-center">
+          <span className="text-primary text-2xl mb-2 opacity-80 block font-normal">✦</span>
+          <span className="text-text-main font-heading tracking-[0.2em] text-lg font-normal text-center">
             DG <span className="italic text-primary">MGMT</span>
           </span>
         </div>
@@ -1094,12 +1094,12 @@ const AdminView = () => {
                 <span className="block text-primary text-[8px] sm:text-[9px] uppercase tracking-[4px] mb-2 font-body opacity-90">
                   Panel de Control Central
                 </span>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading text-text-main uppercase tracking-widest mb-3 font-light leading-none">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading text-text-main uppercase tracking-widest mb-3 font-normal leading-none">
                   {sections.find(s => s.id === activeSection)?.label}
                 </h1>
                 <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
               </div>
-              <p className="text-text-muted font-light text-[10px] sm:text-[11px] tracking-wide max-w-xs md:text-right opacity-60">
+              <p className="text-text-muted font-normal text-[10px] sm:text-[11px] tracking-wide max-w-xs md:text-right opacity-60">
                 Gestión en tiempo real de los servicios vinculados a la base de datos.
               </p>
             </div>
@@ -1622,7 +1622,7 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
           <h4 className="text-text-main font-heading text-5xl mb-8 leading-tight group-hover:text-primary transition-colors duration-700">{item.nombre}</h4>
 
           <div className="relative mb-10">
-            <p className="text-text-muted text-lg font-light italic leading-relaxed border-l-4 border-primary/20 pl-8 opacity-80 line-clamp-3">
+            <p className="text-text-muted text-lg font-normal italic leading-relaxed border-l-4 border-primary/20 pl-8 opacity-80 line-clamp-3">
               "{item.descripcion}"
             </p>
           </div>
@@ -1869,7 +1869,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
         <p className="text-text-muted text-[10px] uppercase tracking-[2px] mb-4 font-bold opacity-50">{item.bodega}</p>
 
         {item.notas_maridaje && (
-          <p className="text-text-muted text-sm font-light italic leading-relaxed mb-8 opacity-70 line-clamp-2">
+          <p className="text-text-muted text-sm font-normal italic leading-relaxed mb-8 opacity-70 line-clamp-2">
             "{item.notas_maridaje}"
           </p>
         )}
@@ -2000,7 +2000,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
           </div>
         </div>
         <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary transition-colors">{item.nombre}</h4>
-        {item.descripcion && <p className="text-text-muted text-sm font-light italic leading-relaxed opacity-70 mb-4">"{item.descripcion}"</p>}
+        {item.descripcion && <p className="text-text-muted text-sm font-normal italic leading-relaxed opacity-70 mb-4">"{item.descripcion}"</p>}
       </div>
       <div className="pt-6 border-t border-text-main/5 flex justify-between items-end">
         <span className="text-text-main font-heading text-2xl">{parseFloat(item.precio).toFixed(2)}€</span>
@@ -2122,7 +2122,7 @@ const UserEditRow = ({ user, fetchData }) => {
               {user.rol === 'Administrador' ? 'Administrador' : 'Cliente'}
             </span>
           </div>
-          <p className="text-text-muted text-xs font-light tracking-wide">{user.email} {user.telefono && `• ${user.telefono}`}</p>
+          <p className="text-text-muted text-xs font-normal tracking-wide">{user.email} {user.telefono && `• ${user.telefono}`}</p>
         </div>
       </div>
       <div className="flex gap-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all transform translate-x-0 md:translate-x-4 md:group-hover:translate-x-0 mt-6 md:mt-0 w-full md:w-auto border-t md:border-t-0 border-text-main/5 pt-4 md:pt-0">

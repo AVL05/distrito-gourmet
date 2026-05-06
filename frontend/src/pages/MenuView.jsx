@@ -161,7 +161,7 @@ const MenuView = () => {
             />
           </FadeIn>
           <FadeIn delay={0.5}>
-            <p className="text-text-muted font-light leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
+            <p className="text-text-muted font-normal leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
               Una selección de sabores diseñada para despertar los sentidos, desde los clásicos reinventados hasta las
               creaciones más audaces de nuestro equipo a los mandos.
             </p>
@@ -199,7 +199,7 @@ const MenuView = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
             <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
-            <p className="text-text-muted font-light tracking-wide text-lg">Sintonizando nuestra bodega...</p>
+            <p className="text-text-muted font-normal tracking-wide text-lg">Sintonizando nuestra bodega...</p>
           </div>
         ) : (
           <PageTransition key={activeCategory}>
@@ -301,13 +301,13 @@ const SectionHeader = ({ index, label }) => (
   <ScrollReveal
     direction="up"
     distance={30}
-    className="flex items-center gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90">
-    <LineReveal className="flex-grow bg-text-main/10 hidden sm:block" delay={0.3} />
-    <span className="text-[12px] tracking-[3px] font-body text-text-muted font-medium">/ 0{index + 1}</span>
-    <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1">
+    className="flex items-center flex-nowrap gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90 w-full overflow-hidden px-4">
+    <LineReveal className="flex-grow bg-text-main/10 hidden sm:block min-w-0" delay={0.3} />
+    <span className="text-[12px] tracking-[3px] font-body text-text-muted font-bold shrink-0">/ 0{index + 1}</span>
+    <h2 className="font-heading text-3xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1 whitespace-nowrap shrink-0">
       <span className="italic">{label.split(' ')[0]}</span> {label.split(' ').slice(1).join(' ')}
     </h2>
-    <LineReveal className="flex-grow bg-text-main/10" delay={0.3} />
+    <LineReveal className="flex-grow bg-text-main/10 min-w-0" delay={0.3} />
   </ScrollReveal>
 );
 
@@ -320,7 +320,7 @@ const DishRow = ({ item, addItem }) => (
           <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
-          <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
+          <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€{!!item.isPerUnit && ' / UD.'}
           </span>
         </div>
@@ -341,7 +341,7 @@ const DishRow = ({ item, addItem }) => (
     </div>
 
     <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center shrink-0 w-full md:w-auto mt-2 md:mt-0">
-      <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest mb-4">
+      <span className="hidden md:block font-body font-normal text-text-main text-xl tracking-widest mb-4">
         {item.price.toFixed(2)}€{!!item.isPerUnit && <span className="text-[12px] ml-1 opacity-60">/ UD.</span>}
       </span>
       <MotionButton
@@ -363,7 +363,7 @@ const DisplayRow = ({ item }) => (
           <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
-          <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
+          <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€
           </span>
         </div>
@@ -373,7 +373,7 @@ const DisplayRow = ({ item }) => (
       </div>
     </div>
     <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
-      <span className="hidden md:block font-body font-light text-text-main text-xl tracking-widest">
+      <span className="hidden md:block font-body font-normal text-text-main text-xl tracking-widest">
         {item.price.toFixed(2)}€
       </span>
     </div>
@@ -389,7 +389,7 @@ const WineDisplayRow = ({ item }) => (
           <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
-          <span className="md:hidden font-body font-light text-text-main text-lg tracking-widest">
+          <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
             {item.price.toFixed(2)}€
           </span>
         </div>
@@ -400,11 +400,11 @@ const WineDisplayRow = ({ item }) => (
     </div>
     <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
       <div className="hidden md:flex flex-col items-end">
-        <span className="font-body font-light text-text-main text-xl tracking-widest">
+        <span className="font-body font-normal text-text-main text-xl tracking-widest">
           {item.price.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ botella</span>
         </span>
         {item.priceGlass && (
-          <span className="font-body font-light text-text-muted text-base tracking-widest mt-1">
+          <span className="font-body font-normal text-text-muted text-base tracking-widest mt-1">
             {item.priceGlass.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ copa</span>
           </span>
         )}
@@ -441,7 +441,7 @@ const TastingMenuCard = ({ menu }) => (
           <span className="italic">{menu.name.split(' ')[0]}</span> {menu.name.split(' ').slice(1).join(' ')}
         </h2>
         <div className="w-12 h-[1px] bg-primary/50 mx-auto mb-6"></div>
-        <p className="text-text-muted font-light leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
+        <p className="text-text-muted font-normal leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
           {menu.description}
         </p>
         {menu.duration && (
@@ -496,7 +496,7 @@ const TastingMenuCard = ({ menu }) => (
 const EmptyState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
-    <p className="text-text-muted font-light tracking-wide text-base sm:text-lg max-w-md mx-auto">
+    <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
       La colección para esta categoría se encuentra en desarrollo por nuestro Chef.
     </p>
   </FadeIn>
