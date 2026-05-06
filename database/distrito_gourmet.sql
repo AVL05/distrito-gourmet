@@ -1,6 +1,5 @@
 -- =====================================================
 -- DISTRITO GOURMET
--- Esquema profesional para TFG DAW
 -- Arquitectura SQL optimizada para restaurante premium
 -- =====================================================
 
@@ -17,15 +16,26 @@ CREATE TABLE usuarios (
     nombre VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'staff', 'client') DEFAULT 'client',
-    telefono VARCHAR(50) NULL,
-    alergias TEXT NULL,
-    preferencias TEXT NULL,
-    es_vip BOOLEAN DEFAULT FALSE,
-    email_verificado_a TIMESTAMP NULL,
-    remember_token VARCHAR(100) NULL,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    rol ENUM('Administrador', 'Staff', 'Cliente') DEFAULT 'Cliente',
+    telefono VARCHAR(50) NULL
+);
+
+-- =====================================================
+-- TABLA: PERSONAL_ACCESS_TOKENS (Sistema Sanctum)
+-- =====================================================
+
+CREATE TABLE personal_access_tokens (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tokenable_type VARCHAR(255) NOT NULL,
+    tokenable_id BIGINT UNSIGNED NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    abilities TEXT NULL,
+    last_used_at TIMESTAMP NULL,
+    expires_at TIMESTAMP NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    INDEX personal_access_tokens_tokenable_index (tokenable_type, tokenable_id)
 );
 
 -- =====================================================
@@ -93,16 +103,11 @@ CREATE TABLE menus_degustacion (
     nombre VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NULL,
     descripcion TEXT NULL,
-    imagen VARCHAR(255) NULL,
     precio DECIMAL(10, 2) NOT NULL,
     precio_maridaje DECIMAL(10, 2) NULL,
     pasos INT NOT NULL,
     duracion_estimada_minutos INT NULL,
-    disponible BOOLEAN DEFAULT TRUE,
-    alternativa_vegetariana BOOLEAN DEFAULT FALSE,
-    menu_de_temporada BOOLEAN DEFAULT FALSE,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    disponible BOOLEAN DEFAULT TRUE
 );
 
 -- =====================================================
@@ -114,15 +119,6 @@ CREATE TABLE platos_menu_degustacion (
     menu_degustacion_id BIGINT UNSIGNED NOT NULL,
     plato_id BIGINT UNSIGNED NOT NULL,
     numero_paso INT NOT NULL,
-    tamaño_porcion ENUM(
-        'Snack',
-        'Pequeño',
-        'Medio',
-        'Completo'
-    ) DEFAULT 'Pequeño',
-    notes TEXT NULL,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_platos_menu_deg_menu FOREIGN KEY (menu_degustacion_id) REFERENCES menus_degustacion (id) ON DELETE CASCADE,
     CONSTRAINT fk_platos_menu_deg_plato FOREIGN KEY (plato_id) REFERENCES platos (id) ON DELETE CASCADE
 );
@@ -134,9 +130,6 @@ CREATE TABLE platos_menu_degustacion (
 CREATE TABLE vinos (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
-    bodega VARCHAR(255) NULL,
-    añada VARCHAR(50) NULL,
-    pais VARCHAR(100) NULL,
     region VARCHAR(100) NULL,
     uva VARCHAR(100) NULL,
     tipo ENUM(
@@ -148,16 +141,11 @@ CREATE TABLE vinos (
     ) NOT NULL,
     notas_maridaje TEXT NULL,
     descripcion TEXT NULL,
-    imagen VARCHAR(255) NULL,
-    porcentaje_alcohol DECIMAL(4, 2) NULL,
-    temperatura_servicio VARCHAR(50) NULL,
     precio_botella DECIMAL(10, 2) NULL,
     precio_copa DECIMAL(10, 2) NULL,
     disponible BOOLEAN DEFAULT TRUE,
     destacado BOOLEAN DEFAULT FALSE,
-    maximo_por_pedido INT DEFAULT 999,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    maximo_por_pedido INT DEFAULT 999
 );
 
 -- =====================================================
@@ -174,33 +162,12 @@ CREATE TABLE bebidas (
         'cocktail',
         'cafe'
     ) NOT NULL,
-    imagen VARCHAR(255) NULL,
     precio DECIMAL(10, 2) NOT NULL,
     disponible BOOLEAN DEFAULT TRUE,
-    destacado BOOLEAN DEFAULT FALSE,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    destacado BOOLEAN DEFAULT FALSE
 );
 
--- =====================================================
--- TABLA: MESAS
--- =====================================================
-
-CREATE TABLE mesas (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    numero_mesa VARCHAR(50) NOT NULL UNIQUE,
-    capacidad INT NOT NULL,
-    zona VARCHAR(100) DEFAULT 'Salón Principal',
-    estado ENUM(
-        'Libre',
-        'Reservada',
-        'Ocupada',
-        'Mantenimiento'
-    ) DEFAULT 'Libre',
-    esta_activo BOOLEAN DEFAULT TRUE,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- Tabla MESAS eliminada según requerimiento
 
 -- =====================================================
 -- TABLA: RESERVAS
@@ -209,7 +176,6 @@ CREATE TABLE mesas (
 CREATE TABLE reservas (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     usuario_id BIGINT UNSIGNED NOT NULL,
-    mesa_id BIGINT UNSIGNED NULL,
     codigo_reserva VARCHAR(100) UNIQUE NULL,
     fecha_reserva DATE NULL,
     hora_reserva TIME NULL,
@@ -223,8 +189,7 @@ CREATE TABLE reservas (
     peticiones_especiales TEXT NULL,
     creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_reservas_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE,
-    CONSTRAINT fk_reservas_mesa FOREIGN KEY (mesa_id) REFERENCES mesas (id) ON DELETE SET NULL
+    CONSTRAINT fk_reservas_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id) ON DELETE CASCADE
 );
 
 -- =====================================================
@@ -282,9 +247,7 @@ CREATE TABLE detalles_pedido (
 CREATE TABLE ajustes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     clave VARCHAR(255) NOT NULL UNIQUE,
-    valor TEXT NOT NULL,
-    creado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-    actualizado_a TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    valor TEXT NOT NULL
 );
 
 -- =====================================================
@@ -391,9 +354,6 @@ INSERT INTO
     vinos (
         id,
         nombre,
-        bodega,
-        añada,
-        pais,
         region,
         uva,
         tipo,
@@ -405,9 +365,6 @@ INSERT INTO
 VALUES (
         1,
         'Pago de Carraovejas',
-        'Pago de Carraovejas',
-        '2021',
-        'España',
         'Ribera del Duero',
         'Tempranillo',
         'Tinto',
@@ -419,9 +376,6 @@ VALUES (
     (
         2,
         'Vega Sicilia Único 2011',
-        'Vega Sicilia',
-        '2011',
-        'España',
         'Ribera del Duero',
         'Tempranillo',
         'Tinto',
@@ -433,9 +387,6 @@ VALUES (
     (
         3,
         'Albariño Pazo Señorans',
-        'Pazo de Señorans',
-        '2022',
-        'España',
         'Rías Baixas',
         'Albariño',
         'Blanco',
@@ -447,9 +398,6 @@ VALUES (
     (
         4,
         'Godello Guímaro',
-        'Guímaro',
-        '2022',
-        'España',
         'Ribeira Sacra',
         'Godello',
         'Blanco',
@@ -461,9 +409,6 @@ VALUES (
     (
         5,
         'Moët & Chandon Imperial',
-        'Moët & Chandon',
-        'NV',
-        'Francia',
         'Champagne',
         'Chardonnay',
         'Espumoso',
@@ -475,9 +420,6 @@ VALUES (
     (
         6,
         'Miraval Rosé',
-        'Miraval',
-        '2022',
-        'Francia',
         'Provence',
         'Syrah y Garnacha',
         'Rosado',
@@ -666,9 +608,7 @@ INSERT INTO
         precio_maridaje,
         pasos,
         duracion_estimada_minutos,
-        disponible,
-        alternativa_vegetariana,
-        menu_de_temporada
+        disponible
     )
 VALUES (
         1,
@@ -679,9 +619,7 @@ VALUES (
         18.00,
         3,
         60,
-        TRUE,
-        TRUE,
-        FALSE
+        TRUE
     ),
     (
         2,
@@ -692,8 +630,6 @@ VALUES (
         45.00,
         8,
         120,
-        TRUE,
-        TRUE,
         TRUE
     ),
     (
@@ -705,39 +641,10 @@ VALUES (
         75.00,
         10,
         180,
-        TRUE,
-        FALSE,
         TRUE
     );
 
--- Mesas
-INSERT INTO
-    mesas (
-        numero_mesa,
-        capacidad,
-        zona,
-        estado
-    )
-VALUES ('1', 2, 'Ventanales', 'Libre'),
-    ('2', 4, 'Ventanales', 'Libre'),
-    (
-        '3',
-        2,
-        'Salón Principal',
-        'Libre'
-    ),
-    (
-        '4',
-        4,
-        'Salón Principal',
-        'Libre'
-    ),
-    (
-        'CT',
-        6,
-        'Chef''s Table',
-        'Libre'
-    );
+-- Mesas eliminadas
 
 -- Usuarios
 INSERT INTO
@@ -755,7 +662,7 @@ VALUES (
         'Admin Michelin',
         'admin@distritogourmet.com',
         '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-        'admin',
+        'Administrador',
         '+34 600 000 000',
         FALSE
     ),
@@ -764,7 +671,7 @@ VALUES (
         'Cliente VIP',
         'vip@distritogourmet.com',
         '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-        'client',
+        'Cliente',
         '+34 611 111 111',
         TRUE
     );

@@ -53,13 +53,11 @@ const ProfileView = () => {
           <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
             Datos <span className="italic text-primary-hover font-light">Personales</span>
           </h2>
-          {!!user?.es_vip && (
-            <div className="mb-4">
-              <span className="text-[10px] bg-primary text-black px-3 py-1 font-bold uppercase tracking-[3px]">
-                Estatus: Cliente Distinguido (VIP)
-              </span>
-            </div>
-          )}
+          <div className="mb-4">
+            <span className="text-[10px] bg-black text-white px-3 py-1 font-bold uppercase tracking-[3px]">
+              Miembro Distrito Gourmet
+            </span>
+          </div>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
           <p className="text-gray-500 text-sm tracking-wide font-light">
             Gestione su información de contacto y credenciales.

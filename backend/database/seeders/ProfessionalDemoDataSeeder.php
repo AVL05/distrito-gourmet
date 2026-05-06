@@ -25,7 +25,6 @@ class ProfessionalDemoDataSeeder extends Seeder
             'vinos',
             'maridajes_plato_vino',
             'bebidas',
-            'mesas',
             'reservas',
             'pedidos',
             'detalles_pedido',
@@ -100,34 +99,34 @@ class ProfessionalDemoDataSeeder extends Seeder
 
         // 5. Menús Degustación
         DB::table('menus_degustacion')->insert([
-            ['id' => 1, 'nombre' => 'Menú Ejecutivo', 'slug' => 'menu-ejecutivo', 'descripcion' => 'Menú contemporáneo diseñado para servicio de mediodía.', 'precio' => 39.00, 'precio_maridaje' => 18.00, 'pasos' => 3, 'duracion_estimada_minutos' => 60, 'alternativa_vegetariana' => true, 'menu_de_temporada' => false],
-            ['id' => 2, 'nombre' => 'Menú Degustación Tierra y Mar', 'slug' => 'menu-tierra-mar', 'descripcion' => 'Recorrido gastronómico que une producto marino y cocina contemporánea.', 'precio' => 95.00, 'precio_maridaje' => 45.00, 'pasos' => 8, 'duracion_estimada_minutos' => 120, 'alternativa_vegetariana' => true, 'menu_de_temporada' => true],
-            ['id' => 3, 'nombre' => 'Chef Experience', 'slug' => 'chef-experience', 'descripcion' => 'Experiencia gastronómica exclusiva fuera de carta.', 'precio' => 145.00, 'precio_maridaje' => 75.00, 'pasos' => 10, 'duracion_estimada_minutos' => 180, 'alternativa_vegetariana' => false, 'menu_de_temporada' => true],
+            ['id' => 1, 'nombre' => 'Menú Ejecutivo', 'slug' => 'menu-ejecutivo', 'descripcion' => 'Menú contemporáneo diseñado para servicio de mediodía.', 'precio' => 39.00, 'precio_maridaje' => 18.00, 'pasos' => 3, 'duracion_estimada_minutos' => 60, 'disponible' => true],
+            ['id' => 2, 'nombre' => 'Menú Degustación Tierra y Mar', 'slug' => 'menu-tierra-mar', 'descripcion' => 'Recorrido gastronómico que une producto marino y cocina contemporánea.', 'precio' => 95.00, 'precio_maridaje' => 45.00, 'pasos' => 8, 'duracion_estimada_minutos' => 120, 'disponible' => true],
+            ['id' => 3, 'nombre' => 'Chef Experience', 'slug' => 'chef-experience', 'descripcion' => 'Experiencia gastronómica exclusiva fuera de carta.', 'precio' => 145.00, 'precio_maridaje' => 75.00, 'pasos' => 10, 'duracion_estimada_minutos' => 180, 'disponible' => true],
         ]);
 
         // 6. Platos de Menús Degustación
         DB::table('platos_menu_degustacion')->insert([
-            ['menu_degustacion_id' => 1, 'plato_id' => 3, 'numero_paso' => 1, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 1, 'plato_id' => 5, 'numero_paso' => 2, 'tamaño_porcion' => 'Completo'],
-            ['menu_degustacion_id' => 1, 'plato_id' => 8, 'numero_paso' => 3, 'tamaño_porcion' => 'Completo'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 1, 'numero_paso' => 1, 'tamaño_porcion' => 'Snack'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 2, 'numero_paso' => 2, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 11, 'numero_paso' => 3, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 6, 'numero_paso' => 4, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 4, 'numero_paso' => 5, 'tamaño_porcion' => 'Medio'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 5, 'numero_paso' => 6, 'tamaño_porcion' => 'Medio'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 12, 'numero_paso' => 7, 'tamaño_porcion' => 'Snack'],
-            ['menu_degustacion_id' => 2, 'plato_id' => 8, 'numero_paso' => 8, 'tamaño_porcion' => 'Completo'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 1, 'numero_paso' => 1, 'tamaño_porcion' => 'Snack'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 11, 'numero_paso' => 2, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 2, 'numero_paso' => 3, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 3, 'numero_paso' => 4, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 4, 'numero_paso' => 5, 'tamaño_porcion' => 'Medio'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 5, 'numero_paso' => 6, 'tamaño_porcion' => 'Medio'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 6, 'numero_paso' => 7, 'tamaño_porcion' => 'Pequeño'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 12, 'numero_paso' => 8, 'tamaño_porcion' => 'Snack'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 8, 'numero_paso' => 9, 'tamaño_porcion' => 'Completo'],
-            ['menu_degustacion_id' => 3, 'plato_id' => 10, 'numero_paso' => 10, 'tamaño_porcion' => 'Snack'],
+            ['menu_degustacion_id' => 1, 'plato_id' => 3, 'numero_paso' => 1],
+            ['menu_degustacion_id' => 1, 'plato_id' => 5, 'numero_paso' => 2],
+            ['menu_degustacion_id' => 1, 'plato_id' => 8, 'numero_paso' => 3],
+            ['menu_degustacion_id' => 2, 'plato_id' => 1, 'numero_paso' => 1],
+            ['menu_degustacion_id' => 2, 'plato_id' => 2, 'numero_paso' => 2],
+            ['menu_degustacion_id' => 2, 'plato_id' => 11, 'numero_paso' => 3],
+            ['menu_degustacion_id' => 2, 'plato_id' => 6, 'numero_paso' => 4],
+            ['menu_degustacion_id' => 2, 'plato_id' => 4, 'numero_paso' => 5],
+            ['menu_degustacion_id' => 2, 'plato_id' => 5, 'numero_paso' => 6],
+            ['menu_degustacion_id' => 2, 'plato_id' => 12, 'numero_paso' => 7],
+            ['menu_degustacion_id' => 2, 'plato_id' => 8, 'numero_paso' => 8],
+            ['menu_degustacion_id' => 3, 'plato_id' => 1, 'numero_paso' => 1],
+            ['menu_degustacion_id' => 3, 'plato_id' => 11, 'numero_paso' => 2],
+            ['menu_degustacion_id' => 3, 'plato_id' => 2, 'numero_paso' => 3],
+            ['menu_degustacion_id' => 3, 'plato_id' => 3, 'numero_paso' => 4],
+            ['menu_degustacion_id' => 3, 'plato_id' => 4, 'numero_paso' => 5],
+            ['menu_degustacion_id' => 3, 'plato_id' => 5, 'numero_paso' => 6],
+            ['menu_degustacion_id' => 3, 'plato_id' => 6, 'numero_paso' => 7],
+            ['menu_degustacion_id' => 3, 'plato_id' => 12, 'numero_paso' => 8],
+            ['menu_degustacion_id' => 3, 'plato_id' => 8, 'numero_paso' => 9],
+            ['menu_degustacion_id' => 3, 'plato_id' => 10, 'numero_paso' => 10],
         ]);
 
         // 7. Maridajes
@@ -138,26 +137,19 @@ class ProfessionalDemoDataSeeder extends Seeder
             ['plato_id' => 8, 'vino_id' => 5, 'nivel_recomendacion' => 'Perfecta', 'notas' => 'Champagne y chocolate generan un gran contraste.'],
         ]);
 
-        // 8. Mesas
-        DB::table('mesas')->insert([
-            ['numero_mesa' => '1', 'capacidad' => 2, 'zona' => 'Ventanales', 'estado' => 'Libre'],
-            ['numero_mesa' => '2', 'capacidad' => 4, 'zona' => 'Ventanales', 'estado' => 'Libre'],
-            ['numero_mesa' => '3', 'capacidad' => 2, 'zona' => 'Salón Principal', 'estado' => 'Libre'],
-            ['numero_mesa' => '4', 'capacidad' => 4, 'zona' => 'Salón Principal', 'estado' => 'Libre'],
-            ['numero_mesa' => 'CT', 'capacidad' => 6, 'zona' => 'Chef\'s Table', 'estado' => 'Libre'],
-        ]);
+        // 8. Mesas eliminadas según requerimiento
 
         // 9. Usuarios
         DB::table('usuarios')->insert([
-            ['id' => 1, 'nombre' => 'Admin Michelin', 'email' => 'admin@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'admin', 'telefono' => '+34 600 000 000', 'es_vip' => false],
-            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'vip@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'client', 'telefono' => '+34 611 111 111', 'es_vip' => true],
-            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@example.com', 'password' => Hash::make('password'), 'rol' => 'client', 'telefono' => '+34 622 222 222', 'es_vip' => false],
+            ['id' => 1, 'nombre' => 'Admin Michelin', 'email' => 'admin@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Administrador', 'telefono' => '+34 600 000 000'],
+            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'vip@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Cliente', 'telefono' => '+34 611 111 111'],
+            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@example.com', 'password' => Hash::make('password'), 'rol' => 'Cliente', 'telefono' => '+34 622 222 222'],
         ]);
 
         // 10. Reservas
         DB::table('reservas')->insert([
-            ['usuario_id' => 2, 'mesa_id' => 4, 'codigo_reserva' => 'VIP-2026-001', 'fecha_reserva' => '2026-06-15', 'hora_reserva' => '21:00:00', 'comensales' => 2, 'menu_degustacion_id' => 3, 'estado' => 'Confirmada', 'peticiones_especiales' => 'Mesa privada y maridaje completo.'],
-            ['usuario_id' => 3, 'mesa_id' => 2, 'codigo_reserva' => 'RSV-2026-014', 'fecha_reserva' => '2026-06-16', 'hora_reserva' => '14:30:00', 'comensales' => 2, 'menu_degustacion_id' => 1, 'estado' => 'Pendiente', 'peticiones_especiales' => 'Celebración aniversario.'],
+            ['usuario_id' => 2, 'codigo_reserva' => 'VIP-2026-001', 'fecha_reserva' => '2026-06-15', 'hora_reserva' => '21:00:00', 'comensales' => 2, 'menu_degustacion_id' => 3, 'estado' => 'Confirmada', 'peticiones_especiales' => 'Mesa privada y maridaje completo.'],
+            ['usuario_id' => 3, 'codigo_reserva' => 'RSV-2026-014', 'fecha_reserva' => '2026-06-16', 'hora_reserva' => '14:30:00', 'comensales' => 2, 'menu_degustacion_id' => 1, 'estado' => 'Pendiente', 'peticiones_especiales' => 'Celebración aniversario.'],
         ]);
 
         // 11. Ajustes

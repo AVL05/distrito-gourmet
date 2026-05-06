@@ -15,7 +15,6 @@ class Reserva extends Model
 
     protected $fillable = [
         'usuario_id',
-        'mesa_id',
         'codigo_reserva',
         'fecha_reserva',
         'hora_reserva',
@@ -28,10 +27,5 @@ class Reserva extends Model
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');
-    }
-
-    public function mesa()
-    {
-        return $this->belongsTo(Mesa::class, 'mesa_id');
     }
 }

@@ -12,20 +12,6 @@ return new class extends Migration {
             $table->id();
             $table->string('clave')->unique();
             $table->text('valor');
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
-        });
-
-        // Mesas
-        Schema::create('mesas', function (Blueprint $table) {
-            $table->id();
-            $table->string('numero_mesa')->unique();
-            $table->integer('capacidad');
-            $table->string('zona')->default('Salón Principal');
-            $table->enum('estado', ['Libre', 'Reservada', 'Ocupada', 'Mantenimiento'])->default('Libre');
-            $table->boolean('esta_activo')->default(true);
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Categorías de Menú
@@ -34,8 +20,6 @@ return new class extends Migration {
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->integer('orden_visualizacion')->default(0);
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Platos
@@ -59,31 +43,22 @@ return new class extends Migration {
         Schema::create('vinos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('bodega')->nullable();
-            $table->string('añada')->nullable();
-            $table->string('pais')->nullable();
             $table->string('region')->nullable();
             $table->string('uva')->nullable();
             $table->enum('tipo', ['Tinto', 'Blanco', 'Rosado', 'Espumoso', 'Dulce']);
             $table->text('notas_maridaje')->nullable();
             $table->text('descripcion')->nullable();
-            $table->string('imagen')->nullable();
-            $table->decimal('porcentaje_alcohol', 4, 2)->nullable();
-            $table->string('temperatura_servicio')->nullable();
             $table->decimal('precio_botella', 10, 2)->nullable();
             $table->decimal('precio_copa', 10, 2)->nullable();
             $table->boolean('disponible')->default(true);
             $table->boolean('destacado')->default(false);
             $table->integer('maximo_por_pedido')->default(999);
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Reservas
         Schema::create('reservas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('usuario_id')->constrained('usuarios')->onDelete('cascade');
-            $table->foreignId('mesa_id')->nullable()->constrained('mesas')->onDelete('set null');
             $table->string('codigo_reserva')->unique()->nullable();
             $table->date('fecha_reserva')->nullable();
             $table->time('hora_reserva')->nullable();
@@ -120,8 +95,6 @@ return new class extends Migration {
             $table->integer('cantidad');
             $table->decimal('precio_unitario', 10, 2)->nullable();
             $table->decimal('precio_total', 10, 2)->nullable();
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Bebidas
@@ -130,12 +103,9 @@ return new class extends Migration {
             $table->string('nombre');
             $table->text('descripcion')->nullable();
             $table->enum('tipo', ['agua', 'refresco', 'cocktail', 'cafe']);
-            $table->string('imagen')->nullable();
             $table->decimal('precio', 10, 2);
             $table->boolean('disponible')->default(true);
             $table->boolean('destacado')->default(false);
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Menús Degustación
@@ -144,16 +114,11 @@ return new class extends Migration {
             $table->string('nombre');
             $table->string('slug')->unique()->nullable();
             $table->text('descripcion')->nullable();
-            $table->string('imagen')->nullable();
             $table->decimal('precio', 10, 2);
             $table->decimal('precio_maridaje', 10, 2)->nullable();
             $table->integer('pasos');
             $table->integer('duracion_estimada_minutos')->nullable();
             $table->boolean('disponible')->default(true);
-            $table->boolean('alternativa_vegetariana')->default(false);
-            $table->boolean('menu_de_temporada')->default(false);
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Platos de Menús Degustación
@@ -162,10 +127,6 @@ return new class extends Migration {
             $table->foreignId('menu_degustacion_id')->constrained('menus_degustacion')->onDelete('cascade');
             $table->foreignId('plato_id')->constrained('platos')->onDelete('cascade');
             $table->integer('numero_paso')->default(1);
-            $table->enum('tamaño_porcion', ['Snack', 'Pequeño', 'Medio', 'Completo'])->default('Pequeño');
-            $table->text('notas')->nullable();
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
 
         // Maridajes Plato-Vino
@@ -175,8 +136,6 @@ return new class extends Migration {
             $table->foreignId('vino_id')->constrained('vinos')->onDelete('cascade');
             $table->enum('nivel_recomendacion', ['Buena', 'Muy buena', 'Perfecta'])->default('Muy buena');
             $table->text('notas')->nullable();
-            $table->timestamp('creado_a')->nullable();
-            $table->timestamp('actualizado_a')->nullable();
         });
     }
 
@@ -192,7 +151,6 @@ return new class extends Migration {
         Schema::dropIfExists('vinos');
         Schema::dropIfExists('platos');
         Schema::dropIfExists('categorias_menu');
-        Schema::dropIfExists('mesas');
         Schema::dropIfExists('ajustes');
     }
 };

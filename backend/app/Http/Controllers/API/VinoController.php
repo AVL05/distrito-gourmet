@@ -17,7 +17,6 @@ class VinoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string',
-            'bodega' => 'nullable|string',
             'tipo' => 'required|in:Tinto,Blanco,Rosado,Espumoso,Dulce',
             'precio_botella' => 'required|numeric',
         ]);

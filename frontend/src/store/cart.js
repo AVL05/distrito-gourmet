@@ -4,7 +4,14 @@ import Swal from 'sweetalert2';
 // Store del carrito de compras usando Zustand
 export const useCartStore = create((set, get) => ({
   // Cargar items guardados en localStorage o empezar vacío
-  items: JSON.parse(localStorage.getItem('cart')) || [],
+  items: (() => {
+    try {
+      const savedCart = localStorage.getItem('cart');
+      return savedCart && savedCart !== 'undefined' ? JSON.parse(savedCart) : [];
+    } catch {
+      return [];
+    }
+  })(),
 
   // Calcular total de artículos en el carrito
   totalItems: () => get().items.reduce((total, item) => total + item.quantity, 0),

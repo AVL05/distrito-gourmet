@@ -167,7 +167,7 @@ const OrderItem = ({ order }) => {
 };
 
 const DashboardView = () => {
-  const { user, logout } = useAuthStore();
+  const { user, logout, isAdmin } = useAuthStore();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -204,11 +204,9 @@ const DashboardView = () => {
               <p className="text-text-muted font-light tracking-wide text-sm">
                 {user?.email} {user?.telefono && ` | ${user.telefono}`}
               </p>
-              {!!user?.es_vip && (
-                <span className="text-[9px] bg-primary text-black px-2 py-0.5 rounded-sm font-bold uppercase tracking-widest animate-pulse">
-                  Miembro VIP
-                </span>
-              )}
+              <span className="text-[9px] bg-black text-white px-2 py-0.5 rounded-sm font-bold uppercase tracking-widest">
+                Miembro Gourmet
+              </span>
             </div>
           </div>
           <button
@@ -241,6 +239,30 @@ const DashboardView = () => {
               </Link>
             </HoverCard>
           </StaggerItem>
+
+          {isAdmin() && (
+            <StaggerItem>
+              <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-8 sm:p-10 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.25)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
+                <Link to="/admin" className="block h-full relative z-10">
+                  <span className="text-primary text-3xl mb-6 block font-light opacity-80 group-hover:rotate-12 transition-transform duration-500">
+                    ⚙
+                  </span>
+                  <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
+                    Panel de <span className="italic text-primary-hover">Administración</span>
+                  </h3>
+                  <p className="text-text-muted text-sm font-light leading-relaxed mb-8">
+                    Gestión completa de la carta, reservas de clientes y usuarios del sistema.
+                  </p>
+                  <div className="mt-auto">
+                    <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-primary-hover">
+                      Acceder al Panel{' '}
+                      <span className="w-6 h-[1px] bg-primary group-hover:bg-primary-hover transition-colors"></span>
+                    </span>
+                  </div>
+                </Link>
+              </HoverCard>
+            </StaggerItem>
+          )}
 
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">

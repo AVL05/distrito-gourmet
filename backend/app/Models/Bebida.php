@@ -10,14 +10,12 @@ class Bebida extends Model
     use HasFactory;
 
     protected $table = 'bebidas';
-    const CREATED_AT = 'creado_a';
-    const UPDATED_AT = 'actualizado_a';
+    public $timestamps = false;
 
     protected $fillable = [
         'nombre',
         'descripcion',
         'tipo',
-        'imagen',
         'precio',
         'disponible',
         'destacado'

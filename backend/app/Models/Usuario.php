@@ -13,8 +13,7 @@ class Usuario extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
-    const CREATED_AT = 'creado_a';
-    const UPDATED_AT = 'actualizado_a';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -27,9 +26,6 @@ class Usuario extends Authenticatable
         'password',
         'rol',
         'telefono',
-        'alergias',
-        'preferencias',
-        'es_vip',
     ];
 
     /**
@@ -39,7 +35,6 @@ class Usuario extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -50,9 +45,7 @@ class Usuario extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verificado_a' => 'datetime',
             'password' => 'hashed',
-            'es_vip' => 'boolean',
         ];
     }
 }

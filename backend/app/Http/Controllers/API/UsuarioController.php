@@ -24,7 +24,7 @@ class UsuarioController extends Controller
         $user = Usuario::findOrFail($userId);
 
         // Si intenta editar otro usuario, verificar que sea admin
-        if ($userId != auth()->id() && auth()->user()->rol !== 'admin') {
+        if ($userId != auth()->id() && auth()->user()->rol !== 'Administrador') {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
@@ -44,13 +44,8 @@ class UsuarioController extends Controller
         }
 
         // Solo un admin puede cambiar roles de usuario
-        if ($request->filled('rol') && auth()->user()->rol === 'admin') {
+        if ($request->filled('rol') && auth()->user()->rol === 'Administrador') {
             $data['rol'] = $request->rol;
-        }
-
-        // Solo un admin puede cambiar VIP
-        if ($request->has('es_vip') && auth()->user()->rol === 'admin') {
-            $data['es_vip'] = $request->es_vip;
         }
 
         $user->update($data);

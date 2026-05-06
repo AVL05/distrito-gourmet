@@ -39,13 +39,13 @@ class AuthController extends Controller
             'telefono.max' => 'El teléfono no puede tener más de 20 caracteres.',
         ]);
 
-        // Crear el usuario con rol 'client' por defecto
+        // Crear el usuario con rol 'Cliente' por defecto
         $usuario = Usuario::create([
             'nombre' => $request->nombre,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'telefono' => $request->telefono,
-            'rol' => 'client',
+            'rol' => 'Cliente',
         ]);
 
         // Generar token de acceso

@@ -23,23 +23,19 @@ class MenuDegustacionController extends Controller
             'pasos' => 'required|integer',
             'duracion_estimada_minutos' => 'nullable|integer',
             'disponible' => 'boolean',
-            'alternativa_vegetariana' => 'boolean',
-            'menu_de_temporada' => 'boolean',
             'platos' => 'nullable|array',
         ]);
 
         $menu = MenuDegustacion::create($request->only([
             'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos', 
-            'duracion_estimada_minutos', 'disponible', 'alternativa_vegetariana', 'menu_de_temporada', 'slug'
+            'duracion_estimada_minutos', 'disponible', 'slug'
         ]));
         
         if ($request->has('platos')) {
             $syncData = [];
             foreach ($request->platos as $p) {
                 $syncData[$p['id']] = [
-                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1,
-                    'tamaño_porcion' => $p['pivot']['tamaño_porcion'] ?? 'Completo',
-                    'notas' => $p['pivot']['notas'] ?? null
+                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1
                 ];
             }
             $menu->platos()->sync($syncData);
@@ -58,24 +54,20 @@ class MenuDegustacionController extends Controller
             'pasos' => 'required|integer',
             'duracion_estimada_minutos' => 'nullable|integer',
             'disponible' => 'boolean',
-            'alternativa_vegetariana' => 'boolean',
-            'menu_de_temporada' => 'boolean',
             'platos' => 'nullable|array',
         ]);
 
         $menu = MenuDegustacion::findOrFail($id);
         $menu->update($request->only([
             'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos', 
-            'duracion_estimada_minutos', 'disponible', 'alternativa_vegetariana', 'menu_de_temporada', 'slug'
+            'duracion_estimada_minutos', 'disponible', 'slug'
         ]));
 
         if ($request->has('platos')) {
             $syncData = [];
             foreach ($request->platos as $p) {
                 $syncData[$p['id']] = [
-                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1,
-                    'tamaño_porcion' => $p['pivot']['tamaño_porcion'] ?? 'Completo',
-                    'notas' => $p['pivot']['notas'] ?? null
+                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1
                 ];
             }
             $menu->platos()->sync($syncData);

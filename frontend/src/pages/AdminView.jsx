@@ -56,7 +56,6 @@ const AdminView = () => {
     descripcion: '',
     precio: '',
     categoria_menu_id: '',
-    imagen: '',
     alergenos: '',
     disponible: true,
     visible_en_carta: true,
@@ -67,16 +66,11 @@ const AdminView = () => {
   });
   const [newWine, setNewWine] = useState({
     nombre: '',
-    bodega: '',
-    añada: '',
-    pais: 'España',
     region: '',
     uva: '',
     tipo: 'Tinto',
     notas_maridaje: '',
     descripcion: '',
-    porcentaje_alcohol: '',
-    temperatura_servicio: '',
     precio_botella: '',
     precio_copa: '',
     disponible: true,
@@ -88,7 +82,6 @@ const AdminView = () => {
     tipo: 'agua',
     precio: '',
     descripcion: '',
-    imagen: '',
     disponible: true,
     destacado: false
   });
@@ -99,9 +92,7 @@ const AdminView = () => {
     precio_maridaje: '',
     pasos: 1,
     duracion_estimada_minutos: 60,
-    alternativa_vegetariana: false,
-    menu_de_temporada: false,
-    maridaje_disponible: false
+    disponible: true
   });
 
   // Handlers genéricos para añadir elementos
@@ -656,9 +647,7 @@ const AdminView = () => {
                   precio_maridaje: '',
                   pasos: 1,
                   duracion_estimada_minutos: 60,
-                  alternativa_vegetariana: false,
-                  menu_de_temporada: false,
-                  maridaje_disponible: false
+                  disponible: true
                 }),
                 'Menú añadido'
               );
@@ -717,55 +706,17 @@ const AdminView = () => {
               />
             </div>
 
-            <div className="md:col-span-3 flex items-center gap-8">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={newTastingMenu.maridaje_disponible}
-                  onChange={e => setNewTastingMenu({ ...newTastingMenu, maridaje_disponible: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
-                />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                  Maridaje disponible
-                </span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={newTastingMenu.alternativa_vegetariana}
-                  onChange={e => setNewTastingMenu({ ...newTastingMenu, alternativa_vegetariana: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
-                />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                  Opción Vegetariana
-                </span>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={newTastingMenu.menu_de_temporada}
-                  onChange={e => setNewTastingMenu({ ...newTastingMenu, menu_de_temporada: e.target.checked })}
-                  className="w-4 h-4 accent-primary"
-                />
-                <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                  Menú de Temporada
-                </span>
-              </label>
+            <div className="md:col-span-3">
+              <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Precio Maridaje (€)</label>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="45.00"
+                value={newTastingMenu.precio_maridaje}
+                onChange={e => setNewTastingMenu({ ...newTastingMenu, precio_maridaje: e.target.value })}
+                className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
+              />
             </div>
-
-            {newTastingMenu.maridaje_disponible && (
-              <div className="md:col-span-1">
-                <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Precio Maridaje (€)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="45.00"
-                  value={newTastingMenu.precio_maridaje}
-                  onChange={e => setNewTastingMenu({ ...newTastingMenu, precio_maridaje: e.target.value })}
-                  className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 focus:border-primary outline-none transition-colors"
-                />
-              </div>
-            )}
 
             <div className="md:col-span-3">
               <label className="text-text-muted text-[10px] uppercase tracking-widest block mb-2 font-bold">Relato del Menú</label>
@@ -1477,34 +1428,15 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <input
                     type="checkbox"
-                    checked={!!edit.precio_maridaje}
-                    onChange={e => setEdit({ ...edit, maridaje_disponible: e.target.checked })}
+                    checked={edit._hasMaridaje || !!edit.precio_maridaje}
+                    onChange={e => {
+                      const hasM = e.target.checked;
+                      setEdit({ ...edit, _hasMaridaje: hasM, precio_maridaje: hasM ? edit.precio_maridaje : null });
+                    }}
                     className="w-4 h-4 accent-primary"
                   />
                   <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                    Maridaje disponible
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={edit.alternativa_vegetariana}
-                    onChange={e => setEdit({ ...edit, alternativa_vegetariana: e.target.checked })}
-                    className="w-4 h-4 accent-primary"
-                  />
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                    Opción Vegetariana
-                  </span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={edit.menu_de_temporada}
-                    onChange={e => setEdit({ ...edit, menu_de_temporada: e.target.checked })}
-                    className="w-4 h-4 accent-primary"
-                  />
-                  <span className="text-[10px] uppercase tracking-widest text-text-muted group-hover:text-primary transition-colors">
-                    Menú de Temporada
+                    Maridaje opcional
                   </span>
                 </label>
               </div>
@@ -1519,7 +1451,7 @@ const TastingMenuEditRow = ({ item, fetchData, handleDelete, allAvailableDishes 
                     className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
                   />
                 </div>
-                {!!edit.maridaje_disponible && (
+                {!!(edit._hasMaridaje || edit.precio_maridaje) && (
                   <div>
                     <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Precio Maridaje (€)</label>
                     <input
@@ -1725,26 +1657,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Bodega / Origen</label>
-                <input
-                  type="text"
-                  value={edit.bodega || ''}
-                  onChange={e => setEdit({ ...edit, bodega: e.target.value })}
-                  className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all font-bold"
-                />
-              </div>
-              <div>
-                <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Año / Cosecha</label>
-                <input
-                  type="text"
-                  value={edit.añada || ''}
-                  onChange={e => setEdit({ ...edit, añada: e.target.value })}
-                  className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
-                />
-              </div>
-            </div>
+
           </div>
 
           <div className="space-y-4">
@@ -1759,7 +1672,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
             </div>
           </div>
 
-          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6 items-end pt-4 border-t border-text-main/5">
+          <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-6 items-end pt-4 border-t border-text-main/5">
             <div>
               <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Tipo de Vino</label>
               <select
@@ -1791,16 +1704,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
               />
             </div>
-            <div>
-              <label className="text-text-muted text-[10px] uppercase tracking-[2px] block mb-2 font-bold">Alcohol (%)</label>
-              <input
-                type="number"
-                step="0.1"
-                value={edit.porcentaje_alcohol || ''}
-                onChange={e => setEdit({ ...edit, porcentaje_alcohol: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary outline-none transition-all"
-              />
-            </div>
+
           </div>
 
           <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-4 gap-6 items-end pt-4 border-t border-text-main/5">
@@ -2109,8 +2013,9 @@ const UserEditRow = ({ user, fetchData }) => {
               value={editUser.rol}
               onChange={e => setEditUser({ ...editUser, rol: e.target.value })}
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm outline-none focus:border-primary appearance-none cursor-pointer">
-              <option value="cliente">Cliente</option>
-              <option value="admin">Administrador</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Staff">Staff</option>
+              <option value="Administrador">Administrador</option>
             </select>
           </div>
           <div className="md:col-span-2">
@@ -2135,14 +2040,14 @@ const UserEditRow = ({ user, fetchData }) => {
   return (
     <div className="group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col md:flex-row justify-between items-center transition-all duration-500 relative overflow-hidden hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
       <div className="flex items-center gap-6">
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-heading text-xl ${user.rol === 'admin' ? 'bg-primary text-black shadow-[0_0_20px_rgba(197,160,89,0.3)]' : 'bg-text-main/5 text-text-muted'}`}>
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-heading text-xl ${user.rol === 'Administrador' ? 'bg-primary text-black shadow-[0_0_20px_rgba(197,160,89,0.3)]' : 'bg-text-main/5 text-text-muted'}`}>
           {user.nombre.charAt(0)}
         </div>
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h4 className="text-text-main font-heading text-xl">{user.nombre}</h4>
-            <span className={`text-[8px] uppercase tracking-[2px] px-2 py-0.5 rounded-sm font-bold ${user.rol === 'admin' ? 'bg-primary/20 text-primary border border-primary/20' : 'bg-text-main/10 text-text-muted border border-text-main/10'}`}>
-              {user.rol === 'admin' ? 'Administrador' : 'Cliente'}
+            <span className={`text-[8px] uppercase tracking-[2px] px-2 py-0.5 rounded-sm font-bold ${user.rol === 'Administrador' ? 'bg-primary/20 text-primary border border-primary/20' : 'bg-text-main/10 text-text-muted border border-text-main/10'}`}>
+              {user.rol === 'Administrador' ? 'Administrador' : 'Cliente'}
             </span>
           </div>
           <p className="text-text-muted text-xs font-light tracking-wide">{user.email} {user.telefono && `• ${user.telefono}`}</p>

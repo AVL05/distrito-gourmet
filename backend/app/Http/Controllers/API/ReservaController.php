@@ -92,20 +92,12 @@ class ReservaController extends Controller
         return response()->json($reservas);
     }
 
-    /**
-     * @function updateStatus
-     * @description Actualiza el estado o la mesa asignada.
-     */
     public function updateStatus(Request $request, $id)
     {
         $res = Reserva::findOrFail($id);
 
         if ($request->has('estado')) {
             $res->estado = $request->input('estado');
-        }
-
-        if ($request->has('mesa_id')) {
-            $res->mesa_id = $request->input('mesa_id');
         }
 
         $res->save();

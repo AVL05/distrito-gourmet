@@ -7,19 +7,26 @@ if (savedToken) {
 }
 
 export const useAuthStore = create((set, get) => ({
-  user: JSON.parse(localStorage.getItem('user')) || null,
+  user: (() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser && savedUser !== 'undefined' ? JSON.parse(savedUser) : null;
+    } catch {
+      return null;
+    }
+  })(),
   token: savedToken || null,
   loading: false,
   error: null,
 
   isAuthenticated: () => !!get().token,
-  isAdmin: () => get().user?.rol === 'admin',
+  isAdmin: () => ['Administrador', 'admin'].includes(get().user?.rol),
 
   login: async credentials => {
     set({ loading: true, error: null });
     try {
       const response = await api.post('/login', credentials);
-      const { token, user } = response.data;
+      const { token, usuario: user } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
@@ -42,7 +49,7 @@ export const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await api.post('/register', userData);
-      const { token, user } = response.data;
+      const { token, usuario: user } = response.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
