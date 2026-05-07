@@ -219,6 +219,7 @@ export const ParallaxImage = ({
         ref={image}
         src={src}
         alt={alt}
+        loading="lazy"
         className={`w-full h-full object-cover scale-[1.15] ${imageClassName}`}
         style={{ willChange: "transform" }}
       />
@@ -291,6 +292,7 @@ export const ImageReveal = ({
       <img
         src={src}
         alt={alt}
+        loading="lazy"
         className={`w-full h-full object-cover ${imageClassName}`}
       />
     </div>
