@@ -446,7 +446,7 @@ const TastingMenuEditRow = ({
             onClick={handleDelete}
             className="text-red-500 hover:text-red-700 text-[10px] uppercase tracking-[2px] font-bold"
           >
-            Eliminar Registro
+            Eliminar
           </button>
         </div>
 
