@@ -120,4 +120,15 @@ class PedidoController extends Controller
         $pedido->save();
         return response()->json(['mensaje' => 'Estado del pedido actualizado']);
     }
+
+    /**
+     * @function destroy
+     * @description Elimina un pedido y sus detalles asociados (vía cascada SQL).
+     */
+    public function destroy($id)
+    {
+        $pedido = Pedido::findOrFail($id);
+        $pedido->delete();
+        return response()->json(['mensaje' => 'Pedido eliminado correctamente']);
+    }
 }

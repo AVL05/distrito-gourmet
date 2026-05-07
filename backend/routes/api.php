@@ -47,10 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
         // Gestión de reservas
         Route::get('/reservations', [ReservaController::class, 'all']);
         Route::patch('/reservations/{id}', [ReservaController::class, 'updateStatus']);
+        Route::delete('/reservations/{id}', [ReservaController::class, 'destroy']);
 
         // Gestión de pedidos
         Route::get('/orders', [PedidoController::class, 'all']);
         Route::patch('/orders/{id}', [PedidoController::class, 'updateStatus']);
+        Route::delete('/orders/{id}', [PedidoController::class, 'destroy']);
 
         // Gestión de usuarios
         Route::get('/users', [UsuarioController::class, 'index']);

@@ -1,8 +1,8 @@
-import { useAuthStore } from '@/store/auth';
-import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { PageTransition, FadeIn } from '@/motion';
+import { useAuthStore } from "@/store/auth";
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { PageTransition, FadeIn } from "@/motion";
 
 // Componente para la vista de inicio de sesión
 const LoginView = () => {
@@ -10,18 +10,18 @@ const LoginView = () => {
   const navigate = useNavigate();
   // Estado local para guardar los datos del formulario
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   // Función para actualizar los datos mientras el usuario escribe
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   // Función para enviar los datos de inicio de sesión
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       // Intentar iniciar sesión llamando a la tienda de autenticación
@@ -29,48 +29,49 @@ const LoginView = () => {
 
       if (success) {
         Swal.fire({
-          icon: 'success',
-          title: 'Bienvenido',
-          text: 'Sesión iniciada correctamente',
-          background: '#fdfaf6',
-          color: '#2c302e',
-          confirmButtonColor: '#e76f51',
+          icon: "success",
+          title: "Bienvenido",
+          text: "Sesión iniciada correctamente",
+          background: "#fdfaf6",
+          color: "#2c302e",
+          confirmButtonColor: "#e76f51",
           timer: 1500,
         });
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
         // Si el login falla, el error ya está en el store (o lo sacamos del catch interno de auth.js)
         // Pero como login() devuelve false, manejamos el error aquí
         const errorMsg = useAuthStore.getState().error;
-        console.log('Login error message:', errorMsg); // Para depuración
+        console.log("Login error message:", errorMsg); // Para depuración
 
-        const isNotFound = errorMsg?.toLowerCase().includes('no existe') ||
-                           errorMsg?.toLowerCase().includes('no registrado') ||
-                           errorMsg?.toLowerCase().includes('invalid') ||
-                           errorMsg?.toLowerCase().includes('records') ||
-                           errorMsg?.toLowerCase().includes('credenciales');
+        const isNotFound =
+          errorMsg?.toLowerCase().includes("no existe") ||
+          errorMsg?.toLowerCase().includes("no registrado") ||
+          errorMsg?.toLowerCase().includes("invalid") ||
+          errorMsg?.toLowerCase().includes("records") ||
+          errorMsg?.toLowerCase().includes("credenciales");
 
         Swal.fire({
-          icon: 'error',
-          title: isNotFound ? 'Usuario no encontrado' : 'Error de Acceso',
+          icon: "error",
+          title: isNotFound ? "Usuario no encontrado" : "Error de Acceso",
           text: isNotFound
-            ? 'El correo electrónico no está registrado en nuestro sistema. Por favor, regístrese para continuar.'
-            : errorMsg || 'Credenciales inválidas, por favor revise sus datos.',
-          background: '#fdfaf6',
-          color: '#2c302e',
-          confirmButtonColor: '#e76f51',
+            ? "El correo electrónico no está registrado en nuestro sistema. Por favor, regístrese para continuar."
+            : errorMsg || "Credenciales inválidas, por favor revise sus datos.",
+          background: "#fdfaf6",
+          color: "#2c302e",
+          confirmButtonColor: "#e76f51",
           showCancelButton: isNotFound,
-          cancelButtonText: 'Cerrar',
-          confirmButtonText: isNotFound ? 'Ir a Registro' : 'Reintentar',
+          cancelButtonText: "Cerrar",
+          confirmButtonText: isNotFound ? "Ir a Registro" : "Reintentar",
         }).then((result) => {
           if (isNotFound && result.isConfirmed) {
-            navigate('/register');
+            navigate("/register");
           }
         });
       }
     } catch (error) {
       // Este catch solo se activará si hay un error crítico no manejado en el store
-      console.error('Error crítico:', error);
+      console.error("Error crítico:", error);
     }
   };
 
@@ -81,13 +82,19 @@ const LoginView = () => {
       <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
         <div className="text-center mb-10">
-          <span className="text-primary text-[10px] uppercase tracking-[5px] font-body block mb-4">Acceso Premium</span>
-          <h1 className="font-heading text-4xl text-text-main uppercase tracking-widest">Identificación</h1>
+          <span className="text-primary text-[10px] uppercase tracking-[5px] font-body block mb-4">
+            Acceso Premium
+          </span>
+          <h1 className="font-heading text-4xl text-text-main uppercase tracking-widest">
+            Identificación
+          </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">Email</label>
+            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -99,7 +106,9 @@ const LoginView = () => {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">Contraseña</label>
+            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">
+              Contraseña
+            </label>
             <input
               type="password"
               name="password"
@@ -113,7 +122,8 @@ const LoginView = () => {
 
           <button
             type="submit"
-            className="group relative w-full py-5 bg-text-main text-white font-body text-[11px] uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:bg-primary-hover">
+            className="group relative w-full py-5 bg-text-main text-white font-body text-[11px] uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:bg-primary-hover"
+          >
             <span className="relative z-10 font-bold">Iniciar Sesión</span>
           </button>
         </form>
@@ -124,7 +134,8 @@ const LoginView = () => {
           </p>
           <NavLink
             to="/register"
-            className="text-primary hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors">
+            className="text-primary hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors"
+          >
             Solicitar Registro
           </NavLink>
         </div>

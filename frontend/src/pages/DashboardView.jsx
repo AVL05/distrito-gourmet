@@ -1,11 +1,17 @@
-import { useAuthStore } from '@/store/auth';
-import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import axios from '@/services/api';
-import { HiClock, HiShoppingBag, HiCheckCircle } from 'react-icons/hi';
-import { PageTransition, FadeIn, StaggerList, StaggerItem, HoverCard } from '@/motion';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
+import { useAuthStore } from "@/store/auth";
+import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import axios from "@/services/api";
+import { HiClock, HiShoppingBag, HiCheckCircle } from "react-icons/hi";
+import {
+  PageTransition,
+  FadeIn,
+  StaggerList,
+  StaggerItem,
+  HoverCard,
+} from "@/motion";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
@@ -14,37 +20,39 @@ const OrderItem = ({ order }) => {
   const detailsRef = useRef(null);
 
   const date = new Date(order.creado_a).toLocaleDateString();
-  const pickupTime = order.hora_recogida ? order.hora_recogida.slice(0, 5) : null;
+  const pickupTime = order.hora_recogida
+    ? order.hora_recogida.slice(0, 5)
+    : null;
 
-  const getStatusColor = status => {
+  const getStatusColor = (status) => {
     switch (status) {
-      case 'Recibido':
-        return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-      case 'Preparando':
-        return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-      case 'Listo':
-        return 'text-green-500 bg-green-500/10 border-green-500/20';
-      case 'Recogido':
-        return 'text-primary bg-primary/10 border-primary/20';
-      case 'Cancelado':
-        return 'text-red-500 bg-red-500/10 border-red-500/20';
+      case "Recibido":
+        return "text-blue-500 bg-blue-500/10 border-blue-500/20";
+      case "Preparando":
+        return "text-amber-500 bg-amber-500/10 border-amber-500/20";
+      case "Listo":
+        return "text-green-500 bg-green-500/10 border-green-500/20";
+      case "Recogido":
+        return "text-primary bg-primary/10 border-primary/20";
+      case "Cancelado":
+        return "text-red-500 bg-red-500/10 border-red-500/20";
       default:
-        return 'text-text-muted bg-text-muted/10 border-text-main/10';
+        return "text-text-muted bg-text-muted/10 border-text-main/10";
     }
   };
 
-  const getStatusLabel = status => {
+  const getStatusLabel = (status) => {
     switch (status) {
-      case 'Recibido':
-        return 'Recibido';
-      case 'Preparando':
-        return 'Preparando';
-      case 'Listo':
-        return 'Listo para Recogida';
-      case 'Recogido':
-        return 'Recogido';
-      case 'Cancelado':
-        return 'Cancelado';
+      case "Recibido":
+        return "Recibido";
+      case "Preparando":
+        return "Preparando";
+      case "Listo":
+        return "Listo para Recogida";
+      case "Recogido":
+        return "Recogido";
+      case "Cancelado":
+        return "Cancelado";
       default:
         return status;
     }
@@ -56,17 +64,22 @@ const OrderItem = ({ order }) => {
         gsap.fromTo(
           detailsRef.current,
           { height: 0, opacity: 0 },
-          { height: 'auto', opacity: 1, duration: 0.5, ease: 'power2.out' }
+          { height: "auto", opacity: 1, duration: 0.5, ease: "power2.out" },
         );
       } else {
-        gsap.to(detailsRef.current, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.in' });
+        gsap.to(detailsRef.current, {
+          height: 0,
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.in",
+        });
       }
     },
-    { dependencies: [showDetails] }
+    { dependencies: [showDetails] },
   );
 
   return (
-    <div className="group relative bg-bg-surface/50 border border-text-main/10 p-6 sm:p-8 hover:bg-text-main/[0.07] transition-all duration-300 rounded-sm">
+    <div className="group relative bg-bg-surface/50 border border-text-main/10 p-6 sm:p-8 hover:bg-text-main/[0.07] transition-[border-color,box-shadow] duration-300 rounded-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-start gap-4 flex-1">
           <div className="w-12 h-12 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary rounded-sm mt-1 flex-shrink-0">
@@ -74,9 +87,12 @@ const OrderItem = ({ order }) => {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3 mb-2">
-              <span className="font-heading text-xl text-text-main uppercase tracking-tight">Pedido #{order.numero_pedido || order.id}</span>
+              <span className="font-heading text-xl text-text-main uppercase tracking-tight">
+                Pedido #{order.numero_pedido || order.id}
+              </span>
               <span
-                className={`text-[10px] uppercase tracking-widest px-3 py-1 border rounded-full font-bold ${getStatusColor(order.estado)}`}>
+                className={`text-[10px] uppercase tracking-widest px-3 py-1 border rounded-full font-bold ${getStatusColor(order.estado)}`}
+              >
                 {getStatusLabel(order.estado)}
               </span>
             </div>
@@ -84,17 +100,19 @@ const OrderItem = ({ order }) => {
               <span className="flex items-center gap-1.5 font-medium">
                 <HiClock size={16} className="text-primary/70" /> {date}
               </span>
-              {pickupTime && order.estado !== 'Recogido' && (
+              {pickupTime && order.estado !== "Recogido" && (
                 <span className="flex items-center gap-1.5 font-medium text-primary">
                   <HiCheckCircle size={16} /> Recogida a las {pickupTime}
                 </span>
               )}
-              {order.estado === 'Recogido' && (
+              {order.estado === "Recogido" && (
                 <span className="flex items-center gap-1.5 font-medium text-primary opacity-70">
                   <HiCheckCircle size={16} /> Finalizado
                 </span>
               )}
-              <span className="font-bold text-text-main text-sm">Total: {parseFloat(order.total).toFixed(2)}€</span>
+              <span className="font-bold text-text-main text-sm">
+                Total: {parseFloat(order.total).toFixed(2)}€
+              </span>
             </div>
           </div>
         </div>
@@ -102,8 +120,9 @@ const OrderItem = ({ order }) => {
         <div className="flex items-center gap-4 w-full md:w-auto">
           <button
             onClick={() => setShowDetails(!showDetails)}
-            className="w-full md:w-auto px-6 py-2 bg-text-main text-bg-body text-[10px] uppercase tracking-[2px] font-bold hover:bg-primary-hover transition-all duration-300">
-            {showDetails ? 'Ocultar Detalles' : 'Ver pedido'}
+            className="w-full md:w-auto px-6 py-2 bg-text-main text-bg-body text-[10px] uppercase tracking-[2px] font-bold hover:bg-primary-hover transition-[border-color,box-shadow] duration-300"
+          >
+            {showDetails ? "Ocultar Detalles" : "Ver pedido"}
           </button>
         </div>
       </div>
@@ -111,14 +130,16 @@ const OrderItem = ({ order }) => {
       <div ref={detailsRef} className="overflow-hidden h-0 opacity-0">
         <div className="mt-8 pt-8 border-t border-text-main/10 space-y-6">
           <p className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold flex items-center gap-2">
-            <span className="w-1 h-1 bg-primary rounded-full"></span> Detalle del Pedido
+            <span className="w-1 h-1 bg-primary rounded-full"></span> Detalle
+            del Pedido
           </p>
 
           <div className="space-y-3">
             {order.detalles?.map((item, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/[0.02] px-2 transition-colors">
+                className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/[0.02] px-2 transition-colors"
+              >
                 <div className="flex items-center gap-4">
                   <span className="w-7 h-7 flex items-center justify-center bg-primary/5 text-[10px] font-bold text-primary border border-primary/10 rounded-full">
                     {item.cantidad}
@@ -126,18 +147,26 @@ const OrderItem = ({ order }) => {
                   <div className="flex flex-col">
                     <span className="text-text-main font-medium tracking-tight uppercase text-[15px]">
                       {item.plato?.nombre ||
-                       item.vino?.nombre ||
-                       item.bebida?.nombre ||
-                       item.menu_degustacion?.nombre ||
-                       'Producto Gourmet'}
+                        item.vino?.nombre ||
+                        item.bebida?.nombre ||
+                        item.menu_degustacion?.nombre ||
+                        "Producto Gourmet"}
                     </span>
                     <span className="text-[12px] text-text-muted tracking-widest mt-0.5">
-                      {(item.precio_unitario ? parseFloat(item.precio_unitario) : 0).toFixed(2)}€ / Ud.
+                      {(item.precio_unitario
+                        ? parseFloat(item.precio_unitario)
+                        : 0
+                      ).toFixed(2)}
+                      € / Ud.
                     </span>
                   </div>
                 </div>
                 <span className="text-text-main font-heading text-lg font-medium">
-                  {(item.precio_total ? parseFloat(item.precio_total) : (item.cantidad * (item.precio_unitario || 0))).toFixed(2)}€
+                  {(item.precio_total
+                    ? parseFloat(item.precio_total)
+                    : item.cantidad * (item.precio_unitario || 0)
+                  ).toFixed(2)}
+                  €
                 </span>
               </div>
             ))}
@@ -149,16 +178,18 @@ const OrderItem = ({ order }) => {
                 Resumen de Pago
               </span>
               <span className="text-[12px] font-medium italic opacity-70">
-                Abonado mediante:{' '}
-                {order.metodo_pago === 'card'
-                  ? 'Tarjeta Bancaria'
-                  : order.metodo_pago === 'paypal'
-                    ? 'PayPal'
-                    : 'Efectivo en Local'}
+                Abonado mediante:{" "}
+                {order.metodo_pago === "card"
+                  ? "Tarjeta Bancaria"
+                  : order.metodo_pago === "paypal"
+                    ? "PayPal"
+                    : "Efectivo en Local"}
               </span>
             </div>
             <div className="text-right">
-              <div className="text-[10px] uppercase tracking-[3px] text-text-muted mb-1 font-bold">Suma Total</div>
+              <div className="text-[10px] uppercase tracking-[3px] text-text-muted mb-1 font-bold">
+                Suma Total
+              </div>
               <div className="text-2xl font-heading text-primary leading-none">
                 {parseFloat(order.total).toFixed(2)}€
               </div>
@@ -178,10 +209,10 @@ const DashboardView = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get('/orders');
+        const response = await axios.get("/orders");
         setOrders(response.data);
       } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error("Error fetching orders:", error);
       } finally {
         setIsLoading(false);
       }
@@ -190,10 +221,10 @@ const DashboardView = () => {
   }, []);
 
   return (
-    <PageTransition className="min-h-screen bg-bg-body pt-40 pb-32 px-4 relative overflow-hidden">
+    <PageTransition className="min-h-screen bg-bg-body pt-24 sm:pt-32 pb-32 px-4 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
-      <div className="container max-w-5xl relative z-10">
+      <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-6 md:px-12 4k:px-24 ultra:px-32">
         <FadeIn className="flex flex-col md:flex-row justify-between items-end mb-12 sm:mb-16 gap-6 sm:gap-8 border-b border-text-main/10 pb-8">
           <div>
             <span className="block text-primary text-[10px] uppercase tracking-[5px] mb-3 font-body opacity-90">
@@ -202,7 +233,9 @@ const DashboardView = () => {
             <h1 className="font-heading text-4xl sm:text-5xl text-text-main uppercase tracking-widest leading-tight">
               Bienvenido,
               <br />
-              <span className="italic text-primary-hover font-normal">{user?.nombre || 'Huésped'}</span>
+              <span className="italic text-primary-hover font-normal">
+                {user?.nombre || "Huésped"}
+              </span>
             </h1>
             <div className="flex items-center gap-4 mt-4">
               <p className="text-text-muted font-normal tracking-wide text-sm">
@@ -215,28 +248,33 @@ const DashboardView = () => {
           </div>
           <button
             onClick={logout}
-            className="group relative px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-muted font-body text-[10px] uppercase tracking-[3px] overflow-hidden transition-all duration-300 hover:border-red-500/50 w-full md:w-auto text-center">
+            className="group relative px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-muted font-body text-[10px] uppercase tracking-[3px] overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-red-500/50 w-full md:w-auto text-center"
+          >
             <div className="absolute inset-0 w-0 bg-red-900/20 transition-all duration-[400ms] ease-out group-hover:w-full"></div>
-            <span className="relative z-10 group-hover:text-red-800 transition-colors duration-300">Cerrar Sesión</span>
+            <span className="relative z-10 group-hover:text-red-800 transition-[border-color,box-shadow] duration-300">
+              Cerrar Sesión
+            </span>
           </button>
         </FadeIn>
 
-        <StaggerList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <StaggerList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           <StaggerItem>
-            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
+            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
               <Link to="/reservations" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
                   ✦
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
-                  Mis <span className="italic text-primary-hover">Reservas</span>
+                  Mis{" "}
+                  <span className="italic text-primary-hover">Reservas</span>
                 </h3>
                 <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
-                  Gestione sus futuras experiencias gastronómicas y consulte el historial de visitas.
+                  Gestione sus futuras experiencias gastronómicas y consulte el
+                  historial de visitas.
                 </p>
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
-                    Ver Detalles{' '}
+                    Ver Detalles{" "}
                     <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
@@ -246,20 +284,24 @@ const DashboardView = () => {
 
           {isAdmin() && (
             <StaggerItem>
-              <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-8 sm:p-10 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.25)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
+              <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-6 sm:p-8 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.25)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
                 <Link to="/admin" className="block h-full relative z-10">
-                  <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:rotate-12 transition-transform duration-500">
+                  <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
                     ⚙
                   </span>
                   <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
-                    Panel de <span className="italic text-primary-hover">Administración</span>
+                    Panel de{" "}
+                    <span className="italic text-primary-hover">
+                      Administración
+                    </span>
                   </h3>
                   <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
-                    Gestión completa de la carta, reservas de clientes y usuarios del sistema.
+                    Gestión completa de la carta, reservas de clientes y
+                    usuarios del sistema.
                   </p>
                   <div className="mt-auto">
                     <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-primary-hover">
-                      Acceder al Panel{' '}
+                      Acceder al Panel{" "}
                       <span className="w-6 h-[1px] bg-primary group-hover:bg-primary-hover transition-colors"></span>
                     </span>
                   </div>
@@ -269,20 +311,22 @@ const DashboardView = () => {
           )}
 
           <StaggerItem>
-            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
+            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
               <Link to="/profile" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
                   ✧
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
-                  Datos <span className="italic text-primary-hover">Personales</span>
+                  Datos{" "}
+                  <span className="italic text-primary-hover">Personales</span>
                 </h3>
                 <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
-                  Actualice sus preferencias, alergias y configuración de contacto.
+                  Actualice sus preferencias, alergias y configuración de
+                  contacto.
                 </p>
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
-                    Editar Perfil{' '}
+                    Editar Perfil{" "}
                     <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
@@ -291,20 +335,23 @@ const DashboardView = () => {
           </StaggerItem>
 
           <StaggerItem>
-            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-8 sm:p-10 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-all duration-500 cursor-pointer relative overflow-hidden h-full">
+            <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-6 sm:p-8 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
               <Link to="/menu" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 group-hover:scale-110 transition-transform duration-500">
+                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
                   ⋆
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
-                  Carta <span className="italic text-primary-hover">Gourmet</span>
+                  Carta{" "}
+                  <span className="italic text-primary-hover">Gourmet</span>
                 </h3>
                 <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
-                  Explore nuestras nuevas creaciones y realice su pedido para disfrutar en casa.
+                  Explore nuestras nuevas creaciones y realice su pedido para
+                  disfrutar en casa.
                 </p>
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
-                    Ver Menú <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
+                    Ver Menú{" "}
+                    <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
               </Link>
@@ -314,10 +361,14 @@ const DashboardView = () => {
 
         <FadeIn
           delay={0.3}
-          className="mt-16 bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-8 sm:p-10 relative overflow-hidden">
+          className="mt-16 bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 relative overflow-hidden"
+        >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12 border-b border-text-main/10 pb-6">
             <h3 className="font-heading text-2xl text-text-main uppercase tracking-[4px] font-normal">
-              Historial de <span className="italic text-primary-hover font-normal">Pedidos</span>
+              Historial de{" "}
+              <span className="italic text-primary-hover font-normal">
+                Pedidos
+              </span>
             </h3>
             {orders.length > 0 && (
               <span className="text-[10px] uppercase tracking-[3px] font-bold text-text-main/40">
@@ -330,11 +381,13 @@ const DashboardView = () => {
             {isLoading ? (
               <div className="py-16 flex flex-col items-center justify-center">
                 <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-                <p className="text-text-muted text-[10px] uppercase tracking-[3px]">Cargando historial...</p>
+                <p className="text-text-muted text-[10px] uppercase tracking-[3px]">
+                  Cargando historial...
+                </p>
               </div>
             ) : orders.length > 0 ? (
               <div className="space-y-4">
-                {orders.map(order => (
+                {orders.map((order) => (
                   <OrderItem key={order.id} order={order} />
                 ))}
               </div>
@@ -343,13 +396,16 @@ const DashboardView = () => {
                 <div className="w-16 h-16 bg-text-main/5 border border-text-main/10 flex items-center justify-center text-text-main/20 rounded-full mb-8">
                   <HiShoppingBag size={32} />
                 </div>
-                <p className="text-text-main font-heading text-2xl mb-4 italic font-normal">Sin Registros</p>
+                <p className="text-text-main font-heading text-2xl mb-4 italic font-normal">
+                  Sin Registros
+                </p>
                 <p className="text-text-muted font-body font-normal text-sm max-w-xs mx-auto mb-10 leading-relaxed">
                   Aún no ha realizado ningún pedido gourmet para llevar.
                 </p>
                 <Link
                   to="/menu"
-                  className="px-8 py-3 border border-text-main text-text-main font-body text-[10px] uppercase tracking-[3px] hover:bg-text-main hover:text-white transition-all duration-500">
+                  className="px-8 py-3 border border-text-main text-text-main font-body text-[10px] uppercase tracking-[3px] hover:bg-text-main hover:text-white transition-[border-color,box-shadow] duration-300"
+                >
                   Explorar la Carta
                 </Link>
               </div>

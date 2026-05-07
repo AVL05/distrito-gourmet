@@ -1,44 +1,44 @@
-import { useAuthStore } from '@/store/auth';
-import { useState } from 'react';
-import axios from '@/services/api';
-import Swal from 'sweetalert2';
-import { useReducedMotion, PageTransition, FadeIn, motion } from '@/motion';
+import { useAuthStore } from "@/store/auth";
+import { useState } from "react";
+import axios from "@/services/api";
+import Swal from "sweetalert2";
+import { useReducedMotion, PageTransition, FadeIn, motion } from "@/motion";
 
 const ProfileView = () => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({
-    nombre: user?.nombre || '',
-    email: user?.email || '',
-    telefono: user?.telefono || '',
-    password: '',
+    nombre: user?.nombre || "",
+    email: user?.email || "",
+    telefono: user?.telefono || "",
+    password: "",
   });
   const shouldReduceMotion = useReducedMotion();
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put('/profile', formData);
+      const response = await axios.put("/profile", formData);
       Swal.fire({
-        icon: 'success',
-        title: 'Perfil Actualizado',
-        background: '#fdfaf6',
-        color: '#2c302e',
-        confirmButtonColor: '#e76f51',
+        icon: "success",
+        title: "Perfil Actualizado",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
       });
 
       // Actualizar localStorage y contexto si cambia email/nombre
       const updatedUser = response.data.user;
-      localStorage.setItem('user', JSON.stringify(updatedUser));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
       useAuthStore.setState({ user: updatedUser });
     } catch (err) {
       console.error(err);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: err.response?.data?.message || 'Error al actualizar',
-        background: '#fdfaf6',
-        color: '#2c302e',
-        confirmButtonColor: '#e76f51',
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.message || "Error al actualizar",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
       });
     }
   };
@@ -49,9 +49,14 @@ const ProfileView = () => {
 
       <FadeIn className="w-full max-w-2xl bg-white/90 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         <div className="text-center mb-12">
-          <span className="text-primary text-3xl mb-4 opacity-80 block font-normal">✧</span>
+          <span className="text-primary text-3xl mb-4 opacity-80 block font-normal">
+            ✧
+          </span>
           <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
-            Datos <span className="italic text-primary-hover font-normal">Personales</span>
+            Datos{" "}
+            <span className="italic text-primary-hover font-normal">
+              Personales
+            </span>
           </h2>
           <div className="mb-4">
             <span className="text-[10px] bg-black text-white px-3 py-1 font-bold uppercase tracking-[3px]">
@@ -72,7 +77,9 @@ const ProfileView = () => {
             <input
               type="text"
               value={formData.nombre}
-              onChange={e => setFormData({ ...formData, nombre: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, nombre: e.target.value })
+              }
               required
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
@@ -85,7 +92,9 @@ const ProfileView = () => {
             <input
               type="email"
               value={formData.email}
-              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
@@ -98,7 +107,9 @@ const ProfileView = () => {
             <input
               type="tel"
               value={formData.telefono}
-              onChange={e => setFormData({ ...formData, telefono: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, telefono: e.target.value })
+              }
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
@@ -111,7 +122,9 @@ const ProfileView = () => {
               type="password"
               placeholder="Deje en blanco para mantener la actual"
               value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
@@ -121,7 +134,8 @@ const ProfileView = () => {
               type="submit"
               whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
               whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-              className="group relative w-full py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]">
+              className="group relative w-full py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
+            >
               <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold tracking-[5px] group-hover:text-black transition-colors duration-300">
                 GUARDAR CAMBIOS

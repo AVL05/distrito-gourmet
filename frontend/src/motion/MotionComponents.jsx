@@ -1,8 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 // Registrar plugins globalmente una sola vez
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -15,40 +15,51 @@ const DURATION = {
 };
 
 const EASING = {
-  smooth: 'power2.out',
-  primary: 'power3.out',
-  back: 'back.out(1.7)',
+  smooth: "power2.out",
+  primary: "power3.out",
+  back: "back.out(1.7)",
 };
 
-export const useMotionProps = _variants => ({});
+export const useMotionProps = (_variants) => ({});
 export const useReducedMotion = () => false;
 
 // ─── FadeIn ───────────────────────────────────────────────────────────────────
 // Componente que hace aparecer elementos suavemente y puede desplazarlos desde una dirección (arriba, abajo, izquierda, derecha)
 
-export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', as: Component = 'div', ...props }) => {
+export const FadeIn = ({
+  children,
+  direction = "up",
+  delay = 0,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const el = useRef(null);
 
   useGSAP(
     () => {
-      const fromVars = { opacity: 0, duration: DURATION.slow, ease: EASING.primary };
-      if (direction === 'up') fromVars.y = 36;
-      if (direction === 'down') fromVars.y = -36;
-      if (direction === 'left') fromVars.x = 36;
-      if (direction === 'right') fromVars.x = -36;
+      const fromVars = {
+        opacity: 0,
+        duration: DURATION.slow,
+        ease: EASING.primary,
+      };
+      if (direction === "up") fromVars.y = 36;
+      if (direction === "down") fromVars.y = -36;
+      if (direction === "left") fromVars.x = 36;
+      if (direction === "right") fromVars.x = -36;
 
       gsap.from(el.current, {
         ...fromVars,
         delay,
-        clearProps: 'all',
+        clearProps: "all",
         scrollTrigger: {
           trigger: el.current,
-          start: 'top 92%',
-          toggleActions: 'play none none none',
+          start: "top 92%",
+          toggleActions: "play none none none",
         },
       });
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -61,7 +72,12 @@ export const FadeIn = ({ children, direction = 'up', delay = 0, className = '', 
 // ─── StaggerList ──────────────────────────────────────────────────────────────
 // Contenedor que anima a sus elementos hijos de forma secuencial (uno tras otro)
 
-export const StaggerList = ({ children, className = '', as: Component = 'div', ...props }) => {
+export const StaggerList = ({
+  children,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const el = useRef(null);
 
   useGSAP(
@@ -75,15 +91,15 @@ export const StaggerList = ({ children, className = '', as: Component = 'div', .
         duration: DURATION.normal,
         stagger: DURATION.stagger,
         ease: EASING.primary,
-        clearProps: 'all',
+        clearProps: "all",
         scrollTrigger: {
           trigger: el.current,
-          start: 'top 88%',
-          toggleActions: 'play none none none',
+          start: "top 88%",
+          toggleActions: "play none none none",
         },
       });
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -96,7 +112,12 @@ export const StaggerList = ({ children, className = '', as: Component = 'div', .
 // ─── StaggerItem (wrapper de compatibilidad) ──────────────────────────────────
 // Elemento individual dentro de un StaggerList
 
-export const StaggerItem = ({ children, className = '', as: Component = 'div', ...props }) => (
+export const StaggerItem = ({
+  children,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => (
   <Component className={className} {...props}>
     {children}
   </Component>
@@ -105,7 +126,12 @@ export const StaggerItem = ({ children, className = '', as: Component = 'div', .
 // ─── PageTransition ───────────────────────────────────────────────────────────
 // Componente para animar la transición suave al cambiar entre distintas páginas
 
-export const PageTransition = ({ children, className = '', as: Component = 'div', ...props }) => {
+export const PageTransition = ({
+  children,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const el = useRef(null);
 
   useGSAP(
@@ -115,10 +141,10 @@ export const PageTransition = ({ children, className = '', as: Component = 'div'
         y: 24,
         duration: DURATION.slow,
         ease: EASING.primary,
-        clearProps: 'all',
+        clearProps: "all",
       });
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -131,7 +157,13 @@ export const PageTransition = ({ children, className = '', as: Component = 'div'
 // ─── ScaleIn ──────────────────────────────────────────────────────────────────
 // Hace aparecer un elemento haciéndolo crecer ligeramente (efecto zoom o escala)
 
-export const ScaleIn = ({ children, className = '', as: Component = 'div', delay = 0, ...props }) => {
+export const ScaleIn = ({
+  children,
+  className = "",
+  as: Component = "div",
+  delay = 0,
+  ...props
+}) => {
   const el = useRef(null);
 
   useGSAP(
@@ -142,15 +174,15 @@ export const ScaleIn = ({ children, className = '', as: Component = 'div', delay
         duration: DURATION.normal,
         ease: EASING.back,
         delay,
-        clearProps: 'all',
+        clearProps: "all",
         scrollTrigger: {
           trigger: el.current,
-          start: 'top 92%',
-          toggleActions: 'play none none none',
+          start: "top 92%",
+          toggleActions: "play none none none",
         },
       });
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -163,7 +195,12 @@ export const ScaleIn = ({ children, className = '', as: Component = 'div', delay
 // ─── Toast ────────────────────────────────────────────────────────────────────
 // Animación para notificaciones o mensajes flotantes (como alertas de éxito o error)
 
-export const Toast = ({ children, className = '', as: Component = 'div', ...props }) => {
+export const Toast = ({
+  children,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const el = useRef(null);
 
   useGSAP(
@@ -174,10 +211,10 @@ export const Toast = ({ children, className = '', as: Component = 'div', ...prop
         scale: 0.92,
         duration: DURATION.normal,
         ease: EASING.back,
-        clearProps: 'all',
+        clearProps: "all",
       });
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -190,31 +227,40 @@ export const Toast = ({ children, className = '', as: Component = 'div', ...prop
 // ─── HoverCard ────────────────────────────────────────────────────────────────
 // Tarjeta que se eleva ligeramente cuando pasas el ratón por encima
 
-export const HoverCard = ({ children, className = '', as: Component = 'div', ...props }) => {
+export const HoverCard = ({
+  children,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const el = useRef(null);
 
   const onMouseEnter = () => {
     gsap.to(el.current, {
       y: -8,
-      scale: 1.02,
-      duration: DURATION.normal,
-      ease: EASING.smooth,
-      overwrite: 'auto',
+      duration: 0.3,
+      ease: "power2.out",
+      overwrite: "auto",
     });
   };
 
   const onMouseLeave = () => {
     gsap.to(el.current, {
       y: 0,
-      scale: 1,
-      duration: DURATION.normal,
-      ease: EASING.smooth,
-      overwrite: 'auto',
+      duration: 0.3,
+      ease: "power2.out",
+      overwrite: "auto",
     });
   };
 
   return (
-    <Component ref={el} className={className} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} {...props}>
+    <Component
+      ref={el}
+      className={className}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      {...props}
+    >
       {children}
     </Component>
   );
@@ -223,11 +269,20 @@ export const HoverCard = ({ children, className = '', as: Component = 'div', ...
 // ─── MotionButton ─────────────────────────────────────────────────────────────
 // Botón con un sutil efecto de "hundirse" al hacer clic sobre él
 
-export const MotionButton = ({ children, className = '', onClick, type = 'button', disabled = false, ...props }) => {
+export const MotionButton = ({
+  children,
+  className = "",
+  onClick,
+  type = "button",
+  disabled = false,
+  ...props
+}) => {
   const btn = useRef(null);
 
-  const onMouseDown = () => gsap.to(btn.current, { scale: 0.95, duration: 0.1, ease: 'power2.in' });
-  const onMouseUp = () => gsap.to(btn.current, { scale: 1, duration: 0.15, ease: EASING.back });
+  const onMouseDown = () =>
+    gsap.to(btn.current, { scale: 0.95, duration: 0.1, ease: "power2.in" });
+  const onMouseUp = () =>
+    gsap.to(btn.current, { scale: 1, duration: 0.15, ease: EASING.back });
 
   return (
     <button
@@ -239,7 +294,8 @@ export const MotionButton = ({ children, className = '', onClick, type = 'button
       onMouseLeave={onMouseUp}
       type={type}
       disabled={disabled}
-      {...props}>
+      {...props}
+    >
       {children}
     </button>
   );
@@ -260,23 +316,23 @@ const motionProxy = new Proxy(
           // Filtramos props de Framer Motion que no son válidas en el DOM
           const validProps = { ...props };
           [
-            'initial',
-            'animate',
-            'exit',
-            'variants',
-            'transition',
-            'whileHover',
-            'whileTap',
-            'layout',
-            'viewport',
-            'drag',
-            'dragConstraints',
-            'dragElastic',
-            'dragMomentum',
-            'onAnimationStart',
-            'onAnimationComplete',
-            'onUpdate',
-          ].forEach(key => delete validProps[key]);
+            "initial",
+            "animate",
+            "exit",
+            "variants",
+            "transition",
+            "whileHover",
+            "whileTap",
+            "layout",
+            "viewport",
+            "drag",
+            "dragConstraints",
+            "dragElastic",
+            "dragMomentum",
+            "onAnimationStart",
+            "onAnimationComplete",
+            "onUpdate",
+          ].forEach((key) => delete validProps[key]);
 
           const Component = prop;
           return <Component {...validProps}>{children}</Component>;
@@ -284,7 +340,7 @@ const motionProxy = new Proxy(
       }
       return componentCache[prop];
     },
-  }
+  },
 );
 
 export const motion = motionProxy;

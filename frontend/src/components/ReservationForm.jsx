@@ -1,9 +1,15 @@
-import { useState, useEffect } from 'react';
-import { AnimatePresence, useReducedMotion, FadeIn, Toast, motion } from '@/motion';
-import { useAuthStore } from '@/store/auth';
-import axios from '@/services/api';
-import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import {
+  AnimatePresence,
+  useReducedMotion,
+  FadeIn,
+  Toast,
+  motion,
+} from "@/motion";
+import { useAuthStore } from "@/store/auth";
+import axios from "@/services/api";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
@@ -12,52 +18,61 @@ const ReservationForm = ({ compact = false }) => {
 
   // Estado principal que guarda los datos introducidos en el formulario
   const [form, setForm] = useState({
-    name: user?.nombre || '',
-    phone: user?.telefono || '',
-    guests: '',
-    date: '',
-    time: '',
-    comments: '',
+    name: user?.nombre || "",
+    phone: user?.telefono || "",
+    guests: "",
+    date: "",
+    time: "",
+    comments: "",
   });
 
   // Sincronizar con el usuario si cambia (ej: login posterior)
   useEffect(() => {
     if (user) {
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
-        name: prev.name || user.nombre || '',
-        phone: prev.phone || user.telefono || '',
+        name: prev.name || user.nombre || "",
+        phone: prev.phone || user.telefono || "",
       }));
     }
   }, [user]);
 
-  // Estados para controlar si está cargando y si se envió con éxito
+  // Estados para controlar si está cargando
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [serverMessage, setServerMessage] = useState('');
   const shouldReduceMotion = useReducedMotion();
 
   // Horarios disponibles para reservar
-  const availableTimes = ['13:00', '13:30', '14:00', '14:30', '20:00', '20:30', '21:00', '21:30'];
-  const today = new Date().toLocaleDateString('en-CA');
-  const maxDate = new Date(new Date().setMonth(new Date().getMonth() + 2)).toLocaleDateString('en-CA');
+  const availableTimes = [
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "20:00",
+    "20:30",
+    "21:00",
+    "21:30",
+  ];
+  const today = new Date().toLocaleDateString("en-CA");
+  const maxDate = new Date(
+    new Date().setMonth(new Date().getMonth() + 2),
+  ).toLocaleDateString("en-CA");
 
   // Enviar reserva (conexión real con API)
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Comprobar que el usuario ha iniciado sesión antes de reservar
     if (!user) {
       Swal.fire({
-        title: 'Atención',
-        text: 'Debe iniciar sesión para realizar una reserva.',
-        icon: 'info',
+        title: "Atención",
+        text: "Debe iniciar sesión para realizar una reserva.",
+        icon: "info",
         showCancelButton: true,
-        confirmButtonText: 'Ir al Login',
-        cancelButtonText: 'Cerrar',
-        confirmButtonColor: '#c5a059',
-      }).then(result => {
-        if (result.isConfirmed) navigate('/login');
+        confirmButtonText: "Ir al Login",
+        cancelButtonText: "Cerrar",
+        confirmButtonColor: "#c5a059",
+      }).then((result) => {
+        if (result.isConfirmed) navigate("/login");
       });
       return;
     }
@@ -65,33 +80,74 @@ const ReservationForm = ({ compact = false }) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/reservations', {
+      await axios.post("/reservations", {
+        nombre: form.name,
+        telefono: form.phone,
         fecha_reserva: form.date,
-        hora_reserva: form.time,
+        hora_reserva:
+          form.time.includes(":") && form.time.split(":").length === 2
+            ? `${form.time}:00`
+            : form.time,
         comensales: parseInt(form.guests),
         peticiones_especiales: form.comments,
       });
 
-      // Mostrar mensaje de confirmación y vaciar el formulario
-      setServerMessage(response.data.message);
-      setSuccess(true);
-      setForm(prev => ({
-        ...prev,
-        guests: '',
-        date: '',
-        time: '',
-        comments: '',
-      }));
-
-      setTimeout(() => setSuccess(false), 8000);
-    } catch (err) {
-      // Si hay error, lo mostramos por pantalla
-      console.error(err);
+      // Mostrar mensaje de confirmación mediante SweetAlert2 (estilo premium)
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: err.response?.data?.message || 'No se pudo procesar la reserva',
-        confirmButtonColor: '#c5a059',
+        icon: "success",
+        title: "Reserva Confirmada",
+        html: `
+          <div class="text-center font-body">
+            <p class="mb-4">Hemos recibido su solicitud para una experiencia en <b>Distrito Gourmet</b>.</p>
+            <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
+              <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Fecha y Hora de la Cita</p>
+              <p class="text-3xl font-heading text-primary">${form.date} — ${form.time}</p>
+              <p class="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos para brindarle un servicio excepcional.</p>
+            </div>
+            <p class="mt-4 text-[11px] text-text-muted">Recibirá un correo de confirmación en breve.</p>
+          </div>
+        `,
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#c5a059",
+        confirmButtonText: "Ver mis Reservas",
+      }).then(() => {
+        // Redirigir al historial para que vea su nueva reserva
+        window.location.href = "/reservations";
+      });
+
+      // Vaciar el formulario
+      setForm((prev) => ({
+        ...prev,
+        guests: "",
+        date: "",
+        time: "",
+        comments: "",
+      }));
+    } catch (err) {
+      // Si hay error, lo mostramos por pantalla con detalle
+      console.error("Error de reserva:", err);
+      const errorData = err.response?.data;
+      console.log("Detalle del error 422:", errorData);
+      let errorMsg = "No se pudo procesar la reserva";
+
+      if (errorData?.mensaje) {
+        errorMsg = errorData.mensaje;
+      } else if (errorData?.message) {
+        errorMsg = errorData.message;
+      } else if (errorData?.errors) {
+        // Recoger el primer error de validación si existe
+        const firstError = Object.values(errorData.errors)[0];
+        if (Array.isArray(firstError)) errorMsg = firstError[0];
+      }
+
+      Swal.fire({
+        icon: "error",
+        title: "Atención",
+        text: errorMsg,
+        confirmButtonColor: "#c5a059",
+        background: "#fdfaf6",
+        color: "#2c302e",
       });
     } finally {
       setLoading(false);
@@ -99,9 +155,9 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   // Actualizar campo del formulario
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
@@ -114,7 +170,10 @@ const ReservationForm = ({ compact = false }) => {
         {!compact && (
           <div className="text-center mb-12">
             <h3 className="font-heading text-3xl md:text-4xl text-gray-900 tracking-[0.2em] mb-4 drop-shadow-lg font-normal">
-              Su <span className="italic font-normal text-primary-hover">Reserva</span>
+              Su{" "}
+              <span className="italic font-normal text-primary-hover">
+                Reserva
+              </span>
             </h3>
             <div className="w-16 h-[1px] bg-primary mx-auto opacity-70"></div>
           </div>
@@ -162,13 +221,14 @@ const ReservationForm = ({ compact = false }) => {
               value={form.guests}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer">
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer"
+            >
               <option value="" disabled>
                 Seleccione número
               </option>
               {[...Array(8)].map((_, i) => (
                 <option key={i + 1} value={i + 1}>
-                  {i + 1} persona{i + 1 > 1 ? 's' : ''}
+                  {i + 1} persona{i + 1 > 1 ? "s" : ""}
                 </option>
               ))}
             </select>
@@ -207,11 +267,12 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer">
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-lg font-normal appearance-none cursor-pointer"
+            >
               <option value="" disabled>
                 Seleccione horario
               </option>
-              {availableTimes.map(time => (
+              {availableTimes.map((time) => (
                 <option key={time} value={time}>
                   Servicio de las {time}
                 </option>
@@ -231,7 +292,8 @@ const ReservationForm = ({ compact = false }) => {
             onChange={handleChange}
             rows="2"
             placeholder="Alergias, celebraciones u otros detalles importantes para nuestro Maître..."
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-normal"></textarea>
+            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-lg font-normal"
+          ></textarea>
         </div>
 
         {/* Botón para enviar el formulario de reserva */}
@@ -241,31 +303,14 @@ const ReservationForm = ({ compact = false }) => {
             whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             className="group relative px-16 py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto min-w-[300px]"
-            disabled={loading}>
+            disabled={loading}
+          >
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
-              {loading ? 'PROCESANDO...' : 'SOLICITAR MESA'}
+              {loading ? "PROCESANDO..." : "SOLICITAR MESA"}
             </span>
           </motion.button>
         </div>
-
-        {/* Mensaje de éxito con animación */}
-        <AnimatePresence>
-          {success && (
-            <Toast className="mt-8 p-6 bg-white/90 border border-primary/40 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-2xl">
-              <span className="text-primary text-2xl mb-2">✦</span>
-              <p className="text-gray-900 font-normal tracking-wide leading-relaxed">
-                {serverMessage || 'Su petición de reserva ha sido recibida con éxito.'}
-                <br />
-                <span className="text-gray-500 text-sm mt-2 block italic opacity-70">
-                  {serverMessage?.includes('PENDIENTE')
-                    ? 'Nuestro equipo revisará la capacidad y le notificará por email.'
-                    : 'Le esperamos para brindarle una experiencia inolvidable.'}
-                </span>
-              </p>
-            </Toast>
-          )}
-        </AnimatePresence>
       </form>
     </FadeIn>
   );

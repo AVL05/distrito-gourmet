@@ -1,7 +1,7 @@
-import { useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -10,20 +10,20 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 export const TextReveal = ({
   text,
-  splitBy = 'word',
-  as: Component = 'h2',
+  splitBy = "word",
+  as: Component = "h2",
   staggerDelay = 0.05,
   delay = 0,
   once = true,
-  className = '',
+  className = "",
   ...props
 }) => {
   const container = useRef(null);
-  const units = splitBy === 'char' ? text.split('') : text.split(' ');
+  const units = splitBy === "char" ? text.split("") : text.split(" ");
 
   useGSAP(
     () => {
-      const targets = container.current.querySelectorAll('.reveal-unit-inner');
+      const targets = container.current.querySelectorAll(".reveal-unit-inner");
 
       gsap.from(targets, {
         y: 40,
@@ -32,38 +32,48 @@ export const TextReveal = ({
         duration: 0.8,
         stagger: staggerDelay,
         delay,
-        ease: 'power3.out',
-        clearProps: 'all',
+        ease: "power3.out",
+        clearProps: "all",
         scrollTrigger: {
           trigger: container.current,
-          start: 'top 88%',
-          toggleActions: once ? 'play none none none' : 'play none none reverse',
+          start: "top 88%",
+          toggleActions: once
+            ? "play none none none"
+            : "play none none reverse",
         },
       });
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
     <Component
       ref={container}
       className={className}
-      style={{ perspective: '800px', display: 'flex', flexWrap: 'wrap' }}
+      style={{ perspective: "800px", display: "flex", flexWrap: "wrap" }}
       aria-label={text}
-      {...props}>
+      {...props}
+    >
       {units.map((unit, i) => (
         <span
           key={`wrapper-${i}`}
           className="reveal-unit-wrapper"
           style={{
-            display: 'inline-block',
-            overflow: 'hidden',
-            padding: '0.05em 0.15em',
-            margin: '-0.05em -0.15em',
-            marginRight: splitBy === 'word' ? '0.25em' : '0',
-            whiteSpace: 'pre',
-          }}>
-          <span className="reveal-unit-inner" style={{ display: 'inline-block', willChange: 'opacity, transform' }}>
+            display: "inline-block",
+            overflow: "hidden",
+            padding: "0.05em 0.15em",
+            margin: "-0.05em -0.15em",
+            marginRight: splitBy === "word" ? "0.25em" : "0",
+            whiteSpace: "pre",
+          }}
+        >
+          <span
+            className="reveal-unit-inner"
+            style={{
+              display: "inline-block",
+              willChange: "opacity, transform",
+            }}
+          >
             {unit}
           </span>
         </span>
@@ -77,13 +87,13 @@ export const TextReveal = ({
 
 export const ScrollReveal = ({
   children,
-  direction = 'up',
+  direction = "up",
   distance = 60,
   delay = 0,
   duration = 0.8,
   once = true,
-  className = '',
-  as: Component = 'div',
+  className = "",
+  as: Component = "div",
   ...props
 }) => {
   const el = useRef(null);
@@ -94,24 +104,26 @@ export const ScrollReveal = ({
         opacity: 0,
         duration,
         delay,
-        ease: 'power2.out',
-        clearProps: 'all',
+        ease: "power2.out",
+        clearProps: "all",
         scrollTrigger: {
           trigger: el.current,
-          start: 'top 92%',
-          toggleActions: once ? 'play none none none' : 'play none none reverse',
+          start: "top 92%",
+          toggleActions: once
+            ? "play none none none"
+            : "play none none reverse",
         },
       };
 
-      if (direction === 'up') fromVars.y = distance;
-      if (direction === 'down') fromVars.y = -distance;
-      if (direction === 'left') fromVars.x = distance;
-      if (direction === 'right') fromVars.x = -distance;
-      if (direction === 'scale') fromVars.scale = 0.9;
+      if (direction === "up") fromVars.y = distance;
+      if (direction === "down") fromVars.y = -distance;
+      if (direction === "left") fromVars.x = distance;
+      if (direction === "right") fromVars.x = -distance;
+      if (direction === "scale") fromVars.scale = 0.9;
 
       gsap.from(el.current, fromVars);
     },
-    { scope: el }
+    { scope: el },
   );
 
   return (
@@ -124,7 +136,13 @@ export const ScrollReveal = ({
 // ─── 3. ParallaxSection ───────────────────────────────────────────────────────
 // Crea un efecto visual donde el contenido se mueve a distinta velocidad que la página al hacer scroll
 
-export const ParallaxSection = ({ children, speed = 50, className = '', as: Component = 'div', ...props }) => {
+export const ParallaxSection = ({
+  children,
+  speed = 50,
+  className = "",
+  as: Component = "div",
+  ...props
+}) => {
   const section = useRef(null);
   const content = useRef(null);
 
@@ -132,16 +150,16 @@ export const ParallaxSection = ({ children, speed = 50, className = '', as: Comp
     () => {
       gsap.to(content.current, {
         y: -speed,
-        ease: 'none',
+        ease: "none",
         scrollTrigger: {
           trigger: section.current,
-          start: 'top bottom',
-          end: 'bottom top',
+          start: "top bottom",
+          end: "bottom top",
           scrub: 1,
         },
       });
     },
-    { scope: section }
+    { scope: section },
   );
 
   return (
@@ -154,7 +172,14 @@ export const ParallaxSection = ({ children, speed = 50, className = '', as: Comp
 // ─── 4. ParallaxImage ─────────────────────────────────────────────────────────
 // Efecto parallax específico para imágenes, moviéndolas ligeramente dentro de su contenedor al hacer scroll
 
-export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', imageClassName = '', ...props }) => {
+export const ParallaxImage = ({
+  src,
+  alt = "",
+  speed = 80,
+  className = "",
+  imageClassName = "",
+  ...props
+}) => {
   const container = useRef(null);
   const image = useRef(null);
 
@@ -163,11 +188,11 @@ export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', image
       // Parallax scrub
       gsap.to(image.current, {
         yPercent: speed / 10,
-        ease: 'none',
+        ease: "none",
         scrollTrigger: {
           trigger: container.current,
-          start: 'top bottom',
-          end: 'bottom top',
+          start: "top bottom",
+          end: "bottom top",
           scrub: true,
         },
       });
@@ -176,16 +201,16 @@ export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', image
       gsap.from(image.current, {
         scale: 1.2,
         duration: 1.5,
-        ease: 'power2.out',
-        clearProps: 'scale',
+        ease: "power2.out",
+        clearProps: "scale",
         scrollTrigger: {
           trigger: container.current,
-          start: 'top 92%',
-          toggleActions: 'play none none none',
+          start: "top 92%",
+          toggleActions: "play none none none",
         },
       });
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
@@ -195,7 +220,7 @@ export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', image
         src={src}
         alt={alt}
         className={`w-full h-full object-cover scale-[1.15] ${imageClassName}`}
-        style={{ willChange: 'transform' }}
+        style={{ willChange: "transform" }}
       />
     </div>
   );
@@ -206,13 +231,13 @@ export const ParallaxImage = ({ src, alt = '', speed = 80, className = '', image
 
 export const ImageReveal = ({
   src,
-  alt = '',
-  revealFrom = 'bottom',
+  alt = "",
+  revealFrom = "bottom",
   duration = 1.2,
   delay = 0,
   once = true,
-  className = '',
-  imageClassName = '',
+  className = "",
+  imageClassName = "",
   ...props
 }) => {
   const container = useRef(null);
@@ -220,37 +245,54 @@ export const ImageReveal = ({
   useGSAP(
     () => {
       const clipPaths = {
-        left: { hidden: 'inset(0 100% 0 0)', visible: 'inset(0 0% 0 0)' },
-        right: { hidden: 'inset(0 0 0 100%)', visible: 'inset(0 0 0 0%)' },
-        bottom: { hidden: 'inset(100% 0 0 0)', visible: 'inset(0% 0 0 0)' },
-        center: { hidden: 'inset(50% 50% 50% 50%)', visible: 'inset(0% 0% 0% 0%)' },
+        left: { hidden: "inset(0 100% 0 0)", visible: "inset(0 0% 0 0)" },
+        right: { hidden: "inset(0 0 0 100%)", visible: "inset(0 0 0 0%)" },
+        bottom: { hidden: "inset(100% 0 0 0)", visible: "inset(0% 0 0 0)" },
+        center: {
+          hidden: "inset(50% 50% 50% 50%)",
+          visible: "inset(0% 0% 0% 0%)",
+        },
       };
       const clip = clipPaths[revealFrom] || clipPaths.bottom;
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container.current,
-          start: 'top 88%',
-          toggleActions: once ? 'play none none none' : 'play none none reverse',
+          start: "top 88%",
+          toggleActions: once
+            ? "play none none none"
+            : "play none none reverse",
         },
       });
 
       tl.fromTo(
         container.current,
         { clipPath: clip.hidden, scale: 1.15 },
-        { clipPath: clip.visible, scale: 1, duration, delay, ease: 'expo.inOut', clearProps: 'all' }
+        {
+          clipPath: clip.visible,
+          scale: 1,
+          duration,
+          delay,
+          ease: "expo.inOut",
+          clearProps: "all",
+        },
       );
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
     <div
       ref={container}
       className={`overflow-hidden ${className}`}
-      style={{ willChange: 'clip-path, transform' }}
-      {...props}>
-      <img src={src} alt={alt} className={`w-full h-full object-cover ${imageClassName}`} />
+      style={{ willChange: "clip-path, transform" }}
+      {...props}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className={`w-full h-full object-cover ${imageClassName}`}
+      />
     </div>
   );
 };
@@ -262,14 +304,14 @@ export const Marquee = ({
   text,
   speed = 40,
   reverse = false,
-  separator = '✦',
-  className = '',
-  textClassName = '',
+  separator = "✦",
+  className = "",
+  textClassName = "",
   ...props
 }) => {
   const container = useRef(null);
   const track = useRef(null);
-  const repeated = Array(6).fill(`${text} ${separator} `).join('');
+  const repeated = Array(6).fill(`${text} ${separator} `).join("");
 
   useGSAP(
     () => {
@@ -280,15 +322,19 @@ export const Marquee = ({
       gsap.to(track.current, {
         x: reverse ? -xDist : 0,
         duration: speed,
-        ease: 'none',
+        ease: "none",
         repeat: -1,
       });
     },
-    { scope: container }
+    { scope: container },
   );
 
   return (
-    <div ref={container} className={`overflow-hidden whitespace-nowrap ${className}`} {...props}>
+    <div
+      ref={container}
+      className={`overflow-hidden whitespace-nowrap ${className}`}
+      {...props}
+    >
       <div ref={track} className="inline-flex">
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
@@ -302,11 +348,11 @@ export const Marquee = ({
 
 export const SmoothCounter = ({
   target,
-  suffix = '',
-  prefix = '',
+  suffix = "",
+  prefix = "",
   duration = 2,
   once = true,
-  className = '',
+  className = "",
   ...props
 }) => {
   const ref = useRef(null);
@@ -317,18 +363,21 @@ export const SmoothCounter = ({
       gsap.to(countObj, {
         value: target,
         duration,
-        ease: 'power2.out',
+        ease: "power2.out",
         scrollTrigger: {
           trigger: ref.current,
-          start: 'top 92%',
-          toggleActions: once ? 'play none none none' : 'play none none reverse',
+          start: "top 92%",
+          toggleActions: once
+            ? "play none none none"
+            : "play none none reverse",
         },
         onUpdate: () => {
-          if (ref.current) ref.current.innerText = `${prefix}${Math.floor(countObj.value)}${suffix}`;
+          if (ref.current)
+            ref.current.innerText = `${prefix}${Math.floor(countObj.value)}${suffix}`;
         },
       });
     },
-    { scope: ref }
+    { scope: ref },
   );
 
   return (
@@ -344,14 +393,14 @@ export const SmoothCounter = ({
 export const MagneticButton = ({
   children,
   strength = 40,
-  className = '',
+  className = "",
   onClick,
-  as: Component = 'button',
+  as: Component = "button",
   ...props
 }) => {
   const button = useRef(null);
 
-  const onMouseMove = e => {
+  const onMouseMove = (e) => {
     const { clientX, clientY } = e;
     const { left, top, width, height } = button.current.getBoundingClientRect();
     const x = clientX - (left + width / 2);
@@ -361,8 +410,8 @@ export const MagneticButton = ({
       x: x * (strength / 100),
       y: y * (strength / 100),
       duration: 0.6,
-      ease: 'power2.out',
-      overwrite: 'auto',
+      ease: "power2.out",
+      overwrite: "auto",
     });
   };
 
@@ -371,8 +420,8 @@ export const MagneticButton = ({
       x: 0,
       y: 0,
       duration: 0.8,
-      ease: 'elastic.out(1, 0.3)',
-      overwrite: 'auto',
+      ease: "elastic.out(1, 0.3)",
+      overwrite: "auto",
     });
   };
 
@@ -383,8 +432,9 @@ export const MagneticButton = ({
       onClick={onClick}
       onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
-      style={{ willChange: 'transform', display: 'inline-block' }}
-      {...props}>
+      style={{ willChange: "transform", display: "inline-block" }}
+      {...props}
+    >
       {children}
     </Component>
   );
@@ -394,15 +444,15 @@ export const MagneticButton = ({
 // Anima una línea decorativa haciéndola crecer de forma fluida (horizontal o verticalmente)
 
 export const LineReveal = ({
-  orientation = 'horizontal',
+  orientation = "horizontal",
   delay = 0,
   duration = 1.2,
   once = true,
-  className = '',
+  className = "",
   ...props
 }) => {
   const line = useRef(null);
-  const isHorizontal = orientation === 'horizontal';
+  const isHorizontal = orientation === "horizontal";
 
   useGSAP(
     () => {
@@ -411,16 +461,18 @@ export const LineReveal = ({
         scaleY: isHorizontal ? 1 : 0,
         duration,
         delay,
-        ease: 'expo.out',
-        clearProps: 'all',
+        ease: "expo.out",
+        clearProps: "all",
         scrollTrigger: {
           trigger: line.current,
-          start: 'top 92%',
-          toggleActions: once ? 'play none none none' : 'play none none reverse',
+          start: "top 92%",
+          toggleActions: once
+            ? "play none none none"
+            : "play none none reverse",
         },
       });
     },
-    { scope: line }
+    { scope: line },
   );
 
   return (
@@ -428,10 +480,10 @@ export const LineReveal = ({
       ref={line}
       className={className}
       style={{
-        transformOrigin: 'left center',
-        willChange: 'transform',
-        width: isHorizontal ? '100%' : '1px',
-        height: isHorizontal ? '1px' : '100%',
+        transformOrigin: "left center",
+        willChange: "transform",
+        width: isHorizontal ? "100%" : "1px",
+        height: isHorizontal ? "1px" : "100%",
       }}
       {...props}
     />
@@ -441,7 +493,7 @@ export const LineReveal = ({
 // ─── 10. ScrollProgress ───────────────────────────────────────────────────────
 // Barra de carga fija en la parte superior que muestra cuánto scroll hemos hecho en la página actual
 
-export const ScrollProgress = ({ className = '', ...props }) => {
+export const ScrollProgress = ({ className = "", ...props }) => {
   const line = useRef(null);
 
   useGSAP(() => {
@@ -450,14 +502,14 @@ export const ScrollProgress = ({ className = '', ...props }) => {
       { scaleX: 0 },
       {
         scaleX: 1,
-        ease: 'none',
+        ease: "none",
         scrollTrigger: {
           trigger: document.body,
-          start: 'top top',
-          end: 'bottom bottom',
+          start: "top top",
+          end: "bottom bottom",
           scrub: 0.3,
         },
-      }
+      },
     );
   });
 

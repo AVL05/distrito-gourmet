@@ -103,4 +103,15 @@ class ReservaController extends Controller
         $res->save();
         return response()->json(['mensaje' => 'Reserva actualizada correctamente']);
     }
+
+    /**
+     * @function destroy
+     * @description Elimina permanentemente una reserva de la base de datos.
+     */
+    public function destroy($id)
+    {
+        $res = Reserva::findOrFail($id);
+        $res->delete();
+        return response()->json(['mensaje' => 'Reserva eliminada correctamente']);
+    }
 }

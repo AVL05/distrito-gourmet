@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   AnimatePresence,
   useReducedMotion,
@@ -9,17 +9,17 @@ import {
   TextReveal,
   LineReveal,
   motion,
-} from '@/motion';
+} from "@/motion";
 
 const ContactView = () => {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setSent(true);
-    setForm({ name: '', email: '', message: '' });
+    setForm({ name: "", email: "", message: "" });
     setTimeout(() => setSent(false), 5000);
   };
 
@@ -40,14 +40,22 @@ const ContactView = () => {
             staggerDelay={0.1}
             className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight justify-center"
           />
-          <LineReveal className="bg-text-main/10 mx-auto" style={{ maxWidth: '4rem' }} />
+          <LineReveal
+            className="bg-text-main/10 mx-auto"
+            style={{ maxWidth: "4rem" }}
+          />
         </ScrollReveal>
 
-        <FadeIn delay={0.15} className="grid grid-cols-1 lg:grid-cols-5 gap-0 border border-text-main/10 bg-bg-surface">
+        <FadeIn
+          delay={0.15}
+          className="grid grid-cols-1 lg:grid-cols-5 gap-0 border border-text-main/10 bg-bg-surface"
+        >
           {/* Info - Takes 2 cols */}
           <div className="lg:col-span-2 flex flex-col justify-start space-y-12 sm:space-y-16 p-8 sm:p-12 md:p-16 border-b lg:border-b-0 lg:border-r border-text-main/10">
             <div>
-              <h3 className="font-heading text-2xl text-text-main mb-6">Ubicación</h3>
+              <h3 className="font-heading text-2xl text-text-main mb-6">
+                Ubicación
+              </h3>
               <div>
                 <p className="text-text-muted font-body font-normal leading-relaxed text-[15px] tracking-wide mb-6">
                   Distrito Financiero
@@ -60,20 +68,26 @@ const ContactView = () => {
                   href="https://maps.google.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-body text-[10px] uppercase tracking-[3px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors">
+                  className="font-body text-[10px] uppercase tracking-[3px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors"
+                >
                   Abrir en el mapa
                 </a>
               </div>
             </div>
 
             <div>
-              <h3 className="font-heading text-2xl text-text-main mb-6">Comunicación</h3>
+              <h3 className="font-heading text-2xl text-text-main mb-6">
+                Comunicación
+              </h3>
               <div className="text-text-muted font-body font-normal leading-relaxed text-[14px]">
                 <p className="mb-4">
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Mesa y Reservas
                   </span>
-                  <a href="tel:+34900000000" className="hover:text-primary transition-colors">
+                  <a
+                    href="tel:+34900000000"
+                    className="hover:text-primary transition-colors"
+                  >
                     +34 900 000 000
                   </a>
                 </p>
@@ -81,21 +95,20 @@ const ContactView = () => {
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Privados & Eventos
                   </span>
-                  <a href="mailto:eventos@distritogourmet.com" className="hover:text-primary transition-colors">
+                  <a
+                    href="mailto:eventos@distritogourmet.com"
+                    className="hover:text-primary transition-colors"
+                  >
                     eventos@distritogourmet.com
-                  </a>
-                </p>
-                <p>
-                  <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">Prensa</span>
-                  <a href="mailto:press@distritogourmet.com" className="hover:text-primary transition-colors">
-                    press@distritogourmet.com
                   </a>
                 </p>
               </div>
             </div>
 
             <div>
-              <h3 className="font-heading text-2xl text-text-main mb-6">Horario</h3>
+              <h3 className="font-heading text-2xl text-text-main mb-6">
+                Horario
+              </h3>
               <div className="grid grid-cols-2 gap-8 text-text-muted font-body font-normal text-[14px] tracking-wide">
                 <div>
                   <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">
@@ -105,7 +118,9 @@ const ContactView = () => {
                   <span className="block text-text-main">13:30 - 15:30</span>
                 </div>
                 <div>
-                  <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">Cenas</span>
+                  <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">
+                    Cenas
+                  </span>
                   <span className="block mb-1">Martes a Sábado</span>
                   <span className="block text-text-main">20:30 - 22:30</span>
                 </div>
@@ -117,10 +132,12 @@ const ContactView = () => {
           <div className="lg:col-span-3">
             <div className="p-8 sm:p-12 md:p-16 h-full flex flex-col justify-center relative">
               <h3 className="font-heading text-3xl sm:text-4xl text-text-main mb-4 leading-tight">
-                Atención <span className="italic text-primary">Personalizada</span>
+                Atención{" "}
+                <span className="italic text-primary">Personalizada</span>
               </h3>
               <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-normal tracking-wide mb-10 sm:mb-12">
-                Nuestro equipo de Guest Relations le atenderá con la extrema diligencia que precisa su consulta.
+                Nuestro equipo de Distrito Gourmet le atenderá con la mayor
+                brevedad posible.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
@@ -131,7 +148,7 @@ const ContactView = () => {
                   <input
                     type="text"
                     value={form.name}
-                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                     required
                     className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading"
                     placeholder="Escriba su nombre"
@@ -144,7 +161,9 @@ const ContactView = () => {
                   <input
                     type="email"
                     value={form.email}
-                    onChange={e => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, email: e.target.value })
+                    }
                     required
                     className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading"
                     placeholder="contacto@ejemplo.com"
@@ -157,18 +176,24 @@ const ContactView = () => {
                   <textarea
                     rows="4"
                     value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, message: e.target.value })
+                    }
                     required
                     className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-transparent text-lg font-heading"
-                    placeholder="¿En qué podemos ayudarle?"></textarea>
+                    placeholder="¿En qué podemos ayudarle?"
+                  ></textarea>
                 </div>
 
                 <div className="pt-8">
                   <motion.button
                     type="submit"
-                    whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                    whileHover={
+                      shouldReduceMotion ? undefined : { scale: 1.02 }
+                    }
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-                    className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main">
+                    className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
+                  >
                     <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                       ENVIAR MENSAJE
@@ -179,7 +204,8 @@ const ContactView = () => {
                 <AnimatePresence>
                   {sent && (
                     <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
-                      Su mensaje ha sido enviado a nuestras oficinas. Le responderemos en un plazo máximo de 24 horas.
+                      Su mensaje ha sido enviado. Le responderemos con la mayor
+                      brevedad posible.
                     </Toast>
                   )}
                 </AnimatePresence>

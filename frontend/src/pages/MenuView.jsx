@@ -1,6 +1,6 @@
-import { useCartStore } from '@/store/cart';
-import { useState, useEffect } from 'react';
-import axios from '@/services/api';
+import { useCartStore } from "@/store/cart";
+import { useState, useEffect } from "react";
+import axios from "@/services/api";
 import {
   PageTransition,
   FadeIn,
@@ -10,12 +10,12 @@ import {
   TextReveal,
   LineReveal,
   MotionButton,
-} from '@/motion';
+} from "@/motion";
 
 // Componente principal que gestiona el estado de la carta, recuperando datos del backend y formateándolos para su visualización categorizada.
 const MenuView = () => {
   const { addItem } = useCartStore();
-  const [activeCategory, setActiveCategory] = useState('carta');
+  const [activeCategory, setActiveCategory] = useState("carta");
   const [menuData, setMenuData] = useState({
     dishes: [],
     beverages: [],
@@ -26,29 +26,29 @@ const MenuView = () => {
 
   // Categorías del menú para las pestañas de filtro
   const categories = [
-    { id: 'carta', label: 'Toda la Carta' },
-    { id: 'bebidas', label: 'Bebidas' },
-    { id: 'bodega', label: 'Bodega' },
-    { id: 'menus', label: 'Menús' },
+    { id: "carta", label: "Toda la Carta" },
+    { id: "bebidas", label: "Bebidas" },
+    { id: "bodega", label: "Bodega" },
+    { id: "menus", label: "Menús" },
   ];
 
   // Llamada a la API para obtener todos los datos del menú
   useEffect(() => {
     const fetchMenu = async () => {
       try {
-        const response = await axios.get('/dishes');
+        const response = await axios.get("/dishes");
         const { platos, vinos, bebidas, menus_degustacion } = response.data;
 
         // Formatear platos
         const formattedDishes = (platos || [])
-          .filter(d => !!d.disponible && !!d.visible_en_carta)
-          .map(d => ({
+          .filter((d) => !!d.disponible && !!d.visible_en_carta)
+          .map((d) => ({
             id: d.id,
-            item_type: 'plato',
+            item_type: "plato",
             name: d.nombre,
             description: d.descripcion,
             price: parseFloat(d.precio),
-            category: d.categoria ? d.categoria.nombre.toLowerCase() : 'otros',
+            category: d.categoria ? d.categoria.nombre.toLowerCase() : "otros",
             image: d.imagen,
             allergens: d.alergenos,
             max_per_order: d.maximo_por_pedido,
@@ -56,11 +56,11 @@ const MenuView = () => {
           }));
 
         // Formatear vinos
-        const formattedWines = (vinos || []).map(w => ({
+        const formattedWines = (vinos || []).map((w) => ({
           id: `w${w.id}`,
-          item_type: 'vino',
+          item_type: "vino",
           name: w.nombre,
-          description: w.notas_maridaje || '',
+          description: w.notas_maridaje || "",
           price: parseFloat(w.precio_botella),
           priceGlass: w.precio_copa ? parseFloat(w.precio_copa) : null,
           wineType: w.tipo,
@@ -69,21 +69,21 @@ const MenuView = () => {
         }));
 
         // Formatear bebidas
-        const formattedBeverages = (bebidas || []).map(b => ({
+        const formattedBeverages = (bebidas || []).map((b) => ({
           id: `b${b.id}`,
-          item_type: 'bebida',
+          item_type: "bebida",
           name: b.nombre,
-          description: b.descripcion || '',
+          description: b.descripcion || "",
           price: parseFloat(b.precio),
           beverageType: b.tipo,
         }));
 
         // Formatear menús degustación
-        const formattedMenus = (menus_degustacion || []).map(m => ({
+        const formattedMenus = (menus_degustacion || []).map((m) => ({
           id: `m${m.id}`,
-          item_type: 'menu_degustacion',
+          item_type: "menu_degustacion",
           name: m.nombre,
-          description: m.descripcion || '',
+          description: m.descripcion || "",
           price: parseFloat(m.precio),
           courses: m.pasos,
           duration: m.duracion_estimada_minutos,
@@ -101,7 +101,7 @@ const MenuView = () => {
           tastingMenus: formattedMenus,
         });
       } catch (e) {
-        console.error('No se pudo cargar la carta', e);
+        console.error("No se pudo cargar la carta", e);
       } finally {
         setLoading(false);
       }
@@ -110,26 +110,29 @@ const MenuView = () => {
   }, []);
 
   // Categorías de platos para "Toda la Carta"
-  const dishCategories = ['entrantes', 'principales', 'postres'];
-  const getDishesForCategory = cat => menuData.dishes.filter(d => d.category === cat);
+  const dishCategories = ["entrantes", "principales", "postres"];
+  const getDishesForCategory = (cat) =>
+    menuData.dishes.filter((d) => d.category === cat);
 
   // Tipos de bebidas para la pestaña de bebidas
   const beverageTypes = [
-    { key: 'agua', label: 'Aguas' },
-    { key: 'refresco', label: 'Refrescos & Zumos' },
-    { key: 'cocktail', label: 'Cócteles' },
-    { key: 'cafe', label: 'Cafés & Infusiones' },
+    { key: "agua", label: "Aguas" },
+    { key: "refresco", label: "Refrescos & Zumos" },
+    { key: "cocktail", label: "Cócteles" },
+    { key: "cafe", label: "Cafés & Infusiones" },
   ];
-  const getBeveragesByType = type => menuData.beverages.filter(b => b.beverageType === type);
+  const getBeveragesByType = (type) =>
+    menuData.beverages.filter((b) => b.beverageType === type);
 
   // Tipos de vinos para la pestaña de bodega
   const wineTypes = [
-    { key: 'Tinto', label: 'Tintos' },
-    { key: 'Blanco', label: 'Blancos' },
-    { key: 'Espumoso', label: 'Espumosos & Champagne' },
-    { key: 'Rosado', label: 'Rosados' },
+    { key: "Tinto", label: "Tintos" },
+    { key: "Blanco", label: "Blancos" },
+    { key: "Espumoso", label: "Espumosos & Champagne" },
+    { key: "Rosado", label: "Rosados" },
   ];
-  const getWinesByType = type => menuData.wines.filter(w => w.wineType === type);
+  const getWinesByType = (type) =>
+    menuData.wines.filter((w) => w.wineType === type);
 
   // Transición de pestañas manejada por PageTransition internamente al cambiar la key
 
@@ -157,13 +160,14 @@ const MenuView = () => {
           <FadeIn delay={0.4}>
             <LineReveal
               className="bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"
-              style={{ maxWidth: '4rem' }}
+              style={{ maxWidth: "4rem" }}
             />
           </FadeIn>
           <FadeIn delay={0.5}>
             <p className="text-text-muted font-normal leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
-              Una selección de sabores diseñada para despertar los sentidos, desde los clásicos reinventados hasta las
-              creaciones más audaces de nuestro equipo a los mandos.
+              Una selección de sabores diseñada para despertar los sentidos,
+              desde los clásicos reinventados hasta las creaciones más audaces
+              de nuestro equipo a los mandos.
             </p>
           </FadeIn>
         </div>
@@ -173,19 +177,25 @@ const MenuView = () => {
       <div className="sticky top-[72px] sm:top-[72px] md:top-28 z-40 bg-bg-body/90 backdrop-blur-xl border-b border-text-main/10 py-4 sm:py-5 mb-12 sm:mb-16 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
         <div className="container overflow-x-auto no-scrollbar">
           <div className="flex justify-start sm:justify-center min-w-max gap-8 sm:gap-12 md:gap-16 px-4">
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={`uppercase text-[12px] sm:text-[13px] tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
-                  activeCategory === cat.id ? 'text-primary' : 'text-text-muted hover:text-text-main'
-                }`}>
+                  activeCategory === cat.id
+                    ? "text-primary"
+                    : "text-text-muted hover:text-text-main"
+                }`}
+              >
                 {cat.label}
                 <div
                   className="absolute bottom-0 left-0 h-[1.5px] bg-primary transition-all duration-500"
                   style={{
-                    width: activeCategory === cat.id ? '100%' : '0%',
-                    boxShadow: activeCategory === cat.id ? '0 0 10px rgba(166,138,86,0.5)' : 'none',
+                    width: activeCategory === cat.id ? "100%" : "0%",
+                    boxShadow:
+                      activeCategory === cat.id
+                        ? "0 0 10px rgba(166,138,86,0.5)"
+                        : "none",
                   }}
                 />
               </button>
@@ -199,23 +209,26 @@ const MenuView = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
             <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
-            <p className="text-text-muted font-normal tracking-wide text-lg">Sintonizando nuestra bodega...</p>
+            <p className="text-text-muted font-normal tracking-wide text-lg">
+              Sintonizando nuestra bodega...
+            </p>
           </div>
         ) : (
           <PageTransition key={activeCategory}>
             {/* TODA LA CARTA */}
-            {activeCategory === 'carta' && (
+            {activeCategory === "carta" && (
               <div className="space-y-32">
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
                   if (items.length === 0) return null;
-                  const label = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+                  const label =
+                    catKey.charAt(0).toUpperCase() + catKey.slice(1);
 
                   return (
                     <div key={catKey} className="mt-16 mb-24">
                       <SectionHeader index={index} label={label} />
                       <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
+                        {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <DishRow item={item} addItem={addItem} />
                           </StaggerItem>
@@ -228,7 +241,7 @@ const MenuView = () => {
             )}
 
             {/* BEBIDAS */}
-            {activeCategory === 'bebidas' && (
+            {activeCategory === "bebidas" && (
               <div className="space-y-32">
                 {beverageTypes.map((bt, index) => {
                   const items = getBeveragesByType(bt.key);
@@ -238,7 +251,7 @@ const MenuView = () => {
                     <div key={bt.key} className="mt-16 mb-24">
                       <SectionHeader index={index} label={bt.label} />
                       <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
+                        {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <DisplayRow item={item} />
                           </StaggerItem>
@@ -251,7 +264,7 @@ const MenuView = () => {
             )}
 
             {/* BODEGA */}
-            {activeCategory === 'bodega' && (
+            {activeCategory === "bodega" && (
               <div className="space-y-32">
                 {wineTypes.map((wt, index) => {
                   const items = getWinesByType(wt.key);
@@ -261,7 +274,7 @@ const MenuView = () => {
                     <div key={wt.key} className="mt-16 mb-24">
                       <SectionHeader index={index} label={wt.label} />
                       <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
-                        {items.map(item => (
+                        {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <WineDisplayRow item={item} />
                           </StaggerItem>
@@ -274,7 +287,7 @@ const MenuView = () => {
             )}
 
             {/* MENÚS DEGUSTACIÓN */}
-            {activeCategory === 'menus' && (
+            {activeCategory === "menus" && (
               <StaggerList className="space-y-20 max-w-5xl mx-auto">
                 {menuData.tastingMenus.map((menu, index) => (
                   <StaggerItem key={menu.id}>
@@ -286,9 +299,14 @@ const MenuView = () => {
             )}
 
             {/* Estado vacío si no hay datos */}
-            {activeCategory === 'carta' && menuData.dishes.length === 0 && <EmptyState />}
-            {activeCategory === 'bebidas' && menuData.beverages.length === 0 && <EmptyState />}
-            {activeCategory === 'bodega' && menuData.wines.length === 0 && <EmptyState />}
+            {activeCategory === "carta" && menuData.dishes.length === 0 && (
+              <EmptyState />
+            )}
+            {activeCategory === "bebidas" &&
+              menuData.beverages.length === 0 && <EmptyState />}
+            {activeCategory === "bodega" && menuData.wines.length === 0 && (
+              <EmptyState />
+            )}
           </PageTransition>
         )}
       </div>
@@ -301,11 +319,18 @@ const SectionHeader = ({ index, label }) => (
   <ScrollReveal
     direction="up"
     distance={30}
-    className="flex items-center flex-nowrap gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90 w-full overflow-hidden px-4">
-    <LineReveal className="flex-grow bg-text-main/10 hidden sm:block min-w-0" delay={0.3} />
-    <span className="text-[12px] tracking-[3px] font-body text-text-muted font-bold shrink-0">/ 0{index + 1}</span>
+    className="flex items-center flex-nowrap gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90 w-full overflow-hidden px-4"
+  >
+    <LineReveal
+      className="flex-grow bg-text-main/10 hidden sm:block min-w-0"
+      delay={0.3}
+    />
+    <span className="text-[12px] tracking-[3px] font-body text-text-muted font-bold shrink-0">
+      / 0{index + 1}
+    </span>
     <h2 className="font-heading text-3xl sm:text-5xl md:text-6xl text-text-main pb-0 px-2 sm:px-4 relative top-1 whitespace-nowrap shrink-0">
-      <span className="italic">{label.split(' ')[0]}</span> {label.split(' ').slice(1).join(' ')}
+      <span className="italic">{label.split(" ")[0]}</span>{" "}
+      {label.split(" ").slice(1).join(" ")}
     </h2>
     <LineReveal className="flex-grow bg-text-main/10 min-w-0" delay={0.3} />
   </ScrollReveal>
@@ -321,7 +346,7 @@ const DishRow = ({ item, addItem }) => (
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
-            {item.price.toFixed(2)}€{!!item.isPerUnit && ' / UD.'}
+            {item.price.toFixed(2)}€{!!item.isPerUnit && " / UD."}
           </span>
         </div>
         {item.description && (
@@ -335,20 +360,25 @@ const DishRow = ({ item, addItem }) => (
               Alérgenos: {item.allergens}
             </span>
           )}
-
         </div>
       </div>
     </div>
 
     <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center shrink-0 w-full md:w-auto mt-2 md:mt-0">
       <span className="hidden md:block font-body font-normal text-text-main text-xl tracking-widest mb-4">
-        {item.price.toFixed(2)}€{!!item.isPerUnit && <span className="text-[12px] ml-1 opacity-60">/ UD.</span>}
+        {item.price.toFixed(2)}€
+        {!!item.isPerUnit && (
+          <span className="text-[12px] ml-1 opacity-60">/ UD.</span>
+        )}
       </span>
       <MotionButton
         onClick={() => addItem(item)}
-        className="w-full md:w-auto relative px-8 py-3 bg-transparent border border-text-main/30 text-text-main font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 group-hover:border-primary hover:text-bg-body focus:outline-none">
-        <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out hover:w-full z-0"></div>
-        <span className="relative z-10 font-bold transition-colors duration-300">Añadir al Carrito</span>
+        className="group w-full md:w-auto relative px-8 py-3 bg-transparent border border-text-main/30 text-text-main font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 hover:border-primary focus:outline-none"
+      >
+        <div className="absolute inset-0 w-0 bg-primary transition-all duration-[500ms] ease-out group-hover:w-full z-0"></div>
+        <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
+          Añadir al Carrito
+        </span>
       </MotionButton>
     </div>
   </div>
@@ -401,11 +431,13 @@ const WineDisplayRow = ({ item }) => (
     <div className="shrink-0 w-full md:w-auto mt-4 md:mt-0">
       <div className="hidden md:flex flex-col items-end">
         <span className="font-body font-normal text-text-main text-xl tracking-widest">
-          {item.price.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ botella</span>
+          {item.price.toFixed(2)}€
+          <span className="text-text-muted text-sm ml-1">/ botella</span>
         </span>
         {item.priceGlass && (
           <span className="font-body font-normal text-text-muted text-base tracking-widest mt-1">
-            {item.priceGlass.toFixed(2)}€<span className="text-text-muted text-sm ml-1">/ copa</span>
+            {item.priceGlass.toFixed(2)}€
+            <span className="text-text-muted text-sm ml-1">/ copa</span>
           </span>
         )}
       </div>
@@ -438,7 +470,8 @@ const TastingMenuCard = ({ menu }) => (
           )}
         </div>
         <h2 className="font-heading text-4xl sm:text-5xl md:text-6xl text-text-main mb-6 leading-tight">
-          <span className="italic">{menu.name.split(' ')[0]}</span> {menu.name.split(' ').slice(1).join(' ')}
+          <span className="italic">{menu.name.split(" ")[0]}</span>{" "}
+          {menu.name.split(" ").slice(1).join(" ")}
         </h2>
         <div className="w-12 h-[1px] bg-primary/50 mx-auto mb-6"></div>
         <p className="text-text-muted font-normal leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
@@ -456,13 +489,20 @@ const TastingMenuCard = ({ menu }) => (
         {menu.dishes.map((dish, i) => (
           <div
             key={`${menu.id}-${dish.id}-${i}`}
-            className="flex items-baseline gap-4 py-4 border-b border-text-main/5 last:border-0">
+            className="flex items-baseline gap-4 py-4 border-b border-text-main/5 last:border-0"
+          >
             <span className="text-primary text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
-              {String(dish.pivot?.numero_paso || i + 1).padStart(2, '0')}
+              {String(dish.pivot?.numero_paso || i + 1).padStart(2, "0")}
             </span>
             <div className="flex-grow">
-              <span className="font-heading text-xl sm:text-2xl text-text-main">{dish.nombre || dish.name}</span>
-              {(dish.pivot?.notas || dish.pivot?.notes) && <p className="text-text-muted text-sm font-body italic mt-1">{dish.pivot?.notas || dish.pivot?.notes}</p>}
+              <span className="font-heading text-xl sm:text-2xl text-text-main">
+                {dish.nombre || dish.name}
+              </span>
+              {(dish.pivot?.notas || dish.pivot?.notes) && (
+                <p className="text-text-muted text-sm font-body italic mt-1">
+                  {dish.pivot?.notas || dish.pivot?.notes}
+                </p>
+              )}
             </div>
           </div>
         ))}
@@ -471,14 +511,22 @@ const TastingMenuCard = ({ menu }) => (
       {/* Precio del menú y maridaje opcional */}
       <div className="text-center flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-16 border-t border-text-main/10 pt-12">
         <div className="text-center">
-          <span className="font-heading text-4xl sm:text-5xl text-text-main">{menu.price.toFixed(0)}€</span>
-          <span className="block text-text-muted text-[11px] tracking-[2px] font-body mt-1 uppercase">por persona</span>
+          <span className="font-heading text-4xl sm:text-5xl text-text-main">
+            {menu.price.toFixed(0)}€
+          </span>
+          <span className="block text-text-muted text-[11px] tracking-[2px] font-body mt-1 uppercase">
+            por persona
+          </span>
         </div>
 
         {menu.pairing_available && (
           <div className="text-center border-l border-text-main/10 pl-8 sm:pl-16">
-            <span className="font-heading text-4xl sm:text-5xl text-primary">{menu.pairing_price.toFixed(0)}€</span>
-            <span className="block text-primary text-[11px] tracking-[2px] font-body mt-1 uppercase font-bold">Maridaje sugerido</span>
+            <span className="font-heading text-4xl sm:text-5xl text-primary">
+              {menu.pairing_price.toFixed(0)}€
+            </span>
+            <span className="block text-primary text-[11px] tracking-[2px] font-body mt-1 uppercase font-bold">
+              Maridaje sugerido
+            </span>
           </div>
         )}
       </div>
@@ -497,7 +545,8 @@ const EmptyState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
-      La colección para esta categoría se encuentra en desarrollo por nuestro Chef.
+      La colección para esta categoría se encuentra en desarrollo por nuestro
+      Chef.
     </p>
   </FadeIn>
 );

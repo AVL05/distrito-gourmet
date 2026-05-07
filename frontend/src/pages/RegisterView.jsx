@@ -1,36 +1,43 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
-import { useAuthStore } from '../store/auth';
-import { useReducedMotion, PageTransition, FadeIn, AnimatePresence, Toast, motion } from '@/motion';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { useAuthStore } from "../store/auth";
+import {
+  useReducedMotion,
+  PageTransition,
+  FadeIn,
+  AnimatePresence,
+  Toast,
+  motion,
+} from "@/motion";
 
 const RegisterView = () => {
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
   const { register, loading, error } = useAuthStore();
   const navigate = useNavigate();
   const shouldReduceMotion = useReducedMotion();
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.password !== form.confirmPassword) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Las contraseñas no coinciden',
-        confirmButtonColor: '#e76f51',
-        background: '#fdfaf6',
-        color: '#2c302e',
+        icon: "error",
+        title: "Error",
+        text: "Las contraseñas no coinciden",
+        confirmButtonColor: "#e76f51",
+        background: "#fdfaf6",
+        color: "#2c302e",
       });
       return;
     }
@@ -43,7 +50,7 @@ const RegisterView = () => {
     });
 
     if (success) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   };
 
@@ -159,20 +166,24 @@ const RegisterView = () => {
               whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
               whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
-              disabled={loading}>
+              disabled={loading}
+            >
               <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
               <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
-                {loading ? 'PROCESANDO...' : 'SOLICITAR REGISTRO'}
+                {loading ? "PROCESANDO..." : "SOLICITAR REGISTRO"}
               </span>
             </motion.button>
           </div>
         </form>
 
         <div className="text-center mt-12 pt-12 border-t border-text-main/10">
-          <p className="text-text-muted text-[10px] uppercase tracking-[3px] mb-4 font-body">¿Ya dispone de cuenta?</p>
+          <p className="text-text-muted text-[10px] uppercase tracking-[3px] mb-4 font-body">
+            ¿Ya dispone de cuenta?
+          </p>
           <Link
             to="/login"
-            className="text-text-main text-[10px] uppercase tracking-[3px] font-bold pb-1 group relative inline-block border-b border-text-main hover:text-primary hover:border-primary transition-colors">
+            className="text-text-main text-[10px] uppercase tracking-[3px] font-bold pb-1 group relative inline-block border-b border-text-main hover:text-primary hover:border-primary transition-colors"
+          >
             Iniciar Sesión
           </Link>
         </div>

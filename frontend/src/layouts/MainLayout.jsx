@@ -1,6 +1,6 @@
-import { Outlet, useLocation } from 'react-router-dom';
-import Footer from '../components/layout/Footer';
-import Navbar from '../components/layout/Navbar';
+import { Outlet, useLocation } from "react-router-dom";
+import Footer from "../components/layout/Footer";
+import Navbar from "../components/layout/Navbar";
 
 // Layout principal que incluye la navegación, el contenido de la página y el pie de página
 const MainLayout = () => {
@@ -8,7 +8,7 @@ const MainLayout = () => {
   const location = useLocation();
 
   // Comprobamos si estamos en una página de administración (ej. /admin) para ocultar elementos si es necesario
-  const isAdminPage = location.pathname.startsWith('/admin');
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   return (
     // Contenedor principal que ocupa toda la pantalla (min-h-screen)
