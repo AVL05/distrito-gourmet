@@ -1,209 +1,648 @@
-# 📌 Nombre del Proyecto
-**Distrito Gourmet** es una aplicación web full-stack para la gestión integral de un restaurante de alta cocina.  
-Objetivo: ofrecer una experiencia completa para clientes y administración, integrando carta digital, reservas y pedidos desde un frontend SPA y una API REST.  
-Contexto: proyecto académico con enfoque en arquitectura moderna y separación clara entre frontend y backend.
+# 📚 Documentación Técnica — Distrito Gourmet
 
-# 🏗️ Arquitectura del Proyecto
-El proyecto se organiza en dos aplicaciones desacopladas:
-- **Frontend SPA** en React + Vite, responsable de la interfaz, navegación y experiencia de usuario.
-- **Backend API REST** en Laravel, responsable de la lógica de negocio, autenticación y acceso a datos.
+> **Versión:** 1.0 · **Última actualización:** Mayo 2026
+> Documentación de arquitectura, decisiones de diseño y guía de desarrollo del proyecto **Distrito Gourmet**.
 
-Separación de responsabilidades (frontend):
-- **Componentes** reutilizables en `frontend/src/components/`.
-- **Páginas/Vistas** en `frontend/src/pages/` para cada ruta principal.
-- **Layouts** en `frontend/src/layouts/` para composición estructural.
-- **Estado global** en `frontend/src/store/` con Zustand (auth, carrito, etc.).
-- **Animaciones y motion** en `frontend/src/motion/`.
-- **Datos/servicios** en `frontend/src/data/` (carpeta reservada para fuentes de datos o servicios).
+---
 
-Patrón de arquitectura utilizado:
-- **Frontend**: arquitectura basada en componentes con rutas SPA (React Router).
-- **Backend**: Laravel MVC para controladores, modelos y rutas.
+## 📌 Descripción del Proyecto
 
-# 📁 Estructura de Carpetas
-Árbol principal del proyecto:
+**Distrito Gourmet** es una aplicación web _full-stack_ para la gestión integral de un restaurante de alta cocina. Su objetivo es ofrecer una experiencia completa tanto para clientes (carta digital, reservas de mesa, pedidos takeaway) como para el equipo de administración (gestión de inventario, pedidos y reservas en tiempo real).
+
+**Contexto académico:** Proyecto de Final de Ciclo · 2º Grado Superior en Desarrollo de Aplicaciones Web (DAW).
+
+### Objetivos principales
+
+- Implementar una arquitectura desacoplada frontend/backend con API REST.
+- Aplicar buenas prácticas de seguridad (autenticación stateless, validación en ambas capas).
+- Lograr una experiencia de usuario premium mediante animaciones y diseño editorial.
+- Garantizar la escalabilidad mediante contenedores Docker.
+
+---
+
+## 🏗️ Arquitectura del Sistema
+
+### Patrón arquitectónico
+
+El proyecto adopta una arquitectura **Cliente–Servidor desacoplada** organizada en tres capas:
+
+```
+┌─────────────────────────┐
+│   Presentation Layer    │  React 19 SPA (Vite) — Puerto 5173 (dev) / 8001 (prod)
+│   frontend/src/         │
+└──────────┬──────────────┘
+           │ REST API (JSON) · Bearer Token (Sanctum)
+┌──────────▼──────────────┐
+│   Application Layer     │  Laravel 12 API — Puerto 8000 (dev) / 8001/api (prod)
+│   backend/app/          │
+└──────────┬──────────────┘
+           │ Eloquent ORM
+┌──────────▼──────────────┐
+│   Data Layer            │  MySQL 8.0 (Docker) / SQLite (desarrollo ligero)
+│   backend/database/     │
+└─────────────────────────┘
+```
+
+### Patrón Frontend: Component-Based Architecture
+
+El frontend sigue una arquitectura de **componentes con responsabilidad única**, organizada por capas:
+
+| Capa                | Directorio        | Responsabilidad                                 |
+| :------------------ | :---------------- | :---------------------------------------------- |
+| **Páginas (Views)** | `src/pages/`      | Composición de layout y lógica de ruta          |
+| **Layouts**         | `src/layouts/`    | Estructura de página reutilizable (nav, footer) |
+| **Componentes**     | `src/components/` | Elementos UI atómicos y reutilizables           |
+| **Estado Global**   | `src/store/`      | Stores de Zustand (auth, carrito)               |
+| **Servicios**       | `src/services/`   | Clientes HTTP con Axios                         |
+| **Animaciones**     | `src/motion/`     | Configuraciones GSAP y wrappers animados        |
+| **Recursos**        | `src/assets/`     | Imágenes, fuentes y archivos estáticos          |
+
+### Patrón Backend: MVC + API Controllers
+
+Laravel sigue el patrón **MVC** adaptado para APIs REST:
+
+- **Models** (`app/Models/`): Modelos Eloquent con relaciones y validaciones.
+- **Controllers** (`app/Http/Controllers/API/`): Controladores REST por recurso.
+- **Routes** (`routes/api.php`): Definición de endpoints protegidos y públicos.
+- **Middleware**: Sanctum para autenticación + middleware de roles.
+
+---
+
+## 📁 Estructura de Carpetas Detallada
+
+### Raíz del monorepo
+
 ```
 distrito-gourmet/
-├── backend/
-├── frontend/
-├── scripts/
-├── package.json
-├── README.md
-└── Documentacion.md
+├── backend/             # Aplicación Laravel 12
+├── frontend/            # Aplicación React 19 + Vite
+├── nginx/               # Configuración Nginx para producción
+├── scripts/             # Scripts de arranque del monorepo
+│   └── dev.js           # Script Node.js que lanza frontend y backend en paralelo
+├── docker-compose.yml   # Orquestación de servicios Docker
+├── package.json         # Scripts raíz (start, install:all)
+├── README.md            # Documentación general del proyecto
+└── Documentacion.md     # Este archivo — documentación técnica
 ```
 
-Carpetas y archivos relevantes:
-- `backend/` — API REST con Laravel.
-- `frontend/` — aplicación React + Vite.
-- `scripts/` — scripts de desarrollo (por ejemplo, arranque conjunto).
-- `package.json` — scripts raíz del monorepo.
-- `README.md` — documentación general.
+### Frontend (`frontend/src/`)
 
-Detalle de `frontend/src/`:
 ```
-frontend/src/
+src/
 ├── assets/
+│   └── images/          # Imágenes y recursos visuales
 ├── components/
-├── data/
+│   ├── layout/          # Header, Footer, ScrollToTop, etc.
+│   ├── ui/              # Botones, inputs, cards genéricas
+│   └── domain/          # Componentes específicos (MenuCard, ReservaForm, etc.)
 ├── layouts/
+│   └── MainLayout.jsx   # Layout base: Outlet con Nav y Footer
 ├── motion/
+│   └── AdvancedComponents.jsx  # Componentes con GSAP / Framer Motion
 ├── pages/
+│   ├── HomeView.jsx      # Landing page principal
+│   ├── MenuView.jsx      # Carta digital completa
+│   ├── ReservationsView.jsx  # Formulario y gestión de reservas
+│   ├── CartView.jsx      # Carrito y checkout
+│   ├── DashboardView.jsx # Panel del cliente (historial, perfil rápido)
+│   ├── AdminView.jsx     # Panel de administración completo
+│   ├── ProfileView.jsx   # Gestión de perfil de usuario
+│   ├── LoginView.jsx     # Autenticación
+│   ├── RegisterView.jsx  # Registro de cuenta
+│   └── ContactView.jsx   # Formulario de contacto
+├── services/
+│   └── (clientes Axios por recurso: authService, pedidoService, etc.)
 ├── store/
-├── App.jsx
-├── index.css
-└── main.jsx
+│   ├── auth.js           # Estado global de autenticación (Zustand)
+│   └── cart.js           # Estado global del carrito (Zustand + localStorage)
+├── App.jsx               # Configuración de rutas (React Router v7)
+├── index.css             # Estilos globales + variables CSS + Tailwind directives
+└── main.jsx              # Punto de entrada — StrictMode + BrowserRouter
 ```
 
-Detalle de `backend/` (Laravel):
+### Backend (`backend/`)
+
 ```
 backend/
 ├── app/
-├── config/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── API/
+│   │   │       ├── AuthController.php       # Login, registro, logout
+│   │   │       ├── PlatoController.php      # CRUD de platos
+│   │   │       ├── VinoController.php       # Listado de vinos
+│   │   │       ├── BebidaController.php     # Listado de bebidas
+│   │   │       ├── MenuDegustacionController.php  # Menús degustación
+│   │   │       ├── PedidoController.php     # Pedidos (index, store, all, updateStatus, destroy)
+│   │   │       ├── ReservaController.php    # Reservas
+│   │   │       └── UsuarioController.php    # Gestión de usuarios (admin)
+│   │   └── Middleware/
+│   └── Models/
+│       ├── User.php (→ usuarios)
+│       ├── Plato.php
+│       ├── Vino.php
+│       ├── Bebida.php
+│       ├── MenuDegustacion.php
+│       ├── Pedido.php
+│       ├── DetallePedido.php
+│       └── Reserva.php
 ├── database/
-├── public/
+│   ├── migrations/      # Migraciones ordenadas cronológicamente
+│   └── seeders/         # Datos de prueba (Admin, Cliente, Carta completa)
 ├── routes/
-└── composer.json
+│   ├── api.php          # Rutas REST (públicas y protegidas con Sanctum)
+│   └── web.php
+└── tests/
+    ├── Unit/            # Tests unitarios de modelos y lógica de negocio
+    └── Feature/         # Tests de integración de endpoints HTTP
 ```
 
-# ⚙️ Instalación y Configuración
-Requisitos previos:
-- Node.js `>= 18`
-- npm `>= 9`
-- PHP `>= 8.2`
-- Composer `>= 2`
+---
 
-Instalación de dependencias (raíz):
-```bash
-npm run install:all
-```
+## ⚙️ Instalación y Configuración
 
-Variables de entorno:
-- Backend: crear `backend/.env` a partir de `backend/.env.example`.
-- Frontend: configurar variables en `frontend/.env` si se requieren (placeholders).
+### Requisitos previos
 
-Ejemplo de variables típicas (placeholders):
+| Herramienta | Versión mínima | Notas                                      |
+| :---------- | :------------: | :----------------------------------------- |
+| PHP         |      8.2+      | Extensiones: mbstring, pdo, pdo_mysql, xml |
+| Composer    |      2.x       | Gestor de dependencias PHP                 |
+| Node.js     |      18+       | Recomendado Node.js 20 LTS                 |
+| npm         |       9+       | Incluido con Node.js                       |
+| MySQL       |      8.0+      | O Docker para no instalarlo localmente     |
+| Git         |      2.x       | Para clonar el repositorio                 |
+
+### Variables de entorno
+
+#### Backend (`backend/.env`)
+
 ```env
-APP_KEY=<<GENERADO_POR_LARAVEL>>
-DB_CONNECTION=sqlite
-SANCTUM_STATEFUL_DOMAINS=localhost:5173
-VITE_API_BASE_URL=<<URL_API_BASE>>
+APP_NAME="Distrito Gourmet"
+APP_ENV=local
+APP_KEY=                          # Se genera con: php artisan key:generate
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=distrito_gourmet
+DB_USERNAME=root
+DB_PASSWORD=tu_password
+
+SANCTUM_STATEFUL_DOMAINS=localhost:5173,localhost:8001
+SESSION_DRIVER=database
+
+FRONTEND_URL=http://localhost:5173
 ```
 
-# 🚀 Scripts Disponibles
-Scripts en la raíz (`package.json`):
-- `npm start` — inicia frontend y backend simultáneamente usando `scripts/dev.js`.
-- `npm run install:all` — instala dependencias de backend y frontend.
+#### Frontend (`frontend/.env`)
 
-Scripts en `frontend/package.json`:
-- `npm run dev` — servidor de desarrollo con Vite.
-- `npm run build` — build de producción (genera `frontend/dist/`).
-- `npm run preview` — previsualización del build.
-- `npm run lint` — análisis con ESLint.
-
-Scripts en `backend/composer.json`:
-- `composer run dev` — arranque de servidor, cola, logs y Vite en paralelo.
-- `composer run test` — ejecuta pruebas con `php artisan test`.
-- `composer run setup` — instalación y configuración base (Laravel + build).
-
-# 🧩 Tecnologías Utilizadas
-Frontend:
-- React
-- Vite
-- Tailwind CSS
-- React Router
-- Zustand
-- Axios
-- Framer Motion
-- SweetAlert2
-- React Icons
-
-Backend:
-- Laravel
-- Laravel Sanctum
-- Eloquent ORM
-- SQLite
-- PHPUnit (tests)
-
-# 🔄 Flujo de la Aplicación
-Navegación:
-- SPA con rutas gestionadas por React Router en `frontend/src/App.jsx`.
-
-Gestión de estado:
-- Estado global mediante Zustand en `frontend/src/store/`.
-- Estado local en componentes con hooks de React.
-
-Consumo de APIs:
-- Cliente HTTP centralizado con Axios (ubicación sugerida: `frontend/src/data/` o `frontend/src/services/` si se crea).
-- Autenticación mediante tokens emitidos por Laravel Sanctum.
-
-# 📡 Comunicación con API
-Cómo se hacen las peticiones:
-- Se recomienda centralizar en servicios Axios para mantener consistencia.
-- Configurar `baseURL` con `VITE_API_BASE_URL` o proxy en Vite.
-
-Manejo de errores:
-- Capturar errores en capa de servicios y mapear a mensajes de UI.
-- Usar interceptores de Axios para errores comunes (401, 403, 500).
-
-Estructura de servicios (propuesta):
+```env
+VITE_API_BASE_URL=http://localhost:8000/api
 ```
-frontend/src/
-└── services/
-    ├── httpClient.js
-    ├── authService.js
-    └── ordersService.js
+
+> En producción con Docker, `VITE_API_BASE_URL` apuntará al dominio correspondiente y Nginx actuará de proxy.
+
+---
+
+## 🚀 Scripts Disponibles
+
+### Raíz del monorepo (`package.json`)
+
+```bash
+npm start              # Arranca frontend (Vite) y backend (Laravel) en paralelo
+npm run install:all    # Instala dependencias de backend (Composer) y frontend (npm)
 ```
-Nota: si no existe aún, esta estructura se sugiere como práctica recomendada.
 
-# 🎨 Estilos y UI
-Sistema de estilos:
-- Tailwind CSS con configuración en `frontend/tailwind.config.js`.
-- Estilos globales en `frontend/src/index.css`.
+### Frontend (`frontend/package.json`)
 
-Organización de componentes visuales:
-- Componentes base en `frontend/src/components/`.
-- Layouts en `frontend/src/layouts/`.
-- Páginas en `frontend/src/pages/`.
+```bash
+npm run dev       # Servidor de desarrollo Vite (HMR, puerto 5173)
+npm run build     # Build de producción → genera frontend/dist/
+npm run preview   # Previsualiza el build de producción localmente
+npm run lint      # Análisis estático con ESLint
+npm run test      # Ejecución de tests con Vitest
+```
 
-# 🧪 Testing (si aplica)
-Backend:
+### Backend (`backend/`)
+
+```bash
+php artisan serve              # Servidor de desarrollo Laravel (puerto 8000)
+php artisan migrate            # Ejecuta las migraciones pendientes
+php artisan migrate:fresh --seed   # Reinicia la BD y ejecuta todos los seeders
+php artisan test               # Ejecuta la suite de PHPUnit
+php artisan make:controller API/NombreController --api  # Crear nuevo controller REST
+php artisan route:list         # Lista todos los endpoints registrados
+```
+
+---
+
+## 🔌 API REST — Referencia de Endpoints
+
+Todos los endpoints están bajo el prefijo `/api/`. La autenticación se realiza mediante **Bearer Token** en la cabecera `Authorization`.
+
+### Autenticación (`/api/`)
+
+```
+POST   /api/register           → Registro de usuario (público)
+POST   /api/login              → Login — devuelve { token, user } (público)
+POST   /api/logout             → Logout — invalida el token (auth)
+GET    /api/user               → Datos del usuario autenticado (auth)
+```
+
+### Carta y Catálogo (todos públicos)
+
+```
+GET    /api/platos             → Listado de platos con categoría
+GET    /api/vinos              → Vinos con tipo, región y notas de maridaje
+GET    /api/bebidas            → Bebidas disponibles
+GET    /api/menus-degustacion  → Menús degustación con platos incluidos
+```
+
+### Pedidos
+
+```
+GET    /api/pedidos              → Historial del usuario autenticado (auth)
+POST   /api/pedidos              → Crear pedido (auth)
+GET    /api/pedidos/all          → Todos los pedidos (admin)
+PATCH  /api/pedidos/{id}/status  → Cambiar estado: Pendiente→Preparando→Listo→Entregado (admin)
+DELETE /api/pedidos/{id}         → Eliminar pedido (admin)
+```
+
+**Payload para `POST /api/pedidos`:**
+
+```json
+{
+  "total": 87.5,
+  "metodo_pago": "Tarjeta",
+  "hora_recogida": "14:30",
+  "fecha_recogida": "2026-05-10",
+  "articulos": [
+    {
+      "db_id": 3,
+      "tipo_item": "plato",
+      "nombre": "Carrillera Ibérica",
+      "cantidad": 2,
+      "precio": 28.5
+    },
+    {
+      "db_id": 1,
+      "tipo_item": "vino",
+      "nombre": "Ribera del Duero Reserva",
+      "cantidad": 1,
+      "precio": 30.5
+    }
+  ]
+}
+```
+
+**Estados del pedido (ENUM):** `Pendiente` · `Preparando` · `Listo` · `Entregado` · `Cancelado`
+
+### Reservas
+
+```
+GET    /api/reservas           → Reservas del usuario autenticado (auth)
+POST   /api/reservas           → Crear reserva (auth)
+GET    /api/reservas/all       → Todas las reservas (admin)
+PATCH  /api/reservas/{id}      → Actualizar estado (admin)
+DELETE /api/reservas/{id}      → Cancelar/eliminar (auth)
+```
+
+**Estados de reserva:** `Pendiente` · `Confirmada` · `Cancelada`
+
+### Usuarios (Admin)
+
+```
+GET    /api/usuarios           → Listado de usuarios (admin)
+DELETE /api/usuarios/{id}      → Eliminar usuario (admin)
+```
+
+---
+
+## 🗄️ Modelo de Base de Datos
+
+### Tablas y Entidades
+
+| Tabla                     | Descripción                                                             |
+| :------------------------ | :---------------------------------------------------------------------- |
+| `usuarios`                | Usuarios del sistema (rol: admin / cliente)                             |
+| `platos`                  | Platos del menú con precio, categoría, alérgenos y flags de visibilidad |
+| `categorias_menu`         | Clasificación de platos (Entrantes, Principales, Postres, etc.)         |
+| `vinos`                   | Catálogo de vinos con tipo, región, uva y precios copa/botella          |
+| `bebidas`                 | Bebidas adicionales (agua, refrescos, cócteles, café)                   |
+| `menus_degustacion`       | Menús de varios pasos con precio y duración estimada                    |
+| `platos_menu_degustacion` | Relación N:M entre menús y platos (con número de paso)                  |
+| `maridajes_plato_vino`    | Maridajes plato–vino con nivel de recomendación                         |
+| `reservas`                | Reservas de mesa con fecha, hora, comensales y estado                   |
+| `pedidos`                 | Cabecera de pedido (tipo: Sala, Takeaway, Delivery)                     |
+| `detalles_pedido`         | Líneas de pedido con referencia al ítem y precio unitario               |
+| `personal_access_tokens`  | Tokens Sanctum para autenticación stateless                             |
+
+### Diagrama de relaciones clave
+
+```
+usuarios (1) ─────────────────< pedidos (N)
+                                   │
+                              detalles_pedido
+                                ├── platos
+                                ├── vinos
+                                ├── bebidas
+                                └── menus_degustacion
+
+usuarios (1) ─────────────────< reservas (N)
+
+platos (N) >──────────────────< menus_degustacion (N)
+            platos_menu_degustacion
+
+platos (N) >──────────────────< vinos (N)
+            maridajes_plato_vino
+              (nivel: Buena / Muy buena / Perfecta)
+
+platos ──── categorias_menu
+```
+
+---
+
+## 🔐 Seguridad y Autenticación
+
+### Laravel Sanctum — Flujo de autenticación
+
+```
+1. POST /api/login  { email, password }
+        │
+        ▼
+2. Laravel valida credenciales → crea PersonalAccessToken
+        │
+        ▼
+3. Respuesta: { token: "1|xxxx...", user: { id, nombre, rol } }
+        │
+        ▼
+4. Frontend guarda token en Zustand store (auth.js)
+        │
+        ▼
+5. Peticiones posteriores:
+   Header: Authorization: Bearer 1|xxxx...
+        │
+        ▼
+6. Middleware auth:sanctum valida el token en cada request
+```
+
+### Protección de Rutas en el Frontend
+
+```jsx
+// ProtectedRoute en App.jsx
+const ProtectedRoute = ({ children, requireAdmin }) => {
+  const { isAuthenticated, isAdmin } = useAuthStore();
+
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  if (requireAdmin && !isAdmin()) return <Navigate to="/" replace />;
+
+  return children;
+};
+```
+
+### Validación de datos
+
+- **Frontend:** Validación en formularios antes de enviar a la API.
+- **Backend:** Validación con `$request->validate()` en todos los controladores.
+- **Ejemplo en PedidoController:**
+  ```php
+  $request->validate([
+      'total'       => 'required|numeric',
+      'metodo_pago' => 'required|string',
+      'articulos'   => 'required|array|min:1',
+      'articulos.*.tipo_item' => 'required|in:plato,vino,bebida,menu_degustacion',
+      'articulos.*.cantidad'  => 'required|integer|min:1',
+      'articulos.*.precio'    => 'required|numeric',
+  ]);
+  ```
+
+---
+
+## 🔄 Flujo de la Aplicación
+
+### Flujo de Pedido (Takeaway)
+
+```
+Usuario navega /menu
+    │
+    ▼
+Añade ítems al carrito (Zustand store → localStorage)
+    │
+    ▼
+Accede a /cart
+    │
+    ▼
+Selecciona hora/fecha de recogida y método de pago
+    │
+    ▼
+POST /api/pedidos → Laravel crea Pedido + DetallesPedido en transacción DB
+    │
+    ▼
+Respuesta 201 → SweetAlert2 muestra confirmación
+    │
+    ▼
+Carrito se vacía → redirect a /dashboard
+```
+
+### Flujo de Reserva
+
+```
+Usuario navega /reservations
+    │
+    ▼
+Selecciona: fecha · hora · comensales · menú degustación (opcional)
+    │
+    ▼
+POST /api/reservas → Laravel crea Reserva con código único
+    │
+    ▼
+Estado inicial: "Pendiente"
+    │
+    ▼
+Admin confirma desde /admin → PATCH /api/reservas/{id}
+    │
+    ▼
+Estado cambia a: "Confirmada"
+```
+
+---
+
+## 🎨 Sistema de Diseño y UI
+
+### Paleta de colores
+
+| Variable CSS         | Valor              | Uso                                       |
+| :------------------- | :----------------- | :---------------------------------------- |
+| `--color-primary`    | `#c8a96e` (dorado) | Acento principal, botones CTA, highlights |
+| `--color-bg-body`    | `#0a0a0a`          | Fondo principal (modo oscuro)             |
+| `--color-bg-surface` | `#141414`          | Tarjetas y superficies elevadas           |
+| `--color-text-base`  | `#f5f0e8`          | Texto principal                           |
+| `--color-text-muted` | `#6b6b6b`          | Texto secundario y placeholders           |
+
+### Tipografía
+
+- **Display / Headlines:** Fuente serif de alto contraste (estética editorial).
+- **Body / UI:** Fuente sans-serif limpia (legibilidad en datos y formularios).
+- Ambas importadas desde Google Fonts en `index.css`.
+
+### Animaciones (GSAP)
+
+Las animaciones se centralizan en `src/motion/`:
+
+- **ScrollTrigger:** Reveal de secciones al hacer scroll.
+- **Page Transitions:** Animaciones de entrada/salida entre rutas.
+- **Micro-interacciones:** Hover effects en tarjetas de menú y botones.
+- **Stagger animations:** Aparición escalonada de listas de platos.
+
+### Lazy Loading de vistas
+
+Todas las vistas (páginas) se cargan con `React.lazy()` + `Suspense` para reducir el bundle inicial:
+
+```jsx
+const MenuView = lazy(() => import("./pages/MenuView"));
+
+<Suspense fallback={<PageLoader />}>
+  <Routes> ... </Routes>
+</Suspense>;
+```
+
+---
+
+## 🧪 Testing
+
+### Backend — PHPUnit
+
 ```bash
 cd backend
-composer run test
+php artisan test                  # Ejecuta toda la suite
+php artisan test --filter=Pedido  # Solo tests de pedidos
+php artisan test --coverage       # Con reporte de cobertura
 ```
 
-Frontend:
-- No hay scripts de test definidos en `frontend/package.json` actualmente.
-- Placeholder recomendado: Vitest o Jest según necesidades del equipo.
+**Tipos de tests implementados:**
 
-# 📦 Build y Despliegue
-Build de frontend:
+- **Unit Tests** (`tests/Unit/`): Validación de lógica de modelos, cálculos de impuestos, etc.
+- **Feature Tests** (`tests/Feature/`): Tests de endpoints HTTP con autenticación.
+
+### Frontend — Vitest
+
+```bash
+cd frontend
+npm run test          # Ejecuta tests en modo watch
+npm run test -- --run # Ejecuta una vez y termina (CI)
+```
+
+---
+
+## 📦 Build y Despliegue
+
+### Opción A — Docker (Producción)
+
+```bash
+docker-compose up -d --build
+```
+
+El `docker-compose.yml` orquesta:
+
+- **`frontend`**: Build de Vite servido por Nginx.
+- **`backend`**: PHP-FPM con Laravel.
+- **`db`**: MySQL 8.0 con volumen persistente.
+- **`nginx`**: Proxy inverso que unifica frontend y API en el puerto 8001.
+
+### Opción B — Despliegue Manual
+
+**Frontend (Vercel / Netlify / CDN):**
+
 ```bash
 cd frontend
 npm run build
+# Subir frontend/dist/ a tu plataforma de hosting estático
 ```
 
-Despliegue:
-- Frontend: servir `frontend/dist/` desde CDN o servidor estático.
-- Backend: desplegar Laravel en servidor con PHP-FPM y configurar `.env`.
-- Base de datos: ajustar `DB_CONNECTION` según entorno (SQLite/MySQL/pgsql).
-- Variables de entorno: definir `APP_KEY`, `APP_ENV`, `APP_URL`, `DB_*` y `VITE_API_BASE_URL`.
+**Backend (Render / Railway / VPS con PHP):**
 
-# ⚠️ Buenas Prácticas
-Convenciones de código:
-- Usar `async/await` en operaciones asíncronas.
-- Mantener nombres descriptivos y coherentes.
-- Evitar duplicación de lógica entre páginas.
+```bash
+cd backend
+composer install --optimize-autoloader --no-dev
+php artisan config:cache
+php artisan route:cache
+php artisan migrate --force
+```
 
-Organización del proyecto:
-- Componentes pequeños y reutilizables.
-- Separar UI, lógica y servicios HTTP.
-- Mantener rutas de API centralizadas.
+### Variables de entorno en producción
 
-Recomendaciones:
-- Validar formularios en frontend y backend.
-- Añadir pruebas unitarias y de integración en módulos críticos.
-- Documentar endpoints y contratos de API.
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://tu-dominio.com
 
-# 📄 Licencia
-Ver el archivo `LICENSE` en la raíz del proyecto.
+DB_CONNECTION=mysql
+DB_HOST=host-produccion
+DB_DATABASE=distrito_gourmet_prod
+DB_USERNAME=usuario_prod
+DB_PASSWORD=contraseña_segura
+
+SANCTUM_STATEFUL_DOMAINS=tu-dominio.com
+FRONTEND_URL=https://tu-dominio.com
+```
+
+---
+
+## ⚠️ Buenas Prácticas y Convenciones
+
+### Código JavaScript / React
+
+- Usar `async/await` para todas las operaciones asíncronas.
+- Preferir componentes funcionales con hooks sobre componentes de clase.
+- Un componente = una responsabilidad (principio de responsabilidad única).
+- Nombrar componentes en **PascalCase** y funciones/variables en **camelCase**.
+- Centralizar las llamadas HTTP en la carpeta `services/` (nunca en componentes directamente).
+
+### Código PHP / Laravel
+
+- Los controladores solo deben orquestar: delegar lógica a modelos o servicios.
+- Usar transacciones DB (`DB::transaction()`) en operaciones con múltiples escrituras.
+- Validar siempre con `$request->validate()` antes de procesar datos.
+- Usar las relaciones Eloquent (`with()`, `load()`) para evitar el problema N+1.
+- Nombramiento de métodos: `index`, `store`, `show`, `update`, `destroy` (convención REST).
+
+### Control de versiones (Git)
+
+- Commits descriptivos en español siguiendo el formato: `tipo: descripción breve`.
+- Tipos comunes: `feat`, `fix`, `refactor`, `docs`, `style`, `test`.
+- Ejemplo: `feat: añadir selector de menú degustación en reservas`.
+
+### Seguridad
+
+- Nunca commitear archivos `.env` (están en `.gitignore`).
+- Rotar el `APP_KEY` en producción.
+- Sanitizar y validar todas las entradas tanto en frontend como en backend.
+- Usar HTTPS en producción (configurar certificado SSL en Nginx).
+
+---
+
+## 🐛 Solución de Problemas Comunes
+
+| Problema                       | Causa probable                                                | Solución                                                         |
+| :----------------------------- | :------------------------------------------------------------ | :--------------------------------------------------------------- |
+| `CORS error` en desarrollo     | El dominio del frontend no está en `SANCTUM_STATEFUL_DOMAINS` | Añadir `localhost:5173` al `.env`                                |
+| `401 Unauthorized`             | Token expirado o no enviado en la cabecera                    | Revisar el store de auth y el interceptor de Axios               |
+| `500 Error` en migraciones     | Credenciales de BD incorrectas en `.env`                      | Verificar `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` |
+| Estilos Tailwind no se aplican | `tailwind.config.js` no incluye la ruta del archivo           | Añadir la ruta en `content: ['./src/**/*.{js,jsx}']`             |
+| Animaciones GSAP no funcionan  | GSAP no está instalado o el elemento no existe en el DOM      | Verificar instalación y usar `useEffect` con `gsap.context()`    |
+| Build de frontend falla        | Variables de entorno de Vite no definidas                     | Crear `frontend/.env` con `VITE_API_BASE_URL`                    |
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo los términos de la **MIT License**.
+Consulta el archivo [`LICENSE`](./LICENSE) en la raíz del repositorio.
+
+---
+
+<p align="center">
+  <sub><em>Documentación técnica de Distrito Gourmet © 2026 · Alex Vicente Lopez · DAW</em></sub>
+</p>
