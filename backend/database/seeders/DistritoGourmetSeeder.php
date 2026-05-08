@@ -6,14 +6,14 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class ProfessionalDemoDataSeeder extends Seeder
+class DistritoGourmetSeeder extends Seeder
 {
-    // Ejecución de los seeders para poblar el catálogo gastronómico
+    // Seeder principal para poblar la base de datos con el catálogo gastronómico completo.
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // Truncar todas las tablas para sustituir los datos (nombres en español)
+        // Truncar todas las tablas para sustituir los datos
         $tablas = [
             'usuarios',
             'categorias_menu',
@@ -133,8 +133,6 @@ class ProfessionalDemoDataSeeder extends Seeder
             ['plato_id' => 2, 'vino_id' => 5, 'nivel_recomendacion' => 'Muy buena', 'notas' => 'Champagne ideal para mariscos premium.'],
             ['plato_id' => 8, 'vino_id' => 5, 'nivel_recomendacion' => 'Perfecta', 'notas' => 'Champagne y chocolate generan un gran contraste.'],
         ]);
-
-        // 8. Mesas eliminadas según requerimiento
 
         // 9. Usuarios
         DB::table('usuarios')->insert([
