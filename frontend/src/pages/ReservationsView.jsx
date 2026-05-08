@@ -15,7 +15,8 @@ import {
 } from "@/motion";
 import { DURATION, EASING } from "@/motion";
 
-// Gestiona las pestañas de 'Nueva Reserva' e 'Historial'. Orquestra la comunicación con la API para recuperar las reservas del usuario autenticado.
+// Gestión de reservas: administra las pestañas de 'Nueva Reserva' e 'Historial'
+// Coordina la comunicación con la API para recuperar las reservas del usuario autenticado.
 const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState("new");
   const [reservations, setReservations] = useState([]);
@@ -143,6 +144,7 @@ const ReservationsView = () => {
                     <p>Consultando su agenda...</p>
                   </div>
                 ) : reservations.length === 0 ? (
+                  // Estado vacío: se muestra cuando el usuario no tiene registros previos
                   <FadeIn className="flex flex-col items-center justify-center text-center py-20 px-4 sm:px-8 border border-text-main/10 bg-bg-surface">
                     <span className="text-text-muted text-4xl mb-6 font-normal">
                       ✦
@@ -152,6 +154,7 @@ const ReservationsView = () => {
                     </p>
                   </FadeIn>
                 ) : (
+                  // Listado de reservas: renderizado secuencial con efecto stagger
                   <StaggerList className="space-y-6">
                     {reservations.map((res) => (
                       <StaggerItem key={res.id}>

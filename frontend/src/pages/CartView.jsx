@@ -16,6 +16,7 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
 
+// Gestión del carrito de compras y proceso de finalización de pedido
 const CartView = () => {
   const { items, updateQuantity, removeItem, clearCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
@@ -25,7 +26,7 @@ const CartView = () => {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [pickupTime, setPickupTime] = useState("");
 
-  // Generar opciones de recogida dinámicas para hoy y mañana
+  // Calcula las horas de recogida disponibles para hoy y mañana
   const generatePickupOptions = () => {
     const options = [];
     const now = new Date();
@@ -87,6 +88,7 @@ const CartView = () => {
 
   const goToCheckout = () => {
     if (!isAuthenticated()) {
+      // Forzar login si el usuario intenta pagar sin sesión
       Swal.fire({
         icon: "info",
         title: "Acceso Requerido",
@@ -102,6 +104,7 @@ const CartView = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Envía el pedido al servidor con toda la info
   const handleCheckout = async () => {
     setIsProcessing(true);
     if (!pickupTime) {

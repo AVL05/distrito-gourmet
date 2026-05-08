@@ -11,6 +11,7 @@ import {
   motion,
 } from "@/motion";
 
+// Vista de contacto: presenta la ubicación del local, información de comunicación y formulario de consultas
 const ContactView = () => {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);

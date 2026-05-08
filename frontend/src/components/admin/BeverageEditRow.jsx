@@ -2,12 +2,14 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 
+// Fila editable para la gestión individual de bebidas en el panel de administración
 const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [edit, setEdit] = useState({ ...item });
 
   const handleUpdate = async () => {
     try {
+      // Envía la actualización de la bebida al servidor
       await axios.put(`/admin/beverages/${item.id}`, edit);
       Swal.fire({
         icon: "success",
@@ -159,6 +161,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
         <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary transition-colors">
           {item.nombre}
         </h4>
+        {/* Muestra la descripción si el producto la tiene definida */}
         {item.descripcion && (
           <p className="text-text-muted text-sm font-normal italic leading-relaxed opacity-70 mb-4">
             "{item.descripcion}"

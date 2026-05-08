@@ -1,5 +1,6 @@
 import { HiTrash } from "react-icons/hi";
 
+// Tarjeta visual para la gestión y asignación de mesas en las reservas
 const ReservationCard = ({
   res,
   handleUpdateReservation,
@@ -8,6 +9,7 @@ const ReservationCard = ({
   return (
     <div
       key={res.id}
+      // Aplica estilos visuales según si la reserva está pendiente, confirmada o cancelada
       className={`bg-bg-surface/90 border p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden ${
         res.estado === "Pendiente"
           ? "border-primary/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]"
@@ -72,6 +74,7 @@ const ReservationCard = ({
             <span className="text-primary text-[10px] font-bold uppercase tracking-widest">
               MESA:
             </span>
+            {/* Permite asignar un ID de mesa directamente desde la tarjeta */}
             <input
               type="text"
               placeholder="Sin asignar"
@@ -95,6 +98,7 @@ const ReservationCard = ({
             onChange={(e) =>
               handleUpdateReservation(res.id, { estado: e.target.value })
             }
+            // Cambia el borde a dorado si está pendiente para llamar la atención del admin
             className={`bg-bg-surface border border-text-main/10 text-text-main rounded p-1.5 pr-8 text-[11px] uppercase tracking-widest outline-none transition-all ${
               res.estado === "Pendiente" ? "border-primary/40 text-primary" : ""
             }`}

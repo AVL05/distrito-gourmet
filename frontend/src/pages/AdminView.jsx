@@ -14,7 +14,8 @@ import UserEditRow from "@/components/admin/UserEditRow";
 import ReservationCard from "@/components/admin/ReservationCard";
 import OrderCard from "@/components/admin/OrderCard";
 
-// Interfaz de administración con navegación por pestañas. Gestiona la lógica de CRUD para los principales recursos del sistema.
+// Panel de Control de Distrito Gourmet
+// Gestión centralizada del restaurante: pedidos, reservas, carta y usuarios
 const AdminView = () => {
   const { logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState("orders");
@@ -32,7 +33,7 @@ const AdminView = () => {
     tasting_menus: [],
   });
 
-  // Secciones del panel de administración
+  // Configuración de las secciones disponibles en la barra lateral
   const sections = [
     { id: "orders", label: "Pedidos" },
     { id: "reservations", label: "Reservas" },
@@ -98,7 +99,9 @@ const AdminView = () => {
     disponible: true,
   });
 
-  // Handlers genéricos para añadir elementos
+  // Funciones genéricas para el CRUD
+
+  // Crea un nuevo registro y refresca la lista automáticamente
   const handleAddItem = async (endpoint, itemData, resetState, successMsg) => {
     try {
       await axios.post(`/admin/${endpoint}`, itemData);
@@ -156,7 +159,8 @@ const AdminView = () => {
     }
   };
 
-  // Llamada a la API para obtener los datos de la sección activa
+  // Trae los datos de la API según la sección donde estemos
+  // Sincroniza la información cada vez que cambio de pestaña en el panel
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -272,6 +276,7 @@ const AdminView = () => {
         (o) => o.estado === "Cancelado",
       );
 
+      // Renderiza una tarjeta de pedido individual
       const renderOrderCard = (order) => (
         <OrderCard
           key={order.id}
@@ -281,6 +286,7 @@ const AdminView = () => {
         />
       );
 
+      // Renderiza una subsección de pedidos con separador visual y contador
       const renderSection = (
         title,
         orders,
@@ -1282,7 +1288,7 @@ const AdminView = () => {
         </div>
       </aside>
 
-      {/* Contenido principal */}
+      {/* Área de Visualización Principal */}
       <main className="flex-grow flex flex-col h-screen relative z-10 overflow-hidden">
         {/* Cabecera Fija (Header + Navegación móvil) */}
         <div className="p-4 md:p-12 pb-2 md:pb-6 flex-shrink-0 border-b md:border-b-0 border-text-main/5">

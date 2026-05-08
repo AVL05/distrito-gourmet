@@ -11,6 +11,7 @@ import {
   motion,
 } from "@/motion";
 
+// Vista de registro para nuevos usuarios del sistema
 const RegisterView = () => {
   const [form, setForm] = useState({
     name: "",

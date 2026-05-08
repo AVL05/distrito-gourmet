@@ -7,14 +7,8 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
-/**
- * Navbar Component
- *
- * Barra de navegación principal del sitio, rediseñada con animaciones GSAP.
- * Gestiona un menú modal a pantalla completa, cambios visuales al hacer scroll,
- * y muestra accesos dinámicos basados en la sesión del usuario y los elementos del carrito.
- *
- */
+// Barra de navegación principal con animaciones GSAP
+// Gestiona el menú modal, cambios al hacer scroll y accesos dinámicos según sesión y carrito
 const Navbar = () => {
   const { isAuthenticated, isAdmin, logout } = useAuthStore();
   const { totalItems } = useCartStore();
@@ -99,9 +93,7 @@ const Navbar = () => {
     { dependencies: [isOpen], scope: menuRef },
   );
 
-  /**
-   * Finaliza la sesión del usuario actual y lo redirige a la vista de inicio de sesión.
-   */
+  // Finalizar sesión y redirigir al login
   const handleLogout = () => {
     logout();
     navigate("/login");

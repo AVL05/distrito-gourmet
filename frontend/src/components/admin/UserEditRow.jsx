@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 
+// Fila editable para la gestión de usuarios y roles en el panel de administración
 const UserEditRow = ({ user, fetchData }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState({
@@ -12,6 +13,7 @@ const UserEditRow = ({ user, fetchData }) => {
     contrasena: "",
   });
 
+  // Actualiza los datos del usuario en la base de datos
   const handleUpdate = async () => {
     try {
       await axios.put(`/admin/users/${user.id}`, editUser);
@@ -164,6 +166,7 @@ const UserEditRow = ({ user, fetchData }) => {
         >
           {user.nombre.charAt(0)}
         </div>
+        {/* Marca visual para diferenciar a los administradores del resto */}
         {user.rol === "Administrador" && (
           <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-bg-surface rounded-full flex items-center justify-center shadow-sm border border-primary/20">
             <span className="text-[8px]">✦</span>
@@ -205,6 +208,7 @@ const UserEditRow = ({ user, fetchData }) => {
         >
           Editar
         </button>
+        {/* Evita que el admin principal se elimine a sí mismo por accidente */}
         {user.id !== 1 && (
           <button
             onClick={handleDelete}

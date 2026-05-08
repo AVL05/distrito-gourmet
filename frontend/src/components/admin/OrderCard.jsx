@@ -1,9 +1,11 @@
 import { HiTrash } from "react-icons/hi";
 
+// Tarjeta visual para la gestión y actualización del estado de pedidos
 const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
   return (
     <div
       key={order.id}
+      // Cambia el color del borde y la sombra según el estado del pedido para identificarlo rápido
       className={`bg-bg-surface/90 border p-5 flex flex-col justify-between transition-all duration-300 relative group overflow-hidden ${
         order.estado === "Pendiente"
           ? "border-primary/50 shadow-[0_0_20px_rgba(197,160,89,0.1)]"
@@ -75,6 +77,7 @@ const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
 
         <div className="bg-black/5 p-4 rounded-sm border border-text-main/5">
           <p className="text-text-main text-[14px] font-normal leading-relaxed italic opacity-90">
+            {/* Formatea la lista de productos (platos, vinos, etc.) para que se vea limpia */}
             {order.detalles
               ?.map((i) => {
                 const nombre =
@@ -95,6 +98,7 @@ const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
           Logística
         </span>
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Selector de estados para actualizar el flujo del pedido en tiempo real */}
           <select
             value={order.estado}
             onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
@@ -107,6 +111,7 @@ const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
             <option value="Cancelado">Cancelado</option>
           </select>
 
+          {/* Solo deja eliminar el pedido si ya está cancelado, para evitar errores */}
           {order.estado === "Cancelado" && (
             <button
               onClick={() =>

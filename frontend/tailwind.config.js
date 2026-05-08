@@ -12,19 +12,19 @@ export default {
         ultra: "3840px",
       },
       colors: {
-        // Logo inspired fine dining palette
-        primary: "#A68A56", // Gold/Bronze from keys & plate
-        "primary-hover": "#8D7344", // Darker gold for hover
-        "bg-body": "#FCFBF8", // Warm creamy textured background
-        "bg-surface": "#FFFFFF", // Pure white for cards/layers
-        "text-main": "#224032", // Deep brand green from 'DISTRITO' text
-        "text-muted": "#4A504A", // Darker elegant gray for better contrast
+        // Paleta de colores inspirada en la marca y alta gastronomía
+        primary: "#A68A56", // Dorado/Bronce inspirado en los elementos del logo
+        "primary-hover": "#8D7344", // Dorado oscuro para estados de interacción
+        "bg-body": "#FCFBF8", // Fondo crema cálido con textura
+        "bg-surface": "#FFFFFF", // Blanco puro para tarjetas y capas
+        "text-main": "#224032", // Verde profundo corporativo del texto 'DISTRITO'
+        "text-muted": "#4A504A", // Gris elegante oscuro para mejorar el contraste
       },
       fontFamily: {
         heading: ['"Playfair Display"', "serif"],
         body: ['"Inter"', "sans-serif"],
       },
-      // Any animations
+      // Definiciones de animación
       animation: {
         "fade-in": "fadeIn 0.5s ease forwards",
       },

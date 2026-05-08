@@ -15,12 +15,12 @@ export const EASING = {
   smooth: [0.25, 0.46, 0.45, 0.94], // Movimiento suave y natural
   decelerate: [0.0, 0.0, 0.2, 1], // Frenado progresivo (entradas)
   accelerate: [0.4, 0.0, 1, 1], // Aceleración suave (salidas)
-  spring: { type: 'spring', stiffness: 300, damping: 24 }, // Rebote sutil
+  spring: { type: "spring", stiffness: 300, damping: 24 }, // Rebote sutil
 };
 
 // ─── Variantes de Fade ─────────────────────────────────────────────
 
-/** Fade in simple (solo opacidad) */
+// Fade in simple (solo opacidad)
 export const fadeVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -35,7 +35,7 @@ export const fadeVariants = {
 
 // ─── Variantes de Fade + Slide ─────────────────────────────────────
 
-/** Fade in con desplazamiento desde abajo (entrada de página/sección) */
+// Fade in con desplazamiento desde abajo (entrada de página/sección)
 export const fadeUpVariants = {
   hidden: { opacity: 0, y: 24 },
   visible: {
@@ -50,7 +50,7 @@ export const fadeUpVariants = {
   },
 };
 
-/** Fade in con desplazamiento desde la izquierda */
+// Fade in con desplazamiento desde la izquierda
 export const fadeLeftVariants = {
   hidden: { opacity: 0, x: -24 },
   visible: {
@@ -65,7 +65,7 @@ export const fadeLeftVariants = {
   },
 };
 
-/** Fade in con desplazamiento desde la derecha */
+// Fade in con desplazamiento desde la derecha
 export const fadeRightVariants = {
   hidden: { opacity: 0, x: 24 },
   visible: {
@@ -82,7 +82,7 @@ export const fadeRightVariants = {
 
 // ─── Variantes de Escala ───────────────────────────────────────────
 
-/** Scale in sutil (para modales, tooltips, dropdowns) */
+// Scale in sutil (para modales, tooltips, dropdowns)
 export const scaleVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -99,7 +99,7 @@ export const scaleVariants = {
 
 // ─── Variantes para Contenedores con Stagger ───────────────────────
 
-/** Contenedor que aplica un stagger progresivo a sus hijos */
+// Contenedor que aplica un stagger progresivo a sus hijos
 export const staggerContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -118,7 +118,7 @@ export const staggerContainerVariants = {
   },
 };
 
-/** Item hijo dentro de un contenedor con stagger */
+// Item hijo dentro de un contenedor con stagger
 export const staggerItemVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
@@ -135,7 +135,7 @@ export const staggerItemVariants = {
 
 // ─── Variantes para el Menú/Overlay del Navbar ─────────────────────
 
-/** Overlay de navegación a pantalla completa */
+// Overlay de navegación a pantalla completa
 export const overlayVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -148,7 +148,7 @@ export const overlayVariants = {
   },
 };
 
-/** Links dentro del overlay a pantalla completa (con stagger) */
+// Links dentro del overlay a pantalla completa (con stagger)
 export const navContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -167,7 +167,7 @@ export const navContainerVariants = {
   },
 };
 
-/** Cada link individual del menú overlay */
+// Cada link individual del menú overlay
 export const navItemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -184,7 +184,7 @@ export const navItemVariants = {
 
 // ─── Variantes para Transiciones de Página ─────────────────────────
 
-/** Transición entre rutas/páginas */
+// Transición entre rutas/páginas
 export const pageTransitionVariants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
@@ -201,7 +201,7 @@ export const pageTransitionVariants = {
 
 // ─── Variantes para Notificaciones/Toast ───────────────────────────
 
-/** Toast que entra desde abajo */
+// Toast que entra desde abajo
 export const toastVariants = {
   hidden: { opacity: 0, y: 40, scale: 0.95 },
   visible: {
@@ -220,7 +220,7 @@ export const toastVariants = {
 
 // ─── Variantes para Cards con Hover ────────────────────────────────
 
-/** Card con efecto hover de elevación sutil */
+// Card con efecto hover de elevación sutil
 export const cardHoverVariants = {
   rest: { scale: 1, y: 0 },
   hover: {
@@ -232,7 +232,7 @@ export const cardHoverVariants = {
 
 // ─── Variantes para Botones ────────────────────────────────────────
 
-/** Efecto tap/press en botones */
+// Efecto tap/press en botones
 export const buttonTapVariants = {
   rest: { scale: 1 },
   tap: { scale: 0.97 },

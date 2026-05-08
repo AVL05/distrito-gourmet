@@ -15,6 +15,7 @@ import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 
+// Este es cada pedido de la lista. Tiene la lógica para abrir y cerrar los detalles.
 const OrderItem = ({ order }) => {
   const [showDetails, setShowDetails] = useState(false);
   const detailsRef = useRef(null);
@@ -58,6 +59,7 @@ const OrderItem = ({ order }) => {
     }
   };
 
+  // Animación suave con GSAP para cuando se despliegan los platos del pedido
   useGSAP(
     () => {
       if (showDetails) {
@@ -201,6 +203,7 @@ const OrderItem = ({ order }) => {
   );
 };
 
+// Página principal del usuario: perfil, accesos rápidos e historial
 const DashboardView = () => {
   const { user, logout, isAdmin } = useAuthStore();
   const [orders, setOrders] = useState([]);

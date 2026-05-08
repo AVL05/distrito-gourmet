@@ -3,6 +3,7 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { HiTrash } from "react-icons/hi";
 
+// Componente para la edición detallada de la secuencia y precio de menús degustación
 const TastingMenuEditRow = ({
   item,
   fetchData,
@@ -41,6 +42,7 @@ const TastingMenuEditRow = ({
       ...edit,
       platos: [
         ...edit.platos,
+        // Añade un nuevo plato a la secuencia del menú con sus valores por defecto
         { ...plato, pivot: { numero_paso: edit.platos.length + 1, notas: "" } },
       ],
     });
@@ -145,6 +147,7 @@ const TastingMenuEditRow = ({
                       checked={edit._hasMaridaje || !!edit.precio_maridaje}
                       onChange={(e) => {
                         const hasM = e.target.checked;
+                        // Activa o desactiva el maridaje y gestiona su precio
                         setEdit({
                           ...edit,
                           _hasMaridaje: hasM,
@@ -299,6 +302,7 @@ const TastingMenuEditRow = ({
                               numero_paso: e.target.value,
                             },
                           };
+                          // Sincroniza el orden del plato en el estado local
                           setEdit({ ...edit, platos: newPlatos });
                         }}
                         className="bg-transparent border-b-2 border-text-main/10 text-text-main text-sm w-full outline-none focus:border-primary pb-1 font-bold transition-colors text-center"

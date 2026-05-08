@@ -6,7 +6,7 @@
 
 @layer base {
   html {
-    /* Base scaling for ultra-high resolutions */
+    /* Escalado base para resoluciones ultra-altas */
     @screen 2k {
       font-size: 110%;
     }
@@ -45,7 +45,7 @@
     content: none;
   }
 
-  /* Custom elegant scrollbar */
+  /* Barra de desplazamiento elegante personalizada */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -62,7 +62,7 @@
 }
 
 @layer components {
-  /* Minimalist Buttons */
+  /* Botones minimalistas */
   .btn {
     @apply inline-block px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-[13px] uppercase tracking-[2px] cursor-pointer transition-all duration-300;
   }
@@ -95,7 +95,7 @@
     @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-[13px] uppercase tracking-[1.5px] transition-colors duration-300 hover:text-main;
   }
 
-  /* Structural */
+  /* Estructura general */
   .container {
     @apply mx-auto px-6 md:px-8;
     max-width: clamp(1280px, 90vw, 2400px);

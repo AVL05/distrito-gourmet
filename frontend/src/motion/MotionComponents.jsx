@@ -304,7 +304,7 @@ export const MotionButton = ({
 // ─── AnimatePresence (stub de compatibilidad) ─────────────────────────────────
 export const AnimatePresence = ({ children }) => <>{children}</>;
 
-/** Proxy de compatibilidad para <motion.tag> */
+// Proxy de compatibilidad para <motion.tag>
 const componentCache = {};
 
 const motionProxy = new Proxy(

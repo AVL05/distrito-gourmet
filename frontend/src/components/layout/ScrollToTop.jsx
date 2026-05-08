@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
+// Componente utilitario para asegurar que el scroll vuelva al inicio en cada cambio de ruta
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 

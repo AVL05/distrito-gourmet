@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 
+// Fila editable para la gestión individual de vinos en el panel de administración
 const WineEditRow = ({ item, fetchData, handleDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [edit, setEdit] = useState({ ...item });
@@ -12,6 +13,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
       delete payload.creado_a;
       delete payload.actualizado_a;
 
+      // Actualiza la información del vino y refresca la lista
       await axios.put(`/admin/wines/${item.id}`, payload);
       Swal.fire({
         icon: "success",
@@ -139,6 +141,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
               onChange={(e) =>
                 setEdit({ ...edit, notas_maridaje: e.target.value })
               }
+              // Espacio para notas de cata o maridaje recomendados
               className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all resize-none italic"
               placeholder="Describa el carácter del vino..."
             />
@@ -234,6 +237,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
       <div className="pt-6 border-t border-text-main/5 flex justify-between items-end">
         <div className="flex flex-col gap-1">
           <div className="flex items-baseline gap-1">
+            {/* Muestra precios diferenciados para botella y copa si existen */}
             <span className="text-text-main font-heading text-xl">
               {parseFloat(item.precio_botella).toFixed(2)}€
             </span>

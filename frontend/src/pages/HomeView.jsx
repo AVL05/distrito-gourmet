@@ -11,15 +11,14 @@ import {
   ScrollProgress,
 } from "@/motion";
 
-// Vista principal (Página de Inicio)
-// Estructura la página en varias secciones visuales: Hero (bienvenida), Filosofía, Experiencia y Reserva.
+// Página de inicio organizada en secciones visuales de alto impacto para el usuario
 const HomeView = () => {
   return (
     <PageTransition className="w-full">
       {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
       <ScrollProgress />
 
-      {/* SECCIÓN 1: Hero (Pantalla principal de bienvenida) */}
+      {/* Sección principal de bienvenida */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
         {/* Imagen de fondo con filtro */}
         <div
@@ -32,12 +31,6 @@ const HomeView = () => {
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
         <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center h-full">
-          <FadeIn delay={0.1}>
-            <span className="block text-text-main text-[12px] md:text-sm uppercase tracking-[0.3em] mb-12 font-body font-semibold">
-              / 01 Inspiración Florentina
-            </span>
-          </FadeIn>
-
           {/* Título con Text Reveal caracter por caracter (estilo Lucky Folks) */}
           <TextReveal
             text="Distrito"
@@ -109,7 +102,7 @@ const HomeView = () => {
         />
       </div>
 
-      {/* SECCIÓN 2: Filosofía / Identidad del restaurante */}
+      {/* Sección sobre la identidad del restaurante */}
       <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -184,7 +177,7 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 3: La Visión (Pilares del restaurante) */}
+      {/* Los pilares que definen nuestra visión */}
       <section className="py-24 md:py-32 bg-bg-body">
         <div className="container px-4">
           <ScrollReveal className="text-center mb-20">
@@ -261,7 +254,7 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* SECCIÓN 4: Llamada a la acción para reservar */}
+      {/* Invitación final para reservar mesa */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
         <div className="container px-4">
           <ScrollReveal className="max-w-4xl mx-auto text-center mb-16">

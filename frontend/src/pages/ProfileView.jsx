@@ -4,6 +4,7 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { useReducedMotion, PageTransition, FadeIn, motion } from "@/motion";
 
+// Vista de perfil del usuario: permite gestionar información personal y credenciales de acceso
 const ProfileView = () => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({

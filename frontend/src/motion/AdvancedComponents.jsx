@@ -185,7 +185,7 @@ export const ParallaxImage = ({
 
   useGSAP(
     () => {
-      // Parallax scrub
+      // Movimiento parallax fluido al hacer scroll
       gsap.to(image.current, {
         yPercent: speed / 10,
         ease: "none",
@@ -197,7 +197,7 @@ export const ParallaxImage = ({
         },
       });
 
-      // Reveal on enter
+      // Animación de aparición al entrar en vista
       gsap.from(image.current, {
         scale: 1.2,
         duration: 1.5,

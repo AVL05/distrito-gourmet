@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: "0.0.0.0",
       port: 5173,
-      // Proxy /api/* → Laravel backend (runs server-side, no CORS/Private Network Access in browser)
+      // Proxy /api/* → Backend Laravel (evita problemas de CORS y acceso a red privada)
       proxy: {
         "/api": {
           target: backendTarget,

@@ -55,7 +55,7 @@ const LoginView = () => {
           icon: "error",
           title: isNotFound ? "Usuario no encontrado" : "Error de Acceso",
           text: isNotFound
-            ? "El correo electrónico no está registrado en nuestro sistema. Por favor, regístrese para continuar."
+            ? "El correo electrónico no está registrado en el sistema. Por favor, regístrese para continuar."
             : errorMsg || "Credenciales inválidas, por favor revise sus datos.",
           background: "#fdfaf6",
           color: "#2c302e",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 
+// Fila editable para la gestión individual de platos en el panel de administración
 const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editDish, setEditDish] = useState({
@@ -11,6 +12,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
     es_por_unidad: !!item.es_por_unidad,
   });
 
+  // Actualiza los datos del plato y limpia los campos que no deben enviarse
   const handleUpdate = async () => {
     try {
       const payload = { ...editDish };
@@ -265,4 +267,5 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
   );
 };
 
+// Componente para editar los platos directamente desde el panel
 export default DishEditRow;

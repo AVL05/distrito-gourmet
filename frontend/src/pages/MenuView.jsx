@@ -12,7 +12,7 @@ import {
   MotionButton,
 } from "@/motion";
 
-// Componente principal que gestiona el estado de la carta, recuperando datos del backend y formateándolos para su visualización categorizada.
+// Carga y organización de la carta gastronómica por categorías desde el servidor
 const MenuView = () => {
   const { addItem } = useCartStore();
   const [activeCategory, setActiveCategory] = useState("carta");
@@ -32,7 +32,7 @@ const MenuView = () => {
     { id: "menus", label: "Menús" },
   ];
 
-  // Llamada a la API para obtener todos los datos del menú
+  // Trae los platos, vinos y demás desde la API
   useEffect(() => {
     const fetchMenu = async () => {
       try {
@@ -314,7 +314,7 @@ const MenuView = () => {
   );
 };
 
-// Cabecera visual para cada sección del menú con animaciones ScrollReveal.
+// Cabecera de cada sección con animaciones de entrada
 const SectionHeader = ({ index, label }) => (
   <ScrollReveal
     direction="up"
@@ -336,7 +336,7 @@ const SectionHeader = ({ index, label }) => (
   </ScrollReveal>
 );
 
-// Fila individual para un plato de la carta con opción de compra.
+// Fila de plato individual. Aquí es donde se añade al carrito.
 const DishRow = ({ item, addItem }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
     <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
@@ -445,7 +445,7 @@ const WineDisplayRow = ({ item }) => (
   </div>
 );
 
-// Tarjeta informativa para menús degustación, listando los pasos incluidos.
+// Tarjeta grande para el menú degustación con todos sus pasos
 const TastingMenuCard = ({ menu }) => (
   <div className="border border-text-main/10 bg-bg-body relative overflow-hidden">
     {/* Línea decorativa superior */}
