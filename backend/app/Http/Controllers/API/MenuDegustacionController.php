@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MenuDegustacion;
 
+// Gestión de menús degustación: administración de experiencias gastronómicas por pasos
 class MenuDegustacionController extends Controller
 {
+    // Listar todos los menús degustación con sus platos asociados
     public function index()
     {
         return response()->json(MenuDegustacion::with('platos')->get());
     }
 
+    // Crear una nueva experiencia de menú degustación y sincronizar sus platos
     public function store(Request $request)
     {
         $request->validate([
@@ -44,6 +47,7 @@ class MenuDegustacionController extends Controller
         return response()->json(['mensaje' => 'Menú degustación creado correctamente', 'menu' => $menu->load('platos')], 201);
     }
 
+    // Actualizar la configuración y los platos de un menú degustación existente
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -76,6 +80,7 @@ class MenuDegustacionController extends Controller
         return response()->json(['mensaje' => 'Menú degustación actualizado correctamente', 'menu' => $menu->load('platos')]);
     }
 
+    // Eliminar un menú degustación del sistema
     public function destroy($id)
     {
         MenuDegustacion::destroy($id);

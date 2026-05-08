@@ -15,11 +15,7 @@ class Usuario extends Authenticatable
     protected $table = 'usuarios';
     public $timestamps = false;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Atributos asignables de forma masiva
     protected $fillable = [
         'nombre',
         'email',
@@ -28,20 +24,12 @@ class Usuario extends Authenticatable
         'telefono',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Atributos ocultos en la serialización (como la contraseña)
     protected $hidden = [
         'password',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    // Conversión de tipos de atributos
     protected function casts(): array
     {
         return [

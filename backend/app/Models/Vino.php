@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Modelo para la gestión de las referencias de la bodega
 class Vino extends Model
 {
     use HasFactory;

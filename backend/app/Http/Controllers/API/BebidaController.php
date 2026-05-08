@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\Bebida;
 use Illuminate\Http\Request;
 
+// Gestión de bebidas: administración de la oferta de refrescos, cócteles y cafés
 class BebidaController extends Controller
 {
+    // Listar todas las bebidas disponibles
     public function index()
     {
         return response()->json(Bebida::all());
     }
 
+    // Registrar una nueva bebida en el sistema
     public function store(Request $request)
     {
         $request->validate([
@@ -28,6 +31,7 @@ class BebidaController extends Controller
         return response()->json($bebida, 201);
     }
 
+    // Actualizar los datos de una bebida existente
     public function update(Request $request, $id)
     {
         $bebida = Bebida::findOrFail($id);
@@ -41,6 +45,7 @@ class BebidaController extends Controller
         return response()->json($bebida);
     }
 
+    // Eliminar una bebida del sistema
     public function destroy($id)
     {
         Bebida::findOrFail($id)->delete();

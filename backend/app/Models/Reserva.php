@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Representa una reserva de mesa en el restaurante
 class Reserva extends Model
 {
     use HasFactory;
@@ -24,6 +25,7 @@ class Reserva extends Model
         'peticiones_especiales'
     ];
 
+    // Relación con el usuario que ha realizado la reserva
     public function usuario()
     {
         return $this->belongsTo(Usuario::class, 'usuario_id');

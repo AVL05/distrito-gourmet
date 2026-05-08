@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
+// Gestión de usuarios: administración de perfiles, roles y credenciales de acceso
 class UsuarioController extends Controller
 {
     // Obtener todos los usuarios (solo admin)

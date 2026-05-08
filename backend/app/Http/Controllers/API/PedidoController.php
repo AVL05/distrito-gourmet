@@ -1,10 +1,5 @@
 <?php
-/**
- * @file OrderController.php
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Controlador para la gestión de pedidos de la tienda Gourmet. Maneja la creación, listado y actualización de estados del pedido.
- */
+// Gestión de pedidos: creación, listado y actualización de estados para el servicio takeaway
 
 namespace App\Http\Controllers\API;
 
@@ -17,10 +12,7 @@ use App\Models\DetallePedido;
 
 class PedidoController extends Controller
 {
-    /**
-     * @function index
-     * @description Obtiene el historial de pedidos del usuario autenticado.
-     */
+    // Obtener el historial de pedidos del usuario autenticado
     public function index()
     {
         $userId = Auth::id();
@@ -33,10 +25,7 @@ class PedidoController extends Controller
         return response()->json($pedidos);
     }
 
-    /**
-     * @function store
-     * @description Crea un nuevo pedido adaptado al esquema profesional SQL.
-     */
+    // Crear un nuevo pedido con el desglose de artículos y cálculo de impuestos
     public function store(Request $request)
     {
         if (!Auth::check()) {
@@ -97,10 +86,7 @@ class PedidoController extends Controller
         });
     }
 
-    /**
-     * @function all
-     * @description Lista todos los pedidos para administración.
-     */
+    // Listar todos los pedidos registrados (acceso de administrador)
     public function all()
     {
         $pedidos = Pedido::with(['usuario', 'detalles.plato', 'detalles.vino', 'detalles.bebida', 'detalles.menu_degustacion'])
@@ -109,10 +95,7 @@ class PedidoController extends Controller
         return response()->json($pedidos);
     }
 
-    /**
-     * @function updateStatus
-     * @description Actualiza el estado usando los nuevos valores ENUM (Pendiente, Preparando, Listo, Entregado, Cancelado).
-     */
+    // Actualizar el estado logístico del pedido (Pendiente, Preparando, Listo, etc.)
     public function updateStatus(Request $request, $id)
     {
         $pedido = Pedido::findOrFail($id);
@@ -121,10 +104,7 @@ class PedidoController extends Controller
         return response()->json(['mensaje' => 'Estado del pedido actualizado']);
     }
 
-    /**
-     * @function destroy
-     * @description Elimina un pedido y sus detalles asociados (vía cascada SQL).
-     */
+    // Eliminar un pedido y su información asociada
     public function destroy($id)
     {
         $pedido = Pedido::findOrFail($id);

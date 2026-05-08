@@ -6,13 +6,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Database Connection Name
+    | Nombre de la Conexión por Defecto
     |--------------------------------------------------------------------------
     |
-    | Here you may specify which of the database connections below you wish
-    | to use as your default connection for database operations. This is
-    | the connection which will be utilized unless another connection
-    | is explicitly specified when you execute a query / statement.
+    | Aquí se puede especificar cuál de las conexiones de base de datos definidas
+    | abajo se utilizará como conexión predeterminada para las operaciones.
     |
     */
 
@@ -20,12 +18,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Database Connections
+    | Conexiones de Base de Datos
     |--------------------------------------------------------------------------
     |
-    | Below are all of the database connections defined for your application.
-    | An example configuration is provided for each database system which
-    | is supported by Laravel. You're free to add / remove connections.
+    | Lista de todas las conexiones de base de datos configuradas para la aplicación.
+    | Se incluyen ejemplos para cada sistema compatible con Laravel.
     |
     */
 
@@ -116,12 +113,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Migration Repository Table
+    | Tabla de Repositorio de Migraciones
     |--------------------------------------------------------------------------
     |
-    | This table keeps track of all the migrations that have already run for
-    | your application. Using this information, we can determine which of
-    | the migrations on disk haven't actually been run on the database.
+    | Esta tabla mantiene un registro de todas las migraciones que ya se han
+    | ejecutado para la aplicación para evitar duplicidades.
     |
     */
 

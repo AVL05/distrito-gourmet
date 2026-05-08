@@ -1,10 +1,5 @@
 <?php
-/**
- * @file AuthController.php
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Controlador encargado de gestionar la autenticación de usuarios (registro, login, logout).
- */
+// Gestión de autenticación: registro, inicio y cierre de sesión de usuarios
 
 namespace App\Http\Controllers\API;
 
@@ -16,10 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * @function register
-     * @description Procesa el registro de nuevos usuarios, asignándoles el rol de 'client' por defecto.
-     */
+    // Registro de nuevos usuarios con rol 'Cliente' asignado por defecto
     public function register(Request $request)
     {
         // Validar datos del formulario de registro
@@ -57,10 +49,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * @function login
-     * @description Autentica al usuario mediante email y password, devolviendo un token de acceso personal.
-     */
+    // Autenticación de usuario mediante credenciales y generación de token
     public function login(Request $request)
     {
         // Validar email y contraseña
@@ -87,20 +76,14 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * @function logout
-     * @description Cierra la sesión activa revocando el token de acceso del usuario autenticado.
-     */
+    // Cierre de sesión y revocación del token de acceso actual
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
         return response()->json(['mensaje' => 'Sesión cerrada correctamente']);
     }
 
-    /**
-     * @function me
-     * @description Obtiene los datos del usuario autenticado actualmente.
-     */
+    // Recuperar la información del usuario autenticado actualmente
     public function me(Request $request)
     {
         return response()->json($request->user());

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Representa un plato individual de la carta
 class Plato extends Model
 {
     use HasFactory;
@@ -27,6 +28,7 @@ class Plato extends Model
         'maximo_por_pedido'
     ];
 
+    // Relación con la categoría del menú a la que pertenece el plato
     public function categoria()
     {
         return $this->belongsTo(CategoriaMenu::class, 'categoria_menu_id');

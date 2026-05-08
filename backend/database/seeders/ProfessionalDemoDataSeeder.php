@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfessionalDemoDataSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+    // Ejecución de los seeders para poblar el catálogo gastronómico
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');

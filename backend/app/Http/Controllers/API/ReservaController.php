@@ -1,10 +1,5 @@
 <?php
-/**
- * @file ReservationController.php
- * @author Alex V. (DAW)
- * @date 2026-04-06
- * @description Gestión de las reservas de mesas para los clientes desde el entorno API.
- */
+// Gestión de reservas: administración de citas y ocupación de mesas
 
 namespace App\Http\Controllers\API;
 
@@ -14,10 +9,7 @@ use App\Models\Reserva;
 
 class ReservaController extends Controller
 {
-    /**
-     * @function index
-     * @description Lista las reservas históricas o futuras asociadas al usuario autenticado.
-     */
+    // Listar las reservas asociadas al usuario autenticado
     public function index()
     {
         $reservas = Reserva::where('usuario_id', auth()->id())
@@ -25,10 +17,7 @@ class ReservaController extends Controller
         return response()->json($reservas);
     }
 
-    /**
-     * @function store
-     * @description Crea una reserva adaptada al nuevo esquema SQL (date/time separados).
-     */
+    // Registrar una nueva reserva validando disponibilidad y aforo
     public function store(Request $request)
     {
         $request->validate([
@@ -73,10 +62,7 @@ class ReservaController extends Controller
         return response()->json(['mensaje' => $mensaje, 'reserva' => $res], 201);
     }
 
-    /**
-     * @function all
-     * @description Recupera el listado completo para administración.
-     */
+    // Recuperar el listado global de reservas para administración
     public function all()
     {
         $reservas = Reserva::with('usuario')
@@ -92,6 +78,7 @@ class ReservaController extends Controller
         return response()->json($reservas);
     }
 
+    // Actualizar el estado de una reserva específica
     public function updateStatus(Request $request, $id)
     {
         $res = Reserva::findOrFail($id);
@@ -104,10 +91,7 @@ class ReservaController extends Controller
         return response()->json(['mensaje' => 'Reserva actualizada correctamente']);
     }
 
-    /**
-     * @function destroy
-     * @description Elimina permanentemente una reserva de la base de datos.
-     */
+    // Eliminar una reserva de forma permanente
     public function destroy($id)
     {
         $res = Reserva::findOrFail($id);
