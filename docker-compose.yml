@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: distrito-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-distrito_gourmet}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_USER: ${DB_USERNAME:-distrito_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: distrito-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      DB_HOST: db
+      DB_DATABASE: ${DB_DATABASE:-distrito_gourmet}
+      DB_USERNAME: ${DB_USERNAME:-distrito_user}
+      DB_PASSWORD: ${DB_PASSWORD:-password}
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: distrito-frontend
+    restart: always
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
