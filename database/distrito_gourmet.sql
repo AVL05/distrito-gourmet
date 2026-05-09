@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 06-05-2026 a las 14:00:40
+-- Tiempo de generación: 09-05-2026 a las 17:11:53
 -- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Versión de PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
@@ -192,10 +192,149 @@ CREATE TABLE `detalles_pedido` (
     `plato_id` bigint(20) UNSIGNED DEFAULT NULL,
     `vino_id` bigint(20) UNSIGNED DEFAULT NULL,
     `bebida_id` bigint(20) UNSIGNED DEFAULT NULL,
+    `menu_degustacion_id` bigint(20) UNSIGNED DEFAULT NULL,
     `cantidad` int(11) NOT NULL,
     `precio_unitario` decimal(10, 2) DEFAULT NULL,
     `precio_total` decimal(10, 2) DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `detalles_pedido`
+--
+
+INSERT INTO
+    `detalles_pedido` (
+        `id`,
+        `pedido_id`,
+        `plato_id`,
+        `vino_id`,
+        `bebida_id`,
+        `menu_degustacion_id`,
+        `cantidad`,
+        `precio_unitario`,
+        `precio_total`
+    )
+VALUES (
+        1,
+        12,
+        1,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        3.00,
+        3.00
+    ),
+    (
+        2,
+        12,
+        14,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        24.00,
+        24.00
+    ),
+    (
+        3,
+        12,
+        4,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        28.00,
+        28.00
+    ),
+    (
+        4,
+        12,
+        8,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        12.00,
+        12.00
+    ),
+    (
+        5,
+        13,
+        22,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        12.00,
+        12.00
+    ),
+    (
+        6,
+        13,
+        15,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        26.00,
+        26.00
+    ),
+    (
+        7,
+        13,
+        18,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        16.00,
+        16.00
+    ),
+    (
+        8,
+        13,
+        19,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        4.50,
+        4.50
+    ),
+    (
+        9,
+        14,
+        2,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        18.00,
+        18.00
+    ),
+    (
+        10,
+        15,
+        1,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        3.00,
+        3.00
+    ),
+    (
+        11,
+        16,
+        1,
+        NULL,
+        NULL,
+        NULL,
+        1,
+        3.00,
+        3.00
+    );
 
 -- --------------------------------------------------------
 
@@ -294,9 +433,9 @@ VALUES (
         1,
         'Menú Ejecutivo',
         'menu-ejecutivo',
-        'Menú contemporáneo diseñado para servicio de mediodía.',
+        'Menú contemporáneo',
         39.00,
-        18.00,
+        NULL,
         3,
         60,
         1
@@ -356,6 +495,21 @@ VALUES (
         3,
         '2024_01_01_000001_create_personal_access_tokens_table',
         1
+    ),
+    (
+        4,
+        '2026_05_06_222310_add_pickup_and_payment_to_pedidos_table',
+        2
+    ),
+    (
+        5,
+        '2026_05_06_222314_add_menu_degustacion_to_detalles_pedido_table',
+        2
+    ),
+    (
+        6,
+        '2026_05_07_203419_create_password_reset_tokens_table',
+        3
     );
 
 -- --------------------------------------------------------
@@ -380,13 +534,118 @@ CREATE TABLE `pedidos` (
         'Takeaway',
         'Delivery'
     ) NOT NULL DEFAULT 'Sala',
+    `hora_recogida` time DEFAULT NULL,
+    `fecha_recogida` date DEFAULT NULL,
     `subtotal` decimal(10, 2) NOT NULL DEFAULT 0.00,
     `impuestos` decimal(10, 2) NOT NULL DEFAULT 0.00,
     `total` decimal(10, 2) NOT NULL DEFAULT 0.00,
+    `metodo_pago` varchar(255) DEFAULT NULL,
     `direccion` text DEFAULT NULL,
     `creado_a` timestamp NULL DEFAULT NULL,
     `actualizado_a` timestamp NULL DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `pedidos`
+--
+
+INSERT INTO
+    `pedidos` (
+        `id`,
+        `usuario_id`,
+        `numero_pedido`,
+        `estado`,
+        `tipo_pedido`,
+        `hora_recogida`,
+        `fecha_recogida`,
+        `subtotal`,
+        `impuestos`,
+        `total`,
+        `metodo_pago`,
+        `direccion`,
+        `creado_a`,
+        `actualizado_a`
+    )
+VALUES (
+        12,
+        4,
+        'DG-20260506-454E',
+        'Pendiente',
+        'Takeaway',
+        '14:00:00',
+        '2026-05-07',
+        60.91,
+        6.09,
+        67.00,
+        'cash',
+        NULL,
+        '2026-05-06 20:26:57',
+        '2026-05-06 20:26:57'
+    ),
+    (
+        13,
+        1,
+        'DG-20260507-ABFF',
+        'Cancelado',
+        'Takeaway',
+        '20:00:00',
+        '2026-05-07',
+        53.18,
+        5.32,
+        58.50,
+        'paypal',
+        NULL,
+        '2026-05-07 16:37:22',
+        '2026-05-07 17:27:31'
+    ),
+    (
+        14,
+        1,
+        'DG-20260507-D472',
+        'Entregado',
+        'Takeaway',
+        '21:00:00',
+        '2026-05-07',
+        16.36,
+        1.64,
+        18.00,
+        'cash',
+        NULL,
+        '2026-05-07 16:54:07',
+        '2026-05-07 17:27:28'
+    ),
+    (
+        15,
+        1,
+        'DG-20260507-C5D6',
+        'Listo',
+        'Takeaway',
+        '20:00:00',
+        '2026-05-07',
+        2.73,
+        0.27,
+        3.00,
+        'card',
+        NULL,
+        '2026-05-07 17:14:07',
+        '2026-05-07 17:27:25'
+    ),
+    (
+        16,
+        1,
+        'DG-20260507-D650',
+        'Preparando',
+        'Takeaway',
+        '20:00:00',
+        '2026-05-07',
+        2.73,
+        0.27,
+        3.00,
+        'cash',
+        NULL,
+        '2026-05-07 17:16:53',
+        '2026-05-07 17:27:11'
+    );
 
 -- --------------------------------------------------------
 
@@ -406,6 +665,36 @@ CREATE TABLE `personal_access_tokens` (
     `created_at` timestamp NULL DEFAULT NULL,
     `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `personal_access_tokens`
+--
+
+INSERT INTO
+    `personal_access_tokens` (
+        `id`,
+        `tokenable_type`,
+        `tokenable_id`,
+        `name`,
+        `token`,
+        `abilities`,
+        `last_used_at`,
+        `expires_at`,
+        `created_at`,
+        `updated_at`
+    )
+VALUES (
+        4,
+        'App\\Models\\Usuario',
+        1,
+        'auth_token',
+        'b90241887c83bbd6fa35f307e055d2e9cfa973d7fadba47b088a249a2f35e09a',
+        '[\"*\"]',
+        '2026-05-07 21:16:10',
+        NULL,
+        '2026-05-07 21:16:07',
+        '2026-05-07 21:16:10'
+    );
 
 -- --------------------------------------------------------
 
@@ -865,31 +1154,56 @@ INSERT INTO
         `actualizado_a`
     )
 VALUES (
-        1,
-        2,
-        'VIP-2026-001',
-        '2026-06-15',
-        '21:00:00',
-        2,
         3,
-        'Confirmada',
-        'Mesa privada y maridaje completo.',
+        1,
+        '7C117382',
+        '2026-05-15',
+        '14:00:00',
+        2,
         NULL,
-        NULL
+        'Pendiente',
+        'sa',
+        '2026-05-06 20:42:41',
+        '2026-05-06 20:44:08'
     ),
     (
-        2,
-        3,
-        'RSV-2026-014',
-        '2026-06-16',
-        '14:30:00',
-        2,
+        4,
         1,
-        'Pendiente',
-        'Celebración aniversario.',
+        '8461DAEC',
+        '2026-05-29',
+        '14:00:00',
+        3,
         NULL,
-        NULL
+        'Confirmada',
+        'scsdfzscs fsdscda',
+        '2026-05-07 17:13:42',
+        '2026-05-07 17:13:42'
+    ),
+    (
+        5,
+        1,
+        'A2364408',
+        '2026-05-20',
+        '14:00:00',
+        3,
+        NULL,
+        'Cancelada',
+        'd',
+        '2026-05-07 17:21:39',
+        '2026-05-07 17:27:51'
     );
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tokens_recuperacion_password`
+--
+
+CREATE TABLE `tokens_recuperacion_password` (
+    `email` varchar(255) NOT NULL,
+    `token` varchar(255) NOT NULL,
+    `created_at` timestamp NULL DEFAULT NULL
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -940,12 +1254,12 @@ VALUES (
         '+34 611 111 111'
     ),
     (
-        3,
+        4,
         'Alex',
-        'alex@example.com',
-        '$2y$12$VYbPOHAXtqb39rXfRzFnWOJwP2MrOu8/EIUYzJIJr3x7aZRzdOYie',
-        'Cliente',
-        '+34 622 222 222'
+        'alex@distritogourmet.com',
+        '$2y$12$JLTBqInQAf0EPtuFxhxY0ukW3GTjuRm67OTtre0AxOt.deSFwUpVK',
+        'Staff',
+        '+34 600 000 000'
     );
 
 -- --------------------------------------------------------
@@ -1099,7 +1413,8 @@ ALTER TABLE `categorias_menu` ADD PRIMARY KEY (`id`);
 ALTER TABLE `detalles_pedido`
 ADD PRIMARY KEY (`id`),
 ADD KEY `detalles_pedido_pedido_id_foreign` (`pedido_id`),
-ADD KEY `detalles_pedido_plato_id_foreign` (`plato_id`);
+ADD KEY `detalles_pedido_plato_id_foreign` (`plato_id`),
+ADD KEY `detalles_pedido_menu_degustacion_id_foreign` (`menu_degustacion_id`);
 
 --
 -- Indices de la tabla `maridajes_plato_vino`
@@ -1165,6 +1480,11 @@ ADD UNIQUE KEY `reservas_codigo_reserva_unique` (`codigo_reserva`),
 ADD KEY `reservas_usuario_id_foreign` (`usuario_id`);
 
 --
+-- Indices de la tabla `tokens_recuperacion_password`
+--
+ALTER TABLE `tokens_recuperacion_password` ADD PRIMARY KEY (`email`);
+
+--
 -- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
@@ -1198,7 +1518,8 @@ AUTO_INCREMENT = 4;
 -- AUTO_INCREMENT de la tabla `detalles_pedido`
 --
 ALTER TABLE `detalles_pedido`
-MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+AUTO_INCREMENT = 12;
 
 --
 -- AUTO_INCREMENT de la tabla `maridajes_plato_vino`
@@ -1219,19 +1540,21 @@ AUTO_INCREMENT = 4;
 --
 ALTER TABLE `migrations`
 MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 4;
+AUTO_INCREMENT = 7;
 
 --
 -- AUTO_INCREMENT de la tabla `pedidos`
 --
 ALTER TABLE `pedidos`
-MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+AUTO_INCREMENT = 17;
 
 --
 -- AUTO_INCREMENT de la tabla `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+AUTO_INCREMENT = 5;
 
 --
 -- AUTO_INCREMENT de la tabla `platos`
@@ -1252,14 +1575,14 @@ AUTO_INCREMENT = 22;
 --
 ALTER TABLE `reservas`
 MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 3;
+AUTO_INCREMENT = 6;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
 MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-AUTO_INCREMENT = 4;
+AUTO_INCREMENT = 5;
 
 --
 -- AUTO_INCREMENT de la tabla `vinos`
@@ -1276,6 +1599,7 @@ AUTO_INCREMENT = 7;
 -- Filtros para la tabla `detalles_pedido`
 --
 ALTER TABLE `detalles_pedido`
+ADD CONSTRAINT `detalles_pedido_menu_degustacion_id_foreign` FOREIGN KEY (`menu_degustacion_id`) REFERENCES `menus_degustacion` (`id`) ON DELETE SET NULL,
 ADD CONSTRAINT `detalles_pedido_pedido_id_foreign` FOREIGN KEY (`pedido_id`) REFERENCES `pedidos` (`id`) ON DELETE CASCADE,
 ADD CONSTRAINT `detalles_pedido_plato_id_foreign` FOREIGN KEY (`plato_id`) REFERENCES `platos` (`id`) ON DELETE SET NULL;
 
