@@ -142,7 +142,7 @@ const MenuView = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
       {/* Cabecera con TextReveal inspirado en Adachi */}
-      <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10 px-4">
+      <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10">
         <div className="container text-center max-w-4xl mx-auto">
           <FadeIn delay={0.05}>
             <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 font-body font-bold">
@@ -205,7 +205,7 @@ const MenuView = () => {
       </div>
 
       {/* Contenido del menú según la categoría activa */}
-      <div className="container relative z-10 px-4">
+      <div className="container relative z-10">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
             <span className="text-primary text-4xl mb-6 opacity-80">✦</span>

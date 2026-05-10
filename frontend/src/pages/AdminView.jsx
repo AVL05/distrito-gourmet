@@ -1243,7 +1243,7 @@ const AdminView = () => {
   };
 
   return (
-    <div className="h-screen bg-bg-body flex relative overflow-hidden">
+    <div className="flex h-screen bg-bg-body overflow-hidden font-body text-text-main selection:bg-primary/30 pt-20 md:pt-0">
       {/* Luz ambiental decorativa */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
@@ -1338,7 +1338,7 @@ const AdminView = () => {
         </div>
 
         {/* Zona Scrollable de Contenido */}
-        <div className="flex-grow overflow-y-auto px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2 custom-scrollbar">
+        <div className="flex-grow overflow-y-auto px-2 sm:px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2 custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}

@@ -179,7 +179,7 @@ const HomeView = () => {
 
       {/* Los pilares que definen nuestra visión */}
       <section className="py-24 md:py-32 bg-bg-body">
-        <div className="container px-4">
+        <div className="container">
           <ScrollReveal className="text-center mb-20">
             <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 03 La Visión
@@ -256,7 +256,7 @@ const HomeView = () => {
 
       {/* Invitación final para reservar mesa */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
-        <div className="container px-4">
+        <div className="container">
           <ScrollReveal className="max-w-4xl mx-auto text-center mb-16">
             <span className="block text-bg-body text-[12px] uppercase tracking-[3px] mb-6 font-body font-medium">
               / 04 Reserva

@@ -97,8 +97,8 @@
 
   /* Estructura general */
   .container {
-    @apply mx-auto px-6 md:px-8;
-    max-width: clamp(1280px, 90vw, 2400px);
+    @apply mx-auto px-4 md:px-8 w-full;
+    max-width: 1440px;
   }
 
   .section {

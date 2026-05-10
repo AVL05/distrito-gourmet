@@ -64,7 +64,7 @@ const ReservationsView = () => {
   };
 
   return (
-    <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
+    <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 relative overflow-hidden">
       {/* Líneas decorativas de fondo */}
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
