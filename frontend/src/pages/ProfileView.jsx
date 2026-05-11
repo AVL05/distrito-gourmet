@@ -17,6 +17,20 @@ const ProfileView = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validación local de contraseña
+    if (formData.password && formData.password.length < 8) {
+      Swal.fire({
+        icon: "warning",
+        title: "Contraseña insuficiente",
+        text: "Por seguridad, la nueva contraseña debe tener al menos 8 caracteres.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     try {
       const response = await axios.put("/profile", formData);
       Swal.fire({

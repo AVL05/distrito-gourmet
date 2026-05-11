@@ -43,6 +43,18 @@ const RegisterView = () => {
       return;
     }
 
+    if (form.password.length < 8) {
+      Swal.fire({
+        icon: "warning",
+        title: "Contraseña débil",
+        text: "La contraseña debe tener al menos 8 caracteres.",
+        confirmButtonColor: "#e76f51",
+        background: "#fdfaf6",
+        color: "#2c302e",
+      });
+      return;
+    }
+
     const success = await register({
       nombre: form.name,
       email: form.email,

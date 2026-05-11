@@ -39,10 +39,8 @@ const LoginView = () => {
         });
         navigate("/dashboard");
       } else {
-        // Si el login falla, el error ya está en el store (o lo sacamos del catch interno de auth.js)
         // Pero como login() devuelve false, manejamos el error aquí
         const errorMsg = useAuthStore.getState().error;
-        console.log("Login error message:", errorMsg); // Para depuración
 
         const isNotFound =
           errorMsg?.toLowerCase().includes("no existe") ||

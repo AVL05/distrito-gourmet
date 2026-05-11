@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import MainLayout from "./layouts/MainLayout";
 import ScrollToTop from "./components/layout/ScrollToTop";
+import SmoothScroll from "./components/layout/SmoothScroll";
 import { useAuthStore } from "./store/auth";
 
 // Vistas con Lazy Loading
@@ -49,6 +50,7 @@ const App = () => {
   return (
     <>
       <ScrollToTop />
+      <SmoothScroll />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<MainLayout />}>

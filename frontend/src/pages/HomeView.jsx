@@ -110,7 +110,7 @@ const HomeView = () => {
               direction="left"
               distance={80}
               duration={0.9}
-              className="lg:col-span-7 text-left relative flex flex-col justify-center order-2 lg:order-1 px-0"
+              className="lg:col-span-8 text-left relative flex flex-col justify-center order-2 lg:order-1 px-0"
             >
               <span className="block text-text-muted text-[12px] uppercase tracking-[3px] mb-8 font-body font-medium">
                 / 02 Identidad
@@ -120,7 +120,7 @@ const HomeView = () => {
                 splitBy="word"
                 as="h2"
                 staggerDelay={0.08}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading text-text-main mb-7 leading-[1.1] tracking-tight"
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-heading text-text-main mb-7 leading-[1.1] tracking-normal"
               />
 
               <div className="h-[1px] w-full bg-text-main/10 mb-7"></div>
@@ -160,7 +160,7 @@ const HomeView = () => {
               distance={80}
               duration={0.9}
               delay={0.2}
-              className="lg:col-span-5 flex justify-center lg:justify-end order-1 lg:order-2 px-4 md:px-0"
+              className="lg:col-span-4 flex justify-center lg:justify-end order-1 lg:order-2 px-4 md:px-0"
             >
               <div className="w-full max-w-[500px] aspect-[3/4] overflow-hidden rounded-t-[250px] relative">
                 <div className="absolute inset-0 border border-text-main/10 rounded-t-[250px] z-20 pointer-events-none"></div>

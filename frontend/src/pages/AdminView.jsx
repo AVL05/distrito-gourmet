@@ -1243,7 +1243,7 @@ const AdminView = () => {
   };
 
   return (
-    <div className="flex h-screen bg-bg-body overflow-hidden font-body text-text-main selection:bg-primary/30 pt-20 md:pt-0">
+    <div className="flex flex-col md:flex-row min-h-screen bg-bg-body font-body text-text-main selection:bg-primary/30 pt-20 md:pt-0">
       {/* Luz ambiental decorativa */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
@@ -1289,7 +1289,7 @@ const AdminView = () => {
       </aside>
 
       {/* Área de Visualización Principal */}
-      <main className="flex-grow flex flex-col h-screen relative z-10 overflow-hidden">
+      <main className="flex-grow flex flex-col relative z-10">
         {/* Cabecera Fija (Header + Navegación móvil) */}
         <div className="p-4 md:p-12 pb-2 md:pb-6 flex-shrink-0 border-b md:border-b-0 border-text-main/5">
           {/* Cabecera móvil */}
@@ -1338,7 +1338,7 @@ const AdminView = () => {
         </div>
 
         {/* Zona Scrollable de Contenido */}
-        <div className="flex-grow overflow-y-auto px-2 sm:px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2 custom-scrollbar">
+        <div className="flex-grow px-2 sm:px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}

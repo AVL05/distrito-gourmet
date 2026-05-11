@@ -52,6 +52,9 @@ class AuthController extends Controller
     // Autenticación de usuario mediante credenciales y generación de token
     public function login(Request $request)
     {
+        // Trimear el email para evitar errores por espacios accidentales
+        $request->merge(['email' => trim($request->email)]);
+
         // Validar email y contraseña
         $request->validate([
             'email' => 'required|email',

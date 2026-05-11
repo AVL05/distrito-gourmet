@@ -25,7 +25,7 @@ Route::get('/dishes', [PlatoController::class, 'index']); // Ver carta sin estar
 // Rutas protegidas (requieren estar logueado)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/user', [AuthController::class, 'me']);
     Route::put('/profile', [UsuarioController::class, 'update']); // Actualizar perfil propio
 
     // Reservas del usuario

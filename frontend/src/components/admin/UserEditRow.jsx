@@ -10,13 +10,32 @@ const UserEditRow = ({ user, fetchData }) => {
     rol: user.rol,
     email: user.email,
     telefono: user.telefono || "",
-    contrasena: "",
+    password: "",
   });
 
   // Actualiza los datos del usuario en la base de datos
   const handleUpdate = async () => {
+    // Validación local de contraseña
+    if (editUser.password && editUser.password.length < 8) {
+      Swal.fire({
+        icon: "warning",
+        title: "Contraseña demasiado corta",
+        text: "La nueva contraseña debe tener al menos 8 caracteres para ser segura.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     try {
-      await axios.put(`/admin/users/${user.id}`, editUser);
+      // Filtrar la contraseña si está vacía para evitar errores de validación (min:8)
+      const dataToSend = { ...editUser };
+      if (!dataToSend.password) {
+        delete dataToSend.password;
+      }
+
+      await axios.put(`/admin/users/${user.id}`, dataToSend);
       Swal.fire({
         icon: "success",
         title: "Usuario Actualizado",
@@ -125,9 +144,9 @@ const UserEditRow = ({ user, fetchData }) => {
             <input
               type="password"
               placeholder="Nueva contraseña..."
-              value={editUser.contrasena}
+              value={editUser.password}
               onChange={(e) =>
-                setEditUser({ ...editUser, contrasena: e.target.value })
+                setEditUser({ ...editUser, password: e.target.value })
               }
               className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-xs focus:border-primary focus:ring-0 outline-none transition-all"
             />

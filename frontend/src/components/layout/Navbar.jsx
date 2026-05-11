@@ -1,7 +1,7 @@
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
 import { useEffect, useState, useRef } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -15,6 +15,8 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   const menuRef = useRef(null);
   const overlayRef = useRef(null);
@@ -123,31 +125,35 @@ const Navbar = () => {
         }`}
       >
         <div className="w-full px-6 md:px-12 2k:px-24 4k:px-72 ultra:px-96 flex justify-between items-center">
-          <NavLink
-            to="/cart"
-            onClick={closeMenu}
-            className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-bg-body" : "text-text-main"}`}
-            title="Selección"
-          >
-            <svg
-              className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {!isAdminPage ? (
+            <NavLink
+              to="/cart"
+              onClick={closeMenu}
+              className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-bg-body" : "text-text-main"}`}
+              title="Selección"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.2"
-                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-              ></path>
-            </svg>
-            {totalItems() > 0 && (
-              <span className="absolute -top-2 -right-3 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-body font-bold">
-                {totalItems()}
-              </span>
-            )}
-          </NavLink>
+              <svg
+                className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.2"
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                ></path>
+              </svg>
+              {totalItems() > 0 && (
+                <span className="absolute -top-2 -right-3 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-body font-bold">
+                  {totalItems()}
+                </span>
+              )}
+            </NavLink>
+          ) : (
+            <div className="w-[18px] h-[18px]" />
+          )}
 
           <NavLink
             to="/"
