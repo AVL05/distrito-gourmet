@@ -246,7 +246,7 @@ const HomeView = () => {
                 Espacio
               </h3>
               <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
-                Un entorno diseñado en vacío absolouto. Madera noble, lino puro
+                Un entorno diseñado en vacío absoluto. Madera noble, lino puro
                 e iluminación escenográfica enfocada al plato.
               </p>
             </ScrollReveal>
@@ -273,7 +273,7 @@ const HomeView = () => {
               style={{ width: "6rem" }}
             />
             <p className="text-bg-body/70 text-sm md:text-base font-body font-normal max-w-lg mx-auto tracking-wide leading-loose">
-              Cupo extremadamente estrictro y reducido por servicio para
+              Cupo extremadamente estricto y reducido por servicio para
               garantizar una experiencia sin interferencias.
             </p>
           </ScrollReveal>

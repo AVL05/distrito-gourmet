@@ -55,6 +55,11 @@ backend/database/*.sqlite-journal
 npm-debug.log*
 
 # ===========================
+# Videos / archivos pesados
+# ===========================
+*.mp4
+
+# ===========================
 # Lockfiles (opcional, descomentar si no se quieren trackear)
 # ===========================
 # package-lock.json
@@ -66,4 +71,3 @@ AGENTS.md
 .AGENTS
 skills-lock.json
 agents
-/Guia

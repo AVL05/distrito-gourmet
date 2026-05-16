@@ -137,8 +137,8 @@ class DistritoGourmetSeeder extends Seeder
         // 9. Usuarios
         DB::table('usuarios')->insert([
             ['id' => 1, 'nombre' => 'Admin Michelin', 'email' => 'admin@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Administrador', 'telefono' => '+34 600 000 000'],
-            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'vip@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Cliente', 'telefono' => '+34 611 111 111'],
-            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@example.com', 'password' => Hash::make('password'), 'rol' => 'Cliente', 'telefono' => '+34 622 222 222'],
+            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'cliente@distritogourmet.com', 'password' => Hash::make('vA391878'), 'rol' => 'Cliente', 'telefono' => '+34 611 111 111'],
+            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@distritogourmet.com', 'password' => Hash::make('vA391878'), 'rol' => 'Staff', 'telefono' => '+34 622 222 222'],
         ]);
 
         // 10. Reservas

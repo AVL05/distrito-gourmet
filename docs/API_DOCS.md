@@ -7,6 +7,14 @@
 
 ## Autenticación
 
+### Credenciales de prueba
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Administrador | `admin@distritogourmet.com` | `password` |
+| Cliente | `cliente@distritogourmet.com` | `vA391878` |
+| Staff | `alex@distritogourmet.com` | `vA391878` |
+
 ### Registro
 ```
 POST /api/register
@@ -14,8 +22,8 @@ POST /api/register
 **Body:**
 ```json
 {
-  "nombre": "Alex",
-  "email": "alex@example.com",
+  "nombre": "Nuevo Cliente",
+  "email": "nuevo.cliente@example.com",
   "password": "password",
   "password_confirmation": "password"
 }
@@ -24,7 +32,7 @@ POST /api/register
 ```json
 {
   "token": "1|xxxx...",
-  "user": { "id": 3, "nombre": "Alex", "rol": "Cliente" }
+  "user": { "id": 4, "nombre": "Nuevo Cliente", "rol": "Cliente" }
 }
 ```
 
