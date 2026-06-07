@@ -71,6 +71,3 @@ AGENTS.md
 .AGENTS
 skills-lock.json
 agents
-
-# Local Netlify folder
-.netlify
