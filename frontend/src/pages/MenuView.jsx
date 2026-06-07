@@ -1,6 +1,8 @@
 import { useCartStore } from "@/store/cart";
 import { useState, useEffect } from "react";
 import axios from "@/services/api";
+import { HAS_CONFIGURED_API, USE_STATIC_DEMO_DATA } from "@/config/demo";
+import { demoMenuData } from "@/data/demoMenu";
 import {
   PageTransition,
   FadeIn,
@@ -23,6 +25,7 @@ const MenuView = () => {
     tastingMenus: [],
   });
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   // Categorías del menú para las pestañas de filtro
   const categories = [
@@ -35,6 +38,12 @@ const MenuView = () => {
   // Trae los platos, vinos y demás desde la API
   useEffect(() => {
     const fetchMenu = async () => {
+      if (USE_STATIC_DEMO_DATA) {
+        setMenuData(demoMenuData);
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get("/dishes");
         const { platos, vinos, bebidas, menus_degustacion } = response.data;
@@ -100,8 +109,10 @@ const MenuView = () => {
           wines: formattedWines,
           tastingMenus: formattedMenus,
         });
+        setLoadError(false);
       } catch (e) {
         console.error("No se pudo cargar la carta", e);
+        setLoadError(true);
       } finally {
         setLoading(false);
       }
@@ -215,8 +226,10 @@ const MenuView = () => {
           </div>
         ) : (
           <PageTransition key={activeCategory}>
+            {loadError && HAS_CONFIGURED_API && <ApiUnavailableState />}
+
             {/* TODA LA CARTA */}
-            {activeCategory === "carta" && (
+            {!loadError && activeCategory === "carta" && (
               <div className="space-y-32">
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
@@ -241,7 +254,7 @@ const MenuView = () => {
             )}
 
             {/* BEBIDAS */}
-            {activeCategory === "bebidas" && (
+            {!loadError && activeCategory === "bebidas" && (
               <div className="space-y-32">
                 {beverageTypes.map((bt, index) => {
                   const items = getBeveragesByType(bt.key);
@@ -264,7 +277,7 @@ const MenuView = () => {
             )}
 
             {/* BODEGA */}
-            {activeCategory === "bodega" && (
+            {!loadError && activeCategory === "bodega" && (
               <div className="space-y-32">
                 {wineTypes.map((wt, index) => {
                   const items = getWinesByType(wt.key);
@@ -287,7 +300,7 @@ const MenuView = () => {
             )}
 
             {/* MENÚS DEGUSTACIÓN */}
-            {activeCategory === "menus" && (
+            {!loadError && activeCategory === "menus" && (
               <StaggerList className="space-y-20 max-w-5xl mx-auto">
                 {menuData.tastingMenus.map((menu, index) => (
                   <StaggerItem key={menu.id}>
@@ -299,12 +312,12 @@ const MenuView = () => {
             )}
 
             {/* Estado vacío si no hay datos */}
-            {activeCategory === "carta" && menuData.dishes.length === 0 && (
+            {!loadError && activeCategory === "carta" && menuData.dishes.length === 0 && (
               <EmptyState />
             )}
-            {activeCategory === "bebidas" &&
+            {!loadError && activeCategory === "bebidas" &&
               menuData.beverages.length === 0 && <EmptyState />}
-            {activeCategory === "bodega" && menuData.wines.length === 0 && (
+            {!loadError && activeCategory === "bodega" && menuData.wines.length === 0 && (
               <EmptyState />
             )}
           </PageTransition>
@@ -547,6 +560,16 @@ const EmptyState = () => (
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
       La colección para esta categoría se encuentra en desarrollo por nuestro
       Chef.
+    </p>
+  </FadeIn>
+);
+
+const ApiUnavailableState = () => (
+  <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
+    <span className="text-primary text-4xl mb-6 opacity-80">!</span>
+    <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
+      La carta no está disponible en este momento. La demo tiene un backend
+      configurado y no usa datos simulados cuando la API no responde.
     </p>
   </FadeIn>
 );

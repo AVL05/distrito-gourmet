@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Gestión del carrito de compras y proceso de finalización de pedido
 const CartView = () => {
@@ -87,6 +88,18 @@ const CartView = () => {
   );
 
   const goToCheckout = () => {
+    if (IS_PUBLIC_DEMO) {
+      Swal.fire({
+        icon: "info",
+        title: "Demo pública",
+        text: "El carrito es navegable, pero los pedidos están desactivados.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     if (!isAuthenticated()) {
       // Forzar login si el usuario intenta pagar sin sesión
       Swal.fire({
@@ -106,6 +119,18 @@ const CartView = () => {
 
   // Envía el pedido al servidor con toda la info
   const handleCheckout = async () => {
+    if (IS_PUBLIC_DEMO) {
+      Swal.fire({
+        icon: "info",
+        title: "Demo pública",
+        text: "Los pedidos están desactivados para proteger la base de datos.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     if (!pickupTime) {
       Swal.fire({

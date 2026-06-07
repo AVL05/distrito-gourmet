@@ -1,8 +1,10 @@
 import api from "@/services/api";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
+import { demoAdminUser } from "@/data/demoAdmin";
 import { create } from "zustand";
 
 // Recuperar el token guardado en el almacenamiento local al iniciar la aplicación
-const savedToken = localStorage.getItem("token");
+const savedToken = IS_PUBLIC_DEMO ? "demo-admin-token" : localStorage.getItem("token");
 if (savedToken) {
   // Configurar el encabezado de autorización global para todas las peticiones a la API
   api.defaults.headers.common.Authorization = `Bearer ${savedToken}`;
@@ -12,6 +14,10 @@ if (savedToken) {
 export const useAuthStore = create((set, get) => ({
   // Carga inicial del usuario desde localStorage con manejo de errores
   user: (() => {
+    if (IS_PUBLIC_DEMO) {
+      return demoAdminUser;
+    }
+
     try {
       const savedUser = localStorage.getItem("user");
       return savedUser && savedUser !== "undefined"
@@ -26,11 +32,19 @@ export const useAuthStore = create((set, get) => ({
   error: null,
 
   // Selectores para verificar el estado de autenticación y roles
-  isAuthenticated: () => !!get().token,
-  isAdmin: () => ["Administrador", "admin"].includes(get().user?.rol),
+  isAuthenticated: () => IS_PUBLIC_DEMO || !!get().token,
+  isAdmin: () =>
+    IS_PUBLIC_DEMO || ["Administrador", "admin"].includes(get().user?.rol),
 
   // Iniciar sesión y persistir datos en localStorage
   login: async (credentials) => {
+    if (IS_PUBLIC_DEMO) {
+      set({
+        error: "La autenticación está desactivada en la demo pública.",
+      });
+      return false;
+    }
+
     set({ loading: true, error: null });
     try {
       const response = await api.post("/login", credentials);
@@ -56,6 +70,13 @@ export const useAuthStore = create((set, get) => ({
 
   // Registrar nuevo usuario
   register: async (userData) => {
+    if (IS_PUBLIC_DEMO) {
+      set({
+        error: "El registro está desactivado en la demo pública.",
+      });
+      return false;
+    }
+
     set({ loading: true, error: null });
     try {
       const response = await api.post("/register", userData);
@@ -80,8 +101,13 @@ export const useAuthStore = create((set, get) => ({
 
   // Cerrar sesión y limpiar datos locales
   logout: async () => {
+    if (IS_PUBLIC_DEMO) {
+      set({ user: demoAdminUser, token: "demo-admin-token" });
+      return;
+    }
+
     try {
-      if (get().token) {
+      if (get().token && !IS_PUBLIC_DEMO) {
         await api.post("/logout");
       }
     } catch (e) {

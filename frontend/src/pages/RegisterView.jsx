@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../store/auth";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
 import {
   useReducedMotion,
   PageTransition,
@@ -30,6 +31,18 @@ const RegisterView = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (IS_PUBLIC_DEMO) {
+      Swal.fire({
+        icon: "info",
+        title: "Demo pública",
+        text: "El registro de usuarios está desactivado en esta demo.",
+        confirmButtonColor: "#e76f51",
+        background: "#fdfaf6",
+        color: "#2c302e",
+      });
+      return;
+    }
 
     if (form.password !== form.confirmPassword) {
       Swal.fire({
@@ -88,6 +101,12 @@ const RegisterView = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-10">
+          {IS_PUBLIC_DEMO && (
+            <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
+              Registro desactivado en modo demo
+            </div>
+          )}
+
           <div className="relative group">
             <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
               Nombre Completo
@@ -179,7 +198,7 @@ const RegisterView = () => {
               whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
               whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
-              disabled={loading}
+              disabled={loading || IS_PUBLIC_DEMO}
             >
               <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
               <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">

@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/auth";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
@@ -60,6 +61,18 @@ const ReservationForm = ({ compact = false }) => {
   // Enviar reserva (conexión real con API)
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (IS_PUBLIC_DEMO) {
+      Swal.fire({
+        title: "Demo pública",
+        text: "Las reservas están desactivadas para no generar datos reales.",
+        icon: "info",
+        confirmButtonColor: "#c5a059",
+        background: "#fdfaf6",
+        color: "#2c302e",
+      });
+      return;
+    }
 
     // Comprobar que el usuario ha iniciado sesión antes de reservar
     if (!user) {
@@ -167,6 +180,12 @@ const ReservationForm = ({ compact = false }) => {
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
       <form onSubmit={handleSubmit} className="relative z-10">
+        {IS_PUBLIC_DEMO && (
+          <div className="mb-8 border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
+            Reservas desactivadas en modo demo
+          </div>
+        )}
+
         {!compact && (
           <div className="text-center mb-12">
             <h3 className="font-heading text-3xl md:text-4xl text-gray-900 tracking-[0.2em] mb-4 drop-shadow-lg font-normal">
@@ -303,7 +322,7 @@ const ReservationForm = ({ compact = false }) => {
             whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             className="group relative px-16 py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto min-w-[300px]"
-            disabled={loading}
+            disabled={loading || IS_PUBLIC_DEMO}
           >
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">

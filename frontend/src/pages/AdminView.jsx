@@ -4,6 +4,8 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { AnimatePresence, useReducedMotion, FadeIn, motion } from "@/motion";
 import { DURATION, EASING } from "@/motion";
+import { USE_STATIC_DEMO_DATA } from "@/config/demo";
+import { demoAdminData } from "@/data/demoAdmin";
 
 // Componentes Administradores
 import DishEditRow from "@/components/admin/DishEditRow";
@@ -103,6 +105,18 @@ const AdminView = () => {
 
   // Crea un nuevo registro y refresca la lista automáticamente
   const handleAddItem = async (endpoint, itemData, resetState, successMsg) => {
+    if (USE_STATIC_DEMO_DATA) {
+      Swal.fire({
+        icon: "info",
+        title: "Demo pública",
+        text: "Las altas están desactivadas y no se guardan cambios reales.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     try {
       await axios.post(`/admin/${endpoint}`, itemData);
       resetState();
@@ -129,6 +143,18 @@ const AdminView = () => {
 
   // Handlers genéricos para eliminar elementos
   const handleDeleteItem = async (endpoint, id, itemName = "elemento") => {
+    if (USE_STATIC_DEMO_DATA) {
+      Swal.fire({
+        icon: "info",
+        title: "Eliminación desactivada",
+        text: `En la demo no se puede eliminar: ${itemName}`,
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: "¿Confirmar eliminación?",
       text: `Esta acción no se puede deshacer para: ${itemName}`,
@@ -162,6 +188,28 @@ const AdminView = () => {
   // Trae los datos de la API según la sección donde estemos
   // Sincroniza la información cada vez que cambio de pestaña en el panel
   const fetchData = useCallback(async () => {
+    if (USE_STATIC_DEMO_DATA) {
+      setLoading(false);
+      setData((current) => ({
+        ...current,
+        orders: demoAdminData.orders,
+        reservations: demoAdminData.reservations,
+        menu: demoAdminData.menu,
+        categories: demoAdminData.categories,
+        wines: demoAdminData.wines,
+        beverages: demoAdminData.beverages,
+        tasting_menus: demoAdminData.tasting_menus,
+        users: demoAdminData.users,
+      }));
+      if (!newDish.categoria_menu_id) {
+        setNewDish((prev) => ({
+          ...prev,
+          categoria_menu_id: demoAdminData.categories[0]?.id || "",
+        }));
+      }
+      return;
+    }
+
     setLoading(true);
     try {
       if (activeSection === "orders") {
@@ -236,6 +284,16 @@ const AdminView = () => {
 
   // Cambiar estado de un pedido
   const handleUpdateOrderStatus = async (id, status) => {
+    if (USE_STATIC_DEMO_DATA) {
+      setData((current) => ({
+        ...current,
+        orders: current.orders.map((order) =>
+          order.id === id ? { ...order, estado: status } : order,
+        ),
+      }));
+      return;
+    }
+
     try {
       await axios.patch(`/admin/orders/${id}`, { estado: status });
       fetchData();
@@ -246,6 +304,16 @@ const AdminView = () => {
 
   // Actualizar datos de una reserva (estado, mesa, etc.)
   const handleUpdateReservation = async (id, updateData) => {
+    if (USE_STATIC_DEMO_DATA) {
+      setData((current) => ({
+        ...current,
+        reservations: current.reservations.map((reservation) =>
+          reservation.id === id ? { ...reservation, ...updateData } : reservation,
+        ),
+      }));
+      return;
+    }
+
     try {
       await axios.patch(`/admin/reservations/${id}`, updateData);
       fetchData();
@@ -1330,8 +1398,9 @@ const AdminView = () => {
                 <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
               </div>
               <p className="text-text-muted font-normal text-[10px] sm:text-[11px] tracking-wide max-w-xs md:text-right opacity-60">
-                Gestión en tiempo real de los servicios vinculados a la base de
-                datos.
+                {USE_STATIC_DEMO_DATA
+                  ? "Demo pública con datos simulados. Las eliminaciones están desactivadas."
+                  : "Gestión en tiempo real de los servicios vinculados a la base de datos."}
               </p>
             </div>
           </FadeIn>

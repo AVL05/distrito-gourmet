@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 gsap.registerPlugin(useGSAP);
 
@@ -236,7 +237,27 @@ const Navbar = () => {
                 Acceso
               </span>
               <div className="flex flex-wrap gap-x-8 gap-y-3">
-                {isAuthenticated() ? (
+                {IS_PUBLIC_DEMO ? (
+                  <>
+                    <NavLink
+                      to="/admin"
+                      onClick={closeMenu}
+                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                    >
+                      Administración
+                    </NavLink>
+                    <NavLink
+                      to="/dashboard"
+                      onClick={closeMenu}
+                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                    >
+                      Área Personal
+                    </NavLink>
+                    <span className="text-bg-body/40 text-[11px] font-body uppercase tracking-[2px]">
+                      Demo Pública
+                    </span>
+                  </>
+                ) : isAuthenticated() ? (
                   <>
                     {isAdmin() && (
                       <NavLink

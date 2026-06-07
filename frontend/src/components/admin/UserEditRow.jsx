@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
+import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 
 // Fila editable para la gestión de usuarios y roles en el panel de administración
 const UserEditRow = ({ user, fetchData }) => {
@@ -54,6 +55,18 @@ const UserEditRow = ({ user, fetchData }) => {
   };
 
   const handleDelete = async () => {
+    if (USE_STATIC_DEMO_DATA) {
+      Swal.fire({
+        icon: "info",
+        title: "Eliminación desactivada",
+        text: `En la demo no se puede eliminar a ${user.nombre}.`,
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     const result = await Swal.fire({
       title: `Opciones de Eliminación`,
       text: `¿Seguro que quiere eliminar permanentemente a ${user.nombre}?`,

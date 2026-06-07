@@ -4,6 +4,12 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
 
+const redirect = sessionStorage.getItem("redirect");
+if (redirect) {
+  sessionStorage.removeItem("redirect");
+  window.history.replaceState(null, "", redirect);
+}
+
 // Filtrar advertencias internas específicas de Chromium (crbug/1173575)
 const originalWarn = console.warn;
 console.warn = (...args) => {

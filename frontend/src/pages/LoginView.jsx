@@ -3,6 +3,7 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Componente para la vista de inicio de sesión
 const LoginView = () => {
@@ -23,6 +24,19 @@ const LoginView = () => {
   // Función para enviar los datos de inicio de sesión
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (IS_PUBLIC_DEMO) {
+      Swal.fire({
+        icon: "info",
+        title: "Demo pública",
+        text: "El acceso de usuarios está desactivado en esta demo.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
+      return;
+    }
+
     try {
       // Intentar iniciar sesión llamando a la tienda de autenticación
       const success = await login(formData);
@@ -89,6 +103,12 @@ const LoginView = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {IS_PUBLIC_DEMO && (
+            <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
+              Acceso desactivado en modo demo
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">
               Email
