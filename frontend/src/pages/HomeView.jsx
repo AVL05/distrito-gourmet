@@ -19,7 +19,7 @@ const HomeView = () => {
       <ScrollProgress />
 
       {/* Sección principal de bienvenida */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
+      <section className="relative min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
         {/* Imagen de fondo con filtro */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30 grayscale"
@@ -30,7 +30,7 @@ const HomeView = () => {
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-        <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center h-full">
+        <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center min-h-[100svh] py-28 sm:py-32">
           {/* Título con Text Reveal caracter por caracter (estilo Lucky Folks) */}
           <TextReveal
             text="Distrito"
@@ -38,7 +38,7 @@ const HomeView = () => {
             as="h1"
             staggerDelay={0.04}
             delay={0.2}
-            className="text-5xl sm:text-7xl md:text-[8rem] leading-[0.85] font-heading text-text-main mb-2 tracking-tight justify-center"
+            className="text-[clamp(3rem,16vw,7rem)] md:text-[8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
           />
           <TextReveal
             text="Gourmet"
@@ -46,20 +46,20 @@ const HomeView = () => {
             as="span"
             staggerDelay={0.04}
             delay={0.5}
-            className="italic text-5xl sm:text-6xl md:text-[7rem] text-primary font-heading mb-6 justify-center"
+            className="italic text-[clamp(3rem,14vw,6rem)] md:text-[7rem] text-primary font-heading mb-6 justify-center"
           />
 
           <FadeIn delay={0.9}>
-            <p className="text-sm md:text-base text-text-muted font-body font-normal mb-16 max-w-lg mx-auto leading-loose tracking-widest uppercase">
+            <p className="text-xs sm:text-sm md:text-base text-text-muted font-body font-normal mb-12 sm:mb-16 max-w-lg mx-auto leading-loose tracking-[0.18em] sm:tracking-widest uppercase">
               Cocina Española Contemporánea
             </p>
           </FadeIn>
 
           <FadeIn delay={1.1}>
-            <div className="flex flex-col sm:flex-row gap-8 items-center">
+            <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 items-center w-full sm:w-auto">
               <Link
                 to="/menu"
-                className="group relative px-6 text-text-main font-body text-[13px] uppercase tracking-[3px] transition-all"
+                className="group relative px-6 text-text-main font-body text-[12px] sm:text-[13px] uppercase tracking-[2px] sm:tracking-[3px] transition-all"
               >
                 <span className="relative z-10 font-bold group-hover:text-primary transition-colors pb-1 border-b border-text-main group-hover:border-primary">
                   Descubrir la Carta
@@ -70,7 +70,7 @@ const HomeView = () => {
                 <div>
                   <Link
                     to="/reservations"
-                    className="group relative px-10 py-4 bg-text-main text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center inline-block"
+                    className="group relative px-8 sm:px-10 py-4 bg-text-main text-bg-body font-body text-[11px] sm:text-[12px] uppercase tracking-[2px] sm:tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center inline-block"
                   >
                     <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
                     <span className="relative z-10 font-semibold transition-colors duration-300 group-hover:text-white">
@@ -84,12 +84,12 @@ const HomeView = () => {
         </div>
       </section>
 
-      <div className="overflow-hidden">
+      <div className="overflow-x-clip">
         <Marquee
           text="Cocina de Autor"
           speed={30}
           separator="✦"
-          className="py-6 bg-text-main border-y border-text-main/10 -rotate-1 scale-[1.02]"
+          className="py-6 bg-text-main border-y border-text-main/10 md:-rotate-1 md:scale-[1.02]"
           textClassName="text-bg-body font-heading text-2xl md:text-4xl italic tracking-widest opacity-80"
         />
         <Marquee
@@ -97,7 +97,7 @@ const HomeView = () => {
           speed={35}
           reverse
           separator="—"
-          className="py-4 bg-bg-body border-b border-text-main/10 rotate-1 scale-[1.02] -mt-3"
+          className="py-4 bg-bg-body border-b border-text-main/10 md:rotate-1 md:scale-[1.02] -mt-3"
           textClassName="text-text-main/15 font-heading text-xl md:text-3xl uppercase tracking-[0.2em]"
         />
       </div>

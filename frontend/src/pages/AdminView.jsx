@@ -1,11 +1,11 @@
 import { useAuthStore } from "@/store/auth";
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { AnimatePresence, useReducedMotion, FadeIn, motion } from "@/motion";
 import { DURATION, EASING } from "@/motion";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
-import { demoAdminData } from "@/data/demoAdmin";
+import { useAdminData } from "@/hooks/useAdminData";
 
 // Componentes Administradores
 import DishEditRow from "@/components/admin/DishEditRow";
@@ -21,19 +21,7 @@ import OrderCard from "@/components/admin/OrderCard";
 const AdminView = () => {
   const { logout } = useAuthStore();
   const [activeSection, setActiveSection] = useState("orders");
-  const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-
-  const [data, setData] = useState({
-    orders: [],
-    menu: [],
-    reservations: [],
-    users: [],
-    categories: [],
-    wines: [],
-    beverages: [],
-    tasting_menus: [],
-  });
 
   // Configuración de las secciones disponibles en la barra lateral
   const sections = [
@@ -99,6 +87,12 @@ const AdminView = () => {
     pasos: 1,
     duracion_estimada_minutos: 60,
     disponible: true,
+  });
+
+  const { data, setData, loading, fetchData } = useAdminData({
+    activeSection,
+    newDishCategoryId: newDish.categoria_menu_id,
+    setNewDish,
   });
 
   // Funciones genéricas para el CRUD
@@ -184,103 +178,6 @@ const AdminView = () => {
       });
     }
   };
-
-  // Trae los datos de la API según la sección donde estemos
-  // Sincroniza la información cada vez que cambio de pestaña en el panel
-  const fetchData = useCallback(async () => {
-    if (USE_STATIC_DEMO_DATA) {
-      setLoading(false);
-      setData((current) => ({
-        ...current,
-        orders: demoAdminData.orders,
-        reservations: demoAdminData.reservations,
-        menu: demoAdminData.menu,
-        categories: demoAdminData.categories,
-        wines: demoAdminData.wines,
-        beverages: demoAdminData.beverages,
-        tasting_menus: demoAdminData.tasting_menus,
-        users: demoAdminData.users,
-      }));
-      if (!newDish.categoria_menu_id) {
-        setNewDish((prev) => ({
-          ...prev,
-          categoria_menu_id: demoAdminData.categories[0]?.id || "",
-        }));
-      }
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (activeSection === "orders") {
-        const res = await axios.get("/admin/orders");
-        setData((d) => ({ ...d, orders: res.data }));
-      } else if (activeSection === "reservations") {
-        const res = await axios.get("/admin/reservations");
-        setData((d) => ({ ...d, reservations: res.data }));
-      } else if (activeSection === "menu") {
-        const res = await axios.get("/dishes");
-        const sortedDishes = (res.data.platos || []).sort((a, b) => {
-          const order = { entrantes: 1, principales: 2, postres: 3 };
-          const orderA = order[a.categoria?.nombre.toLowerCase()] || 99;
-          const orderB = order[b.categoria?.nombre.toLowerCase()] || 99;
-          return orderA - orderB;
-        });
-        setData((d) => ({
-          ...d,
-          menu: sortedDishes,
-          categories: res.data.categorias || [],
-        }));
-        if (res.data.categorias?.length > 0 && !newDish.categoria_menu_id) {
-          setNewDish((prev) => ({
-            ...prev,
-            categoria_menu_id: res.data.categorias[0].id,
-          }));
-        }
-      } else if (activeSection === "wines") {
-        const res = await axios.get("/admin/wines");
-        setData((d) => ({ ...d, wines: res.data }));
-      } else if (activeSection === "beverages") {
-        const res = await axios.get("/admin/beverages");
-        setData((d) => ({ ...d, beverages: res.data }));
-      } else if (activeSection === "tasting_menus") {
-        const [menusRes, dishesRes] = await Promise.all([
-          axios.get("/admin/tasting-menus"),
-          axios.get("/dishes"),
-        ]);
-        const sortedDishes = (dishesRes.data.platos || []).sort((a, b) => {
-          const order = { entrantes: 1, principales: 2, postres: 3 };
-          const orderA = order[a.categoria?.nombre.toLowerCase()] || 99;
-          const orderB = order[b.categoria?.nombre.toLowerCase()] || 99;
-          return orderA - orderB;
-        });
-        setData((d) => ({
-          ...d,
-          tasting_menus: menusRes.data,
-          menu: sortedDishes,
-        }));
-      } else if (activeSection === "users") {
-        const res = await axios.get("/admin/users");
-        setData((d) => ({ ...d, users: res.data }));
-      }
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error de carga",
-        text: "No se pudieron recuperar los datos del servidor.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [activeSection, newDish.categoria_menu_id]);
-
-  // Recargar datos cuando cambia la sección activa
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   // Cambiar estado de un pedido
   const handleUpdateOrderStatus = async (id, status) => {
@@ -1311,9 +1208,9 @@ const AdminView = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-bg-body font-body text-text-main selection:bg-primary/30 pt-20 md:pt-0">
+    <div className="flex flex-col md:flex-row min-h-screen bg-bg-body font-body text-text-main selection:bg-primary/30 pt-16 md:pt-0 overflow-x-hidden">
       {/* Luz ambiental decorativa */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+      <div className="absolute top-0 right-0 w-[min(800px,100vw)] h-[520px] md:h-[800px] bg-primary/5 rounded-full blur-[120px] md:blur-[150px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
       {/* Barra lateral (solo en desktop) */}
       <aside className="w-64 bg-bg-surface/90 backdrop-blur-xl border-r border-text-main/10 hidden md:flex flex-col sticky top-0 h-screen z-20 shadow-[10px_0_30px_rgba(0,0,0,0.5)] flex-shrink-0">
@@ -1374,12 +1271,12 @@ const AdminView = () => {
           </div>
 
           {/* Navegación móvil */}
-          <div className="md:hidden flex gap-4 overflow-x-auto mb-6 pb-3 scrollbar-hide -mx-4 px-4 sticky top-0 bg-bg-body z-30">
+          <div className="md:hidden flex gap-3 overflow-x-auto no-scrollbar mb-6 pb-3 -mx-4 px-4 sticky top-16 bg-bg-body z-30 border-b border-text-main/5">
             {sections.map((s) => (
               <button
                 key={s.id}
                 onClick={() => setActiveSection(s.id)}
-                className={`whitespace-nowrap uppercase tracking-[0.2em] text-[9px] py-2 px-3 rounded-full transition-all font-bold ${activeSection === s.id ? "bg-primary text-black" : "bg-text-main/5 text-text-muted hover:text-text-main"}`}
+                className={`whitespace-nowrap uppercase tracking-[0.16em] text-[9px] py-2 px-3 rounded-full transition-all font-bold ${activeSection === s.id ? "bg-primary text-black" : "bg-text-main/5 text-text-muted hover:text-text-main"}`}
               >
                 {s.label}
               </button>
@@ -1392,7 +1289,7 @@ const AdminView = () => {
                 <span className="block text-primary text-[8px] sm:text-[9px] uppercase tracking-[4px] mb-2 font-body opacity-90">
                   Panel de Control Central
                 </span>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading text-text-main uppercase tracking-widest mb-3 font-normal leading-none">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading text-text-main uppercase tracking-[0.16em] sm:tracking-widest mb-3 font-normal leading-tight">
                   {sections.find((s) => s.id === activeSection)?.label}
                 </h1>
                 <div className="w-12 h-[2px] bg-gradient-to-r from-primary to-transparent"></div>
@@ -1407,7 +1304,7 @@ const AdminView = () => {
         </div>
 
         {/* Zona Scrollable de Contenido */}
-        <div className="flex-grow px-2 sm:px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2">
+        <div className="flex-grow px-4 sm:px-4 md:px-12 2k:px-24 4k:px-64 ultra:px-80 pb-12 pt-2">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}

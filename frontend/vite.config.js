@@ -1,4 +1,3 @@
-/* eslint-env node */
 /* global process */
 import react from "@vitejs/plugin-react";
 

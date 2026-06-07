@@ -117,8 +117,10 @@ export const ScrollReveal = ({
 
       if (direction === "up") fromVars.y = distance;
       if (direction === "down") fromVars.y = -distance;
-      if (direction === "left") fromVars.x = distance;
-      if (direction === "right") fromVars.x = -distance;
+      const horizontalDistance =
+        window.innerWidth < 640 ? 0 : distance;
+      if (direction === "left") fromVars.x = horizontalDistance;
+      if (direction === "right") fromVars.x = -horizontalDistance;
       if (direction === "scale") fromVars.scale = 0.9;
 
       gsap.from(el.current, fromVars);
@@ -334,10 +336,10 @@ export const Marquee = ({
   return (
     <div
       ref={container}
-      className={`overflow-hidden whitespace-nowrap ${className}`}
+      className={`max-w-full overflow-hidden overflow-x-clip whitespace-nowrap [contain:paint] ${className}`}
       {...props}
     >
-      <div ref={track} className="inline-flex">
+      <div ref={track} className="inline-flex will-change-transform">
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
         <span className={`inline-block ${textClassName}`}>{repeated}</span>
       </div>

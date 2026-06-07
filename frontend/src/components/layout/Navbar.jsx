@@ -125,7 +125,7 @@ const Navbar = () => {
             : "bg-transparent h-20 md:h-28"
         }`}
       >
-        <div className="w-full px-6 md:px-12 2k:px-24 4k:px-72 ultra:px-96 flex justify-between items-center">
+        <div className="w-full mobile-safe-padding md:px-12 2k:px-24 4k:px-72 ultra:px-96 flex justify-between items-center">
           {!isAdminPage ? (
             <NavLink
               to="/cart"
@@ -158,15 +158,15 @@ const Navbar = () => {
 
           <NavLink
             to="/"
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70]"
+            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70] max-w-[58vw]"
             onClick={closeMenu}
           >
             <span
-              className={`font-heading text-lg md:text-2xl uppercase tracking-[0.25em] leading-none transition-colors duration-500 ${isOpen ? "text-bg-body" : "text-text-main"}`}
+              className={`font-heading text-base sm:text-lg md:text-2xl uppercase tracking-[0.18em] sm:tracking-[0.25em] leading-none transition-colors duration-500 truncate max-w-full ${isOpen ? "text-bg-body" : "text-text-main"}`}
             >
               Distrito
             </span>
-            <span className="font-heading text-[10px] md:text-xs text-primary italic tracking-[0.3em] leading-none mt-[2px]">
+            <span className="font-heading text-[9px] sm:text-[10px] md:text-xs text-primary italic tracking-[0.24em] sm:tracking-[0.3em] leading-none mt-[2px]">
               Gourmet
             </span>
           </NavLink>
@@ -202,7 +202,7 @@ const Navbar = () => {
         <div className="absolute top-0 bottom-0 left-2/3 w-[1px] bg-white/5 hidden md:block" />
         <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-white/5 hidden md:block" />
 
-        <div className="relative z-10 h-full flex flex-col justify-between px-6 md:px-16 pt-28 md:pt-32 pb-8 md:pb-12">
+        <div className="relative z-10 h-full overflow-y-auto no-scrollbar flex flex-col justify-between mobile-safe-padding md:px-16 pt-24 sm:pt-28 md:pt-32 pb-8 md:pb-12">
           <nav
             ref={linksRef}
             className="flex flex-col gap-1 md:gap-2"
@@ -222,7 +222,7 @@ const Navbar = () => {
                   <span className="font-body text-[10px] md:text-[11px] text-primary tracking-[0.2em] w-6 md:w-8 shrink-0 font-bold">
                     {romanNumerals[i]}
                   </span>
-                  <span className="font-heading text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-bg-body uppercase tracking-wider leading-none group-hover:text-primary transition-colors duration-500 group-hover:italic">
+                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-7xl lg:text-8xl text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary transition-colors duration-500 group-hover:italic break-words">
                     {link.label}
                   </span>
                 </NavLink>
@@ -236,7 +236,7 @@ const Navbar = () => {
               <span className="text-primary text-[10px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Acceso
               </span>
-              <div className="flex flex-wrap gap-x-8 gap-y-3">
+              <div className="flex flex-wrap gap-x-6 md:gap-x-8 gap-y-3">
                 {IS_PUBLIC_DEMO ? (
                   <>
                     <NavLink
@@ -309,7 +309,7 @@ const Navbar = () => {
 
           <div
             ref={bottomInfoRef}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0 mt-8 md:mt-0"
+            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0 mt-8 md:mt-0 pb-[env(safe-area-inset-bottom)]"
           >
             <div className="flex flex-col gap-1">
               <span className="text-primary text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">

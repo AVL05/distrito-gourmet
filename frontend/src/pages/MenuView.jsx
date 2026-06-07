@@ -150,7 +150,7 @@ const MenuView = () => {
   return (
     <PageTransition className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
       {/* Luz ambiental de fondo */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(1000px,100vw)] h-[420px] sm:h-[600px] bg-primary/5 rounded-full blur-[120px] sm:blur-[150px] pointer-events-none"></div>
 
       {/* Cabecera con TextReveal inspirado en Adachi */}
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10">
@@ -185,14 +185,14 @@ const MenuView = () => {
       </div>
 
       {/* Pestañas de filtro */}
-      <div className="sticky top-[72px] sm:top-[72px] md:top-28 z-40 bg-bg-body/90 backdrop-blur-xl border-b border-text-main/10 py-4 sm:py-5 mb-12 sm:mb-16 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+      <div className="sticky top-16 md:top-20 z-40 bg-bg-body/90 backdrop-blur-xl border-b border-text-main/10 py-3 sm:py-5 mb-12 sm:mb-16 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
         <div className="container overflow-x-auto no-scrollbar">
-          <div className="flex justify-start sm:justify-center min-w-max gap-8 sm:gap-12 md:gap-16 px-4">
+          <div className="flex justify-start sm:justify-center min-w-max gap-6 sm:gap-12 md:gap-16 px-1 sm:px-4">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`uppercase text-[12px] sm:text-[13px] tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
+                className={`uppercase text-[11px] sm:text-[13px] tracking-[1.5px] sm:tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
                   activeCategory === cat.id
                     ? "text-primary"
                     : "text-text-muted hover:text-text-main"
@@ -230,7 +230,7 @@ const MenuView = () => {
 
             {/* TODA LA CARTA */}
             {!loadError && activeCategory === "carta" && (
-              <div className="space-y-32">
+              <div className="space-y-20 sm:space-y-32">
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
                   if (items.length === 0) return null;
@@ -238,9 +238,9 @@ const MenuView = () => {
                     catKey.charAt(0).toUpperCase() + catKey.slice(1);
 
                   return (
-                    <div key={catKey} className="mt-16 mb-24">
+                    <div key={catKey} className="mt-12 sm:mt-16 mb-16 sm:mb-24">
                       <SectionHeader index={index} label={label} />
-                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-0 sm:px-4">
                         {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <DishRow item={item} addItem={addItem} />
@@ -255,15 +255,15 @@ const MenuView = () => {
 
             {/* BEBIDAS */}
             {!loadError && activeCategory === "bebidas" && (
-              <div className="space-y-32">
+              <div className="space-y-20 sm:space-y-32">
                 {beverageTypes.map((bt, index) => {
                   const items = getBeveragesByType(bt.key);
                   if (items.length === 0) return null;
 
                   return (
-                    <div key={bt.key} className="mt-16 mb-24">
+                    <div key={bt.key} className="mt-12 sm:mt-16 mb-16 sm:mb-24">
                       <SectionHeader index={index} label={bt.label} />
-                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-0 sm:px-4">
                         {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <DisplayRow item={item} />
@@ -278,15 +278,15 @@ const MenuView = () => {
 
             {/* BODEGA */}
             {!loadError && activeCategory === "bodega" && (
-              <div className="space-y-32">
+              <div className="space-y-20 sm:space-y-32">
                 {wineTypes.map((wt, index) => {
                   const items = getWinesByType(wt.key);
                   if (items.length === 0) return null;
 
                   return (
-                    <div key={wt.key} className="mt-16 mb-24">
+                    <div key={wt.key} className="mt-12 sm:mt-16 mb-16 sm:mb-24">
                       <SectionHeader index={index} label={wt.label} />
-                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-4">
+                      <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-0 sm:px-4">
                         {items.map((item) => (
                           <StaggerItem key={item.id}>
                             <WineDisplayRow item={item} />
@@ -402,8 +402,8 @@ const DisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
-        <div className="flex items-baseline gap-4 mb-2">
-          <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
@@ -428,8 +428,8 @@ const WineDisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
-        <div className="flex items-baseline gap-4 mb-2">
-          <h3 className="font-heading text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+        <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">

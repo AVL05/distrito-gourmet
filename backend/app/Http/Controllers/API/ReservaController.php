@@ -21,9 +21,9 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'fecha_reserva' => 'required|date',
+            'fecha_reserva' => 'required|date|after_or_equal:today',
             'hora_reserva' => 'required|string',
-            'comensales' => 'required|integer|min:1',
+            'comensales' => 'required|integer|min:1|max:44',
             'peticiones_especiales' => 'nullable|string'
         ]);
 
@@ -81,6 +81,10 @@ class ReservaController extends Controller
     // Actualizar el estado de una reserva específica
     public function updateStatus(Request $request, $id)
     {
+        $request->validate([
+            'estado' => 'sometimes|required|in:Pendiente,Confirmada,Cancelada'
+        ]);
+
         $res = Reserva::findOrFail($id);
 
         if ($request->has('estado')) {

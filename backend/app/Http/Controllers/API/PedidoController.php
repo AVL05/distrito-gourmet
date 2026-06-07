@@ -7,8 +7,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use App\Models\Bebida;
+use App\Models\MenuDegustacion;
 use App\Models\Pedido;
 use App\Models\DetallePedido;
+use App\Models\Plato;
+use App\Models\Vino;
 
 class PedidoController extends Controller
 {
@@ -33,8 +38,7 @@ class PedidoController extends Controller
         }
 
         $request->validate([
-            'total' => 'required|numeric',
-            'metodo_pago' => 'required|string',
+            'metodo_pago' => 'required|string|max:50',
             'hora_recogida' => 'nullable|string',
             'fecha_recogida' => 'nullable|date',
             'articulos' => 'required|array|min:1',
@@ -42,11 +46,50 @@ class PedidoController extends Controller
             'articulos.*.tipo_item' => 'required|string|in:plato,vino,bebida,menu_degustacion',
             'articulos.*.nombre' => 'required|string',
             'articulos.*.cantidad' => 'required|integer|min:1',
-            'articulos.*.precio' => 'required|numeric',
         ]);
 
         return DB::transaction(function () use ($request) {
-            $total = (float) $request->total;
+            $articulos = collect($request->articulos)->map(function (array $item) {
+                $catalogItem = match ($item['tipo_item']) {
+                    'plato' => Plato::where('disponible', true)
+                        ->where('disponible_para_llevar', true)
+                        ->find($item['db_id']),
+                    'vino' => Vino::where('disponible', true)->find($item['db_id']),
+                    'bebida' => Bebida::where('disponible', true)->find($item['db_id']),
+                    'menu_degustacion' => MenuDegustacion::where('disponible', true)->find($item['db_id']),
+                };
+
+                if (! $catalogItem) {
+                    throw ValidationException::withMessages([
+                        'articulos' => ['Uno de los artículos no está disponible.'],
+                    ]);
+                }
+
+                $precio = match ($item['tipo_item']) {
+                    'vino' => $catalogItem->precio_botella ?? $catalogItem->precio_copa,
+                    default => $catalogItem->precio,
+                };
+
+                if ($precio === null) {
+                    throw ValidationException::withMessages([
+                        'articulos' => ['Uno de los artículos no tiene precio configurado.'],
+                    ]);
+                }
+
+                $maximo = $catalogItem->maximo_por_pedido ?? null;
+                if ($maximo && $item['cantidad'] > $maximo) {
+                    throw ValidationException::withMessages([
+                        'articulos' => ["La cantidad máxima permitida para {$catalogItem->nombre} es {$maximo}."],
+                    ]);
+                }
+
+                return [
+                    ...$item,
+                    'precio' => (float) $precio,
+                ];
+            });
+
+            $total = round($articulos->sum(fn ($item) => $item['precio'] * $item['cantidad']), 2);
             $subtotal = round($total / 1.10, 2);
             $impuestos = round($total - $subtotal, 2);
 
@@ -66,7 +109,7 @@ class PedidoController extends Controller
             ]);
 
             // Crear cada artículo del pedido
-            foreach ($request->articulos as $item) {
+            foreach ($articulos as $item) {
                 DetallePedido::create([
                     'pedido_id' => $pedido->id,
                     'plato_id' => $item['tipo_item'] === 'plato' ? $item['db_id'] : null,
@@ -98,6 +141,10 @@ class PedidoController extends Controller
     // Actualizar el estado logístico del pedido (Pendiente, Preparando, Listo, etc.)
     public function updateStatus(Request $request, $id)
     {
+        $request->validate([
+            'estado' => 'required|in:Pendiente,Preparando,Listo,Entregado,Cancelado',
+        ]);
+
         $pedido = Pedido::findOrFail($id);
         $pedido->estado = $request->input('estado');
         $pedido->save();

@@ -174,7 +174,7 @@ const CartView = () => {
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
               <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Hora Estimada de Recogida</p>
               <p class="text-4xl font-heading text-primary">${pickupOptions.find((o) => o.value === pickupTime)?.label || pickupTime}</p>
-              <p class="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos en nuestro local.</p>
+              <p className="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos en nuestro local.</p>
             </div>
           </div>
         `,
@@ -234,12 +234,12 @@ const CartView = () => {
 
   return (
     <PageTransition
-      className="bg-bg-body min-h-screen pt-20 sm:pt-28 pb-32 px-4 relative overflow-hidden"
+      className="bg-bg-body min-h-screen pt-20 sm:pt-28 pb-24 sm:pb-32 px-0 sm:px-4 relative overflow-hidden"
       key={step}
     >
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
-      <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-6 md:px-12 4k:px-24 ultra:px-32">
+      <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-4 sm:px-6 md:px-12 4k:px-24 ultra:px-32">
         {step === "cart" ? (
           <div key="cart-step">
             <FadeIn className="text-center mb-16 sm:mb-24 relative">
@@ -257,11 +257,11 @@ const CartView = () => {
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 sm:p-8 border-b border-text-main/10 hover:bg-text-main/5 transition-colors duration-300 gap-6"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-6 sm:p-8 border-b border-text-main/10 hover:bg-text-main/5 transition-colors duration-300 gap-5 sm:gap-6"
                   >
-                    <div className="flex items-center gap-8 w-full sm:w-auto">
+                    <div className="flex items-center gap-4 sm:gap-8 w-full sm:w-auto">
                       <div className="text-left">
-                        <h3 className="font-heading text-3xl text-text-main mb-2 leading-tight">
+                        <h3 className="font-heading text-2xl sm:text-3xl text-text-main mb-2 leading-tight">
                           {item.name}
                         </h3>
                         <p className="text-text-muted font-body font-normal text-[13px] tracking-widest uppercase">
@@ -270,7 +270,7 @@ const CartView = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end mt-2 sm:mt-0">
+                    <div className="flex items-center gap-4 sm:gap-6 w-full sm:w-auto justify-between sm:justify-end mt-2 sm:mt-0">
                       <div className="flex items-center border border-text-main/20 bg-transparent">
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
@@ -309,7 +309,7 @@ const CartView = () => {
               </div>
 
               <div className="lg:col-span-1">
-                <div className="bg-bg-surface border border-text-main/10 p-8 sm:p-10 sticky top-32">
+                <div className="bg-bg-surface border border-text-main/10 p-6 sm:p-10 lg:sticky lg:top-32">
                   <h3 className="font-heading text-3xl text-text-main mb-8 pb-6 border-b border-text-main/10">
                     Resumen
                   </h3>
@@ -350,10 +350,10 @@ const CartView = () => {
               <span className="block text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
                 / 02 Cobros
               </span>
-              <h1 className="font-heading text-5xl sm:text-6xl text-text-main mb-6">
+              <h1 className="font-heading text-4xl sm:text-6xl text-text-main mb-6">
                 Método de <span className="italic text-primary">Pago</span>
               </h1>
-              <p className="text-text-muted uppercase text-[11px] tracking-[4px] font-normal">
+              <p className="text-text-muted uppercase text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[4px] font-normal">
                 Seleccione su preferencia de abono
               </p>
             </div>
@@ -383,9 +383,9 @@ const CartView = () => {
                   <div
                     key={method.id}
                     onClick={() => setPaymentMethod(method.id)}
-                    className={`group relative p-6 sm:p-8 border cursor-pointer transition-all duration-300 flex items-center gap-6 ${
+                    className={`group relative p-5 sm:p-8 border cursor-pointer transition-all duration-300 flex items-center gap-4 sm:gap-6 ${
                       paymentMethod === method.id
-                        ? "bg-text-main border-text-main text-white shadow-xl translate-x-2"
+                        ? "bg-text-main border-text-main text-white shadow-xl sm:translate-x-2"
                         : "bg-bg-surface border-text-main/10 text-text-main hover:border-text-main/40"
                     }`}
                   >
@@ -396,7 +396,7 @@ const CartView = () => {
                     </div>
                     <div className="flex-1">
                       <h4
-                        className={`font-heading text-xl mb-1 ${paymentMethod === method.id ? "text-white" : ""}`}
+                        className={`font-heading text-lg sm:text-xl mb-1 ${paymentMethod === method.id ? "text-white" : ""}`}
                       >
                         {method.name}
                       </h4>
@@ -415,7 +415,7 @@ const CartView = () => {
                 ))}
               </div>
 
-              <div className="bg-bg-surface border border-text-main/10 p-10 relative overflow-hidden">
+              <div className="bg-bg-surface border border-text-main/10 p-6 sm:p-10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
                 <h3 className="font-heading text-2xl text-text-main mb-8 border-b border-text-main/10 pb-6">
                   Finalización

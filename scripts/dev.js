@@ -52,6 +52,7 @@ log(`========================================${colors.reset}\n`);
 const networkHost = getNetworkHost();
 const backendPort = 8000;
 const frontendPort = 5173;
+const shouldFreePorts = process.env.DG_FREE_PORTS === 'true';
 
 const resolvePhpCommand = () => {
   if (process.env.PHP_BIN) return process.env.PHP_BIN;
@@ -121,18 +122,44 @@ const ensurePhpIni = dir => {
 
 const phpIniPath = ensurePhpIni(phpDir);
 
-// Kill any process already listening on a given port (Windows-only)
-const freePort = port => {
+const getPortProcess = port => {
+  const result = spawnSync(
+    'powershell',
+    ['-NoProfile', '-Command', `(Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess`],
+    { shell: false }
+  );
+
+  if (result.status !== 0) return null;
+
+  const pid = result.stdout.toString().trim();
+  return pid || null;
+};
+
+const stopPortProcess = (port, pid) => {
   try {
-    const result = spawnSync(
+    spawnSync(
       'powershell',
-      ['-Command', `$p = (Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue).OwningProcess; if ($p) { Stop-Process -Id $p -Force -ErrorAction SilentlyContinue }`],
+      ['-NoProfile', '-Command', `Stop-Process -Id ${pid} -Force -ErrorAction SilentlyContinue`],
       { shell: false }
     );
-    if (result.status === 0) {
-      logInfo(`Port ${port} is now free.`);
-    }
+    logInfo(`Port ${port} is now free.`);
   } catch (_) {}
+};
+
+const ensurePortAvailable = port => {
+  if (process.platform !== 'win32') return true;
+
+  const pid = getPortProcess(port);
+  if (!pid) return true;
+
+  if (shouldFreePorts) {
+    stopPortProcess(port, pid);
+    return true;
+  }
+
+  log(`${colors.bold}${colors.red}[ERROR]${colors.reset} Port ${port} is already in use by PID ${pid}.`);
+  logInfo('Set DG_FREE_PORTS=true to let this script stop those processes automatically.');
+  return false;
 };
 
 let backendReady = false;
@@ -144,8 +171,9 @@ let frontendUrl = `http://${networkHost}:${frontendPort}`;
 logStep('Starting unified development environment');
 logInfo(`Using PHP binary: ${phpCmd}`);
 
-if (process.platform === 'win32') freePort(backendPort);
-if (process.platform === 'win32') freePort(frontendPort);
+if (!ensurePortAvailable(backendPort) || !ensurePortAvailable(frontendPort)) {
+  process.exit(1);
+}
 
 const backend = spawn(phpCmd, ['artisan', 'serve', '--host=0.0.0.0', '--port=8000'], {
   cwd: './backend',

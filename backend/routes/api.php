@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [PedidoController::class, 'index']);
 
     // Panel de administración (requieren login + rol admin)
-    Route::group(['prefix' => 'admin'], function () {
+    Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
         // Gestión de platos
         Route::apiResource('dishes', PlatoController::class)->except(['index', 'show']);
         Route::apiResource('wines', VinoController::class);
