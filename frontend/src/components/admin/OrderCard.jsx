@@ -2,6 +2,8 @@ import { HiTrash } from "react-icons/hi";
 
 // Tarjeta visual para la gestión y actualización del estado de pedidos
 const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
+  const total = Number.parseFloat(order.total || 0);
+
   return (
     <div
       key={order.id}
@@ -43,7 +45,7 @@ const OrderCard = ({ order, handleUpdateOrderStatus, handleDeleteItem }) => {
           {order.usuario?.nombre || `ID: ${order.usuario_id}`}
         </p>
         <p className="text-text-muted text-[13px] mb-4 opacity-70 font-medium">
-          Total: {parseFloat(order.total).toFixed(2)}€
+          Total: {Number.isFinite(total) ? total.toFixed(2) : "0.00"}€
         </p>
 
         <div className="flex flex-wrap gap-2 mb-4">

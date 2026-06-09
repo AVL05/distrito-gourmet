@@ -221,7 +221,7 @@ const MenuView = () => {
           <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
             <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
             <p className="text-text-muted font-normal tracking-wide text-lg">
-              Sintonizando nuestra bodega...
+              Cargando la carta de temporada...
             </p>
           </div>
         ) : (
@@ -390,7 +390,7 @@ const DishRow = ({ item, addItem }) => (
       >
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[500ms] ease-out group-hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
-          Añadir al Carrito
+          Añadir para Recogida
         </span>
       </MotionButton>
     </div>
@@ -558,8 +558,7 @@ const EmptyState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
-      La colección para esta categoría se encuentra en desarrollo por nuestro
-      Chef.
+      Ahora mismo no hay referencias disponibles en esta categoría.
     </p>
   </FadeIn>
 );

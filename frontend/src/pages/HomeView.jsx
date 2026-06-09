@@ -126,26 +126,23 @@ const HomeView = () => {
               <div className="h-[1px] w-full bg-text-main/10 mb-7"></div>
 
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                En Distrito Gourmet, no solo cocinamos; curamos ingredientes. Un
-                diálogo constante entre la tradición española más profunda y la
-                audacia de la técnica moderna.
+                En Distrito Gourmet trabajamos una cocina española contemporánea
+                con producto de temporada, fondos lentos y una bodega pensada
+                para acompañar cada servicio.
               </p>
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                Cada receta está deconstruida, analizada matemáticamente y
-                ensamblada de nuevo para provocar una reacción emocional
-                inesperada en cada comensal.
+                La carta cambia con el mercado: arroces, carnes maduradas,
+                pescados de lonja y postres de obrador propio conviven con un
+                menú degustación de formato corto.
               </p>
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                Nuestra cocina es un laboratorio de sensaciones donde la
-                precisión técnica se rinde ante la nobleza del producto. En este
-                espacio, el tiempo se detiene para permitir que cada sabor
-                revele su verdadera esencia.
+                Abrimos en Valencia de martes a domingo al mediodía y de martes
+                a sábado por la noche. El equipo confirma cada reserva para
+                cuidar el ritmo de sala.
               </p>
               <p className="text-text-muted mb-10 leading-relaxed font-body font-normal text-[15px] tracking-wide italic border-l-2 border-primary/20 pl-6">
-                Buscamos la armonía absoluta entre el entorno y el plato, donde
-                nuestra exclusiva selección de bodega actúa como el hilo
-                conductor de una narrativa culinaria única. Aquí, la excelencia
-                no es una meta, sino el único camino posible.
+                Precio medio a la carta: 40-55€ por persona. Menú degustación
+                desde 59€, con opción de maridaje.
               </p>
               <Link
                 to="/menu"
@@ -224,11 +221,11 @@ const HomeView = () => {
                 02.
               </span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">
-                Vinos de Autor
+                Bodega Cercana
               </h3>
               <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
-                Maridaje curado artesanalmente. Más de diez mil referencias
-                descansan en una de las bodegas más completas de Europa.
+                Referencias nacionales y mediterráneas elegidas para acompañar
+                la carta, con opciones por copa y maridaje en menú degustación.
               </p>
             </ScrollReveal>
 
@@ -243,11 +240,11 @@ const HomeView = () => {
                 03.
               </span>
               <h3 className="text-3xl font-heading text-text-main mb-6 leading-tight">
-                Espacio
+                Sala
               </h3>
               <p className="text-text-muted font-body font-normal text-[14px] leading-relaxed tracking-wide">
-                Un entorno diseñado en vacío absoluto. Madera noble, lino puro
-                e iluminación escenográfica enfocada al plato.
+                Una sala cálida y urbana, con pocas mesas, servicio cercano e
+                iluminación pensada para comer sin prisas.
               </p>
             </ScrollReveal>
           </div>
@@ -273,8 +270,8 @@ const HomeView = () => {
               style={{ width: "6rem" }}
             />
             <p className="text-bg-body/70 text-sm md:text-base font-body font-normal max-w-lg mx-auto tracking-wide leading-loose">
-              Cupo extremadamente estricto y reducido por servicio para
-              garantizar una experiencia sin interferencias.
+              Reserva online para comida y cena. Confirmamos disponibilidad y
+              preferencias antes del servicio.
             </p>
           </ScrollReveal>
 
@@ -290,7 +287,7 @@ const HomeView = () => {
                 >
                   <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
                   <span className="relative z-10 font-bold group-hover:text-white transition-colors duration-300">
-                    Proceder a la Reserva
+                    Solicitar Reserva
                   </span>
                 </Link>
               </div>

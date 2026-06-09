@@ -6,6 +6,11 @@ const ReservationCard = ({
   handleUpdateReservation,
   handleDeleteItem,
 }) => {
+  const createdAt = res.creado_a ? new Date(res.creado_a) : null;
+  const reservationDate = res.fecha_reserva
+    ? new Date(`${res.fecha_reserva}T00:00:00`)
+    : null;
+
   return (
     <div
       key={res.id}
@@ -43,7 +48,10 @@ const ReservationCard = ({
           {res.usuario?.nombre || `ID: ${res.usuario_id}`}
         </p>
         <p className="text-text-muted text-[11px] mb-4 opacity-70">
-          Registrado: {new Date(res.creado_a).toLocaleDateString()}
+          Registrado:{" "}
+          {createdAt && !Number.isNaN(createdAt.getTime())
+            ? createdAt.toLocaleDateString("es-ES")
+            : "Sin fecha"}
         </p>
 
         <div className="space-y-2 bg-black/5 p-3 rounded-sm border border-text-main/5">
@@ -52,13 +60,12 @@ const ReservationCard = ({
               FECHA:
             </span>
             <span className="text-text-main text-sm font-normal">
-              {new Date(res.fecha_reserva + "T00:00:00").toLocaleDateString(
-                "es-ES",
-                {
-                  day: "2-digit",
-                  month: "long",
-                },
-              )}{" "}
+              {reservationDate && !Number.isNaN(reservationDate.getTime())
+                ? reservationDate.toLocaleDateString("es-ES", {
+                    day: "2-digit",
+                    month: "long",
+                  })
+                : "Sin fecha"}{" "}
               - {res.hora_reserva ? res.hora_reserva.slice(0, 5) : ""}
             </span>
           </div>

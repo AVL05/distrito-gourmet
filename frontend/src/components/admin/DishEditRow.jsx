@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 
 // Fila editable para la gestión individual de platos en el panel de administración
 const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
+  const price = Number.parseFloat(item.precio || 0);
+
   const [isEditing, setIsEditing] = useState(false);
   const [editDish, setEditDish] = useState({
     ...item,
@@ -236,7 +238,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
         <div>
           <div className="flex items-baseline gap-1">
             <span className="text-text-main font-heading text-2xl">
-              {parseFloat(item.precio).toFixed(2)}€
+              {Number.isFinite(price) ? price.toFixed(2) : "0.00"}€
             </span>
             {!!item.es_por_unidad && (
               <span className="text-text-muted text-[10px] uppercase tracking-widest ml-1">

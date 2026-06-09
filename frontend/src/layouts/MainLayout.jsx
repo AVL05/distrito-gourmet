@@ -17,7 +17,7 @@ const MainLayout = () => {
       <Navbar />
 
       {/* Contenedor central donde se cargan las distintas páginas (Outlet) */}
-      <main className={`flex-grow ${isAdminPage ? "" : "pt-24 md:px-0"}`}>
+      <main className={`flex-grow ${isAdminPage ? "" : "pt-20 md:pt-24 md:px-0"}`}>
         <Outlet key={location.pathname} />
       </main>
 

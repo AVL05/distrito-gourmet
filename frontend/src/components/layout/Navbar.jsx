@@ -1,14 +1,10 @@
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
-gsap.registerPlugin(useGSAP);
-
-// Barra de navegación principal con animaciones GSAP
+// Barra de navegación principal con overlay a pantalla completa.
 // Gestiona el menú modal, cambios al hacer scroll y accesos dinámicos según sesión y carrito
 const Navbar = () => {
   const { isAuthenticated, isAdmin, logout } = useAuthStore();
@@ -19,14 +15,10 @@ const Navbar = () => {
   const location = useLocation();
   const isAdminPage = location.pathname.startsWith("/admin");
 
-  const menuRef = useRef(null);
-  const overlayRef = useRef(null);
-  const linksRef = useRef(null);
-  const bottomInfoRef = useRef(null);
-
   // Detectar el evento scroll de la ventana para cambiar el estilo visual del navbar (fondo semi-transparente vs transparente)
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -34,67 +26,12 @@ const Navbar = () => {
   // Efecto secundario: Deshabilitar el scroll vertical del documento cuando el menú modal a pantalla completa está abierto
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
+    document.documentElement.style.overflow = isOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
   }, [isOpen]);
-
-  // Hook personalizado de GSAP para manejar la secuencia de animaciones del menú de navegación
-  useGSAP(
-    () => {
-      if (isOpen) {
-        const tl = gsap.timeline();
-
-        tl.set(overlayRef.current, {
-          display: "block",
-          clipPath: "inset(0 0 100% 0)",
-        });
-
-        tl.to(overlayRef.current, {
-          clipPath: "inset(0 0 0% 0)",
-          duration: 0.8,
-          ease: "power4.inOut",
-        });
-
-        const links = linksRef.current.querySelectorAll(".nav-link-item");
-        tl.from(
-          links,
-          {
-            opacity: 0,
-            y: 40,
-            rotateX: -15,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: "power2.out",
-          },
-          "-=0.4",
-        );
-
-        tl.from(
-          bottomInfoRef.current,
-          {
-            opacity: 0,
-            y: 20,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          "-=0.2",
-        );
-      } else {
-        if (overlayRef.current) {
-          gsap.to(overlayRef.current, {
-            clipPath: "inset(0 0 100% 0)",
-            duration: 0.6,
-            ease: "power4.inOut",
-            onComplete: () => {
-              if (overlayRef.current) overlayRef.current.style.display = "none";
-            },
-          });
-        }
-      }
-    },
-    { dependencies: [isOpen], scope: menuRef },
-  );
 
   // Finalizar sesión y redirigir al login
   const handleLogout = () => {
@@ -102,8 +39,12 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
+  const toggleMenu = () => {
+    setIsOpen((current) => !current);
+  };
+  const closeMenu = () => {
+    if (isOpen) setIsOpen(false);
+  };
 
   // Números romanos para los links
   const romanNumerals = ["I", "II", "III", "IV", "V", "VI", "VII"];
@@ -117,20 +58,32 @@ const Navbar = () => {
   ];
 
   return (
-    <div ref={menuRef}>
+    <div>
       <nav
-        className={`fixed top-0 w-full z-[60] transition-all duration-700 flex items-center ${
-          scrolled
-            ? "bg-bg-body/95 backdrop-blur-md border-b border-text-main/5 h-16 md:h-20"
-            : "bg-transparent h-20 md:h-28"
-        }`}
+        className={
+          isAdminPage
+            ? "fixed right-4 top-4 z-[60] flex items-center transition-all duration-700 md:right-8 md:top-6"
+            : `fixed top-0 w-full z-[60] transition-all duration-700 flex items-center ${
+                isOpen
+                  ? "bg-transparent border-b border-transparent h-20 md:h-28"
+                  : scrolled
+                    ? "bg-bg-body/95 backdrop-blur-md border-b border-text-main/5 h-16 md:h-20"
+                    : "bg-transparent h-20 md:h-28"
+              }`
+        }
       >
-        <div className="w-full mobile-safe-padding md:px-12 2k:px-24 4k:px-72 ultra:px-96 flex justify-between items-center">
+        <div
+          className={
+            isAdminPage
+              ? "flex items-center justify-end"
+              : "w-full mobile-safe-padding md:px-12 2k:px-24 4k:px-72 ultra:px-96 flex justify-between items-center"
+          }
+        >
           {!isAdminPage ? (
             <NavLink
               to="/cart"
               onClick={closeMenu}
-              className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-bg-body" : "text-text-main"}`}
+              className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
               title="Selección"
             >
               <svg
@@ -156,43 +109,53 @@ const Navbar = () => {
             <div className="w-[18px] h-[18px]" />
           )}
 
-          <NavLink
-            to="/"
-            className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70] max-w-[58vw]"
-            onClick={closeMenu}
-          >
-            <span
-              className={`font-heading text-base sm:text-lg md:text-2xl uppercase tracking-[0.18em] sm:tracking-[0.25em] leading-none transition-colors duration-500 truncate max-w-full ${isOpen ? "text-bg-body" : "text-text-main"}`}
+          {!isAdminPage && (
+            <NavLink
+              to="/"
+              className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70] max-w-[58vw]"
+              onClick={closeMenu}
             >
-              Distrito
-            </span>
-            <span className="font-heading text-[9px] sm:text-[10px] md:text-xs text-primary italic tracking-[0.24em] sm:tracking-[0.3em] leading-none mt-[2px]">
-              Gourmet
-            </span>
-          </NavLink>
+              <span
+                className={`font-heading text-base sm:text-lg md:text-2xl uppercase tracking-[0.18em] sm:tracking-[0.25em] leading-none transition-colors duration-500 truncate max-w-full ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
+              >
+                Distrito
+              </span>
+              <span className="font-heading text-[9px] sm:text-[10px] md:text-xs text-primary italic tracking-[0.24em] sm:tracking-[0.3em] leading-none mt-[2px]">
+                Gourmet
+              </span>
+            </NavLink>
+          )}
 
           <button
-            className="flex flex-col items-end justify-center gap-[5px] w-8 h-8 cursor-pointer group z-[70]"
+            className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-[70] ${
+              isAdminPage
+                ? "h-11 w-11 border border-text-main/10 bg-bg-body/90 p-2 shadow-sm backdrop-blur"
+                : "w-8 h-8"
+            }`}
             onClick={toggleMenu}
             aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={isOpen}
           >
             <span
-              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-6 -rotate-45 translate-x-[2px]" : "bg-text-main w-6"}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 -rotate-45 translate-x-[2px]" : "bg-text-main w-6"}`}
             />
             <span
-              className={`block h-[1.5px] transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-0 opacity-0" : "bg-text-main w-4"}`}
+              className={`block h-[1.5px] transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-0 opacity-0" : "bg-text-main w-4"}`}
             />
             <span
-              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-6 rotate-45 translate-x-[2px]" : "bg-text-main w-5"}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 rotate-45 translate-x-[2px]" : "bg-text-main w-5"}`}
             />
           </button>
         </div>
       </nav>
 
       <div
-        ref={overlayRef}
-        className="fixed inset-0 z-[55] bg-text-main overflow-hidden hidden"
-        style={{ clipPath: "inset(0 0 100% 0)" }}
+        className={`fixed inset-0 z-[55] bg-text-main overflow-hidden transition-[clip-path] duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+          isOpen ? "pointer-events-auto" : "pointer-events-none"
+        }`}
+        style={{
+          clipPath: isOpen ? "inset(0 0 0% 0)" : "inset(0 0 100% 0)",
+        }}
       >
         <div
           className="absolute inset-0 bg-cover bg-center opacity-[0.07] grayscale"
@@ -204,12 +167,19 @@ const Navbar = () => {
 
         <div className="relative z-10 h-full overflow-y-auto no-scrollbar flex flex-col justify-between mobile-safe-padding md:px-16 pt-24 sm:pt-28 md:pt-32 pb-8 md:pb-12">
           <nav
-            ref={linksRef}
             className="flex flex-col gap-1 md:gap-2"
             style={{ perspective: "600px" }}
           >
             {mainLinks.map((link, i) => (
-              <div key={link.to} className="nav-link-item group">
+              <div
+                key={link.to}
+                className={`nav-link-item group transition-all duration-500 ${
+                  isOpen
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: isOpen ? `${160 + i * 70}ms` : "0ms" }}
+              >
                 <NavLink
                   to={link.to}
                   onClick={closeMenu}
@@ -232,7 +202,12 @@ const Navbar = () => {
               </div>
             ))}
 
-            <div className="nav-link-item mt-6 md:mt-10 ml-10 md:ml-16 flex flex-col gap-3">
+            <div
+              className={`nav-link-item mt-6 md:mt-10 ml-10 md:ml-16 flex flex-col gap-3 transition-all duration-500 ${
+                isOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+              }`}
+              style={{ transitionDelay: isOpen ? "440ms" : "0ms" }}
+            >
               <span className="text-primary text-[10px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Acceso
               </span>
@@ -254,7 +229,7 @@ const Navbar = () => {
                       Área Personal
                     </NavLink>
                     <span className="text-bg-body/40 text-[11px] font-body uppercase tracking-[2px]">
-                      Demo Pública
+                      Vista de prueba
                     </span>
                   </>
                 ) : isAuthenticated() ? (
@@ -299,7 +274,7 @@ const Navbar = () => {
                       onClick={closeMenu}
                       className="text-bg-body/40 hover:text-primary text-[11px] font-body uppercase tracking-[2px] transition-colors border-b border-bg-body/20 hover:border-primary pb-[2px]"
                     >
-                      Solicitar Registro
+                      Crear Cuenta
                     </NavLink>
                   </>
                 )}
@@ -308,18 +283,20 @@ const Navbar = () => {
           </nav>
 
           <div
-            ref={bottomInfoRef}
-            className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0 mt-8 md:mt-0 pb-[env(safe-area-inset-bottom)]"
+            className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0 mt-8 md:mt-0 pb-[env(safe-area-inset-bottom)] transition-all duration-500 ${
+              isOpen ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+            }`}
+            style={{ transitionDelay: isOpen ? "520ms" : "0ms" }}
           >
             <div className="flex flex-col gap-1">
               <span className="text-primary text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Reservas
               </span>
               <a
-                href="tel:+34900000000"
+                href="tel:+34960123456"
                 className="text-bg-body/50 text-[12px] font-body tracking-widest hover:text-primary transition-colors"
               >
-                +34 900 000 000
+                +34 960 12 34 56
               </a>
               <a
                 href="mailto:info@distritogourmet.com"
@@ -357,7 +334,7 @@ const Navbar = () => {
                 href="#"
                 className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
               >
-                Tw
+                Tk
               </a>
             </div>
           </div>

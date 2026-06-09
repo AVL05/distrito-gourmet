@@ -5,10 +5,10 @@ import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { demoAdminData } from "@/data/demoAdmin";
 
 const sortDishesByCategory = (dishes = []) =>
-  dishes.sort((a, b) => {
+  [...dishes].sort((a, b) => {
     const order = { entrantes: 1, principales: 2, postres: 3 };
-    const orderA = order[a.categoria?.nombre.toLowerCase()] || 99;
-    const orderB = order[b.categoria?.nombre.toLowerCase()] || 99;
+    const orderA = order[a.categoria?.nombre?.toLowerCase?.()] || 99;
+    const orderB = order[b.categoria?.nombre?.toLowerCase?.()] || 99;
     return orderA - orderB;
   });
 

@@ -59,9 +59,9 @@ const ContactView = () => {
               </h3>
               <div>
                 <p className="text-text-muted font-body font-normal leading-relaxed text-[15px] tracking-wide mb-6">
-                  Distrito Financiero
+                  Barrio de Ruzafa
                   <br />
-                  Avenida de la Alta Gastronomía, 8
+                  Calle del Pintor Salvador Abril, 12
                   <br />
                   46004, Valencia, España
                 </p>
@@ -89,7 +89,7 @@ const ContactView = () => {
                     href="tel:+34900000000"
                     className="hover:text-primary transition-colors"
                   >
-                    +34 900 000 000
+                    +34 960 12 34 56
                   </a>
                 </p>
                 <p className="mb-4">

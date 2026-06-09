@@ -215,18 +215,18 @@ const UserEditRow = ({ user, fetchData }) => {
           className={`text-[8px] uppercase tracking-[2px] px-3 py-1 rounded-full font-bold border mb-2 ${
             user.rol === "Administrador"
               ? "bg-primary/10 text-primary border-primary/20"
-              : "bg-slate-500/10 text-slate-500 border-slate-500/20"
+              : "bg-text-main/5 text-text-muted border-text-main/10"
           }`}
         >
           {user.rol}
         </span>
 
         <div className="space-y-1 w-full px-2">
-          <p className="text-slate-500/80 text-[11px] font-medium tracking-tight truncate">
+          <p className="text-text-muted/80 text-[11px] font-medium tracking-tight truncate">
             {user.email}
           </p>
           {user.telefono && (
-            <p className="text-slate-500/60 text-[11px] font-medium tracking-tight">
+            <p className="text-text-muted/60 text-[11px] font-medium tracking-tight">
               {user.telefono}
             </p>
           )}

@@ -209,7 +209,7 @@ const ReservationForm = ({ compact = false }) => {
             value={form.name}
             onChange={handleChange}
             required
-            placeholder="Ej. Marqués de Salamanca"
+            placeholder="Ej. Laura Martínez"
             className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
           />
         </div>
@@ -310,7 +310,7 @@ const ReservationForm = ({ compact = false }) => {
             value={form.comments}
             onChange={handleChange}
             rows="2"
-            placeholder="Alergias, celebraciones u otros detalles importantes para nuestro Maître..."
+            placeholder="Alergias, celebraciones u otros detalles importantes para el equipo de sala..."
             className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
           ></textarea>
         </div>
@@ -326,7 +326,7 @@ const ReservationForm = ({ compact = false }) => {
           >
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
-              {loading ? "PROCESANDO..." : "SOLICITAR MESA"}
+              {loading ? "PROCESANDO..." : "SOLICITAR RESERVA"}
             </span>
           </motion.button>
         </div>

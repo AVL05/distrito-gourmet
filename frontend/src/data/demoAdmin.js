@@ -2,11 +2,20 @@ const demoUser = {
   id: 1,
   nombre: "Administrador Demo",
   email: "admin.demo@distritogourmet.local",
-  telefono: "+34 900 000 000",
+  telefono: "+34 960 12 34 56",
   rol: "Administrador",
 };
 
 export const demoAdminUser = demoUser;
+
+const isoDate = (offsetDays = 0) => {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  return date.toISOString().slice(0, 10);
+};
+
+const isoDateTime = (offsetDays = 0, time = "10:00:00") =>
+  `${isoDate(offsetDays)}T${time}`;
 
 export const demoAdminData = {
   categories: [
@@ -17,8 +26,8 @@ export const demoAdminData = {
   menu: [
     {
       id: 1,
-      nombre: "Croqueta de jamón ibérico",
-      descripcion: "Bechamel cremosa, velo de papada y pan crujiente.",
+      nombre: "Croquetas de jamón ibérico",
+      descripcion: "Bechamel cremosa, jamón ibérico y pan crujiente.",
       precio: "12.50",
       categoria_menu_id: 1,
       categoria: { id: 1, nombre: "entrantes" },
@@ -33,7 +42,7 @@ export const demoAdminData = {
     {
       id: 2,
       nombre: "Tartar de atún rojo",
-      descripcion: "Soja cítrica, aguacate asado y aire de lima.",
+      descripcion: "Soja cítrica, aguacate y encurtidos suaves.",
       precio: "21.00",
       categoria_menu_id: 1,
       categoria: { id: 1, nombre: "entrantes" },
@@ -157,24 +166,24 @@ export const demoAdminData = {
       codigo_reserva: "DG-DEMO-001",
       usuario_id: 2,
       usuario: { nombre: "Cliente Demo" },
-      fecha_reserva: "2026-06-15",
+      fecha_reserva: isoDate(0),
       hora_reserva: "21:00:00",
       comensales: 4,
       estado: "Pendiente",
       mesa_id: "",
-      creado_a: "2026-06-07T10:00:00",
+      creado_a: isoDateTime(-1, "10:00:00"),
     },
     {
       id: 2,
       codigo_reserva: "DG-DEMO-002",
       usuario_id: 2,
       usuario: { nombre: "Cliente Demo" },
-      fecha_reserva: "2026-06-18",
+      fecha_reserva: isoDate(2),
       hora_reserva: "14:00:00",
       comensales: 2,
       estado: "Confirmada",
       mesa_id: "M-04",
-      creado_a: "2026-06-07T11:00:00",
+      creado_a: isoDateTime(-1, "11:00:00"),
     },
   ],
   orders: [
@@ -185,7 +194,7 @@ export const demoAdminData = {
       usuario: { nombre: "Cliente Demo" },
       total: "45.50",
       metodo_pago: "card",
-      fecha_recogida: "2026-06-07",
+      fecha_recogida: isoDate(0),
       hora_recogida: "21:30:00",
       estado: "Pendiente",
       detalles: [
@@ -210,7 +219,7 @@ export const demoAdminData = {
       usuario: { nombre: "Cliente Demo" },
       total: "33.00",
       metodo_pago: "cash",
-      fecha_recogida: "2026-06-07",
+      fecha_recogida: isoDate(0),
       hora_recogida: "14:30:00",
       estado: "Cancelado",
       detalles: [

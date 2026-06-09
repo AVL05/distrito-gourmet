@@ -264,7 +264,7 @@ const TastingMenuEditRow = ({
             {edit.platos.map((plato, idx) => (
               <div
                 key={`${plato.id}-${idx}`}
-                className="bg-white/40 backdrop-blur-sm p-5 group/item hover:bg-white/60 transition-all border border-text-main/5 hover:border-primary/30 shadow-sm hover:shadow-md relative overflow-hidden"
+                className="bg-bg-surface/60 backdrop-blur-sm p-5 group/item hover:bg-bg-surface transition-all border border-text-main/5 hover:border-primary/30 shadow-sm hover:shadow-md relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary/10 group-hover/item:bg-primary transition-colors"></div>
 
@@ -349,7 +349,7 @@ const TastingMenuEditRow = ({
           </button>
           <button
             onClick={handleUpdate}
-            className="bg-primary hover:bg-white text-black px-12 py-4 font-bold text-[11px] uppercase tracking-[4px] transition-all shadow-[0_15px_30px_rgba(197,160,89,0.2)]"
+            className="bg-primary px-12 py-4 font-bold text-[11px] uppercase tracking-[4px] text-white transition-all shadow-[0_15px_30px_rgba(197,160,89,0.2)] hover:bg-primary-hover"
           >
             Guardar Configuración
           </button>
@@ -359,7 +359,7 @@ const TastingMenuEditRow = ({
   }
 
   return (
-    <div className="group bg-white border border-text-main/5 p-10 flex flex-col lg:flex-row gap-10 transition-all duration-700 relative overflow-hidden h-full hover:border-primary/30 hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)]">
+    <div className="group bg-bg-surface border border-text-main/5 p-10 flex flex-col lg:flex-row gap-10 transition-all duration-700 relative overflow-hidden h-full hover:border-primary/30 hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)]">
       <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:bg-primary/10 transition-all duration-1000"></div>
 
       <div className="flex-grow flex flex-col justify-between lg:w-2/3">

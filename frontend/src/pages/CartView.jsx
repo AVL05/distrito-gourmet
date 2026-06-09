@@ -92,7 +92,7 @@ const CartView = () => {
       Swal.fire({
         icon: "info",
         title: "Demo pública",
-        text: "El carrito es navegable, pero los pedidos están desactivados.",
+        text: "La selección es navegable, pero los pedidos de recogida están desactivados.",
         background: "#fdfaf6",
         color: "#2c302e",
         confirmButtonColor: "#e76f51",
@@ -214,7 +214,7 @@ const CartView = () => {
           <div className="w-16 h-[1px] bg-text-main/10 mb-8"></div>
           <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
             Le invitamos a explorar nuestra carta y descubrir las creaciones que
-            nuestro chef ha preparado para usted.
+            nuestro equipo de cocina ha preparado para usted.
           </p>
           <div className="flex justify-center">
             <Link
@@ -343,15 +343,15 @@ const CartView = () => {
               className="flex items-center gap-2 text-text-muted hover:text-text-main transition-colors mb-12 uppercase text-[10px] tracking-[3px] font-bold group"
             >
               <HiArrowLeft className="group-hover:-translate-x-1 transition-transform" />{" "}
-              Regresar al Carrito
+              Regresar a la Selección
             </button>
 
             <div className="text-center mb-16">
               <span className="block text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
-                / 02 Cobros
+                / 02 Recogida
               </span>
               <h1 className="font-heading text-4xl sm:text-6xl text-text-main mb-6">
-                Método de <span className="italic text-primary">Pago</span>
+                Pedido de <span className="italic text-primary">Recogida</span>
               </h1>
               <p className="text-text-muted uppercase text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[4px] font-normal">
                 Seleccione su preferencia de abono
@@ -369,7 +369,7 @@ const CartView = () => {
                   },
                   {
                     id: "cash",
-                    name: "Pago en Restaurante",
+                    name: "Pago en el Local",
                     icon: HiCash,
                     desc: "Abonar al recoger el pedido",
                   },

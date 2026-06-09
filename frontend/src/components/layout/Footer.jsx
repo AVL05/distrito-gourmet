@@ -1,4 +1,4 @@
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
 import {
   motion,
   useReducedMotion,
@@ -28,9 +28,8 @@ const Footer = () => {
               </h3>
             </Link>
             <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
-              Experiencias culinarias únicas en el corazón de Valencia. Un
-              santuario para los sentidos diseñado para paladares
-              extraordinarios.
+              Cocina española contemporánea en Valencia, con carta de temporada,
+              menú degustación y bodega seleccionada por copa y botella.
             </p>
           </div>
 
@@ -42,9 +41,9 @@ const Footer = () => {
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium">
-                Avenida de la Alta Gastronomía, 8
+                Calle del Pintor Salvador Abril, 12
                 <br />
-                Distrito Financiero
+                Barrio de Ruzafa
                 <br />
                 46004, Valencia (España)
               </p>
@@ -59,7 +58,7 @@ const Footer = () => {
                   href="tel:+34900000000"
                   className="hover:text-primary transition-colors py-1"
                 >
-                  +34 900 000 000
+                  +34 960 12 34 56
                 </a>
                 <a
                   href="mailto:info@distritogourmet.com"
@@ -84,7 +83,7 @@ const Footer = () => {
                   22:30
                 </span>
                 <span className="text-text-main/75 italic">
-                  Lunes: Descanso del Chef
+                  Lunes: cerrado
                 </span>
               </p>
             </div>
@@ -97,7 +96,7 @@ const Footer = () => {
             {[
               { icon: FaFacebookF, label: "Facebook" },
               { icon: FaInstagram, label: "Instagram" },
-              { icon: FaTwitter, label: "Twitter" },
+              { icon: FaTiktok, label: "TikTok" },
             ].map(({ icon: Icon, label }) => (
               <motion.a
                 key={label}
