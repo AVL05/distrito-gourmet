@@ -6,9 +6,21 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reserva;
+use Illuminate\Validation\Rule;
 
 class ReservaController extends Controller
 {
+    private const TURNOS = [
+        '13:00:00',
+        '13:30:00',
+        '14:00:00',
+        '14:30:00',
+        '20:00:00',
+        '20:30:00',
+        '21:00:00',
+        '21:30:00',
+    ];
+
     // Listar las reservas asociadas al usuario autenticado
     public function index()
     {
@@ -20,14 +32,19 @@ class ReservaController extends Controller
     // Registrar una nueva reserva validando disponibilidad y aforo
     public function store(Request $request)
     {
+        $request->merge([
+            'hora_reserva' => $this->normalizarHora($request->input('hora_reserva')),
+        ]);
+
         $request->validate([
             'fecha_reserva' => 'required|date|after_or_equal:today',
-            'hora_reserva' => 'required|string',
-            'comensales' => 'required|integer|min:1|max:44',
+            'hora_reserva' => ['required', Rule::in(self::TURNOS)],
+            'comensales' => 'required|integer|min:1|max:8',
             'peticiones_especiales' => 'nullable|string'
         ]);
 
         $fecha = $request->fecha_reserva;
+        $hora = $request->hora_reserva;
         $exists = Reserva::where('usuario_id', auth()->id())
             ->where('fecha_reserva', $fecha)
             ->where('estado', '!=', 'Cancelada')
@@ -40,6 +57,7 @@ class ReservaController extends Controller
         }
 
         $totalOccupancy = Reserva::where('fecha_reserva', $fecha)
+            ->where('hora_reserva', $hora)
             ->where('estado', '!=', 'Cancelada')
             ->sum('comensales');
 
@@ -48,7 +66,7 @@ class ReservaController extends Controller
         $res = Reserva::create([
             'usuario_id' => auth()->id(),
             'fecha_reserva' => $fecha,
-            'hora_reserva' => $request->hora_reserva,
+            'hora_reserva' => $hora,
             'comensales' => $request->comensales,
             'estado' => $estado,
             'peticiones_especiales' => $request->peticiones_especiales,
@@ -101,5 +119,14 @@ class ReservaController extends Controller
         $res = Reserva::findOrFail($id);
         $res->delete();
         return response()->json(['mensaje' => 'Reserva eliminada correctamente']);
+    }
+
+    private function normalizarHora(?string $hora): ?string
+    {
+        if (! $hora) {
+            return $hora;
+        }
+
+        return preg_match('/^\d{2}:\d{2}$/', $hora) ? "{$hora}:00" : $hora;
     }
 }

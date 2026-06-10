@@ -18,8 +18,8 @@ use App\Http\Controllers\API\UsuarioController;
 */
 
 // Rutas públicas (no requieren autenticación)
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 Route::get('/dishes', [PlatoController::class, 'index']); // Ver carta sin estar logueado
 
 // Rutas protegidas (requieren estar logueado)

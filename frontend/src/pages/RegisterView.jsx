@@ -86,13 +86,16 @@ const RegisterView = () => {
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
       <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-      <FadeIn className="w-full max-w-xl bg-bg-surface p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
+      <FadeIn className="w-full max-w-xl bg-bg-surface p-8 sm:p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
         <div className="text-center mb-16">
           <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-6 block font-body">
             / Unirse al Club
           </span>
-          <h2 className="text-5xl font-heading text-text-main leading-tight mb-6">
-            Su <span className="italic text-primary">Inscripción</span>
+          <h2 className="text-4xl sm:text-5xl font-heading text-text-main leading-tight mb-6">
+            Su{" "}
+            <span className="block sm:inline italic text-primary text-[2.65rem] sm:text-inherit">
+              Inscripción
+            </span>
           </h2>
           <div className="w-16 h-[1px] bg-text-main/10 mx-auto mb-6"></div>
           <p className="text-text-muted text-[13px] tracking-widest font-body uppercase">

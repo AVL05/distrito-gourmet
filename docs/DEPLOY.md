@@ -18,7 +18,7 @@ El proyecto está totalmente contenerizado, lo que facilita enormemente su despl
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/tu-usuario/distrito-gourmet.git
+git clone https://github.com/AVL05/distrito-gourmet.git
 cd distrito-gourmet
 ```
 
@@ -28,6 +28,11 @@ Crea los archivos `.env` base si no existen:
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 ```
+
+Variables clave:
+- `backend/.env`: credenciales MySQL, `APP_URL`, `APP_DEBUG=false` en producción.
+- `frontend/.env`: `VITE_API_URL` vacío si frontend y API comparten dominio mediante Nginx/Docker; con Vite separado, indicar el origen del backend Laravel.
+- `VITE_DEMO_MODE=true`: activa la demo pública sin escrituras reales cuando no hay API configurada.
 
 ### 3. Levantar los contenedores
 ```bash
@@ -56,7 +61,8 @@ Si prefieres trabajar directamente sobre tu sistema operativo:
 ### Frontend (React)
 1. Entra en `/frontend`.
 2. Ejecuta `npm install`.
-3. Inicia el entorno de desarrollo: `npm run dev`.
+3. Configura `VITE_API_URL` en `frontend/.env` si el backend está en otro origen.
+4. Inicia el entorno de desarrollo: `npm run dev`.
 
 ---
 
@@ -70,6 +76,25 @@ Para el entorno de producción en un servidor Ubuntu, se utiliza el script de ge
    ```bash
    */5 * * * * /path/to/distrito-gourmet/scripts/auto_update.sh >> /var/log/distrito_update.log 2>&1
    ```
+
+---
+
+## ✅ Checklist de Cierre
+
+Antes de entregar o desplegar:
+```bash
+npm --prefix frontend run lint
+npm --prefix frontend run build
+cd backend && php artisan test
+cd backend && php artisan route:list --path=api
+```
+
+Smoke test manual:
+- Carta pública carga platos, vinos, bebidas y menús degustación.
+- Login, perfil y dashboard funcionan con usuario cliente.
+- Reserva válida queda confirmada o pendiente según aforo del turno.
+- Pedido takeaway calcula total desde catálogo y aparece en dashboard.
+- Panel admin lista y actualiza reservas, pedidos, carta y usuarios.
 
 ---
 

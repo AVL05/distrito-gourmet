@@ -128,9 +128,9 @@ const Navbar = () => {
 
           <button
             className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-[70] ${
-              isAdminPage
+              isAdminPage && !isOpen
                 ? "h-11 w-11 border border-text-main/10 bg-bg-body/90 p-2 shadow-sm backdrop-blur"
-                : "w-8 h-8"
+                : "w-8 h-8 bg-transparent"
             }`}
             onClick={toggleMenu}
             aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
@@ -165,9 +165,9 @@ const Navbar = () => {
         <div className="absolute top-0 bottom-0 left-2/3 w-[1px] bg-white/5 hidden md:block" />
         <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-white/5 hidden md:block" />
 
-        <div className="relative z-10 h-full overflow-y-auto no-scrollbar flex flex-col justify-between mobile-safe-padding md:px-16 pt-24 sm:pt-28 md:pt-32 pb-8 md:pb-12">
+        <div className="relative z-10 h-full overflow-y-auto no-scrollbar flex flex-col justify-between mobile-safe-padding md:px-16 pt-24 sm:pt-28 md:pt-28 pb-8 md:pb-10">
           <nav
-            className="flex flex-col gap-1 md:gap-2"
+            className="flex flex-col gap-1 md:gap-1"
             style={{ perspective: "600px" }}
           >
             {mainLinks.map((link, i) => (
@@ -184,7 +184,7 @@ const Navbar = () => {
                   to={link.to}
                   onClick={closeMenu}
                   className={({ isActive }) =>
-                    `flex items-baseline gap-4 md:gap-8 py-2 md:py-3 transition-all duration-300 ${
+                    `flex items-baseline gap-4 md:gap-8 py-2 md:py-2 transition-all duration-300 ${
                       isActive ? "opacity-100" : "opacity-60 hover:opacity-100"
                     }`
                   }
@@ -192,7 +192,7 @@ const Navbar = () => {
                   <span className="font-body text-[10px] md:text-[11px] text-primary tracking-[0.2em] w-6 md:w-8 shrink-0 font-bold">
                     {romanNumerals[i]}
                   </span>
-                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-7xl lg:text-8xl text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary transition-colors duration-500 group-hover:italic break-words">
+                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-6xl lg:text-[5.25rem] 2xl:text-[5.75rem] text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary transition-colors duration-500 group-hover:italic break-words">
                     {link.label}
                   </span>
                 </NavLink>
@@ -203,7 +203,7 @@ const Navbar = () => {
             ))}
 
             <div
-              className={`nav-link-item mt-6 md:mt-10 ml-10 md:ml-16 flex flex-col gap-3 transition-all duration-500 ${
+              className={`nav-link-item mt-8 md:mt-12 ml-10 md:ml-16 flex flex-col gap-4 transition-all duration-500 ${
                 isOpen ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
               }`}
               style={{ transitionDelay: isOpen ? "440ms" : "0ms" }}
@@ -283,7 +283,7 @@ const Navbar = () => {
           </nav>
 
           <div
-            className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-0 mt-8 md:mt-0 pb-[env(safe-area-inset-bottom)] transition-all duration-500 ${
+            className={`flex flex-col md:flex-row justify-between items-start md:items-end gap-8 md:gap-12 mt-10 md:mt-10 pb-[env(safe-area-inset-bottom)] transition-all duration-500 ${
               isOpen ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
             }`}
             style={{ transitionDelay: isOpen ? "520ms" : "0ms" }}

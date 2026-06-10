@@ -11,22 +11,37 @@ const __dirname = path.dirname(__filename);
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const backendTarget = env.VITE_API_URL || "http://localhost:8000";
+  const backendTarget = env.VITE_API_URL?.trim();
 
   return {
     server: {
       host: "0.0.0.0",
       port: 5173,
-      // Proxy /api/* → Backend Laravel (evita problemas de CORS y acceso a red privada)
-      proxy: {
-        "/api": {
-          target: backendTarget,
-          changeOrigin: true,
-          secure: false,
+      ...(backendTarget
+        ? {
+            // Proxy /api/* hacia el backend configurado por entorno.
+            proxy: {
+              "/api": {
+                target: backendTarget,
+                changeOrigin: true,
+                secure: false,
+              },
+            },
+          }
+        : {}),
+    },
+    plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ["react", "react-dom", "react-router-dom"],
+            motion: ["gsap", "@gsap/react", "lenis"],
+            alerts: ["sweetalert2"],
+          },
         },
       },
     },
-    plugins: [react()],
     test: {
       globals: true,
       environment: "jsdom",

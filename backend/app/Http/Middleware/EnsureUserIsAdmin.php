@@ -10,7 +10,7 @@ class EnsureUserIsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! in_array($request->user()?->rol, ['Administrador', 'admin'], true)) {
+        if ($request->user()?->rol !== 'Administrador') {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Bebida;
 use App\Models\MenuDegustacion;
@@ -17,6 +18,23 @@ use App\Models\Vino;
 
 class PedidoController extends Controller
 {
+    private const METODOS_PAGO = ['card', 'cash', 'paypal'];
+
+    private const HORAS_RECOGIDA = [
+        '13:00:00',
+        '13:30:00',
+        '14:00:00',
+        '14:30:00',
+        '15:00:00',
+        '15:30:00',
+        '20:00:00',
+        '20:30:00',
+        '21:00:00',
+        '21:30:00',
+        '22:00:00',
+        '22:30:00',
+    ];
+
     // Obtener el historial de pedidos del usuario autenticado
     public function index()
     {
@@ -37,10 +55,17 @@ class PedidoController extends Controller
             return response()->json(['mensaje' => 'No autorizado'], 401);
         }
 
+        $request->merge([
+            'hora_recogida' => $this->normalizarHora($request->input('hora_recogida')),
+        ]);
+
         $request->validate([
-            'metodo_pago' => 'required|string|max:50',
-            'hora_recogida' => 'nullable|string',
-            'fecha_recogida' => 'nullable|date',
+            'metodo_pago' => ['required', Rule::in(self::METODOS_PAGO)],
+            'hora_recogida' => ['nullable', Rule::in(self::HORAS_RECOGIDA)],
+            'fecha_recogida' => ['nullable', 'date', Rule::in([
+                now()->toDateString(),
+                now()->addDay()->toDateString(),
+            ])],
             'articulos' => 'required|array|min:1',
             'articulos.*.db_id' => 'required|integer',
             'articulos.*.tipo_item' => 'required|string|in:plato,vino,bebida,menu_degustacion',
@@ -157,5 +182,14 @@ class PedidoController extends Controller
         $pedido = Pedido::findOrFail($id);
         $pedido->delete();
         return response()->json(['mensaje' => 'Pedido eliminado correctamente']);
+    }
+
+    private function normalizarHora(?string $hora): ?string
+    {
+        if (! $hora) {
+            return $hora;
+        }
+
+        return preg_match('/^\d{2}:\d{2}$/', $hora) ? "{$hora}:00" : $hora;
     }
 }

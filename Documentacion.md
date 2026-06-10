@@ -76,7 +76,7 @@ Laravel sigue el patrón **MVC** adaptado para APIs REST:
 distrito-gourmet/
 ├── backend/             # Aplicación Laravel 12
 ├── frontend/            # Aplicación React 19 + Vite
-├── nginx/               # Configuración Nginx para producción
+├── frontend/nginx.conf  # Configuración Nginx del contenedor frontend
 ├── scripts/             # Scripts de arranque del monorepo
 │   └── dev.js           # Script Node.js que lanza frontend y backend en paralelo
 ├── docker-compose.yml   # Orquestación de servicios Docker
@@ -165,9 +165,9 @@ backend/
 
 | Herramienta | Versión mínima | Notas                                      |
 | :---------- | :------------: | :----------------------------------------- |
-| PHP         |      8.2+      | Extensiones: mbstring, pdo, pdo_mysql, xml |
+| PHP         |      8.2+      | Extensiones: mbstring, pdo, pdo_mysql, pdo_sqlite, xml, zip |
 | Composer    |      2.x       | Gestor de dependencias PHP                 |
-| Node.js     |      18+       | Recomendado Node.js 20 LTS                 |
+| Node.js     |      20+       | Recomendado Node.js 22 LTS                 |
 | npm         |       9+       | Incluido con Node.js                       |
 | MySQL       |      8.0+      | O Docker para no instalarlo localmente     |
 | Git         |      2.x       | Para clonar el repositorio                 |
@@ -181,7 +181,7 @@ APP_NAME="Distrito Gourmet"
 APP_ENV=local
 APP_KEY=                          # Se genera con: php artisan key:generate
 APP_DEBUG=true
-APP_URL=http://localhost:8000
+APP_URL=http://127.0.0.1:8000
 
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -190,19 +190,17 @@ DB_DATABASE=distrito_gourmet
 DB_USERNAME=root
 DB_PASSWORD=tu_password
 
-SANCTUM_STATEFUL_DOMAINS=localhost:5173,localhost:8001
 SESSION_DRIVER=database
-
-FRONTEND_URL=http://localhost:5173
 ```
 
 #### Frontend (`frontend/.env`)
 
 ```env
-VITE_API_BASE_URL=http://localhost:8000/api
+VITE_API_URL=http://127.0.0.1:8000
+VITE_DEMO_MODE=false
 ```
 
-> En producción con Docker, `VITE_API_BASE_URL` apuntará al dominio correspondiente y Nginx actuará de proxy.
+> Deja `VITE_API_URL` vacío cuando frontend y backend compartan dominio mediante Nginx/Docker y se use `/api` relativo.
 
 ---
 
@@ -222,7 +220,6 @@ npm run dev       # Servidor de desarrollo Vite (HMR, puerto 5173)
 npm run build     # Build de producción → genera frontend/dist/
 npm run preview   # Previsualiza el build de producción localmente
 npm run lint      # Análisis estático con ESLint
-npm run test      # Ejecución de tests con Vitest
 ```
 
 ### Backend (`backend/`)
@@ -231,7 +228,7 @@ npm run test      # Ejecución de tests con Vitest
 php artisan serve              # Servidor de desarrollo Laravel (puerto 8000)
 php artisan migrate            # Ejecuta las migraciones pendientes
 php artisan migrate:fresh --seed   # Reinicia la BD y ejecuta todos los seeders
-php artisan test               # Ejecuta la suite de PHPUnit
+php artisan test               # Ejecuta la suite de PHPUnit (requiere pdo_sqlite)
 php artisan make:controller API/NombreController --api  # Crear nuevo controller REST
 php artisan route:list         # Lista todos los endpoints registrados
 ```
@@ -246,7 +243,7 @@ Todos los endpoints están bajo el prefijo `/api/`. La autenticación se realiza
 
 ```
 POST   /api/register           → Registro de usuario (público)
-POST   /api/login              → Login — devuelve { token, user } (público)
+POST   /api/login              → Login — devuelve { token, usuario } (público)
 POST   /api/logout             → Logout — invalida el token (auth)
 GET    /api/user               → Datos del usuario autenticado (auth)
 ```
@@ -254,68 +251,67 @@ GET    /api/user               → Datos del usuario autenticado (auth)
 ### Carta y Catálogo (todos públicos)
 
 ```
-GET    /api/platos             → Listado de platos con categoría
-GET    /api/vinos              → Vinos con tipo, región y notas de maridaje
-GET    /api/bebidas            → Bebidas disponibles
-GET    /api/menus-degustacion  → Menús degustación con platos incluidos
+GET    /api/dishes             → Carta completa: platos, vinos, bebidas y menús degustación
 ```
 
 ### Pedidos
 
 ```
-GET    /api/pedidos              → Historial del usuario autenticado (auth)
-POST   /api/pedidos              → Crear pedido (auth)
-GET    /api/pedidos/all          → Todos los pedidos (admin)
-PATCH  /api/pedidos/{id}/status  → Cambiar estado: Pendiente→Preparando→Listo→Entregado (admin)
-DELETE /api/pedidos/{id}         → Eliminar pedido (admin)
+GET    /api/orders              → Historial del usuario autenticado (auth)
+POST   /api/orders              → Crear pedido takeaway (auth)
+GET    /api/admin/orders        → Todos los pedidos (admin)
+PATCH  /api/admin/orders/{id}   → Cambiar estado: Pendiente→Preparando→Listo→Entregado (admin)
+DELETE /api/admin/orders/{id}   → Eliminar pedido (admin)
 ```
 
-**Payload para `POST /api/pedidos`:**
+**Payload para `POST /api/orders`:**
 
 ```json
 {
-  "total": 87.5,
-  "metodo_pago": "Tarjeta",
+  "metodo_pago": "card",
   "hora_recogida": "14:30",
-  "fecha_recogida": "2026-05-10",
+  "fecha_recogida": "2026-06-10",
   "articulos": [
     {
       "db_id": 3,
       "tipo_item": "plato",
       "nombre": "Carrillera Ibérica",
-      "cantidad": 2,
-      "precio": 28.5
+      "cantidad": 2
     },
     {
       "db_id": 1,
       "tipo_item": "vino",
       "nombre": "Ribera del Duero Reserva",
-      "cantidad": 1,
-      "precio": 30.5
+      "cantidad": 1
     }
   ]
 }
 ```
+
+**Métodos de pago válidos:** `card` · `cash` · `paypal`
+> El backend calcula precios y totales desde el catálogo; no confía en `precio` ni `total` enviados por cliente.
 
 **Estados del pedido (ENUM):** `Pendiente` · `Preparando` · `Listo` · `Entregado` · `Cancelado`
 
 ### Reservas
 
 ```
-GET    /api/reservas           → Reservas del usuario autenticado (auth)
-POST   /api/reservas           → Crear reserva (auth)
-GET    /api/reservas/all       → Todas las reservas (admin)
-PATCH  /api/reservas/{id}      → Actualizar estado (admin)
-DELETE /api/reservas/{id}      → Cancelar/eliminar (auth)
+GET    /api/reservations              → Reservas del usuario autenticado (auth)
+POST   /api/reservations              → Crear reserva (auth)
+GET    /api/admin/reservations        → Todas las reservas (admin)
+PATCH  /api/admin/reservations/{id}   → Actualizar estado (admin)
+DELETE /api/admin/reservations/{id}   → Eliminar reserva (admin)
 ```
 
 **Estados de reserva:** `Pendiente` · `Confirmada` · `Cancelada`
+**Reglas:** máximo 8 comensales por reserva y aforo de 44 comensales por turno.
 
 ### Usuarios (Admin)
 
 ```
-GET    /api/usuarios           → Listado de usuarios (admin)
-DELETE /api/usuarios/{id}      → Eliminar usuario (admin)
+GET    /api/admin/users        → Listado de usuarios (admin)
+PUT    /api/admin/users/{id}   → Actualizar usuario (admin)
+DELETE /api/admin/users/{id}   → Eliminar usuario (admin)
 ```
 
 ---
@@ -326,7 +322,7 @@ DELETE /api/usuarios/{id}      → Eliminar usuario (admin)
 
 | Tabla                     | Descripción                                                             |
 | :------------------------ | :---------------------------------------------------------------------- |
-| `usuarios`                | Usuarios del sistema (rol: admin / cliente)                             |
+| `usuarios`                | Usuarios del sistema (roles: Administrador, Cliente, Staff)             |
 | `platos`                  | Platos del menú con precio, categoría, alérgenos y flags de visibilidad |
 | `categorias_menu`         | Clasificación de platos (Entrantes, Principales, Postres, etc.)         |
 | `vinos`                   | Catálogo de vinos con tipo, región, uva y precios copa/botella          |
@@ -335,7 +331,7 @@ DELETE /api/usuarios/{id}      → Eliminar usuario (admin)
 | `platos_menu_degustacion` | Relación N:M entre menús y platos (con número de paso)                  |
 | `maridajes_plato_vino`    | Maridajes plato–vino con nivel de recomendación                         |
 | `reservas`                | Reservas de mesa con fecha, hora, comensales y estado                   |
-| `pedidos`                 | Cabecera de pedido (tipo: Sala, Takeaway, Delivery)                     |
+| `pedidos`                 | Cabecera de pedido; el flujo público actual crea pedidos Takeaway        |
 | `detalles_pedido`         | Líneas de pedido con referencia al ítem y precio unitario               |
 | `personal_access_tokens`  | Tokens Sanctum para autenticación stateless                             |
 
@@ -375,7 +371,7 @@ platos ──── categorias_menu
 2. Laravel valida credenciales → crea PersonalAccessToken
         │
         ▼
-3. Respuesta: { token: "1|xxxx...", user: { id, nombre, rol } }
+3. Respuesta: { token: "1|xxxx...", usuario: { id, nombre, rol } }
         │
         ▼
 4. Frontend guarda token en Zustand store (auth.js)
@@ -409,12 +405,12 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 - **Ejemplo en PedidoController:**
   ```php
   $request->validate([
-      'total'       => 'required|numeric',
-      'metodo_pago' => 'required|string',
+      'metodo_pago' => ['required', Rule::in(['card', 'cash', 'paypal'])],
+      'hora_recogida' => ['nullable', Rule::in([...])],
+      'fecha_recogida' => ['nullable', 'date'],
       'articulos'   => 'required|array|min:1',
       'articulos.*.tipo_item' => 'required|in:plato,vino,bebida,menu_degustacion',
       'articulos.*.cantidad'  => 'required|integer|min:1',
-      'articulos.*.precio'    => 'required|numeric',
   ]);
   ```
 
@@ -437,7 +433,7 @@ Accede a /cart
 Selecciona hora/fecha de recogida y método de pago
     │
     ▼
-POST /api/pedidos → Laravel crea Pedido + DetallesPedido en transacción DB
+POST /api/orders → Laravel valida catálogo, calcula importes y crea Pedido + DetallesPedido en transacción DB
     │
     ▼
 Respuesta 201 → SweetAlert2 muestra confirmación
@@ -452,19 +448,19 @@ Carrito se vacía → redirect a /dashboard
 Usuario navega /reservations
     │
     ▼
-Selecciona: fecha · hora · comensales · menú degustación (opcional)
+Selecciona: fecha · hora · comensales · preferencias
     │
     ▼
-POST /api/reservas → Laravel crea Reserva con código único
+POST /api/reservations → Laravel crea Reserva con código único
     │
     ▼
-Estado inicial: "Pendiente"
+Estado inicial: "Confirmada" si el turno tiene aforo; "Pendiente" si supera 44 comensales
     │
     ▼
-Admin confirma desde /admin → PATCH /api/reservas/{id}
+Admin gestiona desde /admin → PATCH /api/admin/reservations/{id}
     │
     ▼
-Estado cambia a: "Confirmada"
+Estado cambia entre: "Pendiente", "Confirmada" o "Cancelada"
 ```
 
 ---
@@ -516,22 +512,22 @@ const MenuView = lazy(() => import("./pages/MenuView"));
 
 ```bash
 cd backend
-php artisan test                  # Ejecuta toda la suite
-php artisan test --filter=Pedido  # Solo tests de pedidos
-php artisan test --coverage       # Con reporte de cobertura
+php artisan test                     # Ejecuta toda la suite
+php artisan test --filter=PfcClosure # Tests feature de cierre PFC
 ```
 
 **Tipos de tests implementados:**
 
-- **Unit Tests** (`tests/Unit/`): Validación de lógica de modelos, cálculos de impuestos, etc.
-- **Feature Tests** (`tests/Feature/`): Tests de endpoints HTTP con autenticación.
+- **Feature Tests** (`tests/Feature/`): autenticación, rate limit, reservas, pedidos y permisos admin.
 
-### Frontend — Vitest
+> La suite usa SQLite en memoria, por lo que el PHP local debe tener `pdo_sqlite` habilitado.
+
+### Frontend
 
 ```bash
 cd frontend
-npm run test          # Ejecuta tests en modo watch
-npm run test -- --run # Ejecuta una vez y termina (CI)
+npm run lint
+npm run build
 ```
 
 ---
@@ -547,9 +543,8 @@ docker-compose up -d --build
 El `docker-compose.yml` orquesta:
 
 - **`frontend`**: Build de Vite servido por Nginx.
-- **`backend`**: PHP-FPM con Laravel.
+- **`backend`**: Laravel servido en el contenedor backend.
 - **`db`**: MySQL 8.0 con volumen persistente.
-- **`nginx`**: Proxy inverso que unifica frontend y API en el puerto 8001.
 
 ### Opción B — Despliegue Manual
 
@@ -584,8 +579,6 @@ DB_DATABASE=distrito_gourmet_prod
 DB_USERNAME=usuario_prod
 DB_PASSWORD=contraseña_segura
 
-SANCTUM_STATEFUL_DOMAINS=tu-dominio.com
-FRONTEND_URL=https://tu-dominio.com
 ```
 
 ---
@@ -627,12 +620,13 @@ FRONTEND_URL=https://tu-dominio.com
 
 | Problema                       | Causa probable                                                | Solución                                                         |
 | :----------------------------- | :------------------------------------------------------------ | :--------------------------------------------------------------- |
-| `CORS error` en desarrollo     | El dominio del frontend no está en `SANCTUM_STATEFUL_DOMAINS` | Añadir `localhost:5173` al `.env`                                |
+| `/api/dishes` devuelve 404     | Vite está sin proxy al backend en desarrollo separado          | Definir `VITE_API_URL=http://127.0.0.1:8000` o usar `npm start`  |
 | `401 Unauthorized`             | Token expirado o no enviado en la cabecera                    | Revisar el store de auth y el interceptor de Axios               |
 | `500 Error` en migraciones     | Credenciales de BD incorrectas en `.env`                      | Verificar `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` |
 | Estilos Tailwind no se aplican | `tailwind.config.js` no incluye la ruta del archivo           | Añadir la ruta en `content: ['./src/**/*.{js,jsx}']`             |
 | Animaciones GSAP no funcionan  | GSAP no está instalado o el elemento no existe en el DOM      | Verificar instalación y usar `useEffect` con `gsap.context()`    |
-| Build de frontend falla        | Variables de entorno de Vite no definidas                     | Crear `frontend/.env` con `VITE_API_BASE_URL`                    |
+| Build de frontend falla        | Dependencias o variables de entorno incorrectas               | Ejecutar `npm install` y revisar `frontend/.env.example`         |
+| `php artisan test` falla SQLite | Falta la extensión `pdo_sqlite` en PHP                         | Activar `pdo_sqlite` o ejecutar la suite en CI                   |
 
 ---
 

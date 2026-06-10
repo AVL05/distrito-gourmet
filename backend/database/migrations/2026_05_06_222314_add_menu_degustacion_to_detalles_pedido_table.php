@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -12,7 +13,9 @@ return new class extends Migration {
     {
         Schema::table('detalles_pedido', function (Blueprint $table) {
             $table->unsignedBigInteger('menu_degustacion_id')->nullable()->after('bebida_id');
-            $table->foreign('menu_degustacion_id')->references('id')->on('menus_degustacion')->onDelete('set null');
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreign('menu_degustacion_id')->references('id')->on('menus_degustacion')->onDelete('set null');
+            }
         });
     }
 
@@ -22,7 +25,9 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('detalles_pedido', function (Blueprint $table) {
-            $table->dropForeign(['menu_degustacion_id']);
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign(['menu_degustacion_id']);
+            }
             $table->dropColumn('menu_degustacion_id');
         });
     }

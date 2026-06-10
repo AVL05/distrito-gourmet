@@ -48,7 +48,12 @@ Para profundizar en los aspectos técnicos o manuales de uso, consulta:
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tu-usuario/distrito-gourmet.git
+git clone https://github.com/AVL05/distrito-gourmet.git
+cd distrito-gourmet
+
+# Crear configuración base
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 
 # Levantar el entorno completo
 docker-compose up -d --build
@@ -56,6 +61,19 @@ docker-compose up -d --build
 # Inicializar base de datos y datos de prueba
 docker exec -it distrito-backend php artisan migrate --seed
 ```
+
+---
+
+## ✅ Validación de Entrega
+
+```bash
+npm --prefix frontend run lint
+npm --prefix frontend run build
+cd backend && php artisan test
+cd backend && php artisan route:list --path=api
+```
+
+Smoke test manual recomendado: carta, carrito, pedido takeaway, reserva, login, perfil, dashboard y panel de administración.
 
 ---
 **Desarrollado por:** Alex Vicente Lopez  

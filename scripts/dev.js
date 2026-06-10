@@ -53,6 +53,7 @@ const networkHost = getNetworkHost();
 const backendPort = 8000;
 const frontendPort = 5173;
 const shouldFreePorts = process.env.DG_FREE_PORTS === 'true';
+const backendProxyUrl = process.env.VITE_API_URL || `http://${networkHost}:${backendPort}`;
 
 const resolvePhpCommand = () => {
   if (process.env.PHP_BIN) return process.env.PHP_BIN;
@@ -195,6 +196,10 @@ const startFrontend = () => {
   frontend = spawn(frontendCommand, frontendArgs, {
     cwd: './frontend',
     shell: false,
+    env: {
+      ...process.env,
+      VITE_API_URL: backendProxyUrl,
+    },
   });
 
   frontend.stdout.on('data', data => {

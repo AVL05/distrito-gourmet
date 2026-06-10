@@ -30,11 +30,14 @@ Nunca se almacenan contraseñas en texto plano. Se utiliza el algoritmo de hashi
 
 ## 🚦 Validación y Sanitización
 
-### 1. Validación en el Servidor (Form Requests)
-Cada petición que llega a la API es validada rigurosamente mediante `FormRequests` de Laravel. Se comprueban tipos de datos, longitudes, formatos de email y la existencia de registros relacionados, evitando la entrada de datos corruptos o malintencionados.
+### 1. Validación en el Servidor
+Cada petición sensible que llega a la API es validada mediante las reglas de validación de Laravel en los controladores. Se comprueban tipos de datos, longitudes, formatos, estados permitidos, roles válidos, métodos de pago y disponibilidad de los artículos antes de escribir en base de datos.
 
-### 2. Protección CORS
-Se ha configurado una política de **Cross-Origin Resource Sharing (CORS)** estricta, permitiendo únicamente peticiones desde el dominio/IP oficial del frontend, bloqueando intentos de acceso desde sitios web externos no autorizados.
+### 2. Control de Origen y API
+El frontend consume la API mediante el prefijo `/api` y, en desarrollo, Vite puede proxificar las peticiones hacia Laravel usando `VITE_API_URL`. Los orígenes concretos se gestionan por entorno y no se hardcodean en el código fuente.
+
+### 3. Rate Limiting
+Las rutas públicas de autenticación (`/api/login` y `/api/register`) aplican límite de intentos por email/IP para reducir abuso por fuerza bruta.
 
 ---
 

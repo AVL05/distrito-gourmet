@@ -16,13 +16,13 @@ Para realizar reservas o pedidos, el usuario debe crear una cuenta en la secció
 
 ### 3. Reservas de Mesa
 - El cliente selecciona la fecha y hora deseada.
-- **Control de Aforo:** Si el restaurante está cerca de su límite (44 comensales), la reserva quedará en estado "Pendiente" hasta que un administrador la valide.
-- **Menús Especiales:** Se puede pre-seleccionar un "Menú Degustación" en el momento de la reserva.
+- **Control de Aforo por Turno:** Si el turno elegido supera el límite de 44 comensales, la reserva quedará en estado "Pendiente" hasta que un administrador la valide.
+- **Preferencias:** El cliente puede indicar alergias, celebraciones u observaciones para el equipo de sala.
 
 ### 4. Pedidos Online (Takeaway)
 - Los platos se añaden al carrito de compra.
 - El usuario selecciona la hora de recogida.
-- Recibirá notificaciones sobre el estado de su pedido (Preparando -> Listo para recoger).
+- El pedido queda registrado en su área personal y el estado puede actualizarse desde administración.
 
 ---
 
@@ -41,5 +41,5 @@ El personal del restaurante accede mediante una cuenta con privilegios de **Admi
 - **Monitor de Pedidos:** Interfaz optimizada para cocina donde se actualiza el estado de los pedidos en tiempo real.
 
 ### 3. Configuración del Local
-- Ajuste del horario de apertura y cierre.
-- Modificación del límite de comensales máximo por franja horaria.
+- Los horarios y el límite de aforo están definidos por la lógica actual del sistema.
+- Cambios de horario o capacidad requieren ajuste técnico en la aplicación.

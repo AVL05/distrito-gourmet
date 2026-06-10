@@ -1,6 +1,6 @@
 # Documentación API — Distrito Gourmet
 
-> Base URL: `http://localhost:8000/api`
+> Base URL: `/api` cuando frontend y backend comparten dominio. En desarrollo con Vite separado, configurar `VITE_API_URL` y usar `{VITE_API_URL}/api`.
 > Autenticación: **Bearer Token** (Laravel Sanctum)
 
 ---
@@ -25,14 +25,14 @@ POST /api/register
   "nombre": "Nuevo Cliente",
   "email": "nuevo.cliente@example.com",
   "password": "password",
-  "password_confirmation": "password"
+  "telefono": "+34 600 000 000"
 }
 ```
 **Respuesta:** `201 Created`
 ```json
 {
   "token": "1|xxxx...",
-  "user": { "id": 4, "nombre": "Nuevo Cliente", "rol": "Cliente" }
+  "usuario": { "id": 4, "nombre": "Nuevo Cliente", "rol": "Cliente" }
 }
 ```
 
@@ -53,9 +53,10 @@ POST /api/login
 ```json
 {
   "token": "1|xxxx...",
-  "user": { "id": 1, "nombre": "Admin Michelin", "rol": "Administrador" }
+  "usuario": { "id": 1, "nombre": "Admin Michelin", "rol": "Administrador" }
 }
 ```
+> `POST /api/register` y `POST /api/login` tienen rate limit de 5 intentos por minuto por email/IP.
 
 ---
 
@@ -132,7 +133,7 @@ Authorization: Bearer {token}
   }
 }
 ```
-> Si la ocupación total supera **44 comensales** en esa fecha, el estado será `"Pendiente"` en lugar de `"Confirmada"`.
+**Reglas:** máximo 8 comensales por reserva; horarios permitidos `13:00`, `13:30`, `14:00`, `14:30`, `20:00`, `20:30`, `21:00`, `21:30`; si la ocupación supera **44 comensales en el mismo turno**, el estado será `"Pendiente"` en lugar de `"Confirmada"`.
 
 ---
 
@@ -146,8 +147,7 @@ Authorization: Bearer {token}
 **Body:**
 ```json
 {
-  "total": 58.50,
-  "metodo_pago": "Tarjeta",
+  "metodo_pago": "card",
   "hora_recogida": "14:30",
   "fecha_recogida": "2026-06-15",
   "articulos": [
@@ -155,20 +155,20 @@ Authorization: Bearer {token}
       "db_id": 5,
       "tipo_item": "plato",
       "nombre": "Solomillo de Vaca Madurada",
-      "cantidad": 1,
-      "precio": 32.00
+      "cantidad": 1
     },
     {
       "db_id": 1,
       "tipo_item": "vino",
       "nombre": "Pago de Carraovejas",
-      "cantidad": 1,
-      "precio": 48.00
+      "cantidad": 1
     }
   ]
 }
 ```
 **Valores válidos para `tipo_item`:** `plato` · `vino` · `bebida` · `menu_degustacion`
+**Valores válidos para `metodo_pago`:** `card` · `cash` · `paypal`
+> El backend ignora `precio` y `total` enviados por cliente; calcula importes desde el catálogo disponible.
 
 ---
 
@@ -188,6 +188,7 @@ GET    /api/admin/reservations          → Todas las reservas ordenadas por est
 PATCH  /api/admin/reservations/{id}     → Cambiar estado
 DELETE /api/admin/reservations/{id}     → Eliminar reserva
 ```
+**Estados válidos:** `Pendiente`, `Confirmada`, `Cancelada`.
 
 ### Pedidos
 ```
@@ -206,6 +207,7 @@ GET    /api/admin/users                 → Listado de usuarios
 PUT    /api/admin/users/{id}            → Actualizar datos de usuario
 DELETE /api/admin/users/{id}            → Eliminar usuario
 ```
+**Roles válidos:** `Administrador`, `Cliente`, `Staff`. Un administrador no puede eliminar su propio usuario.
 
 ### Carta (CRUD completo)
 ```
@@ -219,7 +221,14 @@ PUT    /api/admin/wines/{id}            → Editar vino
 DELETE /api/admin/wines/{id}            → Eliminar vino
 
 GET    /api/admin/beverages             → Listado de bebidas
+POST   /api/admin/beverages             → Crear bebida
+PUT    /api/admin/beverages/{id}        → Editar bebida
+DELETE /api/admin/beverages/{id}        → Eliminar bebida
+
 GET    /api/admin/tasting-menus         → Listado de menús degustación
+POST   /api/admin/tasting-menus         → Crear menú degustación
+PUT    /api/admin/tasting-menus/{id}    → Editar menú degustación
+DELETE /api/admin/tasting-menus/{id}    → Eliminar menú degustación
 ```
 
 ---
@@ -231,5 +240,7 @@ GET    /api/admin/tasting-menus         → Listado de menús degustación
 | `200` | OK — Petición correcta |
 | `201` | Created — Recurso creado |
 | `401` | Unauthorized — Token ausente o inválido |
+| `403` | Forbidden — Usuario sin permisos suficientes |
+| `429` | Too Many Requests — Rate limit alcanzado |
 | `422` | Unprocessable — Error de validación |
 | `500` | Server Error — Error interno del servidor |

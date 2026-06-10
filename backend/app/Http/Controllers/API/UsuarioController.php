@@ -34,7 +34,8 @@ class UsuarioController extends Controller
             'nombre' => 'sometimes|required|string|max:255',
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'telefono' => 'nullable|string|max:20',
-            'password' => 'nullable|string|min:8'
+            'password' => 'nullable|string|min:8',
+            'rol' => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])]
         ]);
 
         $data = $request->only(['nombre', 'email', 'telefono']);
@@ -59,6 +60,11 @@ class UsuarioController extends Controller
     {
         try {
             $user = Usuario::findOrFail($id);
+
+            if ($user->id === auth()->id()) {
+                return response()->json(['message' => 'No puede eliminar su propio usuario administrador'], 422);
+            }
+
             $user->delete();
             return response()->json(['message' => 'Usuario eliminado correctamente']);
         } catch (\Exception $e) {

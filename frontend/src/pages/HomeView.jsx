@@ -38,7 +38,8 @@ const HomeView = () => {
             as="h1"
             staggerDelay={0.04}
             delay={0.2}
-            className="text-[clamp(3rem,16vw,7rem)] md:text-[8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
+            allowWrap={false}
+            className="text-[clamp(2.35rem,10.5vw,7rem)] md:text-[8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
           />
           <TextReveal
             text="Gourmet"
@@ -46,7 +47,8 @@ const HomeView = () => {
             as="span"
             staggerDelay={0.04}
             delay={0.5}
-            className="italic text-[clamp(3rem,14vw,6rem)] md:text-[7rem] text-primary font-heading mb-6 justify-center"
+            allowWrap={false}
+            className="italic text-[clamp(2.75rem,12vw,6rem)] md:text-[7rem] text-primary font-heading mb-6 justify-center"
           />
 
           <FadeIn delay={0.9}>

@@ -15,6 +15,7 @@ export const TextReveal = ({
   staggerDelay = 0.05,
   delay = 0,
   once = true,
+  allowWrap = true,
   className = "",
   ...props
 }) => {
@@ -50,7 +51,11 @@ export const TextReveal = ({
     <Component
       ref={container}
       className={className}
-      style={{ perspective: "800px", display: "flex", flexWrap: "wrap" }}
+      style={{
+        perspective: "800px",
+        display: "flex",
+        flexWrap: allowWrap ? "wrap" : "nowrap",
+      }}
       aria-label={text}
       {...props}
     >
