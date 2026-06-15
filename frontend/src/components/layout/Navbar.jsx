@@ -56,6 +56,11 @@ const Navbar = () => {
     { to: "/reservations", label: "Reservas" },
     { to: "/contact", label: "Contacto" },
   ];
+  const socialLinks = [
+    { label: "Instagram ficticio", text: "Ig" },
+    { label: "Facebook ficticio", text: "Fb" },
+    { label: "TikTok ficticio", text: "Tk" },
+  ];
 
   return (
     <div>
@@ -85,12 +90,14 @@ const Navbar = () => {
               onClick={closeMenu}
               className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
               title="Selección"
+              aria-label={`Ver selección (${totalItems()} artículos)`}
             >
               <svg
                 className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -292,18 +299,12 @@ const Navbar = () => {
               <span className="text-primary text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Reservas
               </span>
-              <a
-                href="tel:+34960123456"
-                className="text-bg-body/50 text-[12px] font-body tracking-widest hover:text-primary transition-colors"
-              >
-                +34 960 12 34 56
-              </a>
-              <a
-                href="mailto:info@distritogourmet.com"
-                className="text-bg-body/50 text-[12px] font-body tracking-widest hover:text-primary transition-colors"
-              >
-                info@distritogourmet.com
-              </a>
+              <span className="text-bg-body/50 text-[12px] font-body tracking-widest">
+                +34 960 00 00 00
+              </span>
+              <span className="text-bg-body/50 text-[12px] font-body tracking-widest">
+                info@distrito-gourmet.test
+              </span>
             </div>
 
             <div className="hidden md:flex flex-col gap-1 text-center">
@@ -316,26 +317,19 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-6">
-              <a
-                href="#"
-                className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
-              >
-                Ig
-              </a>
-              <span className="text-bg-body/10">|</span>
-              <a
-                href="#"
-                className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
-              >
-                Fb
-              </a>
-              <span className="text-bg-body/10">|</span>
-              <a
-                href="#"
-                className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
-              >
-                Tk
-              </a>
+              {socialLinks.map((link, index) => (
+                <div key={link.label} className="flex items-center gap-6">
+                  <span
+                    aria-label={link.label}
+                    className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
+                  >
+                    {link.text}
+                  </span>
+                  {index < socialLinks.length - 1 && (
+                    <span className="text-bg-body/10">|</span>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>

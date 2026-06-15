@@ -11,6 +11,20 @@ import { Link } from "react-router-dom";
 // Pie de página del sitio web con animaciones sutiles
 const Footer = () => {
   const shouldReduceMotion = useReducedMotion();
+  const socialLinks = [
+    {
+      icon: FaFacebookF,
+      label: "Facebook",
+    },
+    {
+      icon: FaInstagram,
+      label: "Instagram",
+    },
+    {
+      icon: FaTiktok,
+      label: "TikTok",
+    },
+  ];
 
   return (
     <footer className="bg-bg-body relative border-t border-text-main/10 pt-20 pb-10 overflow-hidden">
@@ -28,8 +42,8 @@ const Footer = () => {
               </h3>
             </Link>
             <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
-              Cocina española contemporánea en Valencia, con carta de temporada,
-              menú degustación y bodega seleccionada por copa y botella.
+              Restaurante ficticio de cocina española contemporánea creado como
+              proyecto académico de final de curso.
             </p>
           </div>
 
@@ -41,11 +55,11 @@ const Footer = () => {
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium">
-                Calle del Pintor Salvador Abril, 12
+                Calle de la Mesa Imaginaria, 12
                 <br />
-                Barrio de Ruzafa
+                Distrito Gastronómico Ficticio
                 <br />
-                46004, Valencia (España)
+                46000, Valencia
               </p>
             </div>
             <div className="text-left">
@@ -54,18 +68,8 @@ const Footer = () => {
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
-                <a
-                  href="tel:+34900000000"
-                  className="hover:text-primary transition-colors py-1"
-                >
-                  +34 960 12 34 56
-                </a>
-                <a
-                  href="mailto:info@distritogourmet.com"
-                  className="hover:text-primary transition-colors py-1"
-                >
-                  info@distritogourmet.com
-                </a>
+                <span className="py-1">+34 960 00 00 00</span>
+                <span className="py-1">info@distrito-gourmet.test</span>
               </p>
             </div>
             <div className="text-left">
@@ -93,14 +97,10 @@ const Footer = () => {
         {/* Barra inferior con redes sociales y links legales */}
         <div className="border-t border-text-main/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex gap-4">
-            {[
-              { icon: FaFacebookF, label: "Facebook" },
-              { icon: FaInstagram, label: "Instagram" },
-              { icon: FaTiktok, label: "TikTok" },
-            ].map(({ icon: Icon, label }) => (
-              <motion.a
+            {socialLinks.map(({ icon: Icon, label }) => (
+              <motion.span
                 key={label}
-                href="#"
+                aria-label={label}
                 whileHover={
                   shouldReduceMotion ? undefined : { scale: 1.1, y: -2 }
                 }
@@ -108,20 +108,20 @@ const Footer = () => {
                 className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300"
               >
                 <Icon size={12} />
-              </motion.a>
+              </motion.span>
             ))}
           </div>
 
           <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex gap-8 font-medium">
-            <a href="#" className="hover:text-text-main transition-colors">
+            <Link to="/legal" className="hover:text-text-main transition-colors">
               Aviso Legal
-            </a>
-            <a href="#" className="hover:text-text-main transition-colors">
+            </Link>
+            <Link to="/privacy" className="hover:text-text-main transition-colors">
               Política de Privacidad
-            </a>
-            <a href="#" className="hover:text-text-main transition-colors">
+            </Link>
+            <Link to="/cookies" className="hover:text-text-main transition-colors">
               Cookies
-            </a>
+            </Link>
           </div>
 
           <p className="text-text-main/70 text-[10px] uppercase tracking-[3px] font-medium">

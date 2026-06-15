@@ -1,5 +1,6 @@
 import { useCartStore } from "@/store/cart";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "@/services/api";
 import { HAS_CONFIGURED_API, USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { demoMenuData } from "@/data/demoMenu";
@@ -14,10 +15,13 @@ import {
   MotionButton,
 } from "@/motion";
 
+const MENU_REQUEST_TIMEOUT_MS = 7000;
+
 // Carga y organización de la carta gastronómica por categorías desde el servidor
 const MenuView = () => {
-  const { addItem } = useCartStore();
+  const { addItem, totalItems, totalPrice } = useCartStore();
   const [activeCategory, setActiveCategory] = useState("carta");
+  const [addedItemId, setAddedItemId] = useState(null);
   const [menuData, setMenuData] = useState({
     dishes: [],
     beverages: [],
@@ -34,6 +38,14 @@ const MenuView = () => {
     { id: "bodega", label: "Bodega" },
     { id: "menus", label: "Menús" },
   ];
+  const cartCount = totalItems();
+  const cartTotal = totalPrice();
+
+  const handleAddItem = (item) => {
+    addItem(item);
+    setAddedItemId(item.id);
+    window.setTimeout(() => setAddedItemId(null), 1400);
+  };
 
   // Trae los platos, vinos y demás desde la API
   useEffect(() => {
@@ -45,7 +57,12 @@ const MenuView = () => {
       }
 
       try {
-        const response = await axios.get("/dishes");
+        const response = await axios.get("/dishes", {
+          timeout: MENU_REQUEST_TIMEOUT_MS,
+        });
+        if (!response.data || typeof response.data !== "object") {
+          throw new Error("Respuesta de carta inválida");
+        }
         const { platos, vinos, bebidas, menus_degustacion } = response.data;
 
         // Formatear platos
@@ -111,7 +128,9 @@ const MenuView = () => {
         });
         setLoadError(false);
       } catch (e) {
-        console.error("No se pudo cargar la carta", e);
+        if (import.meta.env.DEV) {
+          console.error("No se pudo cargar la carta", e);
+        }
         setLoadError(true);
       } finally {
         setLoading(false);
@@ -243,7 +262,11 @@ const MenuView = () => {
                       <StaggerList className="flex flex-col w-full max-w-5xl mx-auto px-0 sm:px-4">
                         {items.map((item) => (
                           <StaggerItem key={item.id}>
-                            <DishRow item={item} addItem={addItem} />
+                            <DishRow
+                              item={item}
+                              addItem={handleAddItem}
+                              isAdded={addedItemId === item.id}
+                            />
                           </StaggerItem>
                         ))}
                       </StaggerList>
@@ -323,6 +346,27 @@ const MenuView = () => {
           </PageTransition>
         )}
       </div>
+      {cartCount > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-text-main/10 bg-bg-body/95 backdrop-blur-xl px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
+          <div className="container flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-center sm:text-left">
+              <span className="block text-[10px] uppercase tracking-[3px] text-text-muted font-body">
+                Selección para recogida
+              </span>
+              <span className="font-heading text-xl text-text-main">
+                {cartCount} {cartCount === 1 ? "artículo" : "artículos"} ·{" "}
+                {cartTotal.toFixed(2)}€
+              </span>
+            </div>
+            <Link
+              to="/cart"
+              className="group relative w-full sm:w-auto px-8 py-3 bg-text-main text-bg-body font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all hover:bg-primary text-center"
+            >
+              <span className="relative z-10 font-bold">Ver carrito</span>
+            </Link>
+          </div>
+        </div>
+      )}
     </PageTransition>
   );
 };
@@ -350,7 +394,7 @@ const SectionHeader = ({ index, label }) => (
 );
 
 // Fila de plato individual. Aquí es donde se añade al carrito.
-const DishRow = ({ item, addItem }) => (
+const DishRow = ({ item, addItem, isAdded }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
     <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
       <div className="flex-grow">
@@ -386,11 +430,15 @@ const DishRow = ({ item, addItem }) => (
       </span>
       <MotionButton
         onClick={() => addItem(item)}
-        className="group w-full md:w-auto relative px-8 py-3 bg-transparent border border-text-main/30 text-text-main font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 hover:border-primary focus:outline-none"
+        className={`group w-full md:w-auto relative px-8 py-3 border font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 focus:outline-none ${
+          isAdded
+            ? "bg-primary border-primary text-white"
+            : "bg-transparent border-text-main/30 text-text-main hover:border-primary"
+        }`}
       >
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[500ms] ease-out group-hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
-          Añadir para Recogida
+          {isAdded ? "Añadido" : "Añadir para Recogida"}
         </span>
       </MotionButton>
     </div>
@@ -567,9 +615,16 @@ const ApiUnavailableState = () => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">!</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
-      La carta no está disponible en este momento. La demo tiene un backend
-      configurado y no usa datos simulados cuando la API no responde.
+      La carta no está disponible en este momento. Compruebe la conexión con la
+      API o vuelva a intentarlo en unos segundos.
     </p>
+    <button
+      type="button"
+      onClick={() => window.location.reload()}
+      className="mt-8 font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+    >
+      Reintentar carga
+    </button>
   </FadeIn>
 );
 

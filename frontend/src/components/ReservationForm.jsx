@@ -9,7 +9,7 @@ import {
 import { useAuthStore } from "@/store/auth";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Formulario de reserva de mesa
@@ -185,6 +185,18 @@ const ReservationForm = ({ compact = false }) => {
             Reservas desactivadas en modo demo
           </div>
         )}
+        {!IS_PUBLIC_DEMO && !user && (
+          <div className="mb-8 border border-text-main/10 bg-text-main/5 px-4 py-4 text-center text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[2px] text-text-main font-body font-bold">
+            Para confirmar la reserva necesita{" "}
+            <Link
+              to="/login"
+              className="text-primary border-b border-primary pb-[1px] hover:text-primary-hover hover:border-primary-hover transition-colors"
+            >
+              iniciar sesión
+            </Link>
+            .
+          </div>
+        )}
 
         {!compact && (
           <div className="text-center mb-10 md:mb-12">
@@ -200,10 +212,14 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="mb-7 md:mb-8 relative group">
           {/* Campo: Nombre del cliente */}
-          <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
+          <label
+            htmlFor="reservation-name"
+            className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+          >
             Nombre Completo
           </label>
           <input
+            id="reservation-name"
             type="text"
             name="name"
             value={form.name}
@@ -217,10 +233,14 @@ const ReservationForm = ({ compact = false }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 mb-7 md:mb-8">
           <div className="relative group">
             {/* Campo: Teléfono de contacto */}
-            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
+            <label
+              htmlFor="reservation-phone"
+              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+            >
               Teléfono
             </label>
             <input
+              id="reservation-phone"
               type="tel"
               name="phone"
               value={form.phone}
@@ -232,10 +252,14 @@ const ReservationForm = ({ compact = false }) => {
           </div>
           <div className="relative group">
             {/* Desplegable: Número de comensales */}
-            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
+            <label
+              htmlFor="reservation-guests"
+              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+            >
               Comensales (Máx. 8)
             </label>
             <select
+              id="reservation-guests"
               name="guests"
               value={form.guests}
               onChange={handleChange}
@@ -258,7 +282,10 @@ const ReservationForm = ({ compact = false }) => {
           <div className="relative group">
             {/* Campo: Fecha para la reserva */}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1 mb-2">
-              <label className="text-[12px] uppercase tracking-[2px] text-primary transition-colors group-focus-within:text-primary font-bold mb-0">
+              <label
+                htmlFor="reservation-date"
+                className="text-[12px] uppercase tracking-[2px] text-primary transition-colors group-focus-within:text-primary font-bold mb-0"
+              >
                 Fecha de la Experiencia
               </label>
               <span className="text-[9px] uppercase tracking-[2px] text-text-muted/60 italic">
@@ -266,6 +293,7 @@ const ReservationForm = ({ compact = false }) => {
               </span>
             </div>
             <input
+              id="reservation-date"
               type="date"
               name="date"
               value={form.date}
@@ -278,10 +306,14 @@ const ReservationForm = ({ compact = false }) => {
           </div>
           <div className="relative group">
             {/* Desplegable: Turnos disponibles */}
-            <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
+            <label
+              htmlFor="reservation-time"
+              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+            >
               Turno
             </label>
             <select
+              id="reservation-time"
               name="time"
               value={form.time}
               onChange={handleChange}
@@ -302,10 +334,14 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="mb-10 md:mb-12 relative group">
           {/* Campo opcional para alergias o comentarios */}
-          <label className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold">
+          <label
+            htmlFor="reservation-comments"
+            className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+          >
             Preferencias / Restricciones
           </label>
           <textarea
+            id="reservation-comments"
             name="comments"
             value={form.comments}
             onChange={handleChange}

@@ -9,10 +9,14 @@ import { useAuthStore } from "./store/auth";
 const AdminView = lazy(() => import("./pages/AdminView"));
 const CartView = lazy(() => import("./pages/CartView"));
 const ContactView = lazy(() => import("./pages/ContactView"));
+const CookiePolicyView = lazy(() => import("./pages/CookiePolicyView"));
 const DashboardView = lazy(() => import("./pages/DashboardView"));
 const HomeView = lazy(() => import("./pages/HomeView"));
+const LegalNoticeView = lazy(() => import("./pages/LegalNoticeView"));
 const LoginView = lazy(() => import("./pages/LoginView"));
 const MenuView = lazy(() => import("./pages/MenuView"));
+const NotFoundView = lazy(() => import("./pages/NotFoundView"));
+const PrivacyPolicyView = lazy(() => import("./pages/PrivacyPolicyView"));
 const RegisterView = lazy(() => import("./pages/RegisterView"));
 const ReservationsView = lazy(() => import("./pages/ReservationsView"));
 const ProfileView = lazy(() => import("./pages/ProfileView"));
@@ -62,6 +66,9 @@ const App = () => {
             <Route path="reservations" element={<ReservationsView />} />
             <Route path="cart" element={<CartView />} />
             <Route path="contact" element={<ContactView />} />
+            <Route path="legal" element={<LegalNoticeView />} />
+            <Route path="privacy" element={<PrivacyPolicyView />} />
+            <Route path="cookies" element={<CookiePolicyView />} />
 
             {/* Rutas protegidas (requieren login) */}
             <Route
@@ -90,6 +97,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
+            <Route path="*" element={<NotFoundView />} />
           </Route>
         </Routes>
       </Suspense>

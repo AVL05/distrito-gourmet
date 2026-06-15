@@ -6,6 +6,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reserva;
+use App\Services\DiscordReservationNotifier;
 use Illuminate\Validation\Rule;
 
 class ReservaController extends Controller
@@ -20,6 +21,11 @@ class ReservaController extends Controller
         '21:00:00',
         '21:30:00',
     ];
+
+    public function __construct(
+        private readonly DiscordReservationNotifier $discordReservationNotifier
+    ) {
+    }
 
     // Listar las reservas asociadas al usuario autenticado
     public function index()
@@ -72,6 +78,8 @@ class ReservaController extends Controller
             'peticiones_especiales' => $request->peticiones_especiales,
             'codigo_reserva' => strtoupper(substr(uniqid(), -8))
         ]);
+
+        $this->discordReservationNotifier->notify($res, auth()->user());
 
         $mensaje = $estado === 'Pendiente'
             ? 'Su reserva ha quedado PENDIENTE de aprobación.'

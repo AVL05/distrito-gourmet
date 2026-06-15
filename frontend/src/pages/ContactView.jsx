@@ -59,20 +59,15 @@ const ContactView = () => {
               </h3>
               <div>
                 <p className="text-text-muted font-body font-normal leading-relaxed text-[15px] tracking-wide mb-6">
-                  Barrio de Ruzafa
+                  Distrito Gastronómico Ficticio
                   <br />
-                  Calle del Pintor Salvador Abril, 12
+                  Calle de la Mesa Imaginaria, 12
                   <br />
-                  46004, Valencia, España
+                  46000, Valencia
                 </p>
-                <a
-                  href="https://maps.google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-body text-[10px] uppercase tracking-[3px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors"
-                >
-                  Abrir en el mapa
-                </a>
+                <span className="font-body text-[10px] uppercase tracking-[3px] text-text-main/50">
+                  Ubicación ficticia para proyecto académico
+                </span>
               </div>
             </div>
 
@@ -85,23 +80,13 @@ const ContactView = () => {
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Mesa y Reservas
                   </span>
-                  <a
-                    href="tel:+34900000000"
-                    className="hover:text-primary transition-colors"
-                  >
-                    +34 960 12 34 56
-                  </a>
+                  <span>+34 960 00 00 00</span>
                 </p>
                 <p className="mb-4">
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Privados & Eventos
                   </span>
-                  <a
-                    href="mailto:eventos@distritogourmet.com"
-                    className="hover:text-primary transition-colors"
-                  >
-                    eventos@distritogourmet.com
-                  </a>
+                  <span>eventos@distrito-gourmet.test</span>
                 </p>
               </div>
             </div>
@@ -137,16 +122,19 @@ const ContactView = () => {
                 <span className="italic text-primary">Personalizada</span>
               </h3>
               <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-normal tracking-wide mb-10 sm:mb-12">
-                Nuestro equipo de Distrito Gourmet le atenderá con la mayor
-                brevedad posible.
+                Formulario simulado para el flujo de contacto del proyecto.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
                 <div className="relative group">
-                  <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
+                  <label
+                    htmlFor="contact-name"
+                    className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body"
+                  >
                     Nombre y Apellidos
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -156,10 +144,14 @@ const ContactView = () => {
                   />
                 </div>
                 <div className="relative group">
-                  <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
+                  <label
+                    htmlFor="contact-email"
+                    className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body"
+                  >
                     Correo Electrónico
                   </label>
                   <input
+                    id="contact-email"
                     type="email"
                     value={form.email}
                     onChange={(e) =>
@@ -171,10 +163,14 @@ const ContactView = () => {
                   />
                 </div>
                 <div className="relative group">
-                  <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
+                  <label
+                    htmlFor="contact-message"
+                    className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body"
+                  >
                     Mensaje / Consulta
                   </label>
                   <textarea
+                    id="contact-message"
                     rows="4"
                     value={form.message}
                     onChange={(e) =>

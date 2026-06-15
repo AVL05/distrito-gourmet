@@ -19,7 +19,7 @@ const HomeView = () => {
       <ScrollProgress />
 
       {/* Sección principal de bienvenida */}
-      <section className="relative min-h-[100svh] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
+      <section className="relative min-h-[92svh] md:min-h-[88svh] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
         {/* Imagen de fondo con filtro */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30 grayscale"
@@ -30,7 +30,7 @@ const HomeView = () => {
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-        <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center min-h-[100svh] py-28 sm:py-32">
+        <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center min-h-[92svh] md:min-h-[88svh] pt-24 pb-20 sm:pt-28 sm:pb-24">
           {/* Título con Text Reveal caracter por caracter (estilo Lucky Folks) */}
           <TextReveal
             text="Distrito"
@@ -39,7 +39,7 @@ const HomeView = () => {
             staggerDelay={0.04}
             delay={0.2}
             allowWrap={false}
-            className="text-[clamp(2.35rem,10.5vw,7rem)] md:text-[8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
+            className="text-[clamp(2.35rem,10vw,6rem)] md:text-[6.8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
           />
           <TextReveal
             text="Gourmet"
@@ -48,11 +48,11 @@ const HomeView = () => {
             staggerDelay={0.04}
             delay={0.5}
             allowWrap={false}
-            className="italic text-[clamp(2.75rem,12vw,6rem)] md:text-[7rem] text-primary font-heading mb-6 justify-center"
+            className="italic text-[clamp(2.75rem,11vw,5.4rem)] md:text-[5.8rem] text-primary font-heading mb-5 justify-center"
           />
 
           <FadeIn delay={0.9}>
-            <p className="text-xs sm:text-sm md:text-base text-text-muted font-body font-normal mb-12 sm:mb-16 max-w-lg mx-auto leading-loose tracking-[0.18em] sm:tracking-widest uppercase">
+            <p className="text-xs sm:text-sm md:text-base text-text-muted font-body font-normal mb-8 sm:mb-10 max-w-lg mx-auto leading-loose tracking-[0.18em] sm:tracking-widest uppercase">
               Cocina Española Contemporánea
             </p>
           </FadeIn>

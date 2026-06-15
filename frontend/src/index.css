@@ -43,6 +43,11 @@
     @apply bg-bg-body text-text-main font-body font-normal text-base leading-relaxed antialiased overflow-x-hidden;
   }
 
+  :focus-visible {
+    outline: 2px solid #c5a059;
+    outline-offset: 4px;
+  }
+
   *,
   *::before,
   *::after {

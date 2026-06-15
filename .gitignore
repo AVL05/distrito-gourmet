@@ -55,6 +55,11 @@ backend/database/*.sqlite-journal
 npm-debug.log*
 
 # ===========================
+# Automatizaciones locales
+# ===========================
+docs/n8n/*.local.json
+
+# ===========================
 # Videos / archivos pesados
 # ===========================
 *.mp4
