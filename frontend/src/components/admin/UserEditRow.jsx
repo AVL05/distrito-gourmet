@@ -2,6 +2,11 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
+import {
+  adminEditInputClass,
+  showAdminErrorToast,
+  showAdminToast,
+} from "@/utils/adminFeedback";
 
 // Fila editable para la gestión de usuarios y roles en el panel de administración
 const UserEditRow = ({ user, fetchData }) => {
@@ -37,20 +42,11 @@ const UserEditRow = ({ user, fetchData }) => {
       }
 
       await axios.put(`/admin/users/${user.id}`, dataToSend);
-      Swal.fire({
-        icon: "success",
-        title: "Usuario Actualizado",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showAdminToast("Usuario actualizado");
       setIsEditing(false);
       fetchData();
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar",
-      });
+    } catch (err) {
+      showAdminErrorToast(err, "No se pudo actualizar el usuario.");
     }
   };
 
@@ -101,7 +97,7 @@ const UserEditRow = ({ user, fetchData }) => {
               onChange={(e) =>
                 setEditUser({ ...editUser, nombre: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-sm focus:border-primary focus:ring-0 outline-none transition-all font-heading"
+              className={`${adminEditInputClass} font-heading`}
             />
           </div>
 
@@ -115,7 +111,7 @@ const UserEditRow = ({ user, fetchData }) => {
               onChange={(e) =>
                 setEditUser({ ...editUser, email: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-xs focus:border-primary focus:ring-0 outline-none transition-all"
+              className={adminEditInputClass}
             />
           </div>
 
@@ -129,7 +125,7 @@ const UserEditRow = ({ user, fetchData }) => {
               onChange={(e) =>
                 setEditUser({ ...editUser, telefono: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-xs focus:border-primary focus:ring-0 outline-none transition-all"
+              className={adminEditInputClass}
             />
           </div>
 
@@ -142,7 +138,7 @@ const UserEditRow = ({ user, fetchData }) => {
               onChange={(e) =>
                 setEditUser({ ...editUser, rol: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-xs outline-none focus:border-primary focus:ring-0 appearance-none cursor-pointer"
+              className={`${adminEditInputClass} appearance-none cursor-pointer`}
             >
               <option value="Cliente">Cliente</option>
               <option value="Staff">Staff</option>
@@ -161,7 +157,7 @@ const UserEditRow = ({ user, fetchData }) => {
               onChange={(e) =>
                 setEditUser({ ...editUser, password: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-2 text-xs focus:border-primary focus:ring-0 outline-none transition-all"
+              className={adminEditInputClass}
             />
           </div>
         </div>

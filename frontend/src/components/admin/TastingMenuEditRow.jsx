@@ -1,7 +1,11 @@
 import { useState } from "react";
 import axios from "@/services/api";
-import Swal from "sweetalert2";
 import { HiTrash } from "react-icons/hi";
+import {
+  adminEditInputClass,
+  showAdminErrorToast,
+  showAdminToast,
+} from "@/utils/adminFeedback";
 
 // Componente para la edición detallada de la secuencia y precio de menús degustación
 const TastingMenuEditRow = ({
@@ -16,20 +20,11 @@ const TastingMenuEditRow = ({
   const handleUpdate = async () => {
     try {
       await axios.put(`/admin/tasting-menus/${item.id}`, edit);
-      Swal.fire({
-        icon: "success",
-        title: "Menú Actualizado",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showAdminToast("Menú actualizado");
       setIsEditing(false);
       fetchData();
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar",
-      });
+    } catch (err) {
+      showAdminErrorToast(err, "No se pudo actualizar el menú.");
     }
   };
 
@@ -79,7 +74,7 @@ const TastingMenuEditRow = ({
                 type="text"
                 value={edit.nombre}
                 onChange={(e) => setEdit({ ...edit, nombre: e.target.value })}
-                className="w-full bg-text-main/5 border-b-2 border-text-main/10 text-text-main p-3 text-2xl font-heading focus:border-primary focus:ring-0 outline-none transition-all placeholder:opacity-30"
+                className={`${adminEditInputClass} text-2xl font-heading`}
                 placeholder="Nombre del menú..."
               />
             </div>
@@ -93,7 +88,7 @@ const TastingMenuEditRow = ({
                 onChange={(e) =>
                   setEdit({ ...edit, descripcion: e.target.value })
                 }
-                className="w-full bg-text-main/5 border-2 border-text-main/10 text-text-main p-4 text-base focus:border-primary focus:ring-0 outline-none transition-all resize-none italic leading-relaxed"
+                className={`${adminEditInputClass} resize-none p-4 text-base italic leading-relaxed`}
                 placeholder="Describa la experiencia gastronómica..."
               />
             </div>
@@ -112,7 +107,7 @@ const TastingMenuEditRow = ({
                     onChange={(e) =>
                       setEdit({ ...edit, precio: e.target.value })
                     }
-                    className="w-full bg-transparent border-b-2 border-text-main/10 text-text-main p-2 text-2xl font-heading focus:border-primary focus:ring-0 outline-none transition-all"
+                    className={`${adminEditInputClass} pr-8 text-2xl font-heading`}
                   />
                   <span className="absolute right-0 bottom-2 text-text-muted opacity-30 font-heading text-xl">
                     €
@@ -127,7 +122,7 @@ const TastingMenuEditRow = ({
                   type="number"
                   value={edit.pasos}
                   onChange={(e) => setEdit({ ...edit, pasos: e.target.value })}
-                  className="w-full bg-transparent border-b-2 border-text-main/10 text-text-main p-2 text-xl focus:border-primary focus:ring-0 outline-none transition-all"
+                  className={`${adminEditInputClass} text-xl`}
                 />
               </div>
             </div>
@@ -180,7 +175,7 @@ const TastingMenuEditRow = ({
                         duracion_estimada_minutos: e.target.value,
                       })
                     }
-                    className="w-full bg-transparent border-b border-text-main/10 text-text-main p-2 text-base focus:border-primary focus:ring-0 outline-none transition-all font-bold"
+                    className={`${adminEditInputClass} text-base font-bold`}
                   />
                 </div>
                 {!!(edit._hasMaridaje || edit.precio_maridaje) && (
@@ -195,7 +190,7 @@ const TastingMenuEditRow = ({
                       onChange={(e) =>
                         setEdit({ ...edit, precio_maridaje: e.target.value })
                       }
-                      className="w-full bg-transparent border-b-2 border-primary/20 text-primary p-2 text-xl font-heading focus:border-primary outline-none transition-all font-bold"
+                      className={`${adminEditInputClass} text-xl font-heading font-bold text-primary`}
                     />
                   </div>
                 )}

@@ -10,9 +10,9 @@ Bienvenido a la guía de uso de **Distrito Gourmet**. Esta plataforma está dise
 Para realizar reservas o pedidos, el usuario debe crear una cuenta en la sección "Registro". Una vez logueado, podrá acceder a su historial personal.
 
 ### 2. Carta Interactiva
-- **Exploración:** En la sección "Carta", el usuario puede visualizar los platos disponibles.
-- **Filtros:** Se incluye un sistema de iconos para identificar rápidamente los alérgenos.
-- **Maridaje:** Al seleccionar ciertos platos, el sistema sugiere automáticamente un vino de nuestra bodega que potencia los sabores del mismo.
+- **Exploración:** En la sección "Carta", el usuario puede visualizar platos, menús degustación, bodega y bar.
+- **Filtros:** La carta agrupa el contenido por secciones para facilitar la navegación.
+- **Selección:** Los productos disponibles para recogida pueden añadirse al carrito.
 
 ### 3. Reservas de Mesa
 - El cliente selecciona la fecha y hora deseada.
@@ -31,12 +31,12 @@ Para realizar reservas o pedidos, el usuario debe crear una cuenta en la secció
 El personal del restaurante accede mediante una cuenta con privilegios de **Administrador**.
 
 ### 1. Gestión de la Carta (CRUD)
-- **Añadir/Editar Platos:** Permite modificar precios, descripciones e imágenes.
-- **Bodega:** Control del stock de vinos y edición de notas de cata.
+- **Añadir/Editar Platos:** Permite modificar precios, descripciones, alérgenos y disponibilidad.
+- **Bodega y Bar:** Control de vinos, bebidas, precios y disponibilidad.
 - **Menús Degustación:** Configuración de los "Pasos" que componen el menú.
 
 ### 2. Control Operativo
-- **Dashboard:** Vista rápida de las reservas del día y los últimos pedidos recibidos.
+- **Dashboard:** Vista rápida de reservas, pedidos, cubiertos y venta simulada.
 - **Gestión de Reservas:** El administrador puede cambiar el estado de las reservas (Confirmar/Cancelar) y gestionar las peticiones especiales de los clientes.
 - **Monitor de Pedidos:** Interfaz optimizada para cocina donde se actualiza el estado de los pedidos en tiempo real.
 

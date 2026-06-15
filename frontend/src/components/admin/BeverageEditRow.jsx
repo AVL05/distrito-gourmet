@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "@/services/api";
-import Swal from "sweetalert2";
+import {
+  adminEditInputClass,
+  showAdminErrorToast,
+  showAdminToast,
+} from "@/utils/adminFeedback";
 
 // Fila editable para la gestión individual de bebidas en el panel de administración
 const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
@@ -11,20 +15,11 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
     try {
       // Envía la actualización de la bebida al servidor
       await axios.put(`/admin/beverages/${item.id}`, edit);
-      Swal.fire({
-        icon: "success",
-        title: "Bebida Actualizada",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showAdminToast("Bebida actualizada");
       setIsEditing(false);
       fetchData();
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar",
-      });
+    } catch (err) {
+      showAdminErrorToast(err, "No se pudo actualizar la bebida.");
     }
   };
 
@@ -40,7 +35,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
               type="text"
               value={edit.nombre}
               onChange={(e) => setEdit({ ...edit, nombre: e.target.value })}
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-heading"
+              className={`${adminEditInputClass} text-base font-heading`}
             />
           </div>
 
@@ -53,7 +48,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
               step="0.01"
               value={edit.precio}
               onChange={(e) => setEdit({ ...edit, precio: e.target.value })}
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-bold"
+              className={`${adminEditInputClass} text-base font-bold`}
             />
           </div>
 
@@ -64,7 +59,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
             <select
               value={edit.tipo}
               onChange={(e) => setEdit({ ...edit, tipo: e.target.value })}
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none appearance-none cursor-pointer"
+              className={`${adminEditInputClass} appearance-none cursor-pointer`}
             >
               <option value="agua">Agua</option>
               <option value="refresco">Refresco</option>
@@ -83,7 +78,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
               onChange={(e) =>
                 setEdit({ ...edit, descripcion: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all italic"
+              className={`${adminEditInputClass} italic`}
               placeholder="Ej: Con gas, sin cafeína..."
             />
           </div>

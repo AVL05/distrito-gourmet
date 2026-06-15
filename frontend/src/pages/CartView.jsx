@@ -16,6 +16,7 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
+import { getApiErrorMessage } from "@/utils/apiErrors";
 
 // Gestión del carrito de compras y proceso de finalización de pedido
 const CartView = () => {
@@ -26,6 +27,7 @@ const CartView = () => {
   const [step, setStep] = useState("cart"); // 'cart' or 'checkout'
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [pickupTime, setPickupTime] = useState("");
+  const [checkoutError, setCheckoutError] = useState("");
 
   // Calcula las horas de recogida disponibles para hoy y mañana
   const generatePickupOptions = () => {
@@ -114,6 +116,7 @@ const CartView = () => {
       return;
     }
     setStep("checkout");
+    setCheckoutError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -133,14 +136,7 @@ const CartView = () => {
 
     setIsProcessing(true);
     if (!pickupTime) {
-      Swal.fire({
-        icon: "warning",
-        title: "Hora requerida",
-        text: "Por favor, seleccione una hora de recogida.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-        confirmButtonColor: "#e76f51",
-      });
+      setCheckoutError("Seleccione una hora de recogida para continuar.");
       setIsProcessing(false);
       return;
     }
@@ -186,14 +182,12 @@ const CartView = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Hubo un problema al procesar su pedido. Inténtelo de nuevo.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-        confirmButtonColor: "#c5a059",
-      });
+      setCheckoutError(
+        getApiErrorMessage(
+          error,
+          "Hubo un problema al procesar su pedido. Inténtelo de nuevo.",
+        ),
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -280,23 +274,26 @@ const CartView = () => {
                       <div className="flex items-center border border-text-main/20 bg-transparent">
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
-                          className="w-10 h-10 flex items-center justify-center text-text-muted hover:text-text-main hover:bg-text-main/5 transition-colors"
+                          aria-label={`Reducir cantidad de ${item.name}`}
+                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           <HiMinus size={12} />
                         </button>
-                        <span className="w-12 text-center text-[13px] font-normal text-text-main font-body py-2 border-x border-text-main/20">
+                        <span className="w-12 border-x border-text-main/20 py-2 text-center font-body text-[13px] font-bold text-text-main">
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
-                          className="w-10 h-10 flex items-center justify-center text-text-muted hover:text-text-main hover:bg-text-main/5 transition-colors"
+                          aria-label={`Aumentar cantidad de ${item.name}`}
+                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           <HiPlus size={12} />
                         </button>
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
-                        className="text-text-muted hover:text-red-800 transition-colors p-2"
+                        aria-label={`Eliminar ${item.name}`}
+                        className="min-h-11 min-w-11 p-2 text-text-muted transition-colors hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         title="Eliminar"
                       >
                         <HiTrash size={18} />
@@ -455,6 +452,11 @@ const CartView = () => {
                     </span>
                   </div>
                 </div>
+                {checkoutError && (
+                  <div className="mb-6 border border-red-800/20 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    {checkoutError}
+                  </div>
+                )}
                 <button
                   onClick={handleCheckout}
                   disabled={isProcessing}
@@ -483,7 +485,8 @@ const CartView = () => {
           >
             <span className="flex flex-col text-left">
               <span className="font-body text-[9px] uppercase tracking-[1.8px] text-bg-body/60">
-                Total selección
+                {cartItems.length}{" "}
+                {cartItems.length === 1 ? "producto" : "productos"}
               </span>
               <span className="font-body text-[12px] font-bold uppercase tracking-[1.8px]">
                 Continuar · {total.toFixed(2)}€

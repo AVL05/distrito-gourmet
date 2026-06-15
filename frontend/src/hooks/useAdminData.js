@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import axios from "@/services/api";
-import Swal from "sweetalert2";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { demoAdminData } from "@/data/demoAdmin";
+import { showAdminErrorToast } from "@/utils/adminFeedback";
 
 const sortDishesByCategory = (dishes = []) =>
   [...dishes].sort((a, b) => {
@@ -93,13 +93,10 @@ export const useAdminData = ({ activeSection, newDishCategoryId, setNewDish }) =
       }
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error de carga",
-        text: "No se pudieron recuperar los datos del servidor.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
+      showAdminErrorToast(
+        err,
+        "No se pudieron recuperar los datos del servidor.",
+      );
     } finally {
       setLoading(false);
     }

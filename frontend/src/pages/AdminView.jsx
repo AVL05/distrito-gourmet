@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "@/motion";
 import { DURATION, EASING } from "@/motion";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { useAdminData } from "@/hooks/useAdminData";
+import { getApiErrorMessage, getApiFieldErrors } from "@/utils/apiErrors";
 import {
   HiBeaker,
   HiCalendar,
@@ -40,6 +41,30 @@ const adminSecondaryButtonClass =
   "whitespace-nowrap border border-text-main/10 bg-bg-surface px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-text-muted transition hover:border-primary/40 hover:text-text-main";
 const adminActiveButtonClass =
   "whitespace-nowrap border border-text-main bg-text-main px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-bg-body";
+
+const orderFilterOptions = [
+  ["active", "Activos"],
+  ["today", "Hoy"],
+  ["Pendiente", "Pendientes"],
+  ["Preparando", "Cocina"],
+  ["Listo", "Listos"],
+  ["Cancelado", "Cancelados"],
+  ["all", "Todos"],
+];
+
+const reservationFilterOptions = [
+  ["active", "Activas"],
+  ["today", "Hoy"],
+  ["Pendiente", "Por confirmar"],
+  ["Confirmada", "Confirmadas"],
+  ["Cancelada", "Canceladas"],
+  ["all", "Todas"],
+];
+
+const FieldError = ({ children }) =>
+  children ? (
+    <p className="mt-1.5 text-[11px] font-medium text-red-700">{children}</p>
+  ) : null;
 
 const money = (value) => {
   const parsed = Number.parseFloat(value || 0);
@@ -129,6 +154,7 @@ const AdminView = () => {
   const [reservationFilter, setReservationFilter] = useState("active");
   const [savingKey, setSavingKey] = useState("");
   const [notice, setNotice] = useState("");
+  const [createErrors, setCreateErrors] = useState({});
   const [openCreateForm, setOpenCreateForm] = useState({
     menu: false,
     tasting_menus: false,
@@ -266,7 +292,7 @@ const AdminView = () => {
 
   const showNotice = (message) => {
     setNotice(message);
-    window.setTimeout(() => setNotice(""), 1800);
+    window.setTimeout(() => setNotice(""), 2800);
   };
 
   const toggleCreateForm = (sectionId) => {
@@ -361,7 +387,15 @@ const AdminView = () => {
     },
   };
 
-  const handleAddItem = async (endpoint, itemData, resetState, successMsg) => {
+  const handleAddItem = async (
+    endpoint,
+    itemData,
+    resetState,
+    successMsg,
+    errorKey = endpoint,
+  ) => {
+    setCreateErrors((current) => ({ ...current, [errorKey]: {} }));
+
     if (USE_STATIC_DEMO_DATA) {
       Swal.fire({
         icon: "info",
@@ -378,24 +412,15 @@ const AdminView = () => {
       await axios.post(`/admin/${endpoint}`, itemData);
       resetState();
       fetchData();
-      Swal.fire({
-        icon: "success",
-        title: successMsg,
-        background: "#fdfaf6",
-        color: "#2c302e",
-        confirmButtonColor: "#A68A56",
-        timer: 1400,
-      });
+      showNotice(successMsg);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "No se pudo guardar",
-        text:
-          err.response?.data?.message ||
-          "Revise los campos e inténtelo de nuevo.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
+      setCreateErrors((current) => ({
+        ...current,
+        [errorKey]: getApiFieldErrors(err),
+      }));
+      showNotice(
+        getApiErrorMessage(err, "Revise los campos e inténtelo de nuevo."),
+      );
     }
   };
 
@@ -430,14 +455,8 @@ const AdminView = () => {
     try {
       await axios.delete(`/admin/${endpoint}/${id}`);
       fetchData();
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo eliminar el elemento.",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
+    } catch (err) {
+      showNotice(getApiErrorMessage(err, "No se pudo eliminar el elemento."));
     }
   };
 
@@ -460,13 +479,8 @@ const AdminView = () => {
       await axios.patch(`/admin/orders/${id}`, { estado: status });
       fetchData();
       showNotice(`Pedido marcado como ${status.toLowerCase()}.`);
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "No se pudo actualizar el pedido",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
+    } catch (err) {
+      showNotice(getApiErrorMessage(err, "No se pudo actualizar el pedido."));
     } finally {
       setSavingKey("");
     }
@@ -493,13 +507,8 @@ const AdminView = () => {
       await axios.patch(`/admin/reservations/${id}`, updateData);
       fetchData();
       showNotice("Reserva actualizada.");
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "No se pudo actualizar la reserva",
-        background: "#fdfaf6",
-        color: "#2c302e",
-      });
+    } catch (err) {
+      showNotice(getApiErrorMessage(err, "No se pudo actualizar la reserva."));
     } finally {
       setSavingKey("");
     }
@@ -811,30 +820,14 @@ const AdminView = () => {
             className={`${inputClass} sm:hidden`}
             aria-label="Filtrar pedidos"
           >
-            {[
-              ["active", "Activos"],
-              ["today", "Hoy"],
-              ["Pendiente", "Pendientes"],
-              ["Preparando", "Cocina"],
-              ["Listo", "Listos"],
-              ["Cancelado", "Cancelados"],
-              ["all", "Todos"],
-            ].map(([value, label]) => (
+            {orderFilterOptions.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
           </select>
           <div className="hidden gap-2 sm:flex sm:flex-wrap">
-            {[
-              ["active", "Activos"],
-              ["today", "Hoy"],
-              ["Pendiente", "Pendientes"],
-              ["Preparando", "Cocina"],
-              ["Listo", "Listos"],
-              ["Cancelado", "Cancelados"],
-              ["all", "Todos"],
-            ].map(([value, label]) => (
+            {orderFilterOptions.map(([value, label]) => (
               <button
                 key={value}
                 type="button"
@@ -949,28 +942,14 @@ const AdminView = () => {
             className={`${inputClass} sm:hidden`}
             aria-label="Filtrar reservas"
           >
-            {[
-              ["active", "Activas"],
-              ["today", "Hoy"],
-              ["Pendiente", "Por confirmar"],
-              ["Confirmada", "Confirmadas"],
-              ["Cancelada", "Canceladas"],
-              ["all", "Todas"],
-            ].map(([value, label]) => (
+            {reservationFilterOptions.map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
               </option>
             ))}
           </select>
           <div className="hidden gap-2 sm:flex sm:flex-wrap">
-            {[
-              ["active", "Activas"],
-              ["today", "Hoy"],
-              ["Pendiente", "Por confirmar"],
-              ["Confirmada", "Confirmadas"],
-              ["Cancelada", "Canceladas"],
-              ["all", "Todas"],
-            ].map(([value, label]) => (
+            {reservationFilterOptions.map(([value, label]) => (
               <button
                 key={value}
                 type="button"
@@ -1072,6 +1051,7 @@ const AdminView = () => {
             className={inputClass}
             placeholder="Croquetas de jamón"
           />
+          <FieldError>{createErrors.dishes?.nombre}</FieldError>
         </div>
         <div className="lg:col-span-2">
           <label className={labelClass}>Categoría</label>
@@ -1092,6 +1072,7 @@ const AdminView = () => {
               </option>
             ))}
           </select>
+          <FieldError>{createErrors.dishes?.categoria_menu_id}</FieldError>
         </div>
         <div className="lg:col-span-1">
           <label className={labelClass}>Precio</label>
@@ -1106,6 +1087,7 @@ const AdminView = () => {
             className={inputClass}
             placeholder="0.00"
           />
+          <FieldError>{createErrors.dishes?.precio}</FieldError>
         </div>
         <div className="lg:col-span-2">
           <label className={labelClass}>Alérgenos</label>
@@ -1117,6 +1099,7 @@ const AdminView = () => {
             className={inputClass}
             placeholder="gluten, leche"
           />
+          <FieldError>{createErrors.dishes?.alergenos}</FieldError>
         </div>
         <div className="lg:col-span-4">
           <label className={labelClass}>Descripción</label>
@@ -1129,6 +1112,7 @@ const AdminView = () => {
             rows="3"
             placeholder="Ingredientes, guarnición y notas de servicio"
           />
+          <FieldError>{createErrors.dishes?.descripcion}</FieldError>
         </div>
         <div className="grid grid-cols-1 gap-3 lg:col-span-6 md:grid-cols-2 xl:grid-cols-4">
           <ToggleField
@@ -1243,6 +1227,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Menú Esencia"
               />
+              <FieldError>{createErrors["tasting-menus"]?.nombre}</FieldError>
             </div>
             <div className="lg:col-span-1">
               <label className={labelClass}>Precio</label>
@@ -1260,6 +1245,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="65.00"
               />
+              <FieldError>{createErrors["tasting-menus"]?.precio}</FieldError>
             </div>
             <div className="lg:col-span-1">
               <label className={labelClass}>Maridaje</label>
@@ -1276,6 +1262,9 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="24.00"
               />
+              <FieldError>
+                {createErrors["tasting-menus"]?.precio_maridaje}
+              </FieldError>
             </div>
             <div className="lg:col-span-1">
               <label className={labelClass}>Pases</label>
@@ -1291,6 +1280,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="7"
               />
+              <FieldError>{createErrors["tasting-menus"]?.pasos}</FieldError>
             </div>
             <div className="lg:col-span-6">
               <label className={labelClass}>Descripción</label>
@@ -1306,6 +1296,9 @@ const AdminView = () => {
                 rows="3"
                 placeholder="Pases, ritmo de servicio y propuesta gastronómica"
               />
+              <FieldError>
+                {createErrors["tasting-menus"]?.descripcion}
+              </FieldError>
             </div>
             <div className="lg:col-span-2">
               <ToggleField
@@ -1386,6 +1379,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Albariño sobre lías"
               />
+              <FieldError>{createErrors.wines?.nombre}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Región</label>
@@ -1398,6 +1392,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Rías Baixas"
               />
+              <FieldError>{createErrors.wines?.region}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Tipo</label>
@@ -1407,13 +1402,14 @@ const AdminView = () => {
                   setNewWine({ ...newWine, tipo: event.target.value })
                 }
                 className={inputClass}
-              >
-                <option value="Tinto">Tinto</option>
+                >
+                  <option value="Tinto">Tinto</option>
                 <option value="Blanco">Blanco</option>
                 <option value="Rosado">Rosado</option>
                 <option value="Espumoso">Espumoso</option>
-                <option value="Dulce">Dulce</option>
-              </select>
+                  <option value="Dulce">Dulce</option>
+                </select>
+                <FieldError>{createErrors.wines?.tipo}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Botella</label>
@@ -1428,6 +1424,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="28.00"
               />
+              <FieldError>{createErrors.wines?.precio_botella}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Copa</label>
@@ -1441,6 +1438,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="6.50"
               />
+              <FieldError>{createErrors.wines?.precio_copa}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <ToggleField
@@ -1520,6 +1518,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Agua con gas"
               />
+              <FieldError>{createErrors.beverages?.nombre}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Tipo</label>
@@ -1529,12 +1528,13 @@ const AdminView = () => {
                   setNewBeverage({ ...newBeverage, tipo: event.target.value })
                 }
                 className={inputClass}
-              >
-                <option value="agua">Agua</option>
+                >
+                  <option value="agua">Agua</option>
                 <option value="refresco">Refresco</option>
                 <option value="cocktail">Cóctel</option>
-                <option value="cafe">Café</option>
-              </select>
+                  <option value="cafe">Café</option>
+                </select>
+                <FieldError>{createErrors.beverages?.tipo}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Precio</label>
@@ -1549,6 +1549,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="3.50"
               />
+              <FieldError>{createErrors.beverages?.precio}</FieldError>
             </div>
             <div className="lg:col-span-6">
               <label className={labelClass}>Descripción</label>
@@ -1564,6 +1565,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Formato, origen o nota de servicio"
               />
+              <FieldError>{createErrors.beverages?.descripcion}</FieldError>
             </div>
             <div className="grid grid-cols-1 gap-3 lg:col-span-4 sm:grid-cols-2">
               <ToggleField
@@ -1649,6 +1651,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Laura Martínez"
               />
+              <FieldError>{createErrors.users?.nombre}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Email</label>
@@ -1662,6 +1665,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="laura@distritogourmet.es"
               />
+              <FieldError>{createErrors.users?.email}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Teléfono</label>
@@ -1675,6 +1679,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="+34 600 000 000"
               />
+              <FieldError>{createErrors.users?.telefono}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Rol</label>
@@ -1689,6 +1694,7 @@ const AdminView = () => {
                 <option value="Staff">Staff</option>
                 <option value="Administrador">Administrador</option>
               </select>
+              <FieldError>{createErrors.users?.rol}</FieldError>
             </div>
             <div className="lg:col-span-4">
               <label className={labelClass}>Contraseña</label>
@@ -1703,6 +1709,7 @@ const AdminView = () => {
                 className={inputClass}
                 placeholder="Mínimo 8 caracteres"
               />
+              <FieldError>{createErrors.users?.password}</FieldError>
             </div>
           </div>
           <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">

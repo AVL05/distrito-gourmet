@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "@/services/api";
-import Swal from "sweetalert2";
+import {
+  adminEditInputClass,
+  showAdminErrorToast,
+  showAdminToast,
+} from "@/utils/adminFeedback";
 
 // Fila editable para la gestión individual de platos en el panel de administración
 const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
@@ -23,20 +27,11 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
       delete payload.actualizado_a;
 
       await axios.put(`/admin/dishes/${item.id}`, payload);
-      Swal.fire({
-        icon: "success",
-        title: "Plato Actualizado",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showAdminToast("Plato actualizado");
       setIsEditing(false);
       fetchData();
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: err.response?.data?.mensaje || "No se pudo actualizar",
-      });
+      showAdminErrorToast(err, "No se pudo actualizar el plato.");
     }
   };
 
@@ -63,7 +58,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
               onChange={(e) =>
                 setEditDish({ ...editDish, nombre: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-heading"
+              className={`${adminEditInputClass} text-base font-heading`}
             />
           </div>
 
@@ -79,7 +74,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
                 onChange={(e) =>
                   setEditDish({ ...editDish, precio: e.target.value })
                 }
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-bold"
+                className={`${adminEditInputClass} text-base font-bold`}
               />
             </div>
             <div className="text-left">
@@ -95,7 +90,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
                     maximo_por_pedido: e.target.value,
                   })
                 }
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all"
+                className={`${adminEditInputClass} text-base`}
                 placeholder="Sin límite"
               />
             </div>
@@ -110,7 +105,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
               onChange={(e) =>
                 setEditDish({ ...editDish, categoria_menu_id: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none appearance-none cursor-pointer"
+              className={`${adminEditInputClass} appearance-none cursor-pointer`}
             >
               {categories?.map((c) => (
                 <option key={c.id} value={c.id} className="bg-bg-surface">
@@ -129,7 +124,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
               onChange={(e) =>
                 setEditDish({ ...editDish, descripcion: e.target.value })
               }
-              className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all min-h-[80px] resize-none italic"
+              className={`${adminEditInputClass} min-h-[80px] resize-none italic`}
               placeholder="¿Qué lleva este plato?"
             />
           </div>
@@ -144,7 +139,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
               onChange={(e) =>
                 setEditDish({ ...editDish, alergenos: e.target.value })
               }
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all"
+              className={adminEditInputClass}
               placeholder="Gluten, Lácteos..."
             />
           </div>

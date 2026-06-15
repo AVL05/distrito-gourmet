@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "@/services/api";
-import Swal from "sweetalert2";
+import {
+  adminEditInputClass,
+  showAdminErrorToast,
+  showAdminToast,
+} from "@/utils/adminFeedback";
 
 // Fila editable para la gestión individual de vinos en el panel de administración
 const WineEditRow = ({ item, fetchData, handleDelete }) => {
@@ -15,20 +19,11 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
 
       // Actualiza la información del vino y refresca la lista
       await axios.put(`/admin/wines/${item.id}`, payload);
-      Swal.fire({
-        icon: "success",
-        title: "Vino Actualizado",
-        timer: 1500,
-        showConfirmButton: false,
-      });
+      showAdminToast("Vino actualizado");
       setIsEditing(false);
       fetchData();
-    } catch {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "No se pudo actualizar",
-      });
+    } catch (err) {
+      showAdminErrorToast(err, "No se pudo actualizar el vino.");
     }
   };
 
@@ -53,7 +48,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
               type="text"
               value={edit.nombre}
               onChange={(e) => setEdit({ ...edit, nombre: e.target.value })}
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-heading"
+              className={`${adminEditInputClass} text-base font-heading`}
             />
           </div>
 
@@ -64,7 +59,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
             <select
               value={edit.tipo}
               onChange={(e) => setEdit({ ...edit, tipo: e.target.value })}
-              className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:ring-0 outline-none focus:border-primary appearance-none cursor-pointer"
+              className={`${adminEditInputClass} appearance-none cursor-pointer`}
             >
               <option value="Tinto">Tinto</option>
               <option value="Blanco">Blanco</option>
@@ -83,7 +78,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 type="text"
                 value={edit.region || ""}
                 onChange={(e) => setEdit({ ...edit, region: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all"
+                className={adminEditInputClass}
               />
             </div>
             <div className="text-left">
@@ -94,7 +89,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 type="text"
                 value={edit.uva || ""}
                 onChange={(e) => setEdit({ ...edit, uva: e.target.value })}
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all"
+                className={adminEditInputClass}
               />
             </div>
           </div>
@@ -111,7 +106,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 onChange={(e) =>
                   setEdit({ ...edit, precio_botella: e.target.value })
                 }
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all font-bold"
+                className={`${adminEditInputClass} text-base font-bold`}
               />
             </div>
             <div className="text-left">
@@ -125,7 +120,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 onChange={(e) =>
                   setEdit({ ...edit, precio_copa: e.target.value })
                 }
-                className="w-full bg-text-main/5 border-b border-text-main/10 text-text-main p-3 text-base focus:border-primary focus:ring-0 outline-none transition-all"
+                className={`${adminEditInputClass} text-base`}
                 placeholder="Opcional"
               />
             </div>
@@ -142,7 +137,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
                 setEdit({ ...edit, notas_maridaje: e.target.value })
               }
               // Espacio para notas de cata o maridaje recomendados
-              className="w-full bg-text-main/5 border border-text-main/10 text-text-main p-3 text-sm focus:border-primary focus:ring-0 outline-none transition-all resize-none italic"
+              className={`${adminEditInputClass} resize-none italic`}
               placeholder="Describa el carácter del vino..."
             />
           </div>

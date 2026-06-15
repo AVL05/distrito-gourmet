@@ -55,6 +55,12 @@ backend/database/*.sqlite-journal
 npm-debug.log*
 
 # ===========================
+# Artefactos locales de herramientas
+# ===========================
+.codex-remote-attachments/
+.playwright-mcp/
+
+# ===========================
 # Automatizaciones locales
 # ===========================
 docs/n8n/*.local.json

@@ -88,7 +88,6 @@ export const demoAdminData = {
   wines: [
     {
       id: 1,
-      name: "Ribera del Duero Crianza",
       nombre: "Ribera del Duero Crianza",
       region: "Ribera del Duero",
       tipo: "Tinto",
@@ -98,7 +97,6 @@ export const demoAdminData = {
     },
     {
       id: 2,
-      name: "Albariño sobre lías",
       nombre: "Albariño sobre lías",
       region: "Rías Baixas",
       tipo: "Blanco",
@@ -110,7 +108,6 @@ export const demoAdminData = {
   beverages: [
     {
       id: 1,
-      name: "Limonada de yuzu",
       nombre: "Limonada de yuzu",
       tipo: "refresco",
       precio: "5.00",
@@ -120,7 +117,6 @@ export const demoAdminData = {
     },
     {
       id: 2,
-      name: "Negroni de autor",
       nombre: "Negroni de autor",
       tipo: "cocktail",
       precio: "11.00",
