@@ -1,5 +1,6 @@
 import ReservationForm from "@/components/ReservationForm";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "@/services/api";
 import {
   AnimatePresence,
@@ -19,7 +20,6 @@ import { DURATION, EASING } from "@/motion";
 // Coordina la comunicación con la API para recuperar las reservas del usuario autenticado.
 const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState("new");
-  const [experience, setExperience] = useState("carta");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -86,9 +86,8 @@ const ReservationsView = () => {
             style={{ maxWidth: "4rem" }}
           />
           <p className="text-text-muted text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mt-8">
-            Seleccione el tipo de experiencia, indique sus preferencias y
-            prepare su visita con toda la información necesaria para el equipo
-            de sala.
+            Indique comensales, fecha, hora y cualquier preferencia importante
+            para preparar su mesa con el máximo cuidado.
           </p>
         </ScrollReveal>
 
@@ -145,10 +144,6 @@ const ReservationsView = () => {
           >
             {activeTab === "new" ? (
               <div className="bg-transparent border-0 shadow-none p-0 max-w-4xl mx-auto">
-                <ExperienceSelector
-                  selected={experience}
-                  onSelect={setExperience}
-                />
                 <ReservationForm compact={false} />
               </div>
             ) : (
@@ -163,9 +158,24 @@ const ReservationsView = () => {
                     <span className="text-text-muted text-4xl mb-6 font-normal">
                       ✦
                     </span>
-                    <p className="text-text-muted font-normal tracking-wide text-sm">
+                    <p className="text-text-muted font-normal tracking-wide text-sm max-w-md">
                       Aún no constan reservas en su historial.
                     </p>
+                    <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setActiveTab("new")}
+                        className="min-h-11 border border-text-main px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:bg-text-main hover:text-bg-body transition-colors"
+                      >
+                        Nueva reserva
+                      </button>
+                      <Link
+                        to="/menu"
+                        className="min-h-11 border border-text-main/20 px-5 py-3 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary transition-colors"
+                      >
+                        Ver carta
+                      </Link>
+                    </div>
                   </FadeIn>
                 ) : (
                   // Listado de reservas: renderizado secuencial con efecto stagger
@@ -197,16 +207,6 @@ const ReservationsView = () => {
                                 </span>{" "}
                                 {res.comensales}
                               </span>
-                              {res.tipo_experiencia && (
-                                <span className="flex items-center gap-2">
-                                  <span className="text-text-main/40">
-                                    TIPO
-                                  </span>{" "}
-                                  {res.tipo_experiencia === "menu_degustacion"
-                                    ? "DEGUSTACIÓN"
-                                    : "CARTA"}
-                                </span>
-                              )}
                             </div>
                             {res.peticiones_especiales && (
                               <p className="mt-4 text-[13px] text-text-muted italic flex items-start gap-2">
@@ -239,54 +239,6 @@ const ReservationsView = () => {
         </AnimatePresence>
       </div>
     </PageTransition>
-  );
-};
-
-const ExperienceSelector = ({ selected, onSelect }) => {
-  const options = [
-    {
-      id: "carta",
-      title: "Carta",
-      text: "Reserva clásica para comer a la carta.",
-    },
-    {
-      id: "degustacion",
-      title: "Degustación",
-      text: "Mesa pensada para menú por pases.",
-    },
-    {
-      id: "celebracion",
-      title: "Celebración",
-      text: "Aniversario, reunión o servicio especial.",
-    },
-  ];
-
-  return (
-    <FadeIn className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-3">
-      {options.map((option) => (
-        <button
-          type="button"
-          key={option.id}
-          onClick={() => onSelect(option.id)}
-          aria-pressed={selected === option.id}
-          className={`border p-5 text-left transition-colors ${
-            selected === option.id
-              ? "border-primary bg-primary/10"
-              : "border-text-main/10 bg-bg-surface hover:border-primary/40"
-          }`}
-        >
-          <span className="text-[10px] uppercase tracking-[3px] text-primary font-bold">
-            Experiencia
-          </span>
-          <h3 className="font-heading text-2xl text-text-main mt-2 mb-2">
-            {option.title}
-          </h3>
-          <p className="text-text-muted text-sm leading-relaxed">
-            {option.text}
-          </p>
-        </button>
-      ))}
-    </FadeIn>
   );
 };
 

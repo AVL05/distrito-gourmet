@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "../components/layout/Footer";
+import MobileCTA from "../components/layout/MobileCTA";
 import Navbar from "../components/layout/Navbar";
 
 // Layout principal que incluye la navegación, el contenido de la página y el pie de página
@@ -25,6 +26,7 @@ const MainLayout = () => {
 
       {/* Pie de página, que se oculta si estamos en el panel de administración */}
       <div className="bg-bg-body z-10">{!isAdminPage && <Footer />}</div>
+      {!isAdminPage && <MobileCTA />}
     </div>
   );
 };

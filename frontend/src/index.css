@@ -43,6 +43,12 @@
     @apply bg-bg-body text-text-main font-body font-normal text-base leading-relaxed antialiased overflow-x-hidden;
   }
 
+  @media (max-width: 767px) {
+    body {
+      padding-bottom: 4.5rem;
+    }
+  }
+
   :focus-visible {
     outline: 2px solid #c5a059;
     outline-offset: 4px;
@@ -107,7 +113,7 @@
 @layer components {
   /* Botones minimalistas */
   .btn {
-    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-[12px] sm:text-[13px] uppercase tracking-[1.5px] sm:tracking-[2px] cursor-pointer transition-all duration-300 text-center;
+    @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-[12px] sm:text-[13px] uppercase tracking-[1.2px] sm:tracking-[1.6px] cursor-pointer transition-all duration-300 text-center;
   }
 
   .btn:hover {
@@ -131,11 +137,11 @@
   }
 
   .btn-sm {
-    @apply px-4 py-2 text-[11px] tracking-[1.5px] border border-text-main/20 hover:bg-text-main/5 hover:text-primary;
+    @apply px-4 py-2 text-[11px] tracking-[1.2px] border border-text-main/20 hover:bg-text-main/5 hover:text-primary;
   }
 
   .btn-text {
-    @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-[13px] uppercase tracking-[1.5px] transition-colors duration-300 hover:text-main;
+    @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-[13px] uppercase tracking-[1.2px] transition-colors duration-300 hover:text-main;
   }
 
   /* Estructura general */
@@ -163,7 +169,7 @@
   }
 
   label {
-    @apply text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[2px] text-text-main block mb-2 font-bold;
+    @apply text-[11px] sm:text-[12px] uppercase tracking-[1.2px] sm:tracking-[1.5px] text-text-main block mb-2 font-bold;
   }
 }
 

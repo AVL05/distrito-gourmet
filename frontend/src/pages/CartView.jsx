@@ -203,7 +203,7 @@ const CartView = () => {
     return (
       <PageTransition className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
-        <FadeIn className="bg-bg-surface border border-text-main/10 p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
+        <FadeIn className="bg-bg-surface border border-text-main/10 p-8 sm:p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
           <span className="text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
             / 00 Vacío
           </span>
@@ -216,15 +216,21 @@ const CartView = () => {
             Le invitamos a explorar nuestra carta y descubrir las creaciones que
             nuestro equipo de cocina ha preparado para usted.
           </p>
-          <div className="flex justify-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
             <Link
               to="/menu"
-              className="group relative px-10 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-300 hover:border-text-main inline-block"
+              className="group relative px-8 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[1.8px] overflow-hidden transition-all duration-300 hover:border-text-main inline-block"
             >
               <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 group-hover:text-white font-bold transition-colors duration-300">
                 Explorar la Carta
               </span>
+            </Link>
+            <Link
+              to="/reservations"
+              className="px-8 py-4 border border-text-main/20 font-body text-[12px] uppercase tracking-[1.8px] text-text-main hover:border-primary hover:text-primary transition-colors"
+            >
+              Reservar mesa
             </Link>
           </div>
         </FadeIn>
@@ -468,6 +474,27 @@ const CartView = () => {
           </div>
         )}
       </div>
+      {step === "cart" && cartItems.length > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-[54] border-t border-text-main/10 bg-bg-body/95 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:hidden">
+          <button
+            type="button"
+            onClick={goToCheckout}
+            className="flex min-h-12 w-full items-center justify-between gap-4 bg-text-main px-5 py-3 text-bg-body transition-colors hover:bg-primary"
+          >
+            <span className="flex flex-col text-left">
+              <span className="font-body text-[9px] uppercase tracking-[1.8px] text-bg-body/60">
+                Total selección
+              </span>
+              <span className="font-body text-[12px] font-bold uppercase tracking-[1.8px]">
+                Continuar · {total.toFixed(2)}€
+              </span>
+            </span>
+            <span aria-hidden="true" className="text-lg leading-none">
+              &rarr;
+            </span>
+          </button>
+        </div>
+      )}
     </PageTransition>
   );
 };

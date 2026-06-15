@@ -22,6 +22,7 @@ const MenuView = () => {
   const { addItem, totalItems, totalPrice } = useCartStore();
   const [activeCategory, setActiveCategory] = useState("carta");
   const [addedItemId, setAddedItemId] = useState(null);
+  const [addedItem, setAddedItem] = useState(null);
   const [selectedDish, setSelectedDish] = useState(null);
   const [menuData, setMenuData] = useState({
     dishes: [],
@@ -45,7 +46,11 @@ const MenuView = () => {
   const handleAddItem = (item) => {
     addItem(item);
     setAddedItemId(item.id);
-    window.setTimeout(() => setAddedItemId(null), 1400);
+    setAddedItem(item);
+    window.setTimeout(() => {
+      setAddedItemId(null);
+      setAddedItem(null);
+    }, 1800);
   };
 
   // Trae los platos, vinos y demás desde la API
@@ -354,8 +359,28 @@ const MenuView = () => {
           </PageTransition>
         )}
       </div>
+      {addedItem && (
+        <div className="fixed bottom-20 left-4 right-4 z-[53] mx-auto max-w-md border border-text-main/10 bg-bg-body/95 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-xl md:bottom-24 md:left-auto md:right-8">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <span className="block font-body text-[10px] uppercase tracking-[1.6px] text-primary">
+                Añadido
+              </span>
+              <p className="text-sm font-medium text-text-main">
+                {addedItem.name}
+              </p>
+            </div>
+            <Link
+              to="/cart"
+              className="shrink-0 font-body text-[11px] uppercase tracking-[1.5px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors"
+            >
+              Ver selección
+            </Link>
+          </div>
+        </div>
+      )}
       {cartCount > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-text-main/10 bg-bg-body/95 backdrop-blur-xl px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
+        <div className="fixed bottom-0 left-0 right-0 z-50 hidden border-t border-text-main/10 bg-bg-body/95 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl md:block">
           <div className="container flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-center sm:text-left">
               <span className="block text-[10px] uppercase tracking-[3px] text-text-muted font-body">
@@ -738,6 +763,13 @@ const EmptyState = () => (
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
       Ahora mismo no hay referencias disponibles en esta categoría.
     </p>
+    <button
+      type="button"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary transition-colors"
+    >
+      Volver a categorías
+    </button>
   </FadeIn>
 );
 
@@ -751,7 +783,7 @@ const ApiUnavailableState = () => (
     <button
       type="button"
       onClick={() => window.location.reload()}
-      className="mt-8 font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary transition-colors font-medium"
     >
       Reintentar carga
     </button>

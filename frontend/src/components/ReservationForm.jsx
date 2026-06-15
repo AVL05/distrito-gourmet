@@ -41,6 +41,20 @@ const ReservationForm = ({ compact = false }) => {
   // Estados para controlar si está cargando
   const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const reservationSummary = [
+    ["Fecha", form.date || "Sin seleccionar"],
+    ["Hora", form.time || "Sin seleccionar"],
+    [
+      "Comensales",
+      form.guests
+        ? `${form.guests} ${Number(form.guests) === 1 ? "persona" : "personas"}`
+        : "Sin seleccionar",
+    ],
+    [
+      "Preferencias",
+      form.comments.trim() ? form.comments.trim() : "Sin indicaciones",
+    ],
+  ];
 
   // Horarios disponibles para reservar
   const availableTimes = [
@@ -111,7 +125,7 @@ const ReservationForm = ({ compact = false }) => {
         title: "Reserva Confirmada",
         html: `
           <div class="text-center font-body">
-            <p class="mb-4">Hemos recibido su solicitud para una experiencia en <b>Distrito Gourmet</b>.</p>
+            <p class="mb-4">Hemos recibido su solicitud de mesa en <b>Distrito Gourmet</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
               <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Fecha y Hora de la Cita</p>
               <p class="text-3xl font-heading text-primary">${form.date} — ${form.time}</p>
@@ -141,7 +155,6 @@ const ReservationForm = ({ compact = false }) => {
       // Si hay error, lo mostramos por pantalla con detalle
       console.error("Error de reserva:", err);
       const errorData = err.response?.data;
-      console.log("Detalle del error 422:", errorData);
       let errorMsg = "No se pudo procesar la reserva";
 
       if (errorData?.mensaje) {
@@ -228,6 +241,9 @@ const ReservationForm = ({ compact = false }) => {
             placeholder="Ej. Laura Martínez"
             className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
           />
+          <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+            Usaremos este nombre para identificar la mesa a su llegada.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-10 mb-7 md:mb-8">
@@ -246,9 +262,12 @@ const ReservationForm = ({ compact = false }) => {
               value={form.phone}
               onChange={handleChange}
               required
-              placeholder="+34 000 000 000"
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
-            />
+            placeholder="+34 000 000 000"
+            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
+          />
+            <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+              Solo se utiliza para avisos relacionados con la reserva.
+            </p>
           </div>
           <div className="relative group">
             {/* Desplegable: Número de comensales */}
@@ -275,6 +294,9 @@ const ReservationForm = ({ compact = false }) => {
                 </option>
               ))}
             </select>
+            <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+              Para grupos de más de 8 personas, contacte con sala.
+            </p>
           </div>
         </div>
 
@@ -286,7 +308,7 @@ const ReservationForm = ({ compact = false }) => {
                 htmlFor="reservation-date"
                 className="text-[12px] uppercase tracking-[2px] text-primary transition-colors group-focus-within:text-primary font-bold mb-0"
               >
-                Fecha de la Experiencia
+                Fecha de la Reserva
               </label>
               <span className="text-[9px] uppercase tracking-[2px] text-text-muted/60 italic">
                 Agenda abierta a 2 meses
@@ -349,6 +371,32 @@ const ReservationForm = ({ compact = false }) => {
             placeholder="Alergias, celebraciones u otros detalles importantes para el equipo de sala..."
             className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
           ></textarea>
+          <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+            Indique alergias, celebraciones o necesidades de accesibilidad.
+          </p>
+        </div>
+
+        <div className="mb-10 border border-text-main/10 bg-bg-body/80 p-5 sm:p-6">
+          <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <h4 className="font-heading text-2xl text-gray-900 mb-0">
+              Resumen
+            </h4>
+            <span className="font-body text-[10px] uppercase tracking-[1.6px] text-primary">
+              Revise antes de enviar
+            </span>
+          </div>
+          <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {reservationSummary.map(([label, value]) => (
+              <div key={label} className="border-t border-text-main/10 pt-3">
+                <dt className="font-body text-[10px] uppercase tracking-[1.5px] text-gray-500 mb-1">
+                  {label}
+                </dt>
+                <dd className="text-sm text-gray-900 leading-relaxed">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         {/* Botón para enviar el formulario de reserva */}
