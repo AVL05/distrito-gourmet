@@ -16,6 +16,7 @@ import { IS_PUBLIC_DEMO } from "@/config/demo";
 const ReservationForm = ({ compact = false }) => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const COMMENTS_MAX_LENGTH = 300;
 
   // Estado principal que guarda los datos introducidos en el formulario
   const [form, setForm] = useState({
@@ -40,9 +41,50 @@ const ReservationForm = ({ compact = false }) => {
 
   // Estados para controlar si está cargando
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const shouldReduceMotion = useReducedMotion();
+  const formatShortReservationDate = (date) =>
+    date.toLocaleDateString("es-ES", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
+  const formatFullReservationDate = (date) =>
+    date.toLocaleDateString("es-ES", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+    });
+
+  const reservationDateOptions = (() => {
+    const dates = [];
+    const cursor = new Date();
+    cursor.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setMonth(end.getMonth() + 2);
+    end.setHours(0, 0, 0, 0);
+
+    while (cursor <= end) {
+      dates.push({
+        value: cursor.toLocaleDateString("en-CA"),
+        label: formatShortReservationDate(cursor),
+        fullLabel: formatFullReservationDate(cursor),
+        day: cursor.toLocaleDateString("es-ES", { day: "2-digit" }),
+        month: cursor.toLocaleDateString("es-ES", { month: "short" }),
+        weekday: cursor.toLocaleDateString("es-ES", { weekday: "short" }),
+      });
+      cursor.setDate(cursor.getDate() + 1);
+    }
+
+    return dates;
+  })();
+  const selectedDate = reservationDateOptions.find(
+    (option) => option.value === form.date,
+  );
   const reservationSummary = [
-    ["Fecha", form.date || "Sin seleccionar"],
+    ["Fecha", selectedDate?.fullLabel || "Sin seleccionar"],
     ["Hora", form.time || "Sin seleccionar"],
     [
       "Comensales",
@@ -67,14 +109,33 @@ const ReservationForm = ({ compact = false }) => {
     "21:00",
     "21:30",
   ];
-  const today = new Date().toLocaleDateString("en-CA");
-  const maxDate = new Date(
-    new Date().setMonth(new Date().getMonth() + 2),
-  ).toLocaleDateString("en-CA");
+  const phonePattern = /^\+?\d[\d\s]{8,17}$/;
+
+  const validateForm = () => {
+    const nextErrors = {};
+    const normalizedPhone = form.phone.trim();
+
+    if (!form.name.trim()) nextErrors.name = "Introduzca su nombre.";
+    if (!normalizedPhone) {
+      nextErrors.phone = "Introduzca un teléfono de contacto.";
+    } else if (!phonePattern.test(normalizedPhone)) {
+      nextErrors.phone = "Use un teléfono válido, por ejemplo +34 600 000 000.";
+    }
+    if (!form.guests) nextErrors.guests = "Seleccione el número de comensales.";
+    if (!form.date) nextErrors.date = "Seleccione una fecha.";
+    if (!form.time) nextErrors.time = "Seleccione un turno.";
+    if (form.comments.length > COMMENTS_MAX_LENGTH) {
+      nextErrors.comments = `Máximo ${COMMENTS_MAX_LENGTH} caracteres.`;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
 
   // Enviar reserva (conexión real con API)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
@@ -181,9 +242,24 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   // Actualizar campo del formulario
+  const clearFieldError = (field) => {
+    setErrors((prev) => {
+      if (!prev[field]) return prev;
+      const { [field]: _removed, ...rest } = prev;
+      return rest;
+    });
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    clearFieldError(name);
+  };
+
+  const handleDateSelect = (date) => {
+    setForm((prev) => ({ ...prev, date: date.value }));
+    clearFieldError("date");
+    setIsDatePickerOpen(false);
   };
 
   return (
@@ -238,9 +314,19 @@ const ReservationForm = ({ compact = false }) => {
             value={form.name}
             onChange={handleChange}
             required
+            autoComplete="name"
+            aria-invalid={!!errors.name}
+            aria-describedby={errors.name ? "reservation-name-error" : undefined}
             placeholder="Ej. Laura Martínez"
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
+            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+              errors.name ? "border-red-700" : "border-gray-200"
+            }`}
           />
+          {errors.name && (
+            <p id="reservation-name-error" className="mt-2 text-[12px] text-red-800">
+              {errors.name}
+            </p>
+          )}
           <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
             Usaremos este nombre para identificar la mesa a su llegada.
           </p>
@@ -262,9 +348,22 @@ const ReservationForm = ({ compact = false }) => {
               value={form.phone}
               onChange={handleChange}
               required
-            placeholder="+34 000 000 000"
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
-          />
+              autoComplete="tel"
+              inputMode="tel"
+              aria-invalid={!!errors.phone}
+              aria-describedby={
+                errors.phone ? "reservation-phone-error" : undefined
+              }
+              placeholder="+34 000 000 000"
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+                errors.phone ? "border-red-700" : "border-gray-200"
+              }`}
+            />
+            {errors.phone && (
+              <p id="reservation-phone-error" className="mt-2 text-[12px] text-red-800">
+                {errors.phone}
+              </p>
+            )}
             <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
               Solo se utiliza para avisos relacionados con la reserva.
             </p>
@@ -283,7 +382,13 @@ const ReservationForm = ({ compact = false }) => {
               value={form.guests}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer"
+              aria-invalid={!!errors.guests}
+              aria-describedby={
+                errors.guests ? "reservation-guests-error" : undefined
+              }
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
+                errors.guests ? "border-red-700" : "border-gray-200"
+              }`}
             >
               <option value="" disabled>
                 Seleccione número
@@ -294,6 +399,11 @@ const ReservationForm = ({ compact = false }) => {
                 </option>
               ))}
             </select>
+            {errors.guests && (
+              <p id="reservation-guests-error" className="mt-2 text-[12px] text-red-800">
+                {errors.guests}
+              </p>
+            )}
             <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
               Para grupos de más de 8 personas, contacte con sala.
             </p>
@@ -314,17 +424,77 @@ const ReservationForm = ({ compact = false }) => {
                 Agenda abierta a 2 meses
               </span>
             </div>
-            <input
+            <button
               id="reservation-date"
-              type="date"
-              name="date"
-              value={form.date}
-              onChange={handleChange}
-              required
-              min={today}
-              max={maxDate}
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-base sm:text-lg font-normal cursor-pointer"
-            />
+              type="button"
+              onClick={() => setIsDatePickerOpen((open) => !open)}
+              aria-expanded={isDatePickerOpen}
+              aria-invalid={!!errors.date}
+              aria-describedby={errors.date ? "reservation-date-error" : undefined}
+              className={`flex min-h-12 w-full items-center justify-between border-0 border-b bg-transparent py-3 text-left text-base font-normal text-gray-900 transition-all duration-300 focus:outline-none focus:ring-0 focus:border-primary sm:text-lg ${
+                errors.date ? "border-red-700" : "border-gray-200"
+              }`}
+            >
+              <span
+                className={selectedDate ? "text-gray-900" : "text-gray-900/35"}
+              >
+                {selectedDate?.fullLabel || "Seleccione fecha"}
+              </span>
+              <span
+                className={`text-primary transition-transform duration-300 ${
+                  isDatePickerOpen ? "rotate-180" : ""
+                }`}
+                aria-hidden="true"
+              >
+                ↓
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isDatePickerOpen && (
+                <motion.div
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
+                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18 }}
+                  className="mt-4 max-h-64 overflow-y-auto border border-text-main/10 bg-bg-body/95 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
+                >
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-3">
+                    {reservationDateOptions.map((date) => {
+                      const isSelected = date.value === form.date;
+
+                      return (
+                        <button
+                          key={date.value}
+                          type="button"
+                          onClick={() => handleDateSelect(date)}
+                          aria-pressed={isSelected}
+                          className={`min-h-[72px] border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-body ${
+                            isSelected
+                              ? "border-primary bg-primary text-white"
+                              : "border-text-main/10 bg-white/70 text-gray-900 hover:border-primary hover:bg-primary/10"
+                          }`}
+                        >
+                          <span className="block text-[10px] font-bold uppercase tracking-[1.2px] opacity-70">
+                            {date.weekday}
+                          </span>
+                          <span className="mt-1 block font-heading text-2xl leading-none">
+                            {date.day}
+                          </span>
+                          <span className="mt-1 block text-[10px] font-bold uppercase tracking-[1px]">
+                            {date.month}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {errors.date && (
+              <p id="reservation-date-error" className="mt-2 text-[12px] text-red-800">
+                {errors.date}
+              </p>
+            )}
           </div>
           <div className="relative group">
             {/* Desplegable: Turnos disponibles */}
@@ -340,7 +510,11 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer"
+              aria-invalid={!!errors.time}
+              aria-describedby={errors.time ? "reservation-time-error" : undefined}
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
+                errors.time ? "border-red-700" : "border-gray-200"
+              }`}
             >
               <option value="" disabled>
                 Seleccione horario
@@ -351,6 +525,11 @@ const ReservationForm = ({ compact = false }) => {
                 </option>
               ))}
             </select>
+            {errors.time && (
+              <p id="reservation-time-error" className="mt-2 text-[12px] text-red-800">
+                {errors.time}
+              </p>
+            )}
           </div>
         </div>
 
@@ -368,12 +547,27 @@ const ReservationForm = ({ compact = false }) => {
             value={form.comments}
             onChange={handleChange}
             rows="2"
+            maxLength={COMMENTS_MAX_LENGTH}
+            aria-invalid={!!errors.comments}
+            aria-describedby={
+              errors.comments ? "reservation-comments-error" : undefined
+            }
             placeholder="Alergias, celebraciones u otros detalles importantes para el equipo de sala..."
-            className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal"
+            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+              errors.comments ? "border-red-700" : "border-gray-200"
+            }`}
           ></textarea>
-          <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
-            Indique alergias, celebraciones o necesidades de accesibilidad.
-          </p>
+          <div className="mt-2 flex items-start justify-between gap-4 text-[11px] leading-relaxed text-gray-500">
+            <p>Indique alergias, celebraciones o necesidades de accesibilidad.</p>
+            <span className="shrink-0">
+              {form.comments.length}/{COMMENTS_MAX_LENGTH}
+            </span>
+          </div>
+          {errors.comments && (
+            <p id="reservation-comments-error" className="mt-2 text-[12px] text-red-800">
+              {errors.comments}
+            </p>
+          )}
         </div>
 
         <div className="mb-10 border border-text-main/10 bg-bg-body/80 p-5 sm:p-6">

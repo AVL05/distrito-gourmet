@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Gestión de usuarios
         Route::get('/users', [UsuarioController::class, 'index']);
+        Route::post('/users', [UsuarioController::class, 'store']);
         Route::put('/users/{id}', [UsuarioController::class, 'update']);
         Route::delete('/users/{id}', [UsuarioController::class, 'destroy']);
     });

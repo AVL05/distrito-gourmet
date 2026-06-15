@@ -27,7 +27,7 @@ import UserEditRow from "@/components/admin/UserEditRow";
 import WineEditRow from "@/components/admin/WineEditRow";
 
 const inputClass =
-  "w-full border border-text-main/10 bg-bg-surface px-3 py-2.5 text-sm text-text-main outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "w-full border border-text-main/20 bg-white px-3 py-3 text-sm text-text-main shadow-sm outline-none transition placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15";
 const labelClass =
   "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted";
 const adminFormClass =
@@ -134,6 +134,7 @@ const AdminView = () => {
     tasting_menus: false,
     wines: false,
     beverages: false,
+    users: false,
   });
   const shouldReduceMotion = useReducedMotion();
 
@@ -174,6 +175,13 @@ const AdminView = () => {
     pasos: 1,
     duracion_estimada_minutos: 60,
     disponible: true,
+  });
+  const [newUser, setNewUser] = useState({
+    nombre: "",
+    email: "",
+    telefono: "",
+    rol: "Cliente",
+    password: "",
   });
 
   const { data, setData, loading, fetchData } = useAdminData({
@@ -797,7 +805,27 @@ const AdminView = () => {
     return (
       <div className="space-y-5">
         <div className="flex flex-col gap-3 border border-text-main/10 bg-bg-surface p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:flex-wrap sm:overflow-visible sm:pb-0">
+          <select
+            value={orderFilter}
+            onChange={(event) => setOrderFilter(event.target.value)}
+            className={`${inputClass} sm:hidden`}
+            aria-label="Filtrar pedidos"
+          >
+            {[
+              ["active", "Activos"],
+              ["today", "Hoy"],
+              ["Pendiente", "Pendientes"],
+              ["Preparando", "Cocina"],
+              ["Listo", "Listos"],
+              ["Cancelado", "Cancelados"],
+              ["all", "Todos"],
+            ].map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <div className="hidden gap-2 sm:flex sm:flex-wrap">
             {[
               ["active", "Activos"],
               ["today", "Hoy"],
@@ -915,7 +943,26 @@ const AdminView = () => {
     return (
       <div className="space-y-8">
         <div className="flex flex-col gap-3 border border-text-main/10 bg-bg-surface p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar sm:flex-wrap sm:overflow-visible sm:pb-0">
+          <select
+            value={reservationFilter}
+            onChange={(event) => setReservationFilter(event.target.value)}
+            className={`${inputClass} sm:hidden`}
+            aria-label="Filtrar reservas"
+          >
+            {[
+              ["active", "Activas"],
+              ["today", "Hoy"],
+              ["Pendiente", "Por confirmar"],
+              ["Confirmada", "Confirmadas"],
+              ["Cancelada", "Canceladas"],
+              ["all", "Todas"],
+            ].map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <div className="hidden gap-2 sm:flex sm:flex-wrap">
             {[
               ["active", "Activas"],
               ["today", "Hoy"],
@@ -1194,6 +1241,7 @@ const AdminView = () => {
                   })
                 }
                 className={inputClass}
+                placeholder="Menú Esencia"
               />
             </div>
             <div className="lg:col-span-1">
@@ -1210,6 +1258,7 @@ const AdminView = () => {
                   })
                 }
                 className={inputClass}
+                placeholder="65.00"
               />
             </div>
             <div className="lg:col-span-1">
@@ -1225,6 +1274,7 @@ const AdminView = () => {
                   })
                 }
                 className={inputClass}
+                placeholder="24.00"
               />
             </div>
             <div className="lg:col-span-1">
@@ -1239,6 +1289,7 @@ const AdminView = () => {
                   })
                 }
                 className={inputClass}
+                placeholder="7"
               />
             </div>
             <div className="lg:col-span-6">
@@ -1253,6 +1304,7 @@ const AdminView = () => {
                 }
                 className={inputClass}
                 rows="3"
+                placeholder="Pases, ritmo de servicio y propuesta gastronómica"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1332,6 +1384,7 @@ const AdminView = () => {
                   setNewWine({ ...newWine, nombre: event.target.value })
                 }
                 className={inputClass}
+                placeholder="Albariño sobre lías"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1343,6 +1396,7 @@ const AdminView = () => {
                   setNewWine({ ...newWine, region: event.target.value })
                 }
                 className={inputClass}
+                placeholder="Rías Baixas"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1372,6 +1426,7 @@ const AdminView = () => {
                   setNewWine({ ...newWine, precio_botella: event.target.value })
                 }
                 className={inputClass}
+                placeholder="28.00"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1384,6 +1439,7 @@ const AdminView = () => {
                   setNewWine({ ...newWine, precio_copa: event.target.value })
                 }
                 className={inputClass}
+                placeholder="6.50"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1462,6 +1518,7 @@ const AdminView = () => {
                   setNewBeverage({ ...newBeverage, nombre: event.target.value })
                 }
                 className={inputClass}
+                placeholder="Agua con gas"
               />
             </div>
             <div className="lg:col-span-2">
@@ -1490,6 +1547,7 @@ const AdminView = () => {
                   setNewBeverage({ ...newBeverage, precio: event.target.value })
                 }
                 className={inputClass}
+                placeholder="3.50"
               />
             </div>
             <div className="lg:col-span-6">
@@ -1504,6 +1562,7 @@ const AdminView = () => {
                   })
                 }
                 className={inputClass}
+                placeholder="Formato, origen o nota de servicio"
               />
             </div>
             <div className="grid grid-cols-1 gap-3 lg:col-span-4 sm:grid-cols-2">
@@ -1545,6 +1604,112 @@ const AdminView = () => {
 
   const renderUsers = () => (
     <div className="space-y-6">
+      <CreateToggle
+        isOpen={openCreateForm.users}
+        label="Crear usuario"
+        onClick={() => toggleCreateForm("users")}
+      />
+      {openCreateForm.users && (
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddItem(
+              "users",
+              newUser,
+              () =>
+                setNewUser({
+                  nombre: "",
+                  email: "",
+                  telefono: "",
+                  rol: "Cliente",
+                  password: "",
+                }),
+              "Usuario añadido",
+            );
+          }}
+          className={adminFormClass}
+        >
+          <div className={adminFormHeaderClass}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              Alta rápida
+            </p>
+            <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
+              Nuevo usuario
+            </h3>
+          </div>
+          <div className={adminFormGridClass}>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Nombre</label>
+              <input
+                required
+                value={newUser.nombre}
+                onChange={(event) =>
+                  setNewUser({ ...newUser, nombre: event.target.value })
+                }
+                className={inputClass}
+                placeholder="Laura Martínez"
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Email</label>
+              <input
+                required
+                type="email"
+                value={newUser.email}
+                onChange={(event) =>
+                  setNewUser({ ...newUser, email: event.target.value })
+                }
+                className={inputClass}
+                placeholder="laura@distritogourmet.es"
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Teléfono</label>
+              <input
+                required
+                type="tel"
+                value={newUser.telefono}
+                onChange={(event) =>
+                  setNewUser({ ...newUser, telefono: event.target.value })
+                }
+                className={inputClass}
+                placeholder="+34 600 000 000"
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Rol</label>
+              <select
+                value={newUser.rol}
+                onChange={(event) =>
+                  setNewUser({ ...newUser, rol: event.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="Cliente">Cliente</option>
+                <option value="Staff">Staff</option>
+                <option value="Administrador">Administrador</option>
+              </select>
+            </div>
+            <div className="lg:col-span-4">
+              <label className={labelClass}>Contraseña</label>
+              <input
+                required
+                type="password"
+                minLength="8"
+                value={newUser.password}
+                onChange={(event) =>
+                  setNewUser({ ...newUser, password: event.target.value })
+                }
+                className={inputClass}
+                placeholder="Mínimo 8 caracteres"
+              />
+            </div>
+          </div>
+          <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
+            <button className={adminSubmitClass}>Crear usuario</button>
+          </div>
+        </form>
+      )}
       {data.users?.length ? (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-4">
           {data.users.map((user) => (
@@ -1662,13 +1827,6 @@ const AdminView = () => {
                     {activeMeta?.label}
                   </h2>
                 </div>
-                <button
-                  onClick={logout}
-                  className="inline-flex items-center gap-2 border border-text-main/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-text-muted lg:hidden"
-                >
-                  <HiLogout />
-                  Salir
-                </button>
               </div>
 
               <div className="flex gap-2 overflow-x-auto no-scrollbar lg:hidden">

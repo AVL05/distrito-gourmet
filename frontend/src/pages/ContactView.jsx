@@ -13,15 +13,64 @@ import {
 
 // Vista de contacto: presenta la ubicación del local, información de comunicación y formulario de consultas
 const ContactView = () => {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const MESSAGE_MAX_LENGTH = 500;
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [errors, setErrors] = useState({});
   const shouldReduceMotion = useReducedMotion();
+  const subjectOptions = [
+    "Reserva",
+    "Evento privado",
+    "Alergias",
+    "Prensa / colaboración",
+    "Otra consulta",
+  ];
+
+  const validateForm = () => {
+    const nextErrors = {};
+    if (!form.name.trim()) nextErrors.name = "Introduzca su nombre.";
+    if (!form.email.trim()) {
+      nextErrors.email = "Introduzca su correo.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      nextErrors.email = "Introduzca un correo válido.";
+    }
+    if (!form.subject) nextErrors.subject = "Seleccione el motivo.";
+    if (!form.message.trim()) {
+      nextErrors.message = "Escriba su consulta.";
+    } else if (form.message.length > MESSAGE_MAX_LENGTH) {
+      nextErrors.message = `Máximo ${MESSAGE_MAX_LENGTH} caracteres.`;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const updateField = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const { [field]: _removed, ...rest } = current;
+      return rest;
+    });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSent(true);
-    setForm({ name: "", email: "", message: "" });
-    setTimeout(() => setSent(false), 5000);
+    if (!validateForm()) return;
+
+    setSending(true);
+    window.setTimeout(() => {
+      setSent(true);
+      setSending(false);
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setTimeout(() => setSent(false), 5000);
+    }, 500);
   };
 
   return (
@@ -138,11 +187,21 @@ const ContactView = () => {
                     id="contact-name"
                     type="text"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => updateField("name", e.target.value)}
                     required
-                    className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading"
+                    autoComplete="name"
+                    aria-invalid={!!errors.name}
+                    aria-describedby={errors.name ? "contact-name-error" : undefined}
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
+                      errors.name ? "border-red-700" : "border-text-main/20"
+                    }`}
                     placeholder="Escriba su nombre"
                   />
+                  {errors.name && (
+                    <p id="contact-name-error" className="mt-2 text-[12px] text-red-800">
+                      {errors.name}
+                    </p>
+                  )}
                 </div>
                 <div className="relative group">
                   <label
@@ -155,13 +214,58 @@ const ContactView = () => {
                     id="contact-email"
                     type="email"
                     value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
+                    onChange={(e) => updateField("email", e.target.value)}
                     required
-                    className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading"
+                    autoComplete="email"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={
+                      errors.email ? "contact-email-error" : undefined
+                    }
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
+                      errors.email ? "border-red-700" : "border-text-main/20"
+                    }`}
                     placeholder="contacto@ejemplo.com"
                   />
+                  {errors.email && (
+                    <p id="contact-email-error" className="mt-2 text-[12px] text-red-800">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+                <div className="relative group">
+                  <label
+                    htmlFor="contact-subject"
+                    className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body"
+                  >
+                    Motivo
+                  </label>
+                  <select
+                    id="contact-subject"
+                    value={form.subject}
+                    onChange={(e) => updateField("subject", e.target.value)}
+                    required
+                    aria-invalid={!!errors.subject}
+                    aria-describedby={
+                      errors.subject ? "contact-subject-error" : undefined
+                    }
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading ${
+                      errors.subject ? "border-red-700" : "border-text-main/20"
+                    }`}
+                  >
+                    <option value="" disabled>
+                      Seleccione motivo
+                    </option>
+                    {subjectOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.subject && (
+                    <p id="contact-subject-error" className="mt-2 text-[12px] text-red-800">
+                      {errors.subject}
+                    </p>
+                  )}
                 </div>
                 <div className="relative group">
                   <label
@@ -174,13 +278,29 @@ const ContactView = () => {
                     id="contact-message"
                     rows="4"
                     value={form.message}
-                    onChange={(e) =>
-                      setForm({ ...form, message: e.target.value })
-                    }
+                    onChange={(e) => updateField("message", e.target.value)}
                     required
-                    className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-transparent text-lg font-heading"
+                    maxLength={MESSAGE_MAX_LENGTH}
+                    aria-invalid={!!errors.message}
+                    aria-describedby={
+                      errors.message ? "contact-message-error" : undefined
+                    }
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-transparent text-lg font-heading ${
+                      errors.message ? "border-red-700" : "border-text-main/20"
+                    }`}
                     placeholder="¿En qué podemos ayudarle?"
                   ></textarea>
+                  <div className="mt-2 flex items-start justify-between gap-4 text-[11px] leading-relaxed text-text-muted">
+                    <p>Incluya fecha, horario o número de personas si procede.</p>
+                    <span className="shrink-0">
+                      {form.message.length}/{MESSAGE_MAX_LENGTH}
+                    </span>
+                  </div>
+                  {errors.message && (
+                    <p id="contact-message-error" className="mt-2 text-[12px] text-red-800">
+                      {errors.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="pt-8">
@@ -191,10 +311,11 @@ const ContactView = () => {
                     }
                     whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
+                    disabled={sending}
                   >
                     <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
-                      ENVIAR MENSAJE
+                      {sending ? "ENVIANDO..." : "ENVIAR MENSAJE"}
                     </span>
                   </motion.button>
                 </div>

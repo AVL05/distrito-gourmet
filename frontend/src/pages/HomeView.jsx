@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { demoMenuData } from "@/data/demoMenu";
 import {
   PageTransition,
   FadeIn,
@@ -14,8 +13,6 @@ import {
 
 // Página de inicio organizada en secciones visuales de alto impacto para el usuario
 const HomeView = () => {
-  const featuredDishes = demoMenuData.dishes.slice(0, 3);
-
   return (
     <PageTransition className="w-full">
       {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
@@ -171,63 +168,6 @@ const HomeView = () => {
                 />
               </div>
             </ScrollReveal>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 md:py-28 bg-bg-body border-y border-text-main/5">
-        <div className="container">
-          <ScrollReveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <span className="block text-text-muted text-[11px] uppercase tracking-[2px] mb-5 font-body font-medium">
-                / 03 Destacados
-              </span>
-              <TextReveal
-                text="Primeros bocados"
-                splitBy="word"
-                as="h2"
-                staggerDelay={0.08}
-                className="text-4xl sm:text-5xl font-heading text-text-main leading-tight"
-              />
-            </div>
-            <Link
-              to="/menu"
-              className="self-start md:self-end font-body text-[12px] uppercase tracking-[1.6px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
-            >
-              Ver carta completa
-            </Link>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-text-main/10 border border-text-main/10">
-            {featuredDishes.map((dish) => (
-              <ScrollReveal
-                key={dish.id}
-                className="bg-bg-surface p-7 sm:p-8 flex min-h-[260px] flex-col justify-between"
-              >
-                <div>
-                  <span className="text-primary text-[10px] uppercase tracking-[2px] font-bold">
-                    {dish.category}
-                  </span>
-                  <h3 className="font-heading text-3xl text-text-main mt-4 mb-4 leading-tight">
-                    {dish.name}
-                  </h3>
-                  <p className="text-text-muted text-sm leading-relaxed">
-                    {dish.description}
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center justify-between border-t border-text-main/10 pt-5">
-                  <span className="font-heading text-2xl text-text-main">
-                    {dish.price.toFixed(2)}€
-                  </span>
-                  <Link
-                    to="/menu"
-                    className="font-body text-[11px] uppercase tracking-[1.6px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors"
-                  >
-                    Elegir
-                  </Link>
-                </div>
-              </ScrollReveal>
-            ))}
           </div>
         </div>
       </section>

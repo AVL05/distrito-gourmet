@@ -18,6 +18,31 @@ class UsuarioController extends Controller
         return response()->json($users);
     }
 
+    // Crear usuario desde el panel de administración
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:usuarios',
+            'telefono' => 'required|string|max:20',
+            'password' => 'required|string|min:8',
+            'rol' => ['required', Rule::in(['Administrador', 'Cliente', 'Staff'])]
+        ]);
+
+        $user = Usuario::create([
+            'nombre' => $request->nombre,
+            'email' => $request->email,
+            'telefono' => $request->telefono,
+            'password' => Hash::make($request->password),
+            'rol' => $request->rol,
+        ]);
+
+        return response()->json([
+            'message' => 'Usuario creado correctamente',
+            'user' => $user,
+        ], 201);
+    }
+
     // Actualizar perfil propio o actualizar usuario por admin
     public function update(Request $request, $id = null)
     {

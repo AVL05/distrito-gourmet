@@ -34,11 +34,15 @@ const Footer = () => {
         <FadeIn className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
           {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">
-            <Link to="/" className="group">
-              <h3 className="font-heading text-3xl md:text-3xl text-text-main tracking-[0.2em] mb-6 flex items-center gap-3 font-normal group-hover:text-primary transition-colors">
-                <span className="text-primary opacity-80 text-xl">✦</span>
-                DISTRITO
-                <span className="italic text-primary-hover">GOURMET</span>
+            <Link to="/" className="group max-w-full">
+              <h3 className="font-heading text-[2rem] sm:text-3xl text-text-main tracking-[0.14em] sm:tracking-[0.2em] mb-6 flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1 font-normal leading-tight group-hover:text-primary transition-colors">
+                <span className="text-primary opacity-80 text-xl shrink-0">
+                  ✦
+                </span>
+                <span className="min-w-0">DISTRITO</span>
+                <span className="italic text-primary-hover min-w-0 break-words">
+                  GOURMET
+                </span>
               </h3>
             </Link>
             <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
@@ -69,7 +73,9 @@ const Footer = () => {
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
                 <span className="py-1">+34 960 00 00 00</span>
-                <span className="py-1">reservas@distritogourmet.es</span>
+                <span className="py-1 break-all">
+                  reservas@distritogourmet.es
+                </span>
               </p>
             </div>
             <div className="text-left">
