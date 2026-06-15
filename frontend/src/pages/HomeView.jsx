@@ -89,17 +89,17 @@ const HomeView = () => {
       <div className="overflow-x-clip">
         <Marquee
           text="Cocina de Autor"
-          speed={30}
+          speed={22}
           separator="✦"
-          className="py-6 bg-text-main border-y border-text-main/10 md:-rotate-1 md:scale-[1.02]"
+          className="py-6 bg-text-main border-y border-text-main/10"
           textClassName="text-bg-body font-heading text-2xl md:text-4xl italic tracking-widest opacity-80"
         />
         <Marquee
           text="Distrito Gourmet"
-          speed={35}
+          speed={24}
           reverse
           separator="—"
-          className="py-4 bg-bg-body border-b border-text-main/10 md:rotate-1 md:scale-[1.02] -mt-3"
+          className="py-4 bg-bg-body border-b border-text-main/10"
           textClassName="text-text-main/15 font-heading text-xl md:text-3xl uppercase tracking-[0.2em]"
         />
       </div>
@@ -118,7 +118,7 @@ const HomeView = () => {
                 / 02 Identidad
               </span>
               <TextReveal
-                text="El Arte Contemporáneo"
+                text="Una Casa de Temporada"
                 splitBy="word"
                 as="h2"
                 staggerDelay={0.08}
@@ -128,29 +128,25 @@ const HomeView = () => {
               <div className="h-[1px] w-full bg-text-main/10 mb-7"></div>
 
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                En Distrito Gourmet trabajamos una cocina española contemporánea
-                con producto de temporada, fondos lentos y una bodega pensada
-                para acompañar cada servicio.
+                Distrito Gourmet nace como una cocina urbana de raíz española,
+                con una carta breve, producto de temporada y un servicio de sala
+                cercano.
               </p>
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                La carta cambia con el mercado: arroces, carnes maduradas,
-                pescados de lonja y postres de obrador propio conviven con un
-                menú degustación de formato corto.
+                La propuesta combina entrantes para compartir, arroces, carnes,
+                pescados de lonja y postres de obrador, junto a una bodega
+                pensada para acompañar cada momento de la comida.
               </p>
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
-                Abrimos en Valencia de martes a domingo al mediodía y de martes
-                a sábado por la noche. El equipo confirma cada reserva para
-                cuidar el ritmo de sala.
-              </p>
-              <p className="text-text-muted mb-10 leading-relaxed font-body font-normal text-[15px] tracking-wide italic border-l-2 border-primary/20 pl-6">
-                Precio medio a la carta: 40-55€ por persona. Menú degustación
-                desde 59€, con opción de maridaje.
+                La sala trabaja con pocas mesas para cuidar el ritmo del
+                servicio, las preferencias de cada reserva y los detalles que
+                hacen que una comida sea cómoda desde la llegada.
               </p>
               <Link
                 to="/menu"
                 className="font-body text-[12px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 self-start hover:text-primary hover:border-primary transition-colors font-medium"
               >
-                Explorar Identidad
+                Explorar la carta
               </Link>
             </ScrollReveal>
 
@@ -250,6 +246,34 @@ const HomeView = () => {
               </p>
             </ScrollReveal>
           </div>
+        </div>
+      </section>
+
+      <section className="py-20 md:py-28 bg-bg-surface border-y border-text-main/5">
+        <div className="container grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            ["Carta", "Platos, bebidas, bodega y menús de temporada.", "/menu"],
+            ["Reservas", "Elige día, turno, comensales y preferencias de sala.", "/reservations"],
+            ["Contacto", "Horario, dirección y comunicación del restaurante.", "/contact"],
+          ].map(([title, text, to]) => (
+            <ScrollReveal
+              key={title}
+              className="border border-text-main/10 bg-bg-body p-8 hover:border-primary/40 transition-colors"
+            >
+              <h3 className="font-heading text-3xl text-text-main mb-4">
+                {title}
+              </h3>
+              <p className="text-text-muted text-sm leading-relaxed mb-8">
+                {text}
+              </p>
+              <Link
+                to={to}
+                className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+              >
+                Entrar
+              </Link>
+            </ScrollReveal>
+          ))}
         </div>
       </section>
 

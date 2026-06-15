@@ -12,7 +12,7 @@ const sections = [
     title: "Responsable del tratamiento",
     body: [
       "Distrito Gourmet es un proyecto académico ficticio. No corresponde a un restaurante real ni presta servicios comerciales.",
-      "Los datos de contacto publicados, incluido info@distrito-gourmet.test, son inventados y se muestran únicamente para completar la experiencia de interfaz.",
+      "Los datos de contacto publicados bajo distritogourmet.es son inventados y se muestran únicamente para completar la experiencia de interfaz.",
     ],
   },
   {

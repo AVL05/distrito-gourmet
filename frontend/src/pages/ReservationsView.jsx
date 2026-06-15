@@ -19,6 +19,7 @@ import { DURATION, EASING } from "@/motion";
 // Coordina la comunicación con la API para recuperar las reservas del usuario autenticado.
 const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState("new");
+  const [experience, setExperience] = useState("carta");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
@@ -74,7 +75,7 @@ const ReservationsView = () => {
             / 06 Sus Reservas
           </span>
           <TextReveal
-            text="Gestión Personal"
+            text="Reservar Mesa"
             splitBy="word"
             as="h1"
             staggerDelay={0.1}
@@ -84,12 +85,19 @@ const ReservationsView = () => {
             className="bg-text-main/10 mx-auto"
             style={{ maxWidth: "4rem" }}
           />
+          <p className="text-text-muted text-sm sm:text-base leading-relaxed max-w-2xl mx-auto mt-8">
+            Seleccione el tipo de experiencia, indique sus preferencias y
+            prepare su visita con toda la información necesaria para el equipo
+            de sala.
+          </p>
         </ScrollReveal>
 
         {/* Tabs */}
         <div className="flex justify-center gap-8 sm:gap-12 mb-16 sm:mb-20">
           <motion.button
+            type="button"
             onClick={() => setActiveTab("new")}
+            aria-pressed={activeTab === "new"}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
             className={`pb-2 px-2 text-[10px] sm:text-[11px] uppercase tracking-[3px] sm:tracking-[4px] transition-all relative font-body ${
               activeTab === "new"
@@ -106,7 +114,9 @@ const ReservationsView = () => {
             />
           </motion.button>
           <motion.button
+            type="button"
             onClick={() => setActiveTab("history")}
+            aria-pressed={activeTab === "history"}
             whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
             className={`pb-2 px-2 text-[10px] sm:text-[11px] uppercase tracking-[3px] sm:tracking-[4px] transition-all relative font-body ${
               activeTab === "history"
@@ -135,6 +145,10 @@ const ReservationsView = () => {
           >
             {activeTab === "new" ? (
               <div className="bg-transparent border-0 shadow-none p-0 max-w-4xl mx-auto">
+                <ExperienceSelector
+                  selected={experience}
+                  onSelect={setExperience}
+                />
                 <ReservationForm compact={false} />
               </div>
             ) : (
@@ -225,6 +239,54 @@ const ReservationsView = () => {
         </AnimatePresence>
       </div>
     </PageTransition>
+  );
+};
+
+const ExperienceSelector = ({ selected, onSelect }) => {
+  const options = [
+    {
+      id: "carta",
+      title: "Carta",
+      text: "Reserva clásica para comer a la carta.",
+    },
+    {
+      id: "degustacion",
+      title: "Degustación",
+      text: "Mesa pensada para menú por pases.",
+    },
+    {
+      id: "celebracion",
+      title: "Celebración",
+      text: "Aniversario, reunión o servicio especial.",
+    },
+  ];
+
+  return (
+    <FadeIn className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-3">
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option.id}
+          onClick={() => onSelect(option.id)}
+          aria-pressed={selected === option.id}
+          className={`border p-5 text-left transition-colors ${
+            selected === option.id
+              ? "border-primary bg-primary/10"
+              : "border-text-main/10 bg-bg-surface hover:border-primary/40"
+          }`}
+        >
+          <span className="text-[10px] uppercase tracking-[3px] text-primary font-bold">
+            Experiencia
+          </span>
+          <h3 className="font-heading text-2xl text-text-main mt-2 mb-2">
+            {option.title}
+          </h3>
+          <p className="text-text-muted text-sm leading-relaxed">
+            {option.text}
+          </p>
+        </button>
+      ))}
+    </FadeIn>
   );
 };
 

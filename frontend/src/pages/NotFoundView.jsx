@@ -5,7 +5,7 @@ const NotFoundView = () => (
   <PageTransition className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
     <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block" />
 
-    <FadeIn className="bg-bg-surface border border-text-main/10 p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
+    <FadeIn className="bg-bg-surface border border-text-main/10 p-8 sm:p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
       <span className="text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
         / 404
       </span>
@@ -14,9 +14,10 @@ const NotFoundView = () => (
       </h1>
       <div className="w-16 h-[1px] bg-text-main/10 mb-8" />
       <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
-        La dirección solicitada no existe o ya no está disponible.
+        La dirección solicitada no existe o ha cambiado. Puede volver a una de
+        las secciones principales.
       </p>
-      <div className="flex flex-col sm:flex-row justify-center gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
         <Link
           to="/"
           className="group relative px-8 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[2px] overflow-hidden transition-all duration-300 hover:border-text-main inline-block"
@@ -28,19 +29,19 @@ const NotFoundView = () => (
         </Link>
         <Link
           to="/menu"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 self-center hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
         >
           Ver la carta
         </Link>
         <Link
           to="/reservations"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 self-center hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
         >
           Reservar mesa
         </Link>
         <Link
           to="/contact"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 self-center hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
         >
           Contacto
         </Link>

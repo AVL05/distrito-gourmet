@@ -59,14 +59,14 @@ const ContactView = () => {
               </h3>
               <div>
                 <p className="text-text-muted font-body font-normal leading-relaxed text-[15px] tracking-wide mb-6">
-                  Distrito Gastronómico Ficticio
+                  Ciutat Vella
                   <br />
-                  Calle de la Mesa Imaginaria, 12
+                  Calle del Mercado, 18
                   <br />
                   46000, Valencia
                 </p>
                 <span className="font-body text-[10px] uppercase tracking-[3px] text-text-main/50">
-                  Ubicación ficticia para proyecto académico
+                  Zona centro · Acceso peatonal recomendado
                 </span>
               </div>
             </div>
@@ -86,7 +86,7 @@ const ContactView = () => {
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Privados & Eventos
                   </span>
-                  <span>eventos@distrito-gourmet.test</span>
+                  <span>eventos@distritogourmet.es</span>
                 </p>
               </div>
             </div>
@@ -122,7 +122,8 @@ const ContactView = () => {
                 <span className="italic text-primary">Personalizada</span>
               </h3>
               <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-normal tracking-wide mb-10 sm:mb-12">
-                Formulario simulado para el flujo de contacto del proyecto.
+                Cuéntenos el motivo de su consulta y el equipo de sala le
+                responderá con la mayor brevedad posible.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">

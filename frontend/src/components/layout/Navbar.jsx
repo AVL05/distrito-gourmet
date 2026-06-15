@@ -33,6 +33,17 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setIsOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
   // Finalizar sesión y redirigir al login
   const handleLogout = () => {
     logout();
@@ -57,9 +68,9 @@ const Navbar = () => {
     { to: "/contact", label: "Contacto" },
   ];
   const socialLinks = [
-    { label: "Instagram ficticio", text: "Ig" },
-    { label: "Facebook ficticio", text: "Fb" },
-    { label: "TikTok ficticio", text: "Tk" },
+    { label: "Instagram", text: "Ig" },
+    { label: "Facebook", text: "Fb" },
+    { label: "TikTok", text: "Tk" },
   ];
 
   return (
@@ -167,6 +178,7 @@ const Navbar = () => {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-[0.07] grayscale"
           style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}
+          onClick={closeMenu}
         />
         <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-white/5 hidden md:block" />
         <div className="absolute top-0 bottom-0 left-2/3 w-[1px] bg-white/5 hidden md:block" />
@@ -185,7 +197,9 @@ const Navbar = () => {
                     ? "translate-y-0 opacity-100"
                     : "translate-y-8 opacity-0"
                 }`}
-                style={{ transitionDelay: isOpen ? `${160 + i * 70}ms` : "0ms" }}
+                style={{
+                  transitionDelay: isOpen ? `${160 + i * 70}ms` : "0ms",
+                }}
               >
                 <NavLink
                   to={link.to}
@@ -236,7 +250,7 @@ const Navbar = () => {
                       Área Personal
                     </NavLink>
                     <span className="text-bg-body/40 text-[11px] font-body uppercase tracking-[2px]">
-                      Vista de prueba
+                      Vista pública
                     </span>
                   </>
                 ) : isAuthenticated() ? (
@@ -303,7 +317,7 @@ const Navbar = () => {
                 +34 960 00 00 00
               </span>
               <span className="text-bg-body/50 text-[12px] font-body tracking-widest">
-                info@distrito-gourmet.test
+                reservas@distritogourmet.es
               </span>
             </div>
 

@@ -91,8 +91,8 @@ const CartView = () => {
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
         icon: "info",
-        title: "Demo pública",
-        text: "La selección es navegable, pero los pedidos de recogida están desactivados.",
+        title: "Pedido no disponible",
+        text: "La selección es navegable, pero el pedido de recogida no está disponible en esta vista pública.",
         background: "#fdfaf6",
         color: "#2c302e",
         confirmButtonColor: "#e76f51",
@@ -122,8 +122,8 @@ const CartView = () => {
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
         icon: "info",
-        title: "Demo pública",
-        text: "Los pedidos están desactivados para proteger la base de datos.",
+        title: "Pedido no disponible",
+        text: "Los pedidos de recogida no están disponibles en esta vista pública.",
         background: "#fdfaf6",
         color: "#2c302e",
         confirmButtonColor: "#e76f51",

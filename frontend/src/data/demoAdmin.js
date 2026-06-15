@@ -1,8 +1,8 @@
 const demoUser = {
   id: 1,
   nombre: "Administrador Demo",
-  email: "admin.demo@distritogourmet.local",
-  telefono: "+34 960 12 34 56",
+  email: "admin@distritogourmet.es",
+  telefono: "+34 960 00 00 00",
   rol: "Administrador",
 };
 
@@ -155,8 +155,8 @@ export const demoAdminData = {
     {
       id: 2,
       nombre: "Cliente Demo",
-      email: "cliente.demo@distritogourmet.local",
-      telefono: "+34 600 000 000",
+      email: "cliente@distritogourmet.es",
+      telefono: "+34 600 00 00 00",
       rol: "Cliente",
     },
   ],

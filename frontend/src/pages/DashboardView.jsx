@@ -208,6 +208,13 @@ const DashboardView = () => {
   const { user, logout, isAdmin } = useAuthStore();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const totalSpent = orders.reduce(
+    (total, order) => total + Number.parseFloat(order.total || 0),
+    0,
+  );
+  const activeOrders = orders.filter(
+    (order) => !["Recogido", "Cancelado", "Entregado"].includes(order.estado),
+  ).length;
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -367,6 +374,26 @@ const DashboardView = () => {
           </StaggerItem>
         </StaggerList>
 
+        <FadeIn className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            ["Pedidos activos", activeOrders],
+            ["Historial total", orders.length],
+            ["Importe total", `${totalSpent.toFixed(2)}€`],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="border border-text-main/10 bg-bg-surface/90 p-5"
+            >
+              <span className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-2">
+                {label}
+              </span>
+              <span className="font-heading text-3xl text-text-main">
+                {value}
+              </span>
+            </div>
+          ))}
+        </FadeIn>
+
         <FadeIn
           delay={0.3}
           className="mt-16 bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 relative overflow-hidden"
@@ -387,11 +414,17 @@ const DashboardView = () => {
 
           <div>
             {isLoading ? (
-              <div className="py-16 flex flex-col items-center justify-center">
-                <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4"></div>
-                <p className="text-text-muted text-[10px] uppercase tracking-[3px]">
-                  Cargando historial...
-                </p>
+              <div className="space-y-4">
+                {[1, 2, 3].map((item) => (
+                  <div
+                    key={item}
+                    className="border border-text-main/10 bg-bg-body p-6 animate-pulse"
+                  >
+                    <div className="h-5 w-1/2 bg-text-main/10 mb-4" />
+                    <div className="h-4 w-full bg-text-main/10 mb-3" />
+                    <div className="h-4 w-1/3 bg-text-main/10" />
+                  </div>
+                ))}
               </div>
             ) : orders.length > 0 ? (
               <div className="space-y-4">

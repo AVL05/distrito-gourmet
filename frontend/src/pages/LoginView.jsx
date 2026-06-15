@@ -28,8 +28,8 @@ const LoginView = () => {
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
         icon: "info",
-        title: "Demo pública",
-        text: "El acceso de usuarios está desactivado en esta demo.",
+        title: "Acceso no disponible",
+        text: "El acceso de usuarios no está disponible en esta vista pública.",
         background: "#fdfaf6",
         color: "#2c302e",
         confirmButtonColor: "#e76f51",
@@ -105,7 +105,7 @@ const LoginView = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           {IS_PUBLIC_DEMO && (
             <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
-              Acceso desactivado en modo demo
+              Acceso no disponible en esta vista
             </div>
           )}
 

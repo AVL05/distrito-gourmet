@@ -35,8 +35,8 @@ const RegisterView = () => {
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
         icon: "info",
-        title: "Demo pública",
-        text: "El registro de usuarios está desactivado en esta demo.",
+        title: "Registro no disponible",
+        text: "El alta de usuarios no está disponible en esta vista pública.",
         confirmButtonColor: "#e76f51",
         background: "#fdfaf6",
         color: "#2c302e",
@@ -106,7 +106,7 @@ const RegisterView = () => {
         <form onSubmit={handleSubmit} className="space-y-10">
           {IS_PUBLIC_DEMO && (
             <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
-              Registro desactivado en modo demo
+              Registro no disponible en esta vista
             </div>
           )}
 

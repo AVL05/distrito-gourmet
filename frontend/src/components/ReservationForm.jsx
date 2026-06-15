@@ -64,8 +64,8 @@ const ReservationForm = ({ compact = false }) => {
 
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
-        title: "Demo pública",
-        text: "Las reservas están desactivadas para no generar datos reales.",
+        title: "Servicio no disponible",
+        text: "La reserva online no está disponible en esta vista pública.",
         icon: "info",
         confirmButtonColor: "#c5a059",
         background: "#fdfaf6",
@@ -117,7 +117,7 @@ const ReservationForm = ({ compact = false }) => {
               <p class="text-3xl font-heading text-primary">${form.date} — ${form.time}</p>
               <p class="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos para brindarle un servicio excepcional.</p>
             </div>
-            <p class="mt-4 text-[11px] text-text-muted">Recibirá un correo de confirmación en breve.</p>
+            <p class="mt-4 text-[11px] text-text-muted">El equipo de sala revisará cualquier preferencia indicada.</p>
           </div>
         `,
         background: "#fdfaf6",
@@ -182,7 +182,7 @@ const ReservationForm = ({ compact = false }) => {
       <form onSubmit={handleSubmit} className="relative z-10">
         {IS_PUBLIC_DEMO && (
           <div className="mb-8 border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] text-primary font-body font-bold">
-            Reservas desactivadas en modo demo
+            Reserva online no disponible en esta vista
           </div>
         )}
         {!IS_PUBLIC_DEMO && !user && (

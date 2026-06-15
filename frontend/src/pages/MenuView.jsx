@@ -22,6 +22,7 @@ const MenuView = () => {
   const { addItem, totalItems, totalPrice } = useCartStore();
   const [activeCategory, setActiveCategory] = useState("carta");
   const [addedItemId, setAddedItemId] = useState(null);
+  const [selectedDish, setSelectedDish] = useState(null);
   const [menuData, setMenuData] = useState({
     dishes: [],
     beverages: [],
@@ -139,6 +140,17 @@ const MenuView = () => {
     fetchMenu();
   }, []);
 
+  useEffect(() => {
+    if (!selectedDish) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") setSelectedDish(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedDish]);
+
   // Categorías de platos para "Toda la Carta"
   const dishCategories = ["entrantes", "principales", "postres"];
   const getDishesForCategory = (cat) =>
@@ -237,12 +249,7 @@ const MenuView = () => {
       {/* Contenido del menú según la categoría activa */}
       <div className="container relative z-10">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 sm:py-32 text-center animate-pulse">
-            <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
-            <p className="text-text-muted font-normal tracking-wide text-lg">
-              Cargando la carta de temporada...
-            </p>
-          </div>
+          <MenuSkeleton />
         ) : (
           <PageTransition key={activeCategory}>
             {loadError && HAS_CONFIGURED_API && <ApiUnavailableState />}
@@ -266,6 +273,7 @@ const MenuView = () => {
                               item={item}
                               addItem={handleAddItem}
                               isAdded={addedItemId === item.id}
+                              onDetail={() => setSelectedDish(item)}
                             />
                           </StaggerItem>
                         ))}
@@ -367,9 +375,32 @@ const MenuView = () => {
           </div>
         </div>
       )}
+      {selectedDish && (
+        <DishDetailModal
+          item={selectedDish}
+          onClose={() => setSelectedDish(null)}
+          onAdd={() => handleAddItem(selectedDish)}
+          isAdded={addedItemId === selectedDish.id}
+        />
+      )}
     </PageTransition>
   );
 };
+
+const MenuSkeleton = () => (
+  <div className="max-w-5xl mx-auto py-16 sm:py-24 space-y-8">
+    {[1, 2, 3].map((item) => (
+      <div
+        key={item}
+        className="border-b border-text-main/10 py-8 animate-pulse"
+      >
+        <div className="h-8 w-2/3 bg-text-main/10 mb-4" />
+        <div className="h-4 w-full max-w-2xl bg-text-main/10 mb-3" />
+        <div className="h-4 w-1/3 bg-text-main/10" />
+      </div>
+    ))}
+  </div>
+);
 
 // Cabecera de cada sección con animaciones de entrada
 const SectionHeader = ({ index, label }) => (
@@ -394,7 +425,7 @@ const SectionHeader = ({ index, label }) => (
 );
 
 // Fila de plato individual. Aquí es donde se añade al carrito.
-const DishRow = ({ item, addItem, isAdded }) => (
+const DishRow = ({ item, addItem, isAdded, onDetail }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
     <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
       <div className="flex-grow">
@@ -441,6 +472,105 @@ const DishRow = ({ item, addItem, isAdded }) => (
           {isAdded ? "Añadido" : "Añadir para Recogida"}
         </span>
       </MotionButton>
+      <button
+        type="button"
+        onClick={onDetail}
+        className="mt-3 font-body text-[10px] uppercase tracking-[2px] text-text-muted border-b border-transparent hover:border-primary hover:text-primary transition-colors"
+      >
+        Ver detalle
+      </button>
+    </div>
+  </div>
+);
+
+const DishDetailModal = ({ item, onClose, onAdd, isAdded }) => (
+  <div
+    className="fixed inset-0 z-[70] bg-text-main/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-6"
+    onClick={onClose}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="dish-detail-title"
+  >
+    <div
+      className="w-full max-w-4xl bg-bg-body border border-text-main/10 shadow-2xl max-h-[92vh] overflow-y-auto"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-5">
+        <div className="md:col-span-2 min-h-[260px] bg-bg-surface">
+          <img
+            src="/sala_de_restaurante .png"
+            alt={item.name}
+            className="h-full w-full object-cover grayscale saturate-50"
+          />
+        </div>
+        <div className="md:col-span-3 p-8 sm:p-10">
+          <div className="flex items-start justify-between gap-4 mb-8">
+            <div>
+              <span className="text-primary text-[10px] uppercase tracking-[3px] font-bold">
+                {item.category || "Carta"}
+              </span>
+              <h2
+                id="dish-detail-title"
+                className="font-heading text-4xl text-text-main mt-3 mb-3"
+              >
+                {item.name}
+              </h2>
+              <p className="text-text-muted leading-relaxed">
+                {item.description}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Cerrar detalle"
+              className="text-text-muted hover:text-text-main text-2xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+            <div className="border border-text-main/10 p-4">
+              <span className="block text-[10px] uppercase tracking-[2px] text-text-muted mb-2">
+                Precio
+              </span>
+              <span className="font-heading text-2xl text-text-main">
+                {item.price.toFixed(2)}€
+              </span>
+            </div>
+            <div className="border border-text-main/10 p-4">
+              <span className="block text-[10px] uppercase tracking-[2px] text-text-muted mb-2">
+                Formato
+              </span>
+              <span className="text-text-main">
+                {item.isPerUnit ? "Por unidad" : "Ración"}
+              </span>
+            </div>
+            <div className="border border-text-main/10 p-4">
+              <span className="block text-[10px] uppercase tracking-[2px] text-text-muted mb-2">
+                Límite
+              </span>
+              <span className="text-text-main">
+                {item.max_per_order || "Sin límite"}
+              </span>
+            </div>
+          </div>
+
+          {item.allergens && (
+            <p className="text-[11px] uppercase tracking-[2px] text-text-muted mb-8">
+              Alérgenos: {item.allergens}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={onAdd}
+            className="w-full bg-text-main text-bg-body py-4 font-body text-[12px] uppercase tracking-[3px] font-bold hover:bg-primary transition-colors"
+          >
+            {isAdded ? "Añadido a la selección" : "Añadir para recogida"}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 );

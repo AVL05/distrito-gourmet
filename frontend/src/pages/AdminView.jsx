@@ -32,8 +32,7 @@ const labelClass =
   "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted";
 const adminFormClass =
   "border border-text-main/10 bg-bg-surface p-5 shadow-sm sm:p-6";
-const adminFormHeaderClass =
-  "mb-5 border-b border-text-main/10 pb-4";
+const adminFormHeaderClass = "mb-5 border-b border-text-main/10 pb-4";
 const adminFormGridClass = "grid grid-cols-1 gap-4 lg:grid-cols-6";
 const adminSubmitClass =
   "w-full bg-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-primary-hover sm:w-auto";
@@ -231,6 +230,31 @@ const AdminView = () => {
   const activeMeta = sections.find((section) => section.id === activeSection);
   const ActiveIcon = activeMeta?.icon || HiClipboardList;
   const today = todayIso();
+  const adminMetrics = useMemo(() => {
+    const activeOrders = data.orders.filter(
+      (order) => !["Entregado", "Cancelado"].includes(order.estado),
+    ).length;
+    const todayReservations = data.reservations.filter(
+      (reservation) => reservation.fecha_reserva === today,
+    );
+    const confirmedSeats = todayReservations
+      .filter((reservation) => reservation.estado !== "Cancelada")
+      .reduce(
+        (total, reservation) => total + Number(reservation.comensales || 0),
+        0,
+      );
+    const estimatedRevenue = data.orders.reduce(
+      (total, order) => total + Number.parseFloat(order.total || 0),
+      0,
+    );
+
+    return [
+      { label: "Pedidos activos", value: activeOrders },
+      { label: "Reservas hoy", value: todayReservations.length },
+      { label: "Cubiertos hoy", value: `${confirmedSeats}/44` },
+      { label: "Venta simulada", value: money(estimatedRevenue) },
+    ];
+  }, [data.orders, data.reservations, today]);
 
   const showNotice = (message) => {
     setNotice(message);
@@ -273,7 +297,8 @@ const AdminView = () => {
         reservationFilter === "all" ||
         (reservationFilter === "active" &&
           reservation.estado !== "Cancelada") ||
-        (reservationFilter === "today" && reservation.fecha_reserva === today) ||
+        (reservationFilter === "today" &&
+          reservation.fecha_reserva === today) ||
         reservation.estado === reservationFilter;
 
       const textMatch =
@@ -357,7 +382,9 @@ const AdminView = () => {
       Swal.fire({
         icon: "error",
         title: "No se pudo guardar",
-        text: err.response?.data?.message || "Revise los campos e inténtelo de nuevo.",
+        text:
+          err.response?.data?.message ||
+          "Revise los campos e inténtelo de nuevo.",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -444,7 +471,9 @@ const AdminView = () => {
       setData((current) => ({
         ...current,
         reservations: current.reservations.map((reservation) =>
-          reservation.id === id ? { ...reservation, ...updateData } : reservation,
+          reservation.id === id
+            ? { ...reservation, ...updateData }
+            : reservation,
         ),
       }));
       setSavingKey("");
@@ -558,34 +587,34 @@ const AdminView = () => {
           )}
         </div>
         <div className="flex items-center gap-2">
-        <select
-          value={order.estado}
-          disabled={savingKey === `order-${order.id}`}
-          onChange={(event) =>
-            handleUpdateOrderStatus(order.id, event.target.value)
-          }
-          className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
-        >
-          <option value="Pendiente">Pendiente</option>
-          <option value="Preparando">Preparando</option>
-          <option value="Listo">Listo</option>
-          <option value="Entregado">Entregado</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
-        {order.estado === "Cancelado" && (
-          <button
-            onClick={() =>
-              handleDeleteItem(
-                "orders",
-                order.id,
-                `Pedido #${order.numero_pedido || order.id}`,
-              )
+          <select
+            value={order.estado}
+            disabled={savingKey === `order-${order.id}`}
+            onChange={(event) =>
+              handleUpdateOrderStatus(order.id, event.target.value)
             }
-            className="border border-red-200 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
           >
-            Eliminar
-          </button>
-        )}
+            <option value="Pendiente">Pendiente</option>
+            <option value="Preparando">Preparando</option>
+            <option value="Listo">Listo</option>
+            <option value="Entregado">Entregado</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+          {order.estado === "Cancelado" && (
+            <button
+              onClick={() =>
+                handleDeleteItem(
+                  "orders",
+                  order.id,
+                  `Pedido #${order.numero_pedido || order.id}`,
+                )
+              }
+              className="border border-red-200 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+            >
+              Eliminar
+            </button>
+          )}
         </div>
       </div>
     </article>
@@ -602,12 +631,14 @@ const AdminView = () => {
             {reservation.codigo_reserva || `Reserva #${reservation.id}`}
           </p>
           <h3 className="mt-1 font-heading text-xl font-normal text-text-main">
-            {reservation.usuario?.nombre || `Cliente #${reservation.usuario_id}`}
+            {reservation.usuario?.nombre ||
+              `Cliente #${reservation.usuario_id}`}
           </h3>
         </div>
         <span
           className={`border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] ${
-            statusTone[reservation.estado] || "border-text-main/10 bg-text-main/5"
+            statusTone[reservation.estado] ||
+            "border-text-main/10 bg-text-main/5"
           }`}
         >
           {reservation.estado}
@@ -689,34 +720,34 @@ const AdminView = () => {
           )}
         </div>
         <div className="flex items-center gap-2">
-        <select
-          value={reservation.estado}
-          disabled={savingKey === `reservation-${reservation.id}`}
-          onChange={(event) =>
-            handleUpdateReservation(reservation.id, {
-              estado: event.target.value,
-            })
-          }
-          className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
-        >
-          <option value="Pendiente">Pendiente</option>
-          <option value="Confirmada">Confirmada</option>
-          <option value="Cancelada">Cancelada</option>
-        </select>
-        {reservation.estado === "Cancelada" && (
-          <button
-            onClick={() =>
-              handleDeleteItem(
-                "reservations",
-                reservation.id,
-                `Reserva de ${reservation.usuario?.nombre || "cliente"}`,
-              )
+          <select
+            value={reservation.estado}
+            disabled={savingKey === `reservation-${reservation.id}`}
+            onChange={(event) =>
+              handleUpdateReservation(reservation.id, {
+                estado: event.target.value,
+              })
             }
-            className="border border-red-200 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
           >
-            Eliminar
-          </button>
-        )}
+            <option value="Pendiente">Pendiente</option>
+            <option value="Confirmada">Confirmada</option>
+            <option value="Cancelada">Cancelada</option>
+          </select>
+          {reservation.estado === "Cancelada" && (
+            <button
+              onClick={() =>
+                handleDeleteItem(
+                  "reservations",
+                  reservation.id,
+                  `Reserva de ${reservation.usuario?.nombre || "cliente"}`,
+                )
+              }
+              className="border border-red-200 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-red-700 hover:bg-red-50"
+            >
+              Eliminar
+            </button>
+          )}
         </div>
       </div>
     </article>
@@ -809,42 +840,42 @@ const AdminView = () => {
         )}
 
         {filteredOrders.length > 0 && (
-        <div className="hidden grid-cols-1 gap-5 xl:grid xl:grid-cols-2 2xl:grid-cols-3">
-          {visibleColumns.map((column) => {
-            const Icon = column.icon;
-            const orders = filteredOrders.filter(
-              (order) => order.estado === column.id,
-            );
+          <div className="hidden grid-cols-1 gap-5 xl:grid xl:grid-cols-2 2xl:grid-cols-3">
+            {visibleColumns.map((column) => {
+              const Icon = column.icon;
+              const orders = filteredOrders.filter(
+                (order) => order.estado === column.id,
+              );
 
-            return (
-              <section
-                key={column.id}
-                className="min-h-[240px] border border-text-main/10 bg-bg-body"
-              >
-                <header className="flex items-center justify-between border-b border-text-main/10 bg-bg-surface px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Icon className="text-primary" />
-                    <h3 className="text-sm font-semibold text-text-main">
-                      {column.title}
-                    </h3>
+              return (
+                <section
+                  key={column.id}
+                  className="min-h-[240px] border border-text-main/10 bg-bg-body"
+                >
+                  <header className="flex items-center justify-between border-b border-text-main/10 bg-bg-surface px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Icon className="text-primary" />
+                      <h3 className="text-sm font-semibold text-text-main">
+                        {column.title}
+                      </h3>
+                    </div>
+                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                      {orders.length}
+                    </span>
+                  </header>
+                  <div className="space-y-4 p-4">
+                    {orders.length > 0 ? (
+                      orders.map(renderOrderCard)
+                    ) : (
+                      <p className="px-2 py-8 text-center text-sm text-text-muted">
+                        {column.empty}
+                      </p>
+                    )}
                   </div>
-                  <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
-                    {orders.length}
-                  </span>
-                </header>
-                <div className="space-y-4 p-4">
-                  {orders.length > 0 ? (
-                    orders.map(renderOrderCard)
-                  ) : (
-                    <p className="px-2 py-8 text-center text-sm text-text-muted">
-                      {column.empty}
-                    </p>
-                  )}
-                </div>
-              </section>
-            );
-          })}
-        </div>
+                </section>
+              );
+            })}
+          </div>
         )}
         {filteredOrders.length === 0 && (
           <div className="hidden xl:block">
@@ -1056,7 +1087,9 @@ const AdminView = () => {
           <ToggleField
             label="Disponible"
             checked={newDish.disponible}
-            onChange={(checked) => setNewDish({ ...newDish, disponible: checked })}
+            onChange={(checked) =>
+              setNewDish({ ...newDish, disponible: checked })
+            }
           />
           <ToggleField
             label="Visible carta"
@@ -1082,9 +1115,7 @@ const AdminView = () => {
         </div>
       </div>
       <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
-        <button className={adminSubmitClass}>
-          Crear plato
-        </button>
+        <button className={adminSubmitClass}>Crear plato</button>
       </div>
     </form>
   );
@@ -1104,7 +1135,9 @@ const AdminView = () => {
             item={item}
             categories={data.categories}
             fetchData={fetchData}
-            handleDelete={() => handleDeleteItem("dishes", item.id, item.nombre)}
+            handleDelete={() =>
+              handleDeleteItem("dishes", item.id, item.nombre)
+            }
           />
         ))}
       </div>
@@ -1119,125 +1152,123 @@ const AdminView = () => {
         onClick={() => toggleCreateForm("tasting_menus")}
       />
       {openCreateForm.tasting_menus && (
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          handleAddItem(
-            "tasting-menus",
-            newTastingMenu,
-            () =>
-              setNewTastingMenu({
-                nombre: "",
-                descripcion: "",
-                precio: "",
-                precio_maridaje: "",
-                pasos: 1,
-                duracion_estimada_minutos: 60,
-                disponible: true,
-              }),
-            "Menú añadido",
-          );
-        }}
-        className={adminFormClass}
-      >
-        <div className={adminFormHeaderClass}>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-            Alta rápida
-          </p>
-          <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
-            Nuevo menú degustación
-          </h3>
-        </div>
-        <div className={adminFormGridClass}>
-          <div className="lg:col-span-3">
-            <label className={labelClass}>Nombre</label>
-            <input
-              required
-              value={newTastingMenu.nombre}
-              onChange={(event) =>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddItem(
+              "tasting-menus",
+              newTastingMenu,
+              () =>
                 setNewTastingMenu({
-                  ...newTastingMenu,
-                  nombre: event.target.value,
-                })
-              }
-              className={inputClass}
-            />
+                  nombre: "",
+                  descripcion: "",
+                  precio: "",
+                  precio_maridaje: "",
+                  pasos: 1,
+                  duracion_estimada_minutos: 60,
+                  disponible: true,
+                }),
+              "Menú añadido",
+            );
+          }}
+          className={adminFormClass}
+        >
+          <div className={adminFormHeaderClass}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              Alta rápida
+            </p>
+            <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
+              Nuevo menú degustación
+            </h3>
           </div>
-          <div className="lg:col-span-1">
-            <label className={labelClass}>Precio</label>
-            <input
-              required
-              type="number"
-              step="0.01"
-              value={newTastingMenu.precio}
-              onChange={(event) =>
-                setNewTastingMenu({
-                  ...newTastingMenu,
-                  precio: event.target.value,
-                })
-              }
-              className={inputClass}
-            />
+          <div className={adminFormGridClass}>
+            <div className="lg:col-span-3">
+              <label className={labelClass}>Nombre</label>
+              <input
+                required
+                value={newTastingMenu.nombre}
+                onChange={(event) =>
+                  setNewTastingMenu({
+                    ...newTastingMenu,
+                    nombre: event.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <label className={labelClass}>Precio</label>
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newTastingMenu.precio}
+                onChange={(event) =>
+                  setNewTastingMenu({
+                    ...newTastingMenu,
+                    precio: event.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <label className={labelClass}>Maridaje</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newTastingMenu.precio_maridaje}
+                onChange={(event) =>
+                  setNewTastingMenu({
+                    ...newTastingMenu,
+                    precio_maridaje: event.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <label className={labelClass}>Pases</label>
+              <input
+                type="number"
+                value={newTastingMenu.pasos}
+                onChange={(event) =>
+                  setNewTastingMenu({
+                    ...newTastingMenu,
+                    pasos: event.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-6">
+              <label className={labelClass}>Descripción</label>
+              <textarea
+                value={newTastingMenu.descripcion}
+                onChange={(event) =>
+                  setNewTastingMenu({
+                    ...newTastingMenu,
+                    descripcion: event.target.value,
+                  })
+                }
+                className={inputClass}
+                rows="3"
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <ToggleField
+                label="Disponible"
+                checked={newTastingMenu.disponible}
+                onChange={(checked) =>
+                  setNewTastingMenu({ ...newTastingMenu, disponible: checked })
+                }
+              />
+            </div>
           </div>
-          <div className="lg:col-span-1">
-            <label className={labelClass}>Maridaje</label>
-            <input
-              type="number"
-              step="0.01"
-              value={newTastingMenu.precio_maridaje}
-              onChange={(event) =>
-                setNewTastingMenu({
-                  ...newTastingMenu,
-                  precio_maridaje: event.target.value,
-                })
-              }
-              className={inputClass}
-            />
+          <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
+            <button className={adminSubmitClass}>Crear menú</button>
           </div>
-          <div className="lg:col-span-1">
-            <label className={labelClass}>Pases</label>
-            <input
-              type="number"
-              value={newTastingMenu.pasos}
-              onChange={(event) =>
-                setNewTastingMenu({
-                  ...newTastingMenu,
-                  pasos: event.target.value,
-                })
-              }
-              className={inputClass}
-            />
-          </div>
-          <div className="lg:col-span-6">
-            <label className={labelClass}>Descripción</label>
-            <textarea
-              value={newTastingMenu.descripcion}
-              onChange={(event) =>
-                setNewTastingMenu({
-                  ...newTastingMenu,
-                  descripcion: event.target.value,
-                })
-              }
-              className={inputClass}
-              rows="3"
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <ToggleField
-              label="Disponible"
-              checked={newTastingMenu.disponible}
-              onChange={(checked) =>
-                setNewTastingMenu({ ...newTastingMenu, disponible: checked })
-              }
-            />
-          </div>
-        </div>
-        <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
-          <button className={adminSubmitClass}>
-            Crear menú
-          </button>
-        </div>
-      </form>
+        </form>
       )}
       <div className="space-y-4">
         {data.tasting_menus.map((item) => (
@@ -1263,112 +1294,112 @@ const AdminView = () => {
         onClick={() => toggleCreateForm("wines")}
       />
       {openCreateForm.wines && (
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          handleAddItem(
-            "wines",
-            newWine,
-            () =>
-              setNewWine({
-                nombre: "",
-                region: "",
-                tipo: "Tinto",
-                precio_botella: "",
-                precio_copa: "",
-                disponible: true,
-              }),
-            "Vino añadido",
-          );
-        }}
-        className={adminFormClass}
-      >
-        <div className={adminFormHeaderClass}>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-            Alta rápida
-          </p>
-          <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
-            Nueva referencia
-          </h3>
-        </div>
-        <div className={adminFormGridClass}>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Nombre</label>
-            <input
-              required
-              value={newWine.nombre}
-              onChange={(event) =>
-                setNewWine({ ...newWine, nombre: event.target.value })
-              }
-              className={inputClass}
-            />
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddItem(
+              "wines",
+              newWine,
+              () =>
+                setNewWine({
+                  nombre: "",
+                  region: "",
+                  tipo: "Tinto",
+                  precio_botella: "",
+                  precio_copa: "",
+                  disponible: true,
+                }),
+              "Vino añadido",
+            );
+          }}
+          className={adminFormClass}
+        >
+          <div className={adminFormHeaderClass}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              Alta rápida
+            </p>
+            <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
+              Nueva referencia
+            </h3>
           </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Región</label>
-            <input
-              required
-              value={newWine.region}
-              onChange={(event) =>
-                setNewWine({ ...newWine, region: event.target.value })
-              }
-              className={inputClass}
-            />
+          <div className={adminFormGridClass}>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Nombre</label>
+              <input
+                required
+                value={newWine.nombre}
+                onChange={(event) =>
+                  setNewWine({ ...newWine, nombre: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Región</label>
+              <input
+                required
+                value={newWine.region}
+                onChange={(event) =>
+                  setNewWine({ ...newWine, region: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Tipo</label>
+              <select
+                value={newWine.tipo}
+                onChange={(event) =>
+                  setNewWine({ ...newWine, tipo: event.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="Tinto">Tinto</option>
+                <option value="Blanco">Blanco</option>
+                <option value="Rosado">Rosado</option>
+                <option value="Espumoso">Espumoso</option>
+                <option value="Dulce">Dulce</option>
+              </select>
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Botella</label>
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newWine.precio_botella}
+                onChange={(event) =>
+                  setNewWine({ ...newWine, precio_botella: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Copa</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newWine.precio_copa}
+                onChange={(event) =>
+                  setNewWine({ ...newWine, precio_copa: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <ToggleField
+                label="Disponible"
+                checked={newWine.disponible}
+                onChange={(checked) =>
+                  setNewWine({ ...newWine, disponible: checked })
+                }
+              />
+            </div>
           </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Tipo</label>
-            <select
-              value={newWine.tipo}
-              onChange={(event) =>
-                setNewWine({ ...newWine, tipo: event.target.value })
-              }
-              className={inputClass}
-            >
-              <option value="Tinto">Tinto</option>
-              <option value="Blanco">Blanco</option>
-              <option value="Rosado">Rosado</option>
-              <option value="Espumoso">Espumoso</option>
-              <option value="Dulce">Dulce</option>
-            </select>
+          <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
+            <button className={adminSubmitClass}>Crear referencia</button>
           </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Botella</label>
-            <input
-              required
-              type="number"
-              step="0.01"
-              value={newWine.precio_botella}
-              onChange={(event) =>
-                setNewWine({ ...newWine, precio_botella: event.target.value })
-              }
-              className={inputClass}
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Copa</label>
-            <input
-              type="number"
-              step="0.01"
-              value={newWine.precio_copa}
-              onChange={(event) =>
-                setNewWine({ ...newWine, precio_copa: event.target.value })
-              }
-              className={inputClass}
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <ToggleField
-              label="Disponible"
-              checked={newWine.disponible}
-              onChange={(checked) => setNewWine({ ...newWine, disponible: checked })}
-            />
-          </div>
-        </div>
-        <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
-          <button className={adminSubmitClass}>
-            Crear referencia
-          </button>
-        </div>
-      </form>
+        </form>
       )}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
         {data.wines.map((item) => (
@@ -1393,111 +1424,109 @@ const AdminView = () => {
         onClick={() => toggleCreateForm("beverages")}
       />
       {openCreateForm.beverages && (
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          handleAddItem(
-            "beverages",
-            newBeverage,
-            () =>
-              setNewBeverage({
-                nombre: "",
-                descripcion: "",
-                tipo: "agua",
-                precio: "",
-                disponible: true,
-                destacado: false,
-              }),
-            "Bebida añadida",
-          );
-        }}
-        className={adminFormClass}
-      >
-        <div className={adminFormHeaderClass}>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
-            Alta rápida
-          </p>
-          <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
-            Nueva bebida
-          </h3>
-        </div>
-        <div className={adminFormGridClass}>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Nombre</label>
-            <input
-              required
-              value={newBeverage.nombre}
-              onChange={(event) =>
-                setNewBeverage({ ...newBeverage, nombre: event.target.value })
-              }
-              className={inputClass}
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Tipo</label>
-            <select
-              value={newBeverage.tipo}
-              onChange={(event) =>
-                setNewBeverage({ ...newBeverage, tipo: event.target.value })
-              }
-              className={inputClass}
-            >
-              <option value="agua">Agua</option>
-              <option value="refresco">Refresco</option>
-              <option value="cocktail">Cóctel</option>
-              <option value="cafe">Café</option>
-            </select>
-          </div>
-          <div className="lg:col-span-2">
-            <label className={labelClass}>Precio</label>
-            <input
-              required
-              type="number"
-              step="0.01"
-              value={newBeverage.precio}
-              onChange={(event) =>
-                setNewBeverage({ ...newBeverage, precio: event.target.value })
-              }
-              className={inputClass}
-            />
-          </div>
-          <div className="lg:col-span-6">
-            <label className={labelClass}>Descripción</label>
-            <input
-              required
-              value={newBeverage.descripcion}
-              onChange={(event) =>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddItem(
+              "beverages",
+              newBeverage,
+              () =>
                 setNewBeverage({
-                  ...newBeverage,
-                  descripcion: event.target.value,
-                })
-              }
-              className={inputClass}
-            />
+                  nombre: "",
+                  descripcion: "",
+                  tipo: "agua",
+                  precio: "",
+                  disponible: true,
+                  destacado: false,
+                }),
+              "Bebida añadida",
+            );
+          }}
+          className={adminFormClass}
+        >
+          <div className={adminFormHeaderClass}>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+              Alta rápida
+            </p>
+            <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
+              Nueva bebida
+            </h3>
           </div>
-          <div className="grid grid-cols-1 gap-3 lg:col-span-4 sm:grid-cols-2">
-            <ToggleField
-              label="Disponible"
-              checked={newBeverage.disponible}
-              onChange={(checked) =>
-                setNewBeverage({ ...newBeverage, disponible: checked })
-              }
-            />
-            <ToggleField
-              label="Destacada"
-              checked={newBeverage.destacado}
-              onChange={(checked) =>
-                setNewBeverage({ ...newBeverage, destacado: checked })
-              }
-            />
+          <div className={adminFormGridClass}>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Nombre</label>
+              <input
+                required
+                value={newBeverage.nombre}
+                onChange={(event) =>
+                  setNewBeverage({ ...newBeverage, nombre: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Tipo</label>
+              <select
+                value={newBeverage.tipo}
+                onChange={(event) =>
+                  setNewBeverage({ ...newBeverage, tipo: event.target.value })
+                }
+                className={inputClass}
+              >
+                <option value="agua">Agua</option>
+                <option value="refresco">Refresco</option>
+                <option value="cocktail">Cóctel</option>
+                <option value="cafe">Café</option>
+              </select>
+            </div>
+            <div className="lg:col-span-2">
+              <label className={labelClass}>Precio</label>
+              <input
+                required
+                type="number"
+                step="0.01"
+                value={newBeverage.precio}
+                onChange={(event) =>
+                  setNewBeverage({ ...newBeverage, precio: event.target.value })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="lg:col-span-6">
+              <label className={labelClass}>Descripción</label>
+              <input
+                required
+                value={newBeverage.descripcion}
+                onChange={(event) =>
+                  setNewBeverage({
+                    ...newBeverage,
+                    descripcion: event.target.value,
+                  })
+                }
+                className={inputClass}
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-3 lg:col-span-4 sm:grid-cols-2">
+              <ToggleField
+                label="Disponible"
+                checked={newBeverage.disponible}
+                onChange={(checked) =>
+                  setNewBeverage({ ...newBeverage, disponible: checked })
+                }
+              />
+              <ToggleField
+                label="Destacada"
+                checked={newBeverage.destacado}
+                onChange={(checked) =>
+                  setNewBeverage({ ...newBeverage, destacado: checked })
+                }
+              />
+            </div>
           </div>
-        </div>
-        <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
-          <button className={adminSubmitClass}>
-            Crear bebida
-          </button>
-        </div>
-      </form>
+          <div className="mt-5 flex justify-end border-t border-text-main/10 pt-4">
+            <button className={adminSubmitClass}>Crear bebida</button>
+          </div>
+        </form>
       )}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
         {data.beverages.map((item) => (
@@ -1531,8 +1560,17 @@ const AdminView = () => {
   const renderContent = () => {
     if (loading) {
       return (
-        <div className="border border-text-main/10 bg-bg-surface p-8 text-sm text-text-muted">
-          Cargando datos operativos...
+        <div className="space-y-4">
+          {[1, 2, 3].map((item) => (
+            <div
+              key={item}
+              className="border border-text-main/10 bg-bg-surface p-6 animate-pulse"
+            >
+              <div className="h-5 w-1/3 bg-text-main/10 mb-4" />
+              <div className="h-4 w-full bg-text-main/10 mb-2" />
+              <div className="h-4 w-2/3 bg-text-main/10" />
+            </div>
+          ))}
         </div>
       );
     }
@@ -1670,6 +1708,21 @@ const AdminView = () => {
           )}
 
           <section className="px-4 py-5 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-5">
+              {adminMetrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="border border-text-main/10 bg-bg-surface p-4"
+                >
+                  <span className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-2">
+                    {metric.label}
+                  </span>
+                  <span className="font-heading text-3xl text-text-main">
+                    {metric.value}
+                  </span>
+                </div>
+              ))}
+            </div>
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSection}

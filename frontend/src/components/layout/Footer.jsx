@@ -42,8 +42,8 @@ const Footer = () => {
               </h3>
             </Link>
             <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
-              Restaurante ficticio de cocina española contemporánea creado como
-              proyecto académico de final de curso.
+              Cocina española contemporánea, producto de temporada y una sala
+              pensada para comer sin prisa.
             </p>
           </div>
 
@@ -55,9 +55,9 @@ const Footer = () => {
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium">
-                Calle de la Mesa Imaginaria, 12
+                Calle del Mercado, 18
                 <br />
-                Distrito Gastronómico Ficticio
+                Ciutat Vella
                 <br />
                 46000, Valencia
               </p>
@@ -69,7 +69,7 @@ const Footer = () => {
               </h4>
               <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
                 <span className="py-1">+34 960 00 00 00</span>
-                <span className="py-1">info@distrito-gourmet.test</span>
+                <span className="py-1">reservas@distritogourmet.es</span>
               </p>
             </div>
             <div className="text-left">
@@ -86,9 +86,7 @@ const Footer = () => {
                   <span className="text-primary text-xs">M - S:</span> 20:30 a
                   22:30
                 </span>
-                <span className="text-text-main/75 italic">
-                  Lunes: cerrado
-                </span>
+                <span className="text-text-main/75 italic">Lunes: cerrado</span>
               </p>
             </div>
           </div>
@@ -112,14 +110,32 @@ const Footer = () => {
             ))}
           </div>
 
-          <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex gap-8 font-medium">
-            <Link to="/legal" className="hover:text-text-main transition-colors">
+          <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
+            <Link to="/menu" className="hover:text-text-main transition-colors">
+              Carta
+            </Link>
+            <Link
+              to="/reservations"
+              className="hover:text-text-main transition-colors"
+            >
+              Reservas
+            </Link>
+            <Link
+              to="/legal"
+              className="hover:text-text-main transition-colors"
+            >
               Aviso Legal
             </Link>
-            <Link to="/privacy" className="hover:text-text-main transition-colors">
+            <Link
+              to="/privacy"
+              className="hover:text-text-main transition-colors"
+            >
               Política de Privacidad
             </Link>
-            <Link to="/cookies" className="hover:text-text-main transition-colors">
+            <Link
+              to="/cookies"
+              className="hover:text-text-main transition-colors"
+            >
               Cookies
             </Link>
           </div>

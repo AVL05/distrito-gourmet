@@ -48,6 +48,17 @@
     outline-offset: 4px;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   *,
   *::before,
   *::after {
@@ -143,6 +154,14 @@
     @apply bg-transparent border-none border-b border-text-main/20 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-text-muted/50;
   }
 
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply touch-manipulation;
+  }
+
   label {
     @apply text-[11px] sm:text-[12px] uppercase tracking-[1.5px] sm:tracking-[2px] text-text-main block mb-2 font-bold;
   }
@@ -166,4 +185,5 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+
 }

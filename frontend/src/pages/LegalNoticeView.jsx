@@ -12,7 +12,7 @@ const sections = [
     title: "Información del titular",
     body: [
       "Distrito Gourmet es un restaurante ficticio desarrollado como proyecto académico de final de curso por Alex Vicente López.",
-      "La dirección Calle de la Mesa Imaginaria, 12, el teléfono +34 960 00 00 00 y el correo info@distrito-gourmet.test son datos inventados para dar coherencia a la interfaz.",
+      "La dirección Calle del Mercado, 18, el teléfono +34 960 00 00 00 y los correos publicados bajo distritogourmet.es son datos inventados para dar coherencia a la interfaz.",
     ],
   },
   {
