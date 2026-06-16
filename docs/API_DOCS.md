@@ -1,27 +1,40 @@
-# Documentación API — Distrito Gourmet
+# Documentacion de API - Distrito Gourmet
 
-> Base URL: `/api` cuando frontend y backend comparten dominio. En desarrollo con Vite separado, configurar `VITE_API_URL` y usar `{VITE_API_URL}/api`.
-> Autenticación: **Bearer Token** (Laravel Sanctum)
+Esta documentacion describe la API REST expuesta por el backend Laravel. Todas las rutas se sirven bajo el prefijo `/api`.
 
----
+## Convenciones
 
-## Autenticación
+| Aspecto | Valor |
+| --- | --- |
+| Base path | `/api` |
+| Formato | JSON |
+| Autenticacion | Bearer token emitido por Laravel Sanctum |
+| Cabecera autenticada | `Authorization: Bearer {token}` |
+| Content-Type | `application/json` |
 
-### Credenciales de prueba
+En despliegues donde frontend y backend comparten dominio, el frontend debe consumir rutas relativas bajo `/api`. En desarrollo con Vite y Laravel en origenes separados, configura `VITE_API_URL` en `frontend/.env` con el origen del backend, sin incluir el sufijo `/api`.
 
-| Rol           | Email                         | Contraseña |
-| ------------- | ----------------------------- | ---------- |
-| Administrador | `admin@distritogourmet.com`   | `password` |
-| Cliente       | `cliente@distritogourmet.com` | `vA391878` |
-| Staff         | `alex@distritogourmet.com`    | `vA391878` |
+## Credenciales de prueba
 
-### Registro
+Estas credenciales dependen de los seeders disponibles en el entorno.
 
-```
+| Rol | Email | Contrasena |
+| --- | --- | --- |
+| Administrador | `admin@distritogourmet.com` | `password` |
+| Cliente | `cliente@distritogourmet.com` | `vA391878` |
+| Staff | `alex@distritogourmet.com` | `vA391878` |
+
+No utilices estas credenciales en produccion.
+
+## Autenticacion
+
+### Registrar usuario
+
+```http
 POST /api/register
 ```
 
-**Body:**
+Body:
 
 ```json
 {
@@ -32,24 +45,26 @@ POST /api/register
 }
 ```
 
-**Respuesta:** `201 Created`
+Respuesta `201 Created`:
 
 ```json
 {
-  "token": "1|xxxx...",
-  "usuario": { "id": 4, "nombre": "Nuevo Cliente", "rol": "Cliente" }
+  "token": "1|token...",
+  "usuario": {
+    "id": 4,
+    "nombre": "Nuevo Cliente",
+    "rol": "Cliente"
+  }
 }
 ```
 
----
+### Iniciar sesion
 
-### Login
-
-```
+```http
 POST /api/login
 ```
 
-**Body:**
+Body:
 
 ```json
 {
@@ -58,73 +73,76 @@ POST /api/login
 }
 ```
 
-**Respuesta:** `200 OK`
+Respuesta `200 OK`:
 
 ```json
 {
-  "token": "1|xxxx...",
-  "usuario": { "id": 1, "nombre": "Admin Michelin", "rol": "Administrador" }
+  "token": "1|token...",
+  "usuario": {
+    "id": 1,
+    "nombre": "Admin Michelin",
+    "rol": "Administrador"
+  }
 }
 ```
 
-> `POST /api/register` y `POST /api/login` tienen rate limit de 5 intentos por minuto por email/IP.
+Las rutas `POST /api/register`, `POST /api/login` y `POST /api/contact` aplican rate limit mediante el middleware `throttle:auth`.
 
----
+### Cerrar sesion
 
-### Logout
-
-```
+```http
 POST /api/logout
 Authorization: Bearer {token}
 ```
 
-**Respuesta:** `200 OK`
+Respuesta `200 OK`:
 
 ```json
-{ "mensaje": "Sesión cerrada correctamente" }
+{
+  "mensaje": "Sesion cerrada correctamente"
+}
 ```
 
----
+### Obtener usuario autenticado
 
-### Usuario autenticado
-
-```
+```http
 GET /api/user
 Authorization: Bearer {token}
 ```
 
----
+### Actualizar perfil propio
 
-## Carta (Público — sin autenticación)
+```http
+PUT /api/profile
+Authorization: Bearer {token}
+```
+
+## Rutas publicas
 
 ### Obtener carta completa
 
-```
+```http
 GET /api/dishes
 ```
 
-Devuelve platos, vinos, bebidas y menús degustación en un solo objeto:
+Devuelve un objeto agrupado con platos, vinos, bebidas y menus degustacion.
 
 ```json
 {
-  "platos": [...],
-  "vinos": [...],
-  "bebidas": [...],
-  "menus_degustacion": [...]
+  "platos": [],
+  "vinos": [],
+  "bebidas": [],
+  "menus_degustacion": []
 }
 ```
 
----
+### Consultar disponibilidad de reservas
 
-## Disponibilidad de reservas
-
-### Consultar turnos de una fecha
-
-```
+```http
 GET /api/reservation-availability?date=2026-06-20
 ```
 
-**Respuesta:** `200 OK`
+Respuesta `200 OK`:
 
 ```json
 {
@@ -143,30 +161,32 @@ GET /api/reservation-availability?date=2026-06-20
 }
 ```
 
-**Estados de turno:** `available` · `limited` · `complete`.
+Estados posibles de turno:
 
----
+| Estado | Significado |
+| --- | --- |
+| `available` | Hay plazas suficientes |
+| `limited` | Quedan pocas plazas disponibles |
+| `complete` | El turno esta completo |
 
-## Contacto
+### Enviar contacto
 
-### Enviar consulta
-
-```
+```http
 POST /api/contact
 ```
 
-**Body:**
+Body:
 
 ```json
 {
-  "name": "Laura Martínez",
+  "name": "Laura Martinez",
   "email": "laura@example.com",
   "subject": "Evento privado",
   "message": "Consulta para una mesa de grupo."
 }
 ```
 
-**Respuesta:** `201 Created`
+Respuesta `201 Created`:
 
 ```json
 {
@@ -178,27 +198,25 @@ POST /api/contact
 }
 ```
 
----
-
 ## Reservas
+
+Requieren autenticacion.
 
 ### Listar mis reservas
 
-```
+```http
 GET /api/reservations
 Authorization: Bearer {token}
 ```
 
----
-
 ### Crear reserva
 
-```
+```http
 POST /api/reservations
 Authorization: Bearer {token}
 ```
 
-**Body:**
+Body:
 
 ```json
 {
@@ -206,11 +224,11 @@ Authorization: Bearer {token}
   "hora_reserva": "21:00",
   "comensales": 2,
   "menu_degustacion_id": 2,
-  "peticiones_especiales": "Celebración aniversario"
+  "peticiones_especiales": "Celebracion aniversario"
 }
 ```
 
-**Respuesta:** `201 Created`
+Respuesta `201 Created`:
 
 ```json
 {
@@ -222,127 +240,70 @@ Authorization: Bearer {token}
 }
 ```
 
-**Reglas:** máximo 8 comensales por reserva; horarios permitidos `13:00`, `13:30`, `14:00`, `14:30`, `20:00`, `20:30`, `21:00`, `21:30`; si la ocupación supera **44 comensales en el mismo turno**, el estado será `"Pendiente"` en lugar de `"Confirmada"`.
+Reglas relevantes:
 
----
+- `comensales` acepta valores de 1 a 8.
+- Los turnos validos se controlan desde las reglas de reserva del backend.
+- La capacidad operativa actual es de 44 comensales por turno.
+- Si la reserva supera la capacidad del turno, se crea en estado `Pendiente`.
 
 ## Pedidos
 
+Requieren autenticacion.
+
 ### Crear pedido
 
-```
+```http
 POST /api/orders
 Authorization: Bearer {token}
 ```
 
-**Body:**
+Body:
 
 ```json
 {
   "metodo_pago": "card",
+  "fecha_recogida": "2026-06-20",
   "hora_recogida": "14:30",
-  "fecha_recogida": "2026-06-15",
   "articulos": [
     {
       "db_id": 5,
       "tipo_item": "plato",
       "nombre": "Solomillo de Vaca Madurada",
       "cantidad": 1
-    },
-    {
-      "db_id": 1,
-      "tipo_item": "vino",
-      "nombre": "Pago de Carraovejas",
-      "cantidad": 1
     }
   ]
 }
 ```
 
-**Valores válidos para `tipo_item`:** `plato` · `vino` · `bebida` · `menu_degustacion`
-**Valores válidos para `metodo_pago`:** `card` · `cash` · `paypal`
+Valores validos:
 
-> El backend ignora `precio` y `total` enviados por cliente; calcula importes desde el catálogo disponible.
+| Campo | Valores |
+| --- | --- |
+| `tipo_item` | `plato`, `vino`, `bebida`, `menu_degustacion` |
+| `metodo_pago` | `card`, `cash`, `paypal` |
 
----
+El backend calcula precios y total desde el catalogo persistido. No se debe confiar en importes enviados desde cliente.
 
 ### Listar mis pedidos
 
-```
+```http
 GET /api/orders
 Authorization: Bearer {token}
 ```
 
----
+## Administracion
 
-## Administración (Requiere rol Administrador)
+Todas las rutas bajo `/api/admin` requieren autenticacion y rol `Administrador`.
 
-### Reservas
+### Metricas
 
-```
-GET    /api/admin/reservations          → Todas las reservas ordenadas por estado
-PATCH  /api/admin/reservations/{id}     → Cambiar estado
-DELETE /api/admin/reservations/{id}     → Eliminar reserva
-```
-
-**Estados válidos:** `Pendiente`, `Confirmada`, `Cancelada`.
-
-### Pedidos
-
-```
-GET    /api/admin/orders                → Todos los pedidos
-PATCH  /api/admin/orders/{id}           → Cambiar estado: Pendiente → Preparando → Listo → Entregado
-DELETE /api/admin/orders/{id}           → Eliminar pedido
-```
-
-**Body para cambio de estado:**
-
-```json
-{ "estado": "Preparando" }
-```
-
-### Usuarios
-
-```
-GET    /api/admin/users                 → Listado de usuarios
-PUT    /api/admin/users/{id}            → Actualizar datos de usuario
-DELETE /api/admin/users/{id}            → Eliminar usuario
-```
-
-**Roles válidos:** `Administrador`, `Cliente`, `Staff`. Un administrador no puede eliminar su propio usuario.
-
-### Carta (CRUD completo)
-
-```
-POST   /api/admin/dishes                → Crear plato
-PUT    /api/admin/dishes/{id}           → Editar plato
-DELETE /api/admin/dishes/{id}           → Eliminar plato
-
-GET    /api/admin/wines                 → Listado de vinos
-POST   /api/admin/wines                 → Crear vino
-PUT    /api/admin/wines/{id}            → Editar vino
-DELETE /api/admin/wines/{id}            → Eliminar vino
-
-GET    /api/admin/beverages             → Listado de bebidas
-POST   /api/admin/beverages             → Crear bebida
-PUT    /api/admin/beverages/{id}        → Editar bebida
-DELETE /api/admin/beverages/{id}        → Eliminar bebida
-
-GET    /api/admin/tasting-menus         → Listado de menús degustación
-POST   /api/admin/tasting-menus         → Crear menú degustación
-PUT    /api/admin/tasting-menus/{id}    → Editar menú degustación
-DELETE /api/admin/tasting-menus/{id}    → Eliminar menú degustación
-```
-
----
-
-### Métricas
-
-```
+```http
 GET /api/admin/metrics
+Authorization: Bearer {token}
 ```
 
-Devuelve KPIs para el panel:
+Respuesta:
 
 ```json
 {
@@ -357,16 +318,97 @@ Devuelve KPIs para el panel:
 }
 ```
 
----
+### Reservas
 
-## Códigos de Respuesta
+```http
+GET    /api/admin/reservations
+PATCH  /api/admin/reservations/{id}
+DELETE /api/admin/reservations/{id}
+```
 
-| Código | Significado                                  |
-| ------ | -------------------------------------------- |
-| `200`  | OK — Petición correcta                       |
-| `201`  | Created — Recurso creado                     |
-| `401`  | Unauthorized — Token ausente o inválido      |
-| `403`  | Forbidden — Usuario sin permisos suficientes |
-| `429`  | Too Many Requests — Rate limit alcanzado     |
-| `422`  | Unprocessable — Error de validación          |
-| `500`  | Server Error — Error interno del servidor    |
+Body para cambio de estado:
+
+```json
+{
+  "estado": "Confirmada"
+}
+```
+
+Estados validos: `Pendiente`, `Confirmada`, `Cancelada`.
+
+### Pedidos
+
+```http
+GET    /api/admin/orders
+PATCH  /api/admin/orders/{id}
+DELETE /api/admin/orders/{id}
+```
+
+Body para cambio de estado:
+
+```json
+{
+  "estado": "Preparando"
+}
+```
+
+Estados validos: `Pendiente`, `Preparando`, `Listo`, `Entregado`, `Cancelado`.
+
+### Usuarios
+
+```http
+GET    /api/admin/users
+POST   /api/admin/users
+PUT    /api/admin/users/{id}
+DELETE /api/admin/users/{id}
+```
+
+Roles validos: `Administrador`, `Cliente`, `Staff`.
+
+Un administrador no puede eliminar su propio usuario.
+
+### Carta
+
+```http
+POST   /api/admin/dishes
+PUT    /api/admin/dishes/{id}
+DELETE /api/admin/dishes/{id}
+
+GET    /api/admin/wines
+POST   /api/admin/wines
+PUT    /api/admin/wines/{id}
+DELETE /api/admin/wines/{id}
+
+GET    /api/admin/beverages
+POST   /api/admin/beverages
+PUT    /api/admin/beverages/{id}
+DELETE /api/admin/beverages/{id}
+
+GET    /api/admin/tasting-menus
+POST   /api/admin/tasting-menus
+PUT    /api/admin/tasting-menus/{id}
+DELETE /api/admin/tasting-menus/{id}
+```
+
+Nota: `GET /api/dishes` es la ruta publica agregada para consultar la carta completa. Los listados administrativos separados de vinos, bebidas y menus degustacion estan protegidos.
+
+## Codigos de respuesta
+
+| Codigo | Significado |
+| --- | --- |
+| `200` | Peticion correcta |
+| `201` | Recurso creado |
+| `401` | Token ausente, invalido o sesion no autenticada |
+| `403` | Usuario autenticado sin permisos suficientes |
+| `404` | Recurso no encontrado |
+| `422` | Error de validacion |
+| `429` | Limite de intentos alcanzado |
+| `500` | Error interno del servidor |
+
+## Buenas practicas de consumo
+
+- Mantener el token fuera del codigo fuente y limpiar credenciales al cerrar sesion.
+- Centralizar el cliente HTTP del frontend para adjuntar `Authorization`.
+- Usar rutas relativas `/api` cuando la aplicacion se sirve tras el mismo dominio.
+- Mostrar al usuario los errores de validacion `422` de forma especifica.
+- No enviar totales calculados por cliente como fuente de verdad para pedidos.
