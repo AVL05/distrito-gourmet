@@ -12,7 +12,11 @@ const sortDishesByCategory = (dishes = []) =>
     return orderA - orderB;
   });
 
-export const useAdminData = ({ activeSection, newDishCategoryId, setNewDish }) => {
+export const useAdminData = ({
+  activeSection,
+  newDishCategoryId,
+  setNewDish,
+}) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     orders: [],
@@ -23,6 +27,7 @@ export const useAdminData = ({ activeSection, newDishCategoryId, setNewDish }) =
     wines: [],
     beverages: [],
     tasting_menus: [],
+    metrics: null,
   });
 
   const fetchData = useCallback(async () => {
@@ -38,6 +43,7 @@ export const useAdminData = ({ activeSection, newDishCategoryId, setNewDish }) =
         beverages: demoAdminData.beverages,
         tasting_menus: demoAdminData.tasting_menus,
         users: demoAdminData.users,
+        metrics: demoAdminData.metrics,
       }));
       if (!newDishCategoryId) {
         setNewDish((prev) => ({
@@ -50,6 +56,15 @@ export const useAdminData = ({ activeSection, newDishCategoryId, setNewDish }) =
 
     setLoading(true);
     try {
+      axios
+        .get("/admin/metrics")
+        .then((res) => setData((d) => ({ ...d, metrics: res.data })))
+        .catch((err) => {
+          if (import.meta.env.DEV) {
+            console.warn("No se pudieron cargar las métricas admin", err);
+          }
+        });
+
       if (activeSection === "orders") {
         const res = await axios.get("/admin/orders");
         setData((d) => ({ ...d, orders: res.data }));

@@ -158,6 +158,60 @@ const CartView = () => {
     };
 
     try {
+      const menuResponse = await axios.get("/dishes", { timeout: 7000 });
+      const catalogItems = [
+        ...(menuResponse.data?.platos || []).map((item) => ({
+          id: item.id,
+          type: "plato",
+          name: item.nombre,
+          available: !!item.disponible && !!item.disponible_para_llevar,
+          max: item.maximo_por_pedido,
+        })),
+        ...(menuResponse.data?.vinos || []).map((item) => ({
+          id: item.id,
+          type: "vino",
+          name: item.nombre,
+          available: !!item.disponible,
+          max: item.maximo_por_pedido,
+        })),
+        ...(menuResponse.data?.bebidas || []).map((item) => ({
+          id: item.id,
+          type: "bebida",
+          name: item.nombre,
+          available: !!item.disponible,
+          max: item.maximo_por_pedido,
+        })),
+        ...(menuResponse.data?.menus_degustacion || []).map((item) => ({
+          id: item.id,
+          type: "menu_degustacion",
+          name: item.nombre,
+          available: !!item.disponible,
+          max: item.maximo_por_pedido,
+        })),
+      ];
+      const invalidItems = cartItems.filter((item) => {
+        const dbId = parseInt(item.id.toString().replace(/\D/g, "")) || 0;
+        const catalogItem = catalogItems.find(
+          (candidate) =>
+            candidate.id === dbId &&
+            candidate.type === (item.item_type || "plato"),
+        );
+
+        return (
+          !catalogItem ||
+          !catalogItem.available ||
+          (catalogItem.max && item.quantity > catalogItem.max)
+        );
+      });
+
+      if (invalidItems.length > 0) {
+        setCheckoutError(
+          `Revise la selección: ${invalidItems.map((item) => item.name).join(", ")} ya no está disponible o supera el máximo permitido.`,
+        );
+        setIsProcessing(false);
+        return;
+      }
+
       await axios.post("/orders", payload);
 
       clearCart();

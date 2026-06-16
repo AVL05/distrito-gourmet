@@ -9,17 +9,20 @@
 
 ### Credenciales de prueba
 
-| Rol | Email | Contraseña |
-|---|---|---|
-| Administrador | `admin@distritogourmet.com` | `password` |
-| Cliente | `cliente@distritogourmet.com` | `vA391878` |
-| Staff | `alex@distritogourmet.com` | `vA391878` |
+| Rol           | Email                         | Contraseña |
+| ------------- | ----------------------------- | ---------- |
+| Administrador | `admin@distritogourmet.com`   | `password` |
+| Cliente       | `cliente@distritogourmet.com` | `vA391878` |
+| Staff         | `alex@distritogourmet.com`    | `vA391878` |
 
 ### Registro
+
 ```
 POST /api/register
 ```
+
 **Body:**
+
 ```json
 {
   "nombre": "Nuevo Cliente",
@@ -28,7 +31,9 @@ POST /api/register
   "telefono": "+34 600 000 000"
 }
 ```
+
 **Respuesta:** `201 Created`
+
 ```json
 {
   "token": "1|xxxx...",
@@ -39,33 +44,42 @@ POST /api/register
 ---
 
 ### Login
+
 ```
 POST /api/login
 ```
+
 **Body:**
+
 ```json
 {
   "email": "admin@distritogourmet.com",
   "password": "password"
 }
 ```
+
 **Respuesta:** `200 OK`
+
 ```json
 {
   "token": "1|xxxx...",
   "usuario": { "id": 1, "nombre": "Admin Michelin", "rol": "Administrador" }
 }
 ```
+
 > `POST /api/register` y `POST /api/login` tienen rate limit de 5 intentos por minuto por email/IP.
 
 ---
 
 ### Logout
+
 ```
 POST /api/logout
 Authorization: Bearer {token}
 ```
+
 **Respuesta:** `200 OK`
+
 ```json
 { "mensaje": "Sesión cerrada correctamente" }
 ```
@@ -73,6 +87,7 @@ Authorization: Bearer {token}
 ---
 
 ### Usuario autenticado
+
 ```
 GET /api/user
 Authorization: Bearer {token}
@@ -83,10 +98,13 @@ Authorization: Bearer {token}
 ## Carta (Público — sin autenticación)
 
 ### Obtener carta completa
+
 ```
 GET /api/dishes
 ```
+
 Devuelve platos, vinos, bebidas y menús degustación en un solo objeto:
+
 ```json
 {
   "platos": [...],
@@ -98,9 +116,74 @@ Devuelve platos, vinos, bebidas y menús degustación en un solo objeto:
 
 ---
 
+## Disponibilidad de reservas
+
+### Consultar turnos de una fecha
+
+```
+GET /api/reservation-availability?date=2026-06-20
+```
+
+**Respuesta:** `200 OK`
+
+```json
+{
+  "date": "2026-06-20",
+  "capacity": 44,
+  "turns": [
+    {
+      "time": "21:00",
+      "time_value": "21:00:00",
+      "occupied": 12,
+      "available_seats": 32,
+      "capacity": 44,
+      "status": "available"
+    }
+  ]
+}
+```
+
+**Estados de turno:** `available` · `limited` · `complete`.
+
+---
+
+## Contacto
+
+### Enviar consulta
+
+```
+POST /api/contact
+```
+
+**Body:**
+
+```json
+{
+  "name": "Laura Martínez",
+  "email": "laura@example.com",
+  "subject": "Evento privado",
+  "message": "Consulta para una mesa de grupo."
+}
+```
+
+**Respuesta:** `201 Created`
+
+```json
+{
+  "mensaje": "Consulta recibida correctamente",
+  "contact": {
+    "reference": "DG-C-20260616-A1B2C3",
+    "subject": "Evento privado"
+  }
+}
+```
+
+---
+
 ## Reservas
 
 ### Listar mis reservas
+
 ```
 GET /api/reservations
 Authorization: Bearer {token}
@@ -109,11 +192,14 @@ Authorization: Bearer {token}
 ---
 
 ### Crear reserva
+
 ```
 POST /api/reservations
 Authorization: Bearer {token}
 ```
+
 **Body:**
+
 ```json
 {
   "fecha_reserva": "2026-06-20",
@@ -123,7 +209,9 @@ Authorization: Bearer {token}
   "peticiones_especiales": "Celebración aniversario"
 }
 ```
+
 **Respuesta:** `201 Created`
+
 ```json
 {
   "mensaje": "Reserva confirmada correctamente",
@@ -133,6 +221,7 @@ Authorization: Bearer {token}
   }
 }
 ```
+
 **Reglas:** máximo 8 comensales por reserva; horarios permitidos `13:00`, `13:30`, `14:00`, `14:30`, `20:00`, `20:30`, `21:00`, `21:30`; si la ocupación supera **44 comensales en el mismo turno**, el estado será `"Pendiente"` en lugar de `"Confirmada"`.
 
 ---
@@ -140,11 +229,14 @@ Authorization: Bearer {token}
 ## Pedidos
 
 ### Crear pedido
+
 ```
 POST /api/orders
 Authorization: Bearer {token}
 ```
+
 **Body:**
+
 ```json
 {
   "metodo_pago": "card",
@@ -166,13 +258,16 @@ Authorization: Bearer {token}
   ]
 }
 ```
+
 **Valores válidos para `tipo_item`:** `plato` · `vino` · `bebida` · `menu_degustacion`
 **Valores válidos para `metodo_pago`:** `card` · `cash` · `paypal`
+
 > El backend ignora `precio` y `total` enviados por cliente; calcula importes desde el catálogo disponible.
 
 ---
 
 ### Listar mis pedidos
+
 ```
 GET /api/orders
 Authorization: Bearer {token}
@@ -183,33 +278,41 @@ Authorization: Bearer {token}
 ## Administración (Requiere rol Administrador)
 
 ### Reservas
+
 ```
 GET    /api/admin/reservations          → Todas las reservas ordenadas por estado
 PATCH  /api/admin/reservations/{id}     → Cambiar estado
 DELETE /api/admin/reservations/{id}     → Eliminar reserva
 ```
+
 **Estados válidos:** `Pendiente`, `Confirmada`, `Cancelada`.
 
 ### Pedidos
+
 ```
 GET    /api/admin/orders                → Todos los pedidos
 PATCH  /api/admin/orders/{id}           → Cambiar estado: Pendiente → Preparando → Listo → Entregado
 DELETE /api/admin/orders/{id}           → Eliminar pedido
 ```
+
 **Body para cambio de estado:**
+
 ```json
 { "estado": "Preparando" }
 ```
 
 ### Usuarios
+
 ```
 GET    /api/admin/users                 → Listado de usuarios
 PUT    /api/admin/users/{id}            → Actualizar datos de usuario
 DELETE /api/admin/users/{id}            → Eliminar usuario
 ```
+
 **Roles válidos:** `Administrador`, `Cliente`, `Staff`. Un administrador no puede eliminar su propio usuario.
 
 ### Carta (CRUD completo)
+
 ```
 POST   /api/admin/dishes                → Crear plato
 PUT    /api/admin/dishes/{id}           → Editar plato
@@ -233,14 +336,37 @@ DELETE /api/admin/tasting-menus/{id}    → Eliminar menú degustación
 
 ---
 
+### Métricas
+
+```
+GET /api/admin/metrics
+```
+
+Devuelve KPIs para el panel:
+
+```json
+{
+  "active_orders": 3,
+  "pending_reservations": 2,
+  "upcoming_reservations": 12,
+  "today_seats": 18,
+  "capacity": 44,
+  "average_ticket": 39.25,
+  "top_dishes": [{ "name": "Arroz meloso de setas", "units": 6 }],
+  "turn_occupancy": [{ "time": "21:00", "occupied": 18, "capacity": 44 }]
+}
+```
+
+---
+
 ## Códigos de Respuesta
 
-| Código | Significado |
-|---|---|
-| `200` | OK — Petición correcta |
-| `201` | Created — Recurso creado |
-| `401` | Unauthorized — Token ausente o inválido |
-| `403` | Forbidden — Usuario sin permisos suficientes |
-| `429` | Too Many Requests — Rate limit alcanzado |
-| `422` | Unprocessable — Error de validación |
-| `500` | Server Error — Error interno del servidor |
+| Código | Significado                                  |
+| ------ | -------------------------------------------- |
+| `200`  | OK — Petición correcta                       |
+| `201`  | Created — Recurso creado                     |
+| `401`  | Unauthorized — Token ausente o inválido      |
+| `403`  | Forbidden — Usuario sin permisos suficientes |
+| `429`  | Too Many Requests — Rate limit alcanzado     |
+| `422`  | Unprocessable — Error de validación          |
+| `500`  | Server Error — Error interno del servidor    |

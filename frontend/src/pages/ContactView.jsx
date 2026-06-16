@@ -10,6 +10,9 @@ import {
   LineReveal,
   motion,
 } from "@/motion";
+import axios from "@/services/api";
+import { HAS_CONFIGURED_API, IS_PUBLIC_DEMO } from "@/config/demo";
+import { getApiErrorMessage, getApiFieldErrors } from "@/utils/apiErrors";
 
 // Vista de contacto: presenta la ubicación del local, información de comunicación y formulario de consultas
 const ContactView = () => {
@@ -60,17 +63,32 @@ const ContactView = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setSending(true);
-    window.setTimeout(() => {
+    try {
+      if (!IS_PUBLIC_DEMO || HAS_CONFIGURED_API) {
+        await axios.post("/contact", form);
+      }
       setSent(true);
-      setSending(false);
       setForm({ name: "", email: "", subject: "", message: "" });
-      setTimeout(() => setSent(false), 5000);
-    }, 500);
+      window.setTimeout(() => setSent(false), 5000);
+    } catch (error) {
+      const fieldErrors = getApiFieldErrors(error);
+      setErrors(fieldErrors);
+      if (Object.keys(fieldErrors).length === 0) {
+        setErrors({
+          message: getApiErrorMessage(
+            error,
+            "No se pudo enviar el mensaje. Inténtelo de nuevo.",
+          ),
+        });
+      }
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -191,14 +209,19 @@ const ContactView = () => {
                     required
                     autoComplete="name"
                     aria-invalid={!!errors.name}
-                    aria-describedby={errors.name ? "contact-name-error" : undefined}
+                    aria-describedby={
+                      errors.name ? "contact-name-error" : undefined
+                    }
                     className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
                       errors.name ? "border-red-700" : "border-text-main/20"
                     }`}
                     placeholder="Escriba su nombre"
                   />
                   {errors.name && (
-                    <p id="contact-name-error" className="mt-2 text-[12px] text-red-800">
+                    <p
+                      id="contact-name-error"
+                      className="mt-2 text-[12px] text-red-800"
+                    >
                       {errors.name}
                     </p>
                   )}
@@ -227,7 +250,10 @@ const ContactView = () => {
                     placeholder="contacto@ejemplo.com"
                   />
                   {errors.email && (
-                    <p id="contact-email-error" className="mt-2 text-[12px] text-red-800">
+                    <p
+                      id="contact-email-error"
+                      className="mt-2 text-[12px] text-red-800"
+                    >
                       {errors.email}
                     </p>
                   )}
@@ -262,7 +288,10 @@ const ContactView = () => {
                     ))}
                   </select>
                   {errors.subject && (
-                    <p id="contact-subject-error" className="mt-2 text-[12px] text-red-800">
+                    <p
+                      id="contact-subject-error"
+                      className="mt-2 text-[12px] text-red-800"
+                    >
                       {errors.subject}
                     </p>
                   )}
@@ -291,13 +320,18 @@ const ContactView = () => {
                     placeholder="¿En qué podemos ayudarle?"
                   ></textarea>
                   <div className="mt-2 flex items-start justify-between gap-4 text-[11px] leading-relaxed text-text-muted">
-                    <p>Incluya fecha, horario o número de personas si procede.</p>
+                    <p>
+                      Incluya fecha, horario o número de personas si procede.
+                    </p>
                     <span className="shrink-0">
                       {form.message.length}/{MESSAGE_MAX_LENGTH}
                     </span>
                   </div>
                   {errors.message && (
-                    <p id="contact-message-error" className="mt-2 text-[12px] text-red-800">
+                    <p
+                      id="contact-message-error"
+                      className="mt-2 text-[12px] text-red-800"
+                    >
                       {errors.message}
                     </p>
                   )}

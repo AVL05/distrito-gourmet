@@ -139,7 +139,11 @@ export const demoAdminData = {
       menu_de_temporada: true,
       disponible: true,
       platos: [
-        { id: 1, nombre: "Croqueta de jamón ibérico", pivot: { numero_paso: 1 } },
+        {
+          id: 1,
+          nombre: "Croqueta de jamón ibérico",
+          pivot: { numero_paso: 1 },
+        },
         { id: 2, nombre: "Tartar de atún rojo", pivot: { numero_paso: 2 } },
         { id: 3, nombre: "Arroz meloso de setas", pivot: { numero_paso: 3 } },
         { id: 4, nombre: "Tarta fina de manzana", pivot: { numero_paso: 4 } },
@@ -228,4 +232,27 @@ export const demoAdminData = {
       ],
     },
   ],
+  metrics: {
+    active_orders: 1,
+    pending_reservations: 1,
+    upcoming_reservations: 2,
+    today_seats: 4,
+    capacity: 44,
+    average_ticket: 39.25,
+    top_dishes: [
+      { name: "Arroz meloso de setas", units: 6 },
+      { name: "Tartar de atún rojo", units: 4 },
+      { name: "Croquetas de jamón ibérico", units: 3 },
+    ],
+    turn_occupancy: [
+      { time: "13:00", occupied: 0, capacity: 44 },
+      { time: "13:30", occupied: 0, capacity: 44 },
+      { time: "14:00", occupied: 2, capacity: 44 },
+      { time: "14:30", occupied: 0, capacity: 44 },
+      { time: "20:00", occupied: 0, capacity: 44 },
+      { time: "20:30", occupied: 0, capacity: 44 },
+      { time: "21:00", occupied: 4, capacity: 44 },
+      { time: "21:30", occupied: 0, capacity: 44 },
+    ],
+  },
 };

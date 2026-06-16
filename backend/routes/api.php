@@ -10,6 +10,9 @@ use App\Http\Controllers\API\VinoController;
 use App\Http\Controllers\API\BebidaController;
 use App\Http\Controllers\API\MenuDegustacionController;
 use App\Http\Controllers\API\UsuarioController;
+use App\Http\Controllers\API\AdminMetricsController;
+use App\Http\Controllers\API\ContactController;
+use App\Http\Controllers\API\ReservationAvailabilityController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +24,8 @@ use App\Http\Controllers\API\UsuarioController;
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 Route::get('/dishes', [PlatoController::class, 'index']); // Ver carta sin estar logueado
+Route::get('/reservation-availability', ReservationAvailabilityController::class);
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:auth');
 
 // Rutas protegidas (requieren estar logueado)
 Route::middleware('auth:sanctum')->group(function () {
@@ -38,6 +43,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Panel de administración (requieren login + rol admin)
     Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
+        Route::get('/metrics', AdminMetricsController::class);
+
         // Gestión de platos
         Route::apiResource('dishes', PlatoController::class)->except(['index', 'show']);
         Route::apiResource('wines', VinoController::class);

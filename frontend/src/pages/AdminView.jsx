@@ -265,6 +265,24 @@ const AdminView = () => {
   const ActiveIcon = activeMeta?.icon || HiClipboardList;
   const today = todayIso();
   const adminMetrics = useMemo(() => {
+    if (data.metrics) {
+      return [
+        { label: "Pedidos activos", value: data.metrics.active_orders || 0 },
+        {
+          label: "Reservas próximas",
+          value: data.metrics.upcoming_reservations || 0,
+        },
+        {
+          label: "Cubiertos hoy",
+          value: `${data.metrics.today_seats || 0}/${data.metrics.capacity || 44}`,
+        },
+        {
+          label: "Ticket medio",
+          value: money(data.metrics.average_ticket || 0),
+        },
+      ];
+    }
+
     const activeOrders = data.orders.filter(
       (order) => !["Entregado", "Cancelado"].includes(order.estado),
     ).length;
@@ -288,7 +306,7 @@ const AdminView = () => {
       { label: "Cubiertos hoy", value: `${confirmedSeats}/44` },
       { label: "Venta simulada", value: money(estimatedRevenue) },
     ];
-  }, [data.orders, data.reservations, today]);
+  }, [data.metrics, data.orders, data.reservations, today]);
 
   const showNotice = (message) => {
     setNotice(message);
@@ -1402,14 +1420,14 @@ const AdminView = () => {
                   setNewWine({ ...newWine, tipo: event.target.value })
                 }
                 className={inputClass}
-                >
-                  <option value="Tinto">Tinto</option>
+              >
+                <option value="Tinto">Tinto</option>
                 <option value="Blanco">Blanco</option>
                 <option value="Rosado">Rosado</option>
                 <option value="Espumoso">Espumoso</option>
-                  <option value="Dulce">Dulce</option>
-                </select>
-                <FieldError>{createErrors.wines?.tipo}</FieldError>
+                <option value="Dulce">Dulce</option>
+              </select>
+              <FieldError>{createErrors.wines?.tipo}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Botella</label>
@@ -1528,13 +1546,13 @@ const AdminView = () => {
                   setNewBeverage({ ...newBeverage, tipo: event.target.value })
                 }
                 className={inputClass}
-                >
-                  <option value="agua">Agua</option>
+              >
+                <option value="agua">Agua</option>
                 <option value="refresco">Refresco</option>
                 <option value="cocktail">Cóctel</option>
-                  <option value="cafe">Café</option>
-                </select>
-                <FieldError>{createErrors.beverages?.tipo}</FieldError>
+                <option value="cafe">Café</option>
+              </select>
+              <FieldError>{createErrors.beverages?.tipo}</FieldError>
             </div>
             <div className="lg:col-span-2">
               <label className={labelClass}>Precio</label>

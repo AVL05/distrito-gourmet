@@ -7,25 +7,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reserva;
 use App\Services\DiscordReservationNotifier;
+use App\Services\ReservationRules;
 use Illuminate\Validation\Rule;
 
 class ReservaController extends Controller
 {
-    private const TURNOS = [
-        '13:00:00',
-        '13:30:00',
-        '14:00:00',
-        '14:30:00',
-        '20:00:00',
-        '20:30:00',
-        '21:00:00',
-        '21:30:00',
-    ];
-
     public function __construct(
         private readonly DiscordReservationNotifier $discordReservationNotifier
-    ) {
-    }
+    ) {}
 
     // Listar las reservas asociadas al usuario autenticado
     public function index()
@@ -39,12 +28,12 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'hora_reserva' => $this->normalizarHora($request->input('hora_reserva')),
+            'hora_reserva' => ReservationRules::normalizeTime($request->input('hora_reserva')),
         ]);
 
         $request->validate([
             'fecha_reserva' => 'required|date|after_or_equal:today',
-            'hora_reserva' => ['required', Rule::in(self::TURNOS)],
+            'hora_reserva' => ['required', Rule::in(ReservationRules::TURNS)],
             'comensales' => 'required|integer|min:1|max:8',
             'peticiones_especiales' => 'nullable|string'
         ]);
@@ -67,7 +56,7 @@ class ReservaController extends Controller
             ->where('estado', '!=', 'Cancelada')
             ->sum('comensales');
 
-        $estado = ($totalOccupancy + $request->comensales) > 44 ? 'Pendiente' : 'Confirmada';
+        $estado = ($totalOccupancy + $request->comensales) > ReservationRules::CAPACITY ? 'Pendiente' : 'Confirmada';
 
         $res = Reserva::create([
             'usuario_id' => auth()->id(),
@@ -127,14 +116,5 @@ class ReservaController extends Controller
         $res = Reserva::findOrFail($id);
         $res->delete();
         return response()->json(['mensaje' => 'Reserva eliminada correctamente']);
-    }
-
-    private function normalizarHora(?string $hora): ?string
-    {
-        if (! $hora) {
-            return $hora;
-        }
-
-        return preg_match('/^\d{2}:\d{2}$/', $hora) ? "{$hora}:00" : $hora;
     }
 }

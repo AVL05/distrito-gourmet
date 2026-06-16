@@ -43,6 +43,8 @@ const ReservationForm = ({ compact = false }) => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [availability, setAvailability] = useState([]);
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const shouldReduceMotion = useReducedMotion();
   const formatShortReservationDate = (date) =>
     date.toLocaleDateString("es-ES", {
@@ -83,6 +85,41 @@ const ReservationForm = ({ compact = false }) => {
   const selectedDate = reservationDateOptions.find(
     (option) => option.value === form.date,
   );
+  const baseAvailableTimes = [
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "20:00",
+    "20:30",
+    "21:00",
+    "21:30",
+  ];
+  const demoAvailability = baseAvailableTimes.map((time, index) => {
+    const occupied = index === 6 ? 36 : index === 2 ? 18 : 0;
+    const availableSeats = Math.max(44 - occupied, 0);
+
+    return {
+      time,
+      occupied,
+      available_seats: availableSeats,
+      capacity: 44,
+      status:
+        availableSeats === 0
+          ? "complete"
+          : availableSeats <= 8
+            ? "limited"
+            : "available",
+    };
+  });
+  const availabilityTurns = form.date
+    ? availability.length > 0
+      ? availability
+      : demoAvailability
+    : [];
+  const selectedTurn = availabilityTurns.find(
+    (turn) => turn.time === form.time,
+  );
   const reservationSummary = [
     ["Fecha", selectedDate?.fullLabel || "Sin seleccionar"],
     ["Hora", form.time || "Sin seleccionar"],
@@ -99,17 +136,41 @@ const ReservationForm = ({ compact = false }) => {
   ];
 
   // Horarios disponibles para reservar
-  const availableTimes = [
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "20:00",
-    "20:30",
-    "21:00",
-    "21:30",
-  ];
+  const availableTimes =
+    availabilityTurns.length > 0
+      ? availabilityTurns
+      : baseAvailableTimes.map((time) => ({ time }));
   const phonePattern = /^\+?\d[\d\s]{8,17}$/;
+
+  useEffect(() => {
+    if (!form.date || IS_PUBLIC_DEMO) {
+      setAvailability([]);
+      return;
+    }
+
+    let cancelled = false;
+    const fetchAvailability = async () => {
+      setAvailabilityLoading(true);
+      try {
+        const response = await axios.get("/reservation-availability", {
+          params: { date: form.date },
+        });
+        if (!cancelled) setAvailability(response.data?.turns || []);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn("No se pudo cargar disponibilidad", error);
+        }
+        if (!cancelled) setAvailability([]);
+      } finally {
+        if (!cancelled) setAvailabilityLoading(false);
+      }
+    };
+
+    fetchAvailability();
+    return () => {
+      cancelled = true;
+    };
+  }, [form.date]);
 
   const validateForm = () => {
     const nextErrors = {};
@@ -124,6 +185,12 @@ const ReservationForm = ({ compact = false }) => {
     if (!form.guests) nextErrors.guests = "Seleccione el número de comensales.";
     if (!form.date) nextErrors.date = "Seleccione una fecha.";
     if (!form.time) nextErrors.time = "Seleccione un turno.";
+    if (
+      selectedTurn?.available_seats !== undefined &&
+      Number(form.guests || 0) > selectedTurn.available_seats
+    ) {
+      nextErrors.time = "El turno seleccionado no tiene plazas suficientes.";
+    }
     if (form.comments.length > COMMENTS_MAX_LENGTH) {
       nextErrors.comments = `Máximo ${COMMENTS_MAX_LENGTH} caracteres.`;
     }
@@ -168,7 +235,7 @@ const ReservationForm = ({ compact = false }) => {
     setLoading(true);
 
     try {
-      await axios.post("/reservations", {
+      const response = await axios.post("/reservations", {
         nombre: form.name,
         telefono: form.phone,
         fecha_reserva: form.date,
@@ -179,6 +246,7 @@ const ReservationForm = ({ compact = false }) => {
         comensales: parseInt(form.guests),
         peticiones_especiales: form.comments,
       });
+      const reservation = response.data?.reserva;
 
       // Mostrar mensaje de confirmación mediante SweetAlert2 (estilo premium)
       Swal.fire({
@@ -188,9 +256,9 @@ const ReservationForm = ({ compact = false }) => {
           <div class="text-center font-body">
             <p class="mb-4">Hemos recibido su solicitud de mesa en <b>Distrito Gourmet</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
-              <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Fecha y Hora de la Cita</p>
-              <p class="text-3xl font-heading text-primary">${form.date} — ${form.time}</p>
-              <p class="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos para brindarle un servicio excepcional.</p>
+              <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Código de reserva</p>
+              <p class="text-3xl font-heading text-primary">${reservation?.codigo_reserva || "Pendiente"}</p>
+              <p class="mt-3 text-sm">${form.date} — ${form.time} · ${form.guests} pax</p>
             </div>
             <p class="mt-4 text-[11px] text-text-muted">El equipo de sala revisará cualquier preferencia indicada.</p>
           </div>
@@ -316,14 +384,19 @@ const ReservationForm = ({ compact = false }) => {
             required
             autoComplete="name"
             aria-invalid={!!errors.name}
-            aria-describedby={errors.name ? "reservation-name-error" : undefined}
+            aria-describedby={
+              errors.name ? "reservation-name-error" : undefined
+            }
             placeholder="Ej. Laura Martínez"
             className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
               errors.name ? "border-red-700" : "border-gray-200"
             }`}
           />
           {errors.name && (
-            <p id="reservation-name-error" className="mt-2 text-[12px] text-red-800">
+            <p
+              id="reservation-name-error"
+              className="mt-2 text-[12px] text-red-800"
+            >
               {errors.name}
             </p>
           )}
@@ -360,7 +433,10 @@ const ReservationForm = ({ compact = false }) => {
               }`}
             />
             {errors.phone && (
-              <p id="reservation-phone-error" className="mt-2 text-[12px] text-red-800">
+              <p
+                id="reservation-phone-error"
+                className="mt-2 text-[12px] text-red-800"
+              >
                 {errors.phone}
               </p>
             )}
@@ -400,7 +476,10 @@ const ReservationForm = ({ compact = false }) => {
               ))}
             </select>
             {errors.guests && (
-              <p id="reservation-guests-error" className="mt-2 text-[12px] text-red-800">
+              <p
+                id="reservation-guests-error"
+                className="mt-2 text-[12px] text-red-800"
+              >
                 {errors.guests}
               </p>
             )}
@@ -430,7 +509,9 @@ const ReservationForm = ({ compact = false }) => {
               onClick={() => setIsDatePickerOpen((open) => !open)}
               aria-expanded={isDatePickerOpen}
               aria-invalid={!!errors.date}
-              aria-describedby={errors.date ? "reservation-date-error" : undefined}
+              aria-describedby={
+                errors.date ? "reservation-date-error" : undefined
+              }
               className={`flex min-h-12 w-full items-center justify-between border-0 border-b bg-transparent py-3 text-left text-base font-normal text-gray-900 transition-all duration-300 focus:outline-none focus:ring-0 focus:border-primary sm:text-lg ${
                 errors.date ? "border-red-700" : "border-gray-200"
               }`}
@@ -453,7 +534,9 @@ const ReservationForm = ({ compact = false }) => {
               {isDatePickerOpen && (
                 <motion.div
                   initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
-                  animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+                  animate={
+                    shouldReduceMotion ? undefined : { opacity: 1, y: 0 }
+                  }
                   exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
                   transition={{ duration: 0.18 }}
                   className="mt-4 max-h-64 overflow-y-auto border border-text-main/10 bg-bg-body/95 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
@@ -491,7 +574,10 @@ const ReservationForm = ({ compact = false }) => {
               )}
             </AnimatePresence>
             {errors.date && (
-              <p id="reservation-date-error" className="mt-2 text-[12px] text-red-800">
+              <p
+                id="reservation-date-error"
+                className="mt-2 text-[12px] text-red-800"
+              >
                 {errors.date}
               </p>
             )}
@@ -510,23 +596,54 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
+              disabled={!form.date || availabilityLoading}
               aria-invalid={!!errors.time}
-              aria-describedby={errors.time ? "reservation-time-error" : undefined}
+              aria-describedby={
+                errors.time ? "reservation-time-error" : undefined
+              }
               className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
                 errors.time ? "border-red-700" : "border-gray-200"
               }`}
             >
               <option value="" disabled>
-                Seleccione horario
+                {availabilityLoading
+                  ? "Consultando disponibilidad"
+                  : form.date
+                    ? "Seleccione horario"
+                    : "Seleccione primero una fecha"}
               </option>
-              {availableTimes.map((time) => (
-                <option key={time} value={time}>
-                  Servicio de las {time}
-                </option>
-              ))}
+              {availableTimes.map((turn) => {
+                const guests = Number(form.guests || 1);
+                const isFull =
+                  turn.available_seats !== undefined &&
+                  turn.available_seats < guests;
+
+                return (
+                  <option key={turn.time} value={turn.time} disabled={isFull}>
+                    {turn.time} ·{" "}
+                    {turn.available_seats === undefined
+                      ? "Servicio disponible"
+                      : isFull
+                        ? "Completo"
+                        : `${turn.available_seats} plazas libres`}
+                  </option>
+                );
+              })}
             </select>
+            {selectedTurn?.available_seats !== undefined && (
+              <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
+                {selectedTurn.status === "limited"
+                  ? "Últimas plazas para este turno."
+                  : "Disponibilidad calculada con las reservas activas."}{" "}
+                {selectedTurn.occupied}/{selectedTurn.capacity} cubiertos
+                ocupados.
+              </p>
+            )}
             {errors.time && (
-              <p id="reservation-time-error" className="mt-2 text-[12px] text-red-800">
+              <p
+                id="reservation-time-error"
+                className="mt-2 text-[12px] text-red-800"
+              >
                 {errors.time}
               </p>
             )}
@@ -558,13 +675,18 @@ const ReservationForm = ({ compact = false }) => {
             }`}
           ></textarea>
           <div className="mt-2 flex items-start justify-between gap-4 text-[11px] leading-relaxed text-gray-500">
-            <p>Indique alergias, celebraciones o necesidades de accesibilidad.</p>
+            <p>
+              Indique alergias, celebraciones o necesidades de accesibilidad.
+            </p>
             <span className="shrink-0">
               {form.comments.length}/{COMMENTS_MAX_LENGTH}
             </span>
           </div>
           {errors.comments && (
-            <p id="reservation-comments-error" className="mt-2 text-[12px] text-red-800">
+            <p
+              id="reservation-comments-error"
+              className="mt-2 text-[12px] text-red-800"
+            >
               {errors.comments}
             </p>
           )}

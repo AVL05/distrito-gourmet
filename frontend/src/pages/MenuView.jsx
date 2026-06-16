@@ -1,5 +1,5 @@
 import { useCartStore } from "@/store/cart";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/services/api";
 import { HAS_CONFIGURED_API, USE_STATIC_DEMO_DATA } from "@/config/demo";
@@ -31,6 +31,12 @@ const MenuView = () => {
   });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [dishFilters, setDishFilters] = useState({
+    query: "",
+    allergen: "all",
+    takeawayOnly: false,
+    maxPrice: "",
+  });
 
   // Categorías del menú para las pestañas de filtro
   const categories = [
@@ -84,6 +90,7 @@ const MenuView = () => {
             allergens: d.alergenos,
             max_per_order: d.maximo_por_pedido,
             isPerUnit: !!d.es_por_unidad,
+            availableTakeaway: !!d.disponible_para_llevar,
           }));
 
         // Formatear vinos
@@ -146,8 +153,46 @@ const MenuView = () => {
 
   // Categorías de platos para "Toda la Carta"
   const dishCategories = ["entrantes", "principales", "postres"];
+  const allergenOptions = useMemo(() => {
+    const allergens = new Set();
+    menuData.dishes.forEach((dish) => {
+      String(dish.allergens || "")
+        .split(",")
+        .map((allergen) => allergen.trim().toLowerCase())
+        .filter(Boolean)
+        .forEach((allergen) => allergens.add(allergen));
+    });
+    return [...allergens].sort();
+  }, [menuData.dishes]);
+  const filteredDishes = useMemo(() => {
+    const query = dishFilters.query.trim().toLowerCase();
+    const maxPrice = Number.parseFloat(dishFilters.maxPrice);
+
+    return menuData.dishes.filter((dish) => {
+      const textMatch =
+        !query ||
+        dish.name.toLowerCase().includes(query) ||
+        String(dish.description || "")
+          .toLowerCase()
+          .includes(query);
+      const allergenMatch =
+        dishFilters.allergen === "all" ||
+        String(dish.allergens || "")
+          .toLowerCase()
+          .split(",")
+          .map((allergen) => allergen.trim())
+          .includes(dishFilters.allergen);
+      const takeawayMatch =
+        !dishFilters.takeawayOnly || dish.availableTakeaway !== false;
+      const priceMatch =
+        !dishFilters.maxPrice ||
+        (Number.isFinite(maxPrice) && dish.price <= maxPrice);
+
+      return textMatch && allergenMatch && takeawayMatch && priceMatch;
+    });
+  }, [dishFilters, menuData.dishes]);
   const getDishesForCategory = (cat) =>
-    menuData.dishes.filter((d) => d.category === cat);
+    filteredDishes.filter((d) => d.category === cat);
 
   // Tipos de bebidas para la pestaña de bebidas
   const beverageTypes = [
@@ -250,6 +295,11 @@ const MenuView = () => {
             {/* TODA LA CARTA */}
             {!loadError && activeCategory === "carta" && (
               <div className="space-y-20 sm:space-y-32">
+                <MenuFilters
+                  filters={dishFilters}
+                  allergenOptions={allergenOptions}
+                  onChange={setDishFilters}
+                />
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
                   if (items.length === 0) return null;
@@ -335,14 +385,23 @@ const MenuView = () => {
             )}
 
             {/* Estado vacío si no hay datos */}
-            {!loadError && activeCategory === "carta" && menuData.dishes.length === 0 && (
-              <EmptyState />
-            )}
-            {!loadError && activeCategory === "bebidas" &&
+            {!loadError &&
+              activeCategory === "carta" &&
+              menuData.dishes.length === 0 && <EmptyState />}
+            {!loadError &&
+              activeCategory === "carta" &&
+              menuData.dishes.length > 0 &&
+              filteredDishes.length === 0 && (
+                <EmptyState>
+                  No hay platos que coincidan con los filtros seleccionados.
+                </EmptyState>
+              )}
+            {!loadError &&
+              activeCategory === "bebidas" &&
               menuData.beverages.length === 0 && <EmptyState />}
-            {!loadError && activeCategory === "bodega" && menuData.wines.length === 0 && (
-              <EmptyState />
-            )}
+            {!loadError &&
+              activeCategory === "bodega" &&
+              menuData.wines.length === 0 && <EmptyState />}
           </PageTransition>
         )}
       </div>
@@ -428,6 +487,87 @@ const SectionHeader = ({ index, label }) => (
   </ScrollReveal>
 );
 
+const MenuFilters = ({ filters, allergenOptions, onChange }) => {
+  const updateFilter = (field, value) =>
+    onChange((current) => ({ ...current, [field]: value }));
+  const hasActiveFilters =
+    filters.query ||
+    filters.allergen !== "all" ||
+    filters.takeawayOnly ||
+    filters.maxPrice;
+
+  return (
+    <FadeIn className="mx-auto mb-10 max-w-5xl border border-text-main/10 bg-bg-surface p-4 sm:p-5">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr_0.8fr_auto] md:items-end">
+        <div>
+          <label htmlFor="menu-search">Buscar plato</label>
+          <input
+            id="menu-search"
+            type="search"
+            value={filters.query}
+            onChange={(event) => updateFilter("query", event.target.value)}
+            placeholder="Nombre, ingrediente o descripción"
+          />
+        </div>
+        <div>
+          <label htmlFor="menu-allergen">Alérgeno</label>
+          <select
+            id="menu-allergen"
+            value={filters.allergen}
+            onChange={(event) => updateFilter("allergen", event.target.value)}
+          >
+            <option value="all">Todos</option>
+            {allergenOptions.map((allergen) => (
+              <option key={allergen} value={allergen}>
+                {allergen}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="menu-max-price">Precio máx.</label>
+          <input
+            id="menu-max-price"
+            type="number"
+            min="0"
+            step="1"
+            value={filters.maxPrice}
+            onChange={(event) => updateFilter("maxPrice", event.target.value)}
+            placeholder="€"
+          />
+        </div>
+        <label className="mb-0 flex min-h-12 items-center justify-between gap-3 border border-text-main/10 px-3 py-2 text-[11px] text-text-main">
+          <span>Solo takeaway</span>
+          <input
+            type="checkbox"
+            checked={filters.takeawayOnly}
+            onChange={(event) =>
+              updateFilter("takeawayOnly", event.target.checked)
+            }
+            className="h-4 w-4 accent-primary"
+          />
+        </label>
+      </div>
+      {hasActiveFilters && (
+        <button
+          type="button"
+          onClick={() =>
+            onChange({
+              query: "",
+              allergen: "all",
+              takeawayOnly: false,
+              maxPrice: "",
+            })
+          }
+          className="mt-4 text-[11px] font-semibold uppercase tracking-[1.6px] text-primary hover:text-primary-hover"
+        >
+          Limpiar filtros
+        </button>
+      )}
+    </FadeIn>
+  );
+};
+
 // Fila de plato individual. Aquí es donde se añade al carrito.
 const DishRow = ({ item, addItem, isAdded }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
@@ -447,6 +587,16 @@ const DishRow = ({ item, addItem, isAdded }) => (
           </p>
         )}
         <div className="flex flex-wrap gap-x-6 gap-y-2">
+          {item.availableTakeaway === false && (
+            <span className="text-[10px] uppercase tracking-widest text-red-800/80">
+              Solo disponible en sala
+            </span>
+          )}
+          {item.max_per_order && item.max_per_order < 999 && (
+            <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
+              Máx. {item.max_per_order} por pedido
+            </span>
+          )}
           {item.allergens && (
             <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
               Alérgenos: {item.allergens}
@@ -465,15 +615,22 @@ const DishRow = ({ item, addItem, isAdded }) => (
       </span>
       <MotionButton
         onClick={() => addItem(item)}
+        disabled={item.availableTakeaway === false}
         className={`group w-full md:w-auto relative px-8 py-3 border font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 focus:outline-none ${
-          isAdded
-            ? "bg-primary border-primary text-white"
-            : "bg-transparent border-text-main/30 text-text-main hover:border-primary"
+          item.availableTakeaway === false
+            ? "cursor-not-allowed border-text-main/10 text-text-muted/50"
+            : isAdded
+              ? "bg-primary border-primary text-white"
+              : "bg-transparent border-text-main/30 text-text-main hover:border-primary"
         }`}
       >
         <div className="absolute inset-0 w-0 bg-primary transition-all duration-[500ms] ease-out group-hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
-          {isAdded ? "Añadido" : "Añadir para Recogida"}
+          {item.availableTakeaway === false
+            ? "Solo sala"
+            : isAdded
+              ? "Añadido"
+              : "Añadir para Recogida"}
         </span>
       </MotionButton>
     </div>
@@ -637,11 +794,12 @@ const TastingMenuCard = ({ menu }) => (
 );
 
 // Estado visual cuando una categoría de menú no tiene elementos disponibles.
-const EmptyState = () => (
+const EmptyState = ({ children }) => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
     <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
-      Ahora mismo no hay referencias disponibles en esta categoría.
+      {children ||
+        "Ahora mismo no hay referencias disponibles en esta categoría."}
     </p>
     <button
       type="button"
