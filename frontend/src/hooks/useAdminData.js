@@ -66,11 +66,11 @@ export const useAdminData = ({
         });
 
       if (activeSection === "orders") {
-        const res = await axios.get("/admin/orders");
-        setData((d) => ({ ...d, orders: res.data }));
+        const res = await axios.get("/admin/orders", { params: { per_page: 200 } });
+        setData((d) => ({ ...d, orders: res.data?.data ?? res.data }));
       } else if (activeSection === "reservations") {
-        const res = await axios.get("/admin/reservations");
-        setData((d) => ({ ...d, reservations: res.data }));
+        const res = await axios.get("/admin/reservations", { params: { per_page: 200 } });
+        setData((d) => ({ ...d, reservations: res.data?.data ?? res.data }));
       } else if (activeSection === "menu") {
         const res = await axios.get("/dishes");
         const sortedDishes = sortDishesByCategory(res.data.platos || []);
@@ -107,7 +107,6 @@ export const useAdminData = ({
         setData((d) => ({ ...d, users: res.data }));
       }
     } catch (err) {
-      console.error(err);
       showAdminErrorToast(
         err,
         "No se pudieron recuperar los datos del servidor.",

@@ -11,27 +11,21 @@ import {
   ScrollProgress,
 } from "@/motion";
 
-// Página de inicio organizada en secciones visuales de alto impacto para el usuario
 const HomeView = () => {
   return (
     <PageTransition className="w-full">
-      {/* Barra de progreso de scroll (inspirado en sitios editoriales premium) */}
       <ScrollProgress />
 
-      {/* Sección principal de bienvenida */}
       <section className="relative min-h-[92svh] md:min-h-[88svh] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
-        {/* Imagen de fondo con filtro */}
         <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-30 grayscale"
-          style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}
+          style={{ backgroundImage: "url('/sala_de_restaurante.png')" }}
         ></div>
 
-        {/* Líneas decorativas */}
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
         <div className="relative z-10 px-4 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center min-h-[92svh] md:min-h-[88svh] pt-24 pb-20 sm:pt-28 sm:pb-24">
-          {/* Título con Text Reveal caracter por caracter (estilo Lucky Folks) */}
           <TextReveal
             text="Distrito"
             splitBy="char"
@@ -67,7 +61,6 @@ const HomeView = () => {
                   Descubrir la Carta
                 </span>
               </Link>
-              {/* Botón magnético inspirado en Lucky Folks */}
               <MagneticButton as="div" strength={12} className="cursor-pointer">
                 <div>
                   <Link
@@ -104,7 +97,6 @@ const HomeView = () => {
         />
       </div>
 
-      {/* Sección sobre la identidad del restaurante */}
       <section className="py-20 md:py-40 bg-bg-surface relative border-y border-text-main/5">
         <div className="container relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
@@ -172,7 +164,6 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* Los pilares que definen nuestra visión */}
       <section className="py-24 md:py-32 bg-bg-body">
         <div className="container">
           <ScrollReveal className="text-center mb-20">
@@ -277,7 +268,6 @@ const HomeView = () => {
         </div>
       </section>
 
-      {/* Invitación final para reservar mesa */}
       <section className="py-24 md:py-32 bg-text-main text-bg-body">
         <div className="container">
           <ScrollReveal className="max-w-4xl mx-auto text-center mb-16">
@@ -309,9 +299,9 @@ const HomeView = () => {
               <div>
                 <Link
                   to="/reservations"
-                  className="group relative px-12 py-5 bg-transparent border border-bg-body text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-primary focus:outline-none w-full sm:w-auto text-center inline-block"
+                  className="group relative px-12 py-5 bg-transparent border border-bg-body/60 text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-primary-light focus:outline-none w-full sm:w-auto text-center inline-block"
                 >
-                  <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+                  <div className="absolute inset-0 w-0 bg-primary-light transition-all duration-[400ms] ease-out group-hover:w-full"></div>
                   <span className="relative z-10 font-bold group-hover:text-white transition-colors duration-300">
                     Solicitar Reserva
                   </span>

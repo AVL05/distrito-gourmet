@@ -450,16 +450,45 @@ const MenuView = () => {
   );
 };
 
+const SkeletonLine = ({ className = "" }) => (
+  <div className={`skeleton rounded-sm ${className}`} />
+);
+
 const MenuSkeleton = () => (
-  <div className="max-w-5xl mx-auto py-16 sm:py-24 space-y-8">
-    {[1, 2, 3].map((item) => (
-      <div
-        key={item}
-        className="border-b border-text-main/10 py-8 animate-pulse"
-      >
-        <div className="h-8 w-2/3 bg-text-main/10 mb-4" />
-        <div className="h-4 w-full max-w-2xl bg-text-main/10 mb-3" />
-        <div className="h-4 w-1/3 bg-text-main/10" />
+  <div className="max-w-5xl mx-auto py-16 sm:py-24 space-y-20">
+    {[
+      { rows: 4, labelW: "w-24" },
+      { rows: 5, labelW: "w-32" },
+      { rows: 3, labelW: "w-28" },
+    ].map((section, sIdx) => (
+      <div key={sIdx}>
+        {/* Cabecera de sección skeleton */}
+        <div className="flex items-center gap-4 mb-16 px-4">
+          <SkeletonLine className="flex-grow h-px hidden sm:block" />
+          <SkeletonLine className={`h-3 ${section.labelW} flex-shrink-0`} />
+          <SkeletonLine className="h-10 w-48 flex-shrink-0" />
+          <SkeletonLine className="flex-grow h-px" />
+        </div>
+
+        {/* Filas de plato skeleton */}
+        <div className="flex flex-col border-t border-text-main/5">
+          {Array.from({ length: section.rows }).map((_, i) => (
+            <div
+              key={i}
+              className="flex justify-between items-start gap-6 py-8 px-4 border-b border-text-main/5"
+            >
+              <div className="flex-1 space-y-3">
+                <SkeletonLine className={`h-5 ${i % 2 === 0 ? "w-3/5" : "w-2/5"}`} />
+                <SkeletonLine className={`h-3 ${i % 3 === 0 ? "w-full" : "w-4/5"}`} />
+                <SkeletonLine className="h-3 w-1/4" />
+              </div>
+              <div className="flex-shrink-0 flex flex-col items-end gap-3 pt-1">
+                <SkeletonLine className="h-5 w-16" />
+                <SkeletonLine className="h-8 w-24" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     ))}
   </div>

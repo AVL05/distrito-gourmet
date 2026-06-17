@@ -8,69 +8,57 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
-// Gestión de usuarios: administración de perfiles, roles y credenciales de acceso
 class UsuarioController extends Controller
 {
-    // Obtener todos los usuarios (solo admin)
     public function index()
     {
-        $users = Usuario::all();
-        return response()->json($users);
+        return response()->json(Usuario::all());
     }
 
-    // Crear usuario desde el panel de administración
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios',
+            'nombre'   => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:usuarios',
             'telefono' => 'required|string|max:20',
             'password' => 'required|string|min:8',
-            'rol' => ['required', Rule::in(['Administrador', 'Cliente', 'Staff'])]
+            'rol'      => ['required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
         ]);
 
         $user = Usuario::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
+            'nombre'   => $request->nombre,
+            'email'    => $request->email,
             'telefono' => $request->telefono,
             'password' => Hash::make($request->password),
-            'rol' => $request->rol,
+            'rol'      => $request->rol,
         ]);
 
-        return response()->json([
-            'message' => 'Usuario creado correctamente',
-            'user' => $user,
-        ], 201);
+        return response()->json(['message' => 'Usuario creado correctamente', 'user' => $user], 201);
     }
 
-    // Actualizar perfil propio o actualizar usuario por admin
     public function update(Request $request, $id = null)
     {
-        $userId = $id ? $id : auth()->id();
+        $userId = $id ?? auth()->id();
         $user = Usuario::findOrFail($userId);
 
-        // Si intenta editar otro usuario, verificar que sea admin
         if ($userId != auth()->id() && auth()->user()->rol !== 'Administrador') {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
-        // Validar datos del usuario
         $request->validate([
-            'nombre' => 'sometimes|required|string|max:255',
-            'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
+            'nombre'   => 'sometimes|required|string|max:255',
+            'email'    => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'telefono' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8',
-            'rol' => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])]
+            'rol'      => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
         ]);
 
         $data = $request->only(['nombre', 'email', 'telefono']);
 
-        // Si se envía contraseña nueva, encriptarla
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
 
-        // Solo un admin puede cambiar roles de usuario
         if ($request->filled('rol') && auth()->user()->rol === 'Administrador') {
             $data['rol'] = $request->rol;
         }
@@ -80,20 +68,16 @@ class UsuarioController extends Controller
         return response()->json(['message' => 'Usuario actualizado correctamente', 'user' => $user]);
     }
 
-    // Eliminar un usuario (solo admin)
     public function destroy($id)
     {
-        try {
-            $user = Usuario::findOrFail($id);
+        $user = Usuario::findOrFail($id);
 
-            if ($user->id === auth()->id()) {
-                return response()->json(['message' => 'No puede eliminar su propio usuario administrador'], 422);
-            }
-
-            $user->delete();
-            return response()->json(['message' => 'Usuario eliminado correctamente']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar usuario'], 500);
+        if ($user->id === auth()->id()) {
+            return response()->json(['message' => 'No puede eliminar su propio usuario administrador'], 422);
         }
+
+        $user->delete();
+
+        return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
 }

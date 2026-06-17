@@ -1,5 +1,4 @@
 <?php
-// Gestión de pedidos: creación, listado y actualización de estados para el servicio takeaway
 
 namespace App\Http\Controllers\API;
 
@@ -20,7 +19,7 @@ class PedidoController extends Controller
 {
     private const METODOS_PAGO = ['card', 'cash', 'paypal'];
 
-    private const HORAS_RECOGIDA = [
+    public const HORAS_RECOGIDA = [
         '13:00:00',
         '13:30:00',
         '14:00:00',
@@ -35,12 +34,14 @@ class PedidoController extends Controller
         '22:30:00',
     ];
 
-    // Obtener el historial de pedidos del usuario autenticado
+    public static function getPickupTimes(): array
+    {
+        return array_map(fn ($t) => substr($t, 0, 5), self::HORAS_RECOGIDA);
+    }
+
     public function index()
     {
-        $userId = Auth::id();
-
-        $pedidos = Pedido::where('usuario_id', $userId)
+        $pedidos = Pedido::where('usuario_id', Auth::id())
             ->with(['detalles.plato', 'detalles.vino', 'detalles.bebida', 'detalles.menu_degustacion'])
             ->latest()
             ->get();
@@ -48,13 +49,8 @@ class PedidoController extends Controller
         return response()->json($pedidos);
     }
 
-    // Crear un nuevo pedido con el desglose de artículos y cálculo de impuestos
     public function store(Request $request)
     {
-        if (!Auth::check()) {
-            return response()->json(['mensaje' => 'No autorizado'], 401);
-        }
-
         $request->merge([
             'hora_recogida' => $this->normalizarHora($request->input('hora_recogida')),
         ]);
@@ -118,7 +114,6 @@ class PedidoController extends Controller
             $subtotal = round($total / 1.10, 2);
             $impuestos = round($total - $subtotal, 2);
 
-            // Crear el pedido principal
             $pedido = Pedido::create([
                 'usuario_id' => Auth::id(),
                 'numero_pedido' => 'DG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4)),
@@ -133,7 +128,6 @@ class PedidoController extends Controller
                 'metodo_pago' => $request->metodo_pago,
             ]);
 
-            // Crear cada artículo del pedido
             foreach ($articulos as $item) {
                 DetallePedido::create([
                     'pedido_id' => $pedido->id,
@@ -143,27 +137,26 @@ class PedidoController extends Controller
                     'menu_degustacion_id' => $item['tipo_item'] === 'menu_degustacion' ? $item['db_id'] : null,
                     'cantidad' => $item['cantidad'],
                     'precio_unitario' => $item['precio'],
-                    'precio_total' => $item['precio'] * $item['cantidad']
+                    'precio_total' => $item['precio'] * $item['cantidad'],
                 ]);
             }
 
             return response()->json([
                 'mensaje' => 'Pedido creado correctamente',
-                'pedido' => $pedido->load('detalles')
+                'pedido' => $pedido->load('detalles'),
             ], 201);
         });
     }
 
-    // Listar todos los pedidos registrados (acceso de administrador)
     public function all()
     {
         $pedidos = Pedido::with(['usuario', 'detalles.plato', 'detalles.vino', 'detalles.bebida', 'detalles.menu_degustacion'])
             ->latest()
-            ->get();
+            ->paginate(request()->integer('per_page', 50));
+
         return response()->json($pedidos);
     }
 
-    // Actualizar el estado logístico del pedido (Pendiente, Preparando, Listo, etc.)
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -173,14 +166,15 @@ class PedidoController extends Controller
         $pedido = Pedido::findOrFail($id);
         $pedido->estado = $request->input('estado');
         $pedido->save();
+
         return response()->json(['mensaje' => 'Estado del pedido actualizado']);
     }
 
-    // Eliminar un pedido y su información asociada
     public function destroy($id)
     {
         $pedido = Pedido::findOrFail($id);
         $pedido->delete();
+
         return response()->json(['mensaje' => 'Pedido eliminado correctamente']);
     }
 

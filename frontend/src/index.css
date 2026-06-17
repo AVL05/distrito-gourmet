@@ -6,7 +6,6 @@
 
 @layer base {
   html {
-    /* Escalado base para resoluciones ultra-altas */
     @screen 2k {
       font-size: 110%;
     }
@@ -41,6 +40,12 @@
 
   body {
     @apply bg-bg-body text-text-main font-body font-normal text-base leading-relaxed antialiased overflow-x-hidden;
+    /*
+     * Textura de grano sutil sobre el fondo crema.
+     * El SVG inline con feTurbulence genera ruido fractal a muy baja opacidad
+     * sin añadir capas extra al DOM ni interferir con z-index.
+     */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.038'/%3E%3C/svg%3E");
   }
 
   @media (max-width: 767px) {
@@ -94,24 +99,22 @@
     content: none;
   }
 
-  /* Barra de desplazamiento elegante personalizada */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
   }
   ::-webkit-scrollbar-track {
-    background: #f8f6f0;
+    background: #f0ebe2;
   }
   ::-webkit-scrollbar-thumb {
-    background: #d9d2c5;
+    background: #c8bfb0;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #b89065;
+    background: #a68a56;
   }
 }
 
 @layer components {
-  /* Botones minimalistas */
   .btn {
     @apply inline-flex items-center justify-center px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-main font-body text-[12px] sm:text-[13px] uppercase tracking-[1.2px] sm:tracking-[1.6px] cursor-pointer transition-all duration-300 text-center;
   }
@@ -144,7 +147,6 @@
     @apply bg-transparent border-none text-text-muted cursor-pointer font-body text-[13px] uppercase tracking-[1.2px] transition-colors duration-300 hover:text-main;
   }
 
-  /* Estructura general */
   .container {
     @apply mx-auto px-4 sm:px-6 md:px-8 w-full;
     max-width: 1440px;
@@ -171,6 +173,18 @@
   label {
     @apply text-[11px] sm:text-[12px] uppercase tracking-[1.2px] sm:tracking-[1.5px] text-text-main block mb-2 font-bold;
   }
+
+  /* Skeleton shimmer — sustituto del animate-pulse genérico */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      rgba(34, 64, 50, 0.06) 25%,
+      rgba(34, 64, 50, 0.12) 50%,
+      rgba(34, 64, 50, 0.06) 75%
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.8s infinite;
+  }
 }
 
 @layer utilities {
@@ -191,5 +205,4 @@
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-
 }

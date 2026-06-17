@@ -1,5 +1,4 @@
 <?php
-// Gestión de autenticación: registro, inicio y cierre de sesión de usuarios
 
 namespace App\Http\Controllers\API;
 
@@ -11,82 +10,66 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Registro de nuevos usuarios con rol 'Cliente' asignado por defecto
     public function register(Request $request)
     {
-        // Validar datos del formulario de registro
         $request->validate([
-            'nombre' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:usuarios',
+            'nombre'   => 'required|string|max:255',
+            'email'    => 'required|string|email|max:255|unique:usuarios',
             'password' => 'required|string|min:8',
             'telefono' => 'required|string|max:20',
         ], [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'email.required' => 'El correo electrónico es obligatorio.',
-            'email.email' => 'El formato del correo electrónico no es válido.',
-            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'nombre.required'   => 'El nombre es obligatorio.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'El formato del correo electrónico no es válido.',
+            'email.unique'      => 'Este correo electrónico ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.min'      => 'La contraseña debe tener al menos 8 caracteres.',
             'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.max' => 'El teléfono no puede tener más de 20 caracteres.',
+            'telefono.max'      => 'El teléfono no puede tener más de 20 caracteres.',
         ]);
 
-        // Crear el usuario con rol 'Cliente' por defecto
         $usuario = Usuario::create([
-            'nombre' => $request->nombre,
-            'email' => $request->email,
+            'nombre'   => $request->nombre,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
             'telefono' => $request->telefono,
-            'rol' => 'Cliente',
+            'rol'      => 'Cliente',
         ]);
 
-        // Generar token de acceso
         $token = $usuario->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'usuario' => $usuario,
-            'token' => $token,
-        ], 201);
+        return response()->json(['usuario' => $usuario, 'token' => $token], 201);
     }
 
-    // Autenticación de usuario mediante credenciales y generación de token
     public function login(Request $request)
     {
-        // Trimear el email para evitar errores por espacios accidentales
         $request->merge(['email' => trim($request->email)]);
 
-        // Validar email y contraseña
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
         $usuario = Usuario::where('email', $request->email)->first();
 
-        // Verificar que las credenciales son correctas
-        if (!$usuario || !Hash::check($request->password, $usuario->password)) {
+        if (! $usuario || ! Hash::check($request->password, $usuario->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales son incorrectas.'],
             ]);
         }
 
-        // Generar token de acceso
         $token = $usuario->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'usuario' => $usuario,
-            'token' => $token,
-        ]);
+        return response()->json(['usuario' => $usuario, 'token' => $token]);
     }
 
-    // Cierre de sesión y revocación del token de acceso actual
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json(['mensaje' => 'Sesión cerrada correctamente']);
     }
 
-    // Recuperar la información del usuario autenticado actualmente
     public function me(Request $request)
     {
         return response()->json($request->user());

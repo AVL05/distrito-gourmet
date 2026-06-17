@@ -1,5 +1,4 @@
 <?php
-// Gestión de reservas: administración de citas y ocupación de mesas
 
 namespace App\Http\Controllers\API;
 
@@ -16,15 +15,13 @@ class ReservaController extends Controller
         private readonly DiscordReservationNotifier $discordReservationNotifier
     ) {}
 
-    // Listar las reservas asociadas al usuario autenticado
     public function index()
     {
-        $reservas = Reserva::where('usuario_id', auth()->id())
-            ->get();
+        $reservas = Reserva::where('usuario_id', auth()->id())->get();
+
         return response()->json($reservas);
     }
 
-    // Registrar una nueva reserva validando disponibilidad y aforo
     public function store(Request $request)
     {
         $request->merge([
@@ -32,14 +29,15 @@ class ReservaController extends Controller
         ]);
 
         $request->validate([
-            'fecha_reserva' => 'required|date|after_or_equal:today',
-            'hora_reserva' => ['required', Rule::in(ReservationRules::TURNS)],
-            'comensales' => 'required|integer|min:1|max:8',
-            'peticiones_especiales' => 'nullable|string'
+            'fecha_reserva'       => 'required|date|after_or_equal:today',
+            'hora_reserva'        => ['required', Rule::in(ReservationRules::TURNS)],
+            'comensales'          => 'required|integer|min:1|max:8',
+            'peticiones_especiales' => 'nullable|string',
         ]);
 
         $fecha = $request->fecha_reserva;
-        $hora = $request->hora_reserva;
+        $hora  = $request->hora_reserva;
+
         $exists = Reserva::where('usuario_id', auth()->id())
             ->where('fecha_reserva', $fecha)
             ->where('estado', '!=', 'Cancelada')
@@ -47,7 +45,7 @@ class ReservaController extends Controller
 
         if ($exists) {
             return response()->json([
-                'mensaje' => 'Ya dispone de una reserva para esta fecha.'
+                'mensaje' => 'Ya dispone de una reserva para esta fecha.',
             ], 422);
         }
 
@@ -56,16 +54,18 @@ class ReservaController extends Controller
             ->where('estado', '!=', 'Cancelada')
             ->sum('comensales');
 
-        $estado = ($totalOccupancy + $request->comensales) > ReservationRules::CAPACITY ? 'Pendiente' : 'Confirmada';
+        $estado = ($totalOccupancy + $request->comensales) > ReservationRules::CAPACITY
+            ? 'Pendiente'
+            : 'Confirmada';
 
         $res = Reserva::create([
-            'usuario_id' => auth()->id(),
-            'fecha_reserva' => $fecha,
-            'hora_reserva' => $hora,
-            'comensales' => $request->comensales,
-            'estado' => $estado,
+            'usuario_id'            => auth()->id(),
+            'fecha_reserva'         => $fecha,
+            'hora_reserva'          => $hora,
+            'comensales'            => $request->comensales,
+            'estado'                => $estado,
             'peticiones_especiales' => $request->peticiones_especiales,
-            'codigo_reserva' => strtoupper(substr(uniqid(), -8))
+            'codigo_reserva'        => strtoupper(substr(uniqid(), -8)),
         ]);
 
         $this->discordReservationNotifier->notify($res, auth()->user());
@@ -77,7 +77,6 @@ class ReservaController extends Controller
         return response()->json(['mensaje' => $mensaje, 'reserva' => $res], 201);
     }
 
-    // Recuperar el listado global de reservas para administración
     public function all()
     {
         $reservas = Reserva::with('usuario')
@@ -88,16 +87,15 @@ class ReservaController extends Controller
             END")
             ->orderBy('fecha_reserva', 'asc')
             ->orderBy('hora_reserva', 'asc')
-            ->get();
+            ->paginate(request()->integer('per_page', 50));
 
         return response()->json($reservas);
     }
 
-    // Actualizar el estado de una reserva específica
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'estado' => 'sometimes|required|in:Pendiente,Confirmada,Cancelada'
+            'estado' => 'sometimes|required|in:Pendiente,Confirmada,Cancelada',
         ]);
 
         $res = Reserva::findOrFail($id);
@@ -107,14 +105,15 @@ class ReservaController extends Controller
         }
 
         $res->save();
+
         return response()->json(['mensaje' => 'Reserva actualizada correctamente']);
     }
 
-    // Eliminar una reserva de forma permanente
     public function destroy($id)
     {
         $res = Reserva::findOrFail($id);
         $res->delete();
+
         return response()->json(['mensaje' => 'Reserva eliminada correctamente']);
     }
 }

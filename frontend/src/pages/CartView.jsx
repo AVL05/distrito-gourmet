@@ -11,72 +11,70 @@ import {
 } from "react-icons/hi";
 import { FaPaypal } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 import { getApiErrorMessage } from "@/utils/apiErrors";
 
-// Gestión del carrito de compras y proceso de finalización de pedido
+const buildPickupOptions = (validTimes) => {
+  const options = [];
+  const now = new Date();
+
+  const addSlotsForDay = (date, isToday) => {
+    validTimes.forEach((timeStr) => {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      const timeDate = new Date(date);
+      timeDate.setHours(hours, minutes, 0, 0);
+
+      if (timeDate > now || !isToday) {
+        const label = hours >= 20 ? "Cena" : "Comida";
+        const dayLabel = isToday ? "Hoy" : "Mañana";
+        options.push({
+          label: `${dayLabel} - ${timeStr} (${label})`,
+          value: `${isToday ? "today" : "tomorrow"}-${timeStr}`,
+          actualTime: timeStr,
+        });
+      }
+    });
+  };
+
+  addSlotsForDay(now, true);
+  if (options.length < 5) {
+    const tomorrow = new Date();
+    tomorrow.setDate(now.getDate() + 1);
+    addSlotsForDay(tomorrow, false);
+  }
+
+  return options;
+};
+
 const CartView = () => {
   const { items, updateQuantity, removeItem, clearCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [step, setStep] = useState("cart"); // 'cart' or 'checkout'
+  const [step, setStep] = useState("cart");
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [pickupTime, setPickupTime] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
+  const [validTimes, setValidTimes] = useState([]);
 
-  // Calcula las horas de recogida disponibles para hoy y mañana
-  const generatePickupOptions = () => {
-    const options = [];
-    const now = new Date();
-
-    // Intervalos de 30 min entre 13:00-15:30 y 20:00-22:30
-    const timeRanges = [
-      { start: 13, end: 15.5, label: "Comida" },
-      { start: 20, end: 22.5, label: "Cena" },
-    ];
-
-    // Función auxiliar para añadir slots de un día
-    const addSlotsForDay = (date, isToday) => {
-      timeRanges.forEach((range) => {
-        for (let h = range.start; h <= range.end; h += 0.5) {
-          const hours = Math.floor(h);
-          const minutes = (h % 1) * 60;
-          const timeDate = new Date(date);
-          timeDate.setHours(hours, minutes, 0, 0);
-
-          if (timeDate > now || !isToday) {
-            const timeStr = `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-            const dayLabel = isToday ? "Hoy" : "Mañana";
-            options.push({
-              label: `${dayLabel} - ${timeStr} (${range.label})`,
-              value: `${isToday ? "today" : "tomorrow"}-${timeStr}`,
-              actualTime: timeStr,
-              date: isToday ? "hoy" : "mañana",
-            });
-          }
-        }
+  useEffect(() => {
+    axios.get("/pickup-times")
+      .then((res) => setValidTimes(res.data.horarios ?? []))
+      .catch(() => {
+        // Fallback con los horarios habituales si la API no responde
+        setValidTimes([
+          "13:00","13:30","14:00","14:30","15:00","15:30",
+          "20:00","20:30","21:00","21:30","22:00","22:30",
+        ]);
       });
-    };
+  }, []);
 
-    addSlotsForDay(now, true);
-    // Si quedan menos de 3 opciones hoy, o ya es tarde, añadir mañana
-    if (options.length < 5) {
-      const tomorrow = new Date();
-      tomorrow.setDate(now.getDate() + 1);
-      addSlotsForDay(tomorrow, false);
-    }
+  const pickupOptions = useMemo(() => buildPickupOptions(validTimes), [validTimes]);
 
-    return options;
-  };
-
-  const pickupOptions = generatePickupOptions();
-
-  // Seleccionar automáticamente la primera hora disponible
   useEffect(() => {
     if (pickupOptions.length > 0 && !pickupTime) {
       setPickupTime(pickupOptions[0].value);
@@ -235,7 +233,6 @@ const CartView = () => {
       });
       navigate("/dashboard");
     } catch (error) {
-      console.error(error);
       setCheckoutError(
         getApiErrorMessage(
           error,

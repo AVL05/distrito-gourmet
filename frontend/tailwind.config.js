@@ -12,26 +12,33 @@ export default {
         ultra: "3840px",
       },
       colors: {
-        // Paleta de colores inspirada en la marca y alta gastronomía
-        primary: "#A68A56", // Dorado/Bronce inspirado en los elementos del logo
-        "primary-hover": "#8D7344", // Dorado oscuro para estados de interacción
-        "bg-body": "#FCFBF8", // Fondo crema cálido con textura
-        "bg-surface": "#FFFFFF", // Blanco puro para tarjetas y capas
-        "text-main": "#224032", // Verde profundo corporativo del texto 'DISTRITO'
-        "text-muted": "#4A504A", // Gris elegante oscuro para mejorar el contraste
+        primary: "#A68A56",
+        "primary-hover": "#8D7344",
+        // Tono más luminoso para hovers sobre fondos oscuros (ej. sección negra del hero)
+        "primary-light": "#C4A46E",
+        "bg-body": "#FCFBF8",
+        // Blanco cálido con matiz pergamino — evita el salto frío frente al fondo crema
+        "bg-surface": "#F9F6F0",
+        "text-main": "#224032",
+        // Gris cálido con dominante marrón en lugar del sesgo verdoso anterior
+        "text-muted": "#5C5448",
       },
       fontFamily: {
         heading: ['"Playfair Display"', "serif"],
         body: ['"Inter"', "sans-serif"],
       },
-      // Definiciones de animación
       animation: {
         "fade-in": "fadeIn 0.5s ease forwards",
+        shimmer: "shimmer 1.8s infinite",
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-400px 0" },
+          "100%": { backgroundPosition: "400px 0" },
         },
       },
     },

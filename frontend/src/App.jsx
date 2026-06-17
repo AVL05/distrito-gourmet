@@ -11,6 +11,7 @@ const CartView = lazy(() => import("./pages/CartView"));
 const ContactView = lazy(() => import("./pages/ContactView"));
 const CookiePolicyView = lazy(() => import("./pages/CookiePolicyView"));
 const DashboardView = lazy(() => import("./pages/DashboardView"));
+const ForgotPasswordView = lazy(() => import("./pages/ForgotPasswordView"));
 const HomeView = lazy(() => import("./pages/HomeView"));
 const LegalNoticeView = lazy(() => import("./pages/LegalNoticeView"));
 const LoginView = lazy(() => import("./pages/LoginView"));
@@ -19,14 +20,17 @@ const NotFoundView = lazy(() => import("./pages/NotFoundView"));
 const PrivacyPolicyView = lazy(() => import("./pages/PrivacyPolicyView"));
 const RegisterView = lazy(() => import("./pages/RegisterView"));
 const ReservationsView = lazy(() => import("./pages/ReservationsView"));
+const ResetPasswordView = lazy(() => import("./pages/ResetPasswordView"));
 const ProfileView = lazy(() => import("./pages/ProfileView"));
 
-// Componente simple de carga para Suspense
 const PageLoader = () => (
   <div className="min-h-screen bg-bg-body flex items-center justify-center">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-      <span className="text-primary text-[11px] uppercase tracking-[3px] font-body animate-pulse">
+    <div className="flex flex-col items-center gap-5">
+      <div className="relative w-10 h-10">
+        <div className="absolute inset-0 border border-primary/15 rounded-full" />
+        <div className="absolute inset-0 border-t border-primary rounded-full animate-spin" />
+      </div>
+      <span className="text-text-muted text-[10px] uppercase tracking-[4px] font-body">
         Distrito Gourmet
       </span>
     </div>
@@ -62,6 +66,8 @@ const App = () => {
             <Route index element={<HomeView />} />
             <Route path="login" element={<LoginView />} />
             <Route path="register" element={<RegisterView />} />
+            <Route path="forgot-password" element={<ForgotPasswordView />} />
+            <Route path="reset-password" element={<ResetPasswordView />} />
             <Route path="menu" element={<MenuView />} />
             <Route path="reservations" element={<ReservationsView />} />
             <Route path="cart" element={<CartView />} />

@@ -418,11 +418,16 @@ const DashboardView = () => {
                 {[1, 2, 3].map((item) => (
                   <div
                     key={item}
-                    className="border border-text-main/10 bg-bg-body p-6 animate-pulse"
+                    className="border border-text-main/10 bg-bg-body p-6 sm:p-8"
                   >
-                    <div className="h-5 w-1/2 bg-text-main/10 mb-4" />
-                    <div className="h-4 w-full bg-text-main/10 mb-3" />
-                    <div className="h-4 w-1/3 bg-text-main/10" />
+                    <div className="flex items-start gap-4 mb-5">
+                      <div className="skeleton rounded-sm w-12 h-12 flex-shrink-0" />
+                      <div className="flex-1 space-y-3 pt-1">
+                        <div className="skeleton rounded-sm h-5 w-2/5" />
+                        <div className="skeleton rounded-sm h-3 w-3/5" />
+                      </div>
+                      <div className="skeleton rounded-sm h-8 w-28 flex-shrink-0" />
+                    </div>
                   </div>
                 ))}
               </div>

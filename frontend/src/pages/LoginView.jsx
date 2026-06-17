@@ -5,23 +5,16 @@ import Swal from "sweetalert2";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
-// Componente para la vista de inicio de sesión
 const LoginView = () => {
   const { login } = useAuthStore();
   const navigate = useNavigate();
-  // Estado local para guardar los datos del formulario
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
 
-  // Función para actualizar los datos mientras el usuario escribe
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Función para enviar los datos de inicio de sesión
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,7 +31,6 @@ const LoginView = () => {
     }
 
     try {
-      // Intentar iniciar sesión llamando a la tienda de autenticación
       const success = await login(formData);
 
       if (success) {
@@ -53,7 +45,6 @@ const LoginView = () => {
         });
         navigate("/dashboard");
       } else {
-        // Pero como login() devuelve false, manejamos el error aquí
         const errorMsg = useAuthStore.getState().error;
 
         const isNotFound =
@@ -81,16 +72,20 @@ const LoginView = () => {
           }
         });
       }
-    } catch (error) {
-      // Este catch solo se activará si hay un error crítico no manejado en el store
-      console.error("Error crítico:", error);
+    } catch {
+      Swal.fire({
+        icon: "error",
+        title: "Error inesperado",
+        text: "No se pudo conectar con el servidor. Inténtelo de nuevo.",
+        background: "#fdfaf6",
+        color: "#2c302e",
+        confirmButtonColor: "#e76f51",
+      });
     }
   };
 
   return (
-    // Contenedor principal con animación de transición de página
     <PageTransition className="min-h-screen flex items-center justify-center bg-bg-body pt-20 px-4">
-      {/* Tarjeta de inicio de sesión */}
       <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
         <div className="text-center mb-10">
@@ -124,9 +119,17 @@ const LoginView = () => {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold ml-1">
-              Contraseña
-            </label>
+            <div className="flex items-center justify-between ml-1">
+              <label className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold">
+                Contraseña
+              </label>
+              <NavLink
+                to="/forgot-password"
+                className="text-[10px] uppercase tracking-[2px] text-text-muted hover:text-primary transition-colors font-medium"
+              >
+                ¿Olvidó su contraseña?
+              </NavLink>
+            </div>
             <input
               type="password"
               name="password"
