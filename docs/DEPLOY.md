@@ -1,179 +1,180 @@
-# Guia de despliegue e instalacion - Distrito Gourmet
+# Guía de Despliegue e Instalación — Distrito Gourmet 🚀
 
-Esta guia cubre la instalacion del proyecto en desarrollo local, ejecucion con Docker Compose y criterios minimos antes de entregar o desplegar.
+<p align="center">
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
+  <img alt="PHP" src="https://img.shields.io/badge/PHP-8.2-777BB4?logo=php&logoColor=white">
+  <img alt="Node" src="https://img.shields.io/badge/Node-LTS-339933?logo=node.js&logoColor=white">
+</p>
 
-## Requisitos
+Esta guía detalla los pasos necesarios para poner en marcha el proyecto tanto en entornos de desarrollo local como en producción utilizando Docker.
 
-### Comunes
+---
 
-- Git.
-- Node.js y npm.
-- Acceso al repositorio.
+## 📑 Índice
 
-### Desarrollo sin Docker
+- [Requisitos previos](#-requisitos-previos)
+- [Despliegue con Docker (recomendado)](#-despliegue-con-docker-recomendado)
+- [Variables de entorno](#-variables-de-entorno)
+- [Desarrollo local (sin Docker)](#-desarrollo-local-sin-docker)
+- [Despliegue en producción (Homelab)](#-despliegue-en-producción-homelab)
+- [Comandos útiles](#-comandos-útiles)
+- [Resolución de problemas](#-resolución-de-problemas)
+- [Checklist de cierre](#-checklist-de-cierre)
+- [Archivos de configuración clave](#-archivos-de-configuración-clave)
 
-- PHP 8.2 o superior.
-- Composer.
-- MySQL compatible con la configuracion de Laravel.
+---
 
-### Docker
+## 🛠️ Requisitos previos
 
-- Docker.
-- Docker Compose.
-- Puertos disponibles por defecto:
-  - `80` para frontend.
-  - `8000` para backend.
-  - `3306` para MySQL.
+- **Docker** y **Docker Compose** instalados.
+- **Git** para la clonación del repositorio.
+- Puertos libres: `80` (Frontend), `8000` (Backend) y `3306` (Base de datos).
 
-## Variables de entorno
+---
 
-El proyecto separa configuracion por aplicacion:
+## 🐳 Despliegue con Docker (recomendado)
 
-| Archivo | Uso |
-| --- | --- |
-| `backend/.env` | Configuracion Laravel, base de datos, logs, mail y servicios externos |
-| `frontend/.env` | Configuracion Vite, origen de API y modo demo |
+El proyecto está totalmente contenerizado, lo que facilita enormemente su despliegue sin necesidad de instalar PHP, Node.js o MySQL localmente.
 
-Crear archivos iniciales:
-
-```bash
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-```
-
-Variables relevantes:
-
-| Variable | Ubicacion | Descripcion |
-| --- | --- | --- |
-| `APP_ENV` | `backend/.env` | `local` en desarrollo, `production` en despliegue |
-| `APP_DEBUG` | `backend/.env` | Debe ser `false` en produccion |
-| `APP_KEY` | `backend/.env` | Clave de aplicacion Laravel |
-| `DB_HOST` | `backend/.env` | Host de MySQL; en Docker es `db` |
-| `DB_DATABASE` | `backend/.env` | Nombre de base de datos |
-| `DB_USERNAME` | `backend/.env` | Usuario de base de datos |
-| `DB_PASSWORD` | `backend/.env` | Contrasena de base de datos |
-| `VITE_API_URL` | `frontend/.env` | Origen del backend cuando no se usan rutas relativas |
-| `VITE_DEMO_MODE` | `frontend/.env` | Activa/desactiva comportamiento de demo |
-
-No hardcodear origenes, IPs LAN ni `localhost` en codigo fuente. Ajustar esos valores en `.env`.
-
-## Ejecucion con Docker Compose
-
-Docker Compose levanta tres servicios: MySQL, backend Laravel y frontend servido por Nginx.
+### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/AVL05/distrito-gourmet.git
 cd distrito-gourmet
+```
 
+### 2. Configuración de entorno
+
+Crea los archivos `.env` base si no existen:
+
+```bash
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
+```
 
+Revisa la sección [Variables de entorno](#-variables-de-entorno) para ajustar los valores clave antes de levantar el entorno.
+
+### 3. Levantar los contenedores
+
+```bash
 docker-compose up -d --build
 ```
 
-Inicializar base de datos:
+### 4. Inicialización del sistema
+
+Una vez los contenedores estén corriendo, ejecuta las migraciones y el seeder para tener datos reales de prueba:
 
 ```bash
 docker exec -it distrito-backend php artisan migrate --seed
 ```
 
-Comandos utiles:
+### 5. Verificación
 
 ```bash
 docker-compose ps
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f db
-docker-compose down
+curl -I http://localhost
 ```
 
-Si se necesita reiniciar desde cero la base de datos Docker, hacerlo de forma consciente porque el volumen `db_data` contiene los datos persistidos.
+Si todo ha ido bien, deberías ver los tres servicios en estado `Up` y una respuesta `200 OK` en el frontend.
 
-## Desarrollo local sin Docker
+---
 
-### Backend
+## 🔧 Variables de entorno
 
-```bash
-cd backend
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan serve
-```
+### `backend/.env`
 
-Revisa `backend/.env` antes de migrar para confirmar credenciales MySQL y host.
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `APP_URL` | URL pública del backend | `http://localhost:8000` |
+| `APP_DEBUG` | Modo debug (`false` en producción) | `false` |
+| `DB_CONNECTION` | Driver de base de datos | `mysql` |
+| `DB_HOST` | Host del servicio de base de datos | `db` (nombre del servicio en `docker-compose.yml`) |
+| `DB_PORT` | Puerto de la base de datos | `3306` |
+| `DB_DATABASE` | Nombre de la base de datos | `distrito_gourmet` |
+| `DB_USERNAME` / `DB_PASSWORD` | Credenciales de acceso a MySQL | — |
 
-### Frontend
+### `frontend/.env`
 
-```bash
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
+| Variable | Descripción | Ejemplo |
+|---|---|---|
+| `VITE_API_URL` | Origen del backend Laravel. Vacío si frontend y API comparten dominio vía Nginx/Docker; con Vite separado, indicar el origen del backend. | `http://localhost:8000` |
+| `VITE_DEMO_MODE` | Activa la demo pública sin escrituras reales cuando no hay API configurada | `true` / `false` |
 
-Si el backend esta en otro origen, configurar `VITE_API_URL` con el origen completo del servidor Laravel, por ejemplo `http://127.0.0.1:8000`. No incluir `/api` en la variable.
+> 🔒 Nunca subas archivos `.env` reales al repositorio. Mantén `backend/.env.example` y `frontend/.env.example` como plantillas sin credenciales sensibles.
 
-### Orquestacion desde raiz
+---
 
-Desde la raiz del repositorio:
+## 💻 Desarrollo local (sin Docker)
 
-```bash
-npm run install:all
-npm start
-```
+Si prefieres trabajar directamente sobre tu sistema operativo:
 
-El script `scripts/dev.js` levanta Laravel y Vite, comprueba puertos y pasa `VITE_API_URL` al frontend en desarrollo.
+### Backend (Laravel)
 
-## Despliegue en produccion
+1. Entra en `/backend`.
+2. Ejecuta `composer install`.
+3. Configura tu base de datos en el `.env`.
+4. Ejecuta `php artisan key:generate` y `php artisan migrate --seed`.
+5. Inicia el servidor: `php artisan serve`.
 
-Checklist recomendado:
+### Frontend (React)
 
-1. Configurar `APP_ENV=production`.
-2. Configurar `APP_DEBUG=false`.
-3. Definir `APP_KEY` valida.
-4. Usar credenciales de base de datos robustas.
-5. Revisar que `VITE_API_URL` sea coherente con el dominio final o quede vacio si se usa proxy relativo `/api`.
-6. Ejecutar migraciones de forma controlada.
-7. Validar que Nginx enruta correctamente la SPA y las llamadas `/api`.
+1. Entra en `/frontend`.
+2. Ejecuta `npm install`.
+3. Configura `VITE_API_URL` en `frontend/.env` si el backend está en otro origen.
+4. Inicia el entorno de desarrollo: `npm run dev`.
 
-Comandos Laravel habituales en produccion:
+---
 
-```bash
-cd backend
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
+## 🏗️ Despliegue en producción (Homelab)
 
-Si se despliega con Docker, ejecutar los comandos dentro del contenedor `distrito-backend`.
+Para el entorno de producción en un servidor Ubuntu, se utiliza el script de gestión incluido:
 
-## Homelab y scripts de mantenimiento
+1. **Permisos:**
+   ```bash
+   chmod +x scripts/manage.sh
+   ```
+2. **Arranque:**
+   ```bash
+   ./scripts/manage.sh start
+   ```
+3. **Auto-update:** el script `scripts/auto_update.sh` debe configurarse en el `crontab` del sistema para sincronizar con GitHub automáticamente:
+   ```bash
+   */5 * * * * /path/to/distrito-gourmet/scripts/auto_update.sh >> /var/log/distrito_update.log 2>&1
+   ```
 
-El repositorio incluye scripts en `scripts/` para facilitar tareas de entorno. Antes de usarlos en servidor:
+> 💡 Recomendación de producción: sirve el frontend y la API bajo HTTPS (por ejemplo con un proxy como Nginx/Traefik + Let's Encrypt) y fija `APP_DEBUG=false` para no exponer trazas de error.
 
-```bash
-chmod +x scripts/manage.sh
-chmod +x scripts/auto_update.sh
-```
+---
 
-Ejemplo de arranque:
+## 🧰 Comandos útiles
 
-```bash
-./scripts/manage.sh start
-```
+| Acción | Comando |
+|---|---|
+| Ver logs en tiempo real | `docker-compose logs -f` |
+| Ver logs de un servicio concreto | `docker-compose logs -f backend` |
+| Reiniciar un servicio | `docker-compose restart backend` |
+| Reconstruir un solo servicio | `docker-compose up -d --build backend` |
+| Entrar al contenedor del backend | `docker exec -it distrito-backend bash` |
+| Detener todo el entorno | `docker-compose down` |
+| Detener y borrar volúmenes (⚠️ borra datos) | `docker-compose down -v` |
 
-Ejemplo de actualizacion automatica mediante cron:
+---
 
-```bash
-*/5 * * * * /path/to/distrito-gourmet/scripts/auto_update.sh >> /var/log/distrito_update.log 2>&1
-```
+## 🩺 Resolución de problemas
 
-Recomendacion: activar auto-update solo si el flujo de ramas, backups y migraciones esta controlado. En produccion real, es preferible desplegar versiones etiquetadas o ramas estables.
+| Síntoma | Posible causa | Solución |
+|---|---|---|
+| `docker-compose up` falla por puerto ocupado | Otro proceso usando `80`, `8000` o `3306` | Libera el puerto o cambia el mapeo en `docker-compose.yml` |
+| Frontend no conecta con la API | `VITE_API_URL` mal configurada | Revisa `frontend/.env` y reconstruye el contenedor del frontend |
+| Error de conexión a base de datos | El backend arrancó antes de que MySQL esté listo | Reinicia el servicio backend: `docker-compose restart backend` |
+| `php artisan migrate --seed` falla | Variables `DB_*` incorrectas en `backend/.env` | Verifica que coincidan con el servicio `db` definido en `docker-compose.yml` |
+| Cambios en el código no se reflejan | Imagen cacheada | Reconstruye con `docker-compose up -d --build` |
 
-## Validacion previa a entrega
+---
+
+## ✅ Checklist de cierre
+
+Antes de entregar o desplegar:
 
 ```bash
 npm --prefix frontend run lint
@@ -182,35 +183,21 @@ cd backend && php artisan test
 cd backend && php artisan route:list --path=api
 ```
 
-Smoke test funcional:
+**Smoke test manual:**
 
-1. Abrir frontend y cargar la carta publica.
-2. Registrar o iniciar sesion con usuario de prueba.
-3. Crear una reserva valida.
-4. Crear un pedido takeaway.
-5. Comprobar historial de usuario.
-6. Entrar como administrador.
-7. Cambiar estados de reserva y pedido.
-8. Crear, editar y eliminar un elemento de carta en entorno no productivo.
+- Carta pública carga platos, vinos, bebidas y menús degustación.
+- Login, perfil y dashboard funcionan con usuario cliente.
+- Reserva válida queda confirmada o pendiente según aforo del turno.
+- Pedido takeaway calcula total desde catálogo y aparece en dashboard.
+- Panel admin lista y actualiza reservas, pedidos, carta y usuarios.
 
-## Problemas frecuentes
+---
 
-| Sintoma | Posible causa | Accion |
-| --- | --- | --- |
-| Frontend no conecta con API | `VITE_API_URL` incorrecto o proxy no configurado | Revisar `frontend/.env` y llamadas bajo `/api` |
-| Laravel no conecta con MySQL | `DB_HOST`, credenciales o contenedor `db` no disponible | Revisar `backend/.env` y `docker-compose ps` |
-| Error de clave Laravel | `APP_KEY` vacia | Ejecutar `php artisan key:generate` |
-| Puerto ocupado | Otro servicio usa `80`, `8000` o `3306` | Cambiar puertos o detener servicio conflictivo |
-| Build frontend falla | Dependencias no instaladas o variables ausentes | Ejecutar `npm install` en `frontend/` y revisar `.env` |
+## 📁 Archivos de configuración clave
 
-## Archivos clave
-
-| Archivo | Proposito |
-| --- | --- |
-| `docker-compose.yml` | Orquesta `db`, `backend` y `frontend` |
-| `backend/Dockerfile` | Imagen PHP/Laravel |
-| `frontend/Dockerfile` | Build y servicio Nginx del frontend |
-| `frontend/nginx.conf` | Configuracion de SPA y proxy hacia API |
-| `scripts/dev.js` | Entorno local coordinado |
-| `backend/.env.example` | Plantilla de configuracion Laravel |
-| `frontend/.env.example` | Plantilla de configuracion Vite |
+| Archivo | Propósito |
+|---|---|
+| `docker-compose.yml` | Define la orquestación de los 3 servicios principales |
+| `backend/Dockerfile` | Configuración de la imagen PHP 8.2 con las extensiones necesarias |
+| `frontend/Dockerfile` | Construcción de la app React y servicio mediante Nginx |
+| `frontend/nginx.conf` | Configuración del servidor web para manejar las rutas de la SPA y el proxy inverso hacia la API |

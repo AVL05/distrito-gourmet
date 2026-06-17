@@ -1,217 +1,94 @@
-# Seguridad y proteccion de datos - Distrito Gourmet
+# Seguridad y Protección de Datos — Distrito Gourmet 🛡️
 
-Este documento resume las medidas de seguridad aplicadas, las buenas practicas esperadas en despliegue y los riesgos que deben revisarse antes de usar la aplicacion en un entorno real.
+La seguridad es un pilar fundamental en el desarrollo de **Distrito Gourmet**. Se han implementado múltiples capas de protección siguiendo los estándares actuales de la industria para garantizar la integridad de los datos y la privacidad de los usuarios.
 
-## Modelo de seguridad
+---
 
-Distrito Gourmet separa responsabilidades entre:
+## 📑 Índice
 
-- Frontend React: interfaz de usuario y consumo de API.
-- Backend Laravel: autenticacion, autorizacion, validacion y reglas de negocio.
-- Base de datos MySQL: persistencia de usuarios, carta, reservas y pedidos.
+- [Autenticación y autorización](#-autenticación-y-autorización)
+- [Protección de la base de datos](#-protección-de-la-base-de-datos)
+- [Validación y sanitización](#-validación-y-sanitización)
+- [Cumplimiento de normativa (RGPD)](#-cumplimiento-de-normativa-rgpd)
+- [Recomendaciones adicionales para producción](#-recomendaciones-adicionales-para-producción)
+- [Reporte de vulnerabilidades](#-reporte-de-vulnerabilidades)
 
-La seguridad critica debe residir en backend. El frontend puede mejorar la experiencia, pero no debe considerarse una barrera de seguridad.
+---
 
-## Autenticacion
+## 🔐 Autenticación y autorización
 
-La API utiliza Laravel Sanctum con tokens Bearer.
+### 1. Autenticación stateless (Laravel Sanctum)
 
-Flujo general:
+En lugar de sesiones tradicionales por cookies, el sistema utiliza **tokens de portador (Bearer Tokens)**:
 
-1. El usuario se registra o inicia sesion.
-2. El backend valida credenciales.
-3. Laravel emite un token.
-4. El frontend adjunta `Authorization: Bearer {token}` en rutas protegidas.
-5. El logout invalida el token actual.
+- Los tokens son únicos por sesión y se almacenan de forma segura en el cliente.
+- Permiten una comunicación desacoplada y segura entre el frontend (React) y el backend (Laravel).
 
-Buenas practicas:
+### 2. Control de acceso basado en roles (RBAC)
 
-- No incluir tokens en URLs.
-- No guardar tokens en codigo fuente.
-- Cerrar sesion en dispositivos compartidos.
-- Rotar credenciales de prueba antes de cualquier despliegue publico.
+Se ha implementado una lógica de roles diferenciada:
 
-## Autorizacion y roles
+- **Cliente:** acceso limitado a sus propias reservas, pedidos y perfil.
+- **Staff:** acceso operativo a las herramientas del día a día de sala/cocina (p. ej. monitor de pedidos), sin alcance sobre la gestión completa del sistema.
+- **Administrador:** acceso total a los módulos CRUD de la carta, gestión de usuarios y monitorización global del local.
 
-El sistema diferencia roles:
+---
 
-| Rol | Permisos principales |
-| --- | --- |
-| Cliente | Gestion de sus reservas, pedidos y perfil |
-| Staff | Acceso operativo segun reglas configuradas |
-| Administrador | Gestion global de usuarios, carta, reservas, pedidos y metricas |
+## 🛡️ Protección de la base de datos
 
-Las rutas administrativas estan bajo `/api/admin` y requieren autenticacion mas middleware de rol administrador.
+### 1. Prevención de inyección SQL
 
-Controles relevantes:
+Gracias al uso de **Eloquent ORM**, todas las consultas a la base de datos utilizan sentencias preparadas y vinculación de parámetros (*parameter binding*). Esto hace que sea técnicamente imposible realizar ataques de inyección SQL a través de los formularios de la aplicación.
 
-- Un usuario no administrador no debe acceder a rutas de administracion.
-- Un administrador no puede eliminar su propio usuario administrador.
-- Los cambios de rol deben hacerse solo desde contexto administrativo.
+### 2. Cifrado de contraseñas
 
-## Validacion de entrada
+Nunca se almacenan contraseñas en texto plano. Se utiliza el algoritmo de hashing **Bcrypt** (el estándar de Laravel), lo que garantiza que, incluso en el caso improbable de un acceso no autorizado a la base de datos, las credenciales de los usuarios permanezcan cifradas y sean ilegibles.
 
-Las operaciones sensibles validan datos en servidor mediante reglas Laravel:
+---
 
-- Registro y login.
-- Contacto.
-- Reservas.
-- Pedidos.
-- Cambios de estado.
-- Gestion de carta.
-- Gestion de usuarios.
+## 🚦 Validación y sanitización
 
-Ejemplos de reglas de negocio aplicadas en backend:
+### 1. Validación en el servidor
 
-- Maximo 8 comensales por reserva.
-- Capacidad de 44 comensales por turno.
-- Estados permitidos para reservas y pedidos.
-- Tipos de item permitidos en pedidos.
-- Metodos de pago permitidos.
-- Recalculo de importes desde catalogo persistido.
+Cada petición sensible que llega a la API es validada mediante las reglas de validación de Laravel en los controladores. Se comprueban tipos de datos, longitudes, formatos, estados permitidos, roles válidos, métodos de pago y disponibilidad de los artículos antes de escribir en base de datos.
 
-El cliente no es fuente de verdad para precios, totales, roles ni permisos.
+### 2. Control de origen y API
 
-## Proteccion de datos
+El frontend consume la API mediante el prefijo `/api` y, en desarrollo, Vite puede proxificar las peticiones hacia Laravel usando `VITE_API_URL`. Los orígenes concretos se gestionan por entorno y no se hardcodean en el código fuente.
 
-### Contrasenas
+### 3. Rate limiting
 
-Las contrasenas se almacenan hasheadas mediante el mecanismo estandar de Laravel. Nunca deben guardarse ni registrarse en texto plano.
+Las rutas públicas de autenticación (`/api/login` y `/api/register`) aplican límite de intentos por email/IP para reducir abuso por fuerza bruta.
 
-### Base de datos
+---
 
-Laravel Eloquent y el query builder usan consultas parametrizadas, reduciendo el riesgo de inyeccion SQL cuando se evitan consultas raw inseguras.
+## 📜 Cumplimiento de normativa (RGPD)
 
-Buenas practicas:
+- **Soberanía de datos:** a diferencia de las plataformas de terceros, el restaurante es el único dueño de su base de datos, cumpliendo con el principio de control sobre la información de carácter personal.
+- **Información nutricional:** el sistema incluye la gestión obligatoria de **alérgenos**, cumpliendo con la normativa europea de información alimentaria.
 
-- Evitar concatenar datos de usuario en SQL manual.
-- Revisar permisos del usuario MySQL.
-- No reutilizar credenciales de desarrollo en produccion.
-- Mantener backups cifrados si contienen datos personales.
+---
 
-### Datos personales
+## 🔧 Recomendaciones adicionales para producción
 
-El sistema trata datos como nombre, email, telefono, reservas, pedidos y posibles peticiones especiales. Esos campos pueden contener informacion personal o sensible.
+Las siguientes prácticas son recomendaciones de hardening estándar de la industria a considerar antes de un despliegue en producción real; no describen necesariamente funcionalidad ya implementada en el proyecto:
 
-Recomendaciones:
+- **HTTPS obligatorio:** servir frontend y API exclusivamente bajo TLS (por ejemplo mediante Nginx/Traefik + Let's Encrypt), redirigiendo todo el tráfico HTTP a HTTPS.
+- **CORS restrictivo:** limitar los orígenes permitidos en la API al dominio real de producción, evitando configuraciones abiertas (`*`).
+- **`APP_DEBUG=false`** en producción, para no exponer trazas de error ni información interna del stack.
+- **Gestión de secretos:** mantener `backend/.env` y `frontend/.env` fuera del control de versiones, y rotar credenciales (DB, claves de aplicación) periódicamente.
+- **Copias de seguridad:** establecer una política de backups automáticos de la base de datos, con pruebas periódicas de restauración.
+- **Expiración y revocación de tokens:** revisar la configuración de expiración de los tokens de Sanctum y ofrecer al usuario la posibilidad de revocar sesiones activas.
+- **Cabeceras de seguridad HTTP:** considerar cabeceras como `Content-Security-Policy`, `X-Content-Type-Options` y `Strict-Transport-Security` a nivel de proxy/Nginx.
 
-- Definir politica de retencion de datos.
-- Limitar acceso administrativo a personal autorizado.
-- Evitar incluir datos personales en logs.
-- Documentar proceso de borrado o anonimizado si aplica.
-- Informar al usuario sobre tratamiento de datos en una politica de privacidad.
+---
 
-## Configuracion por entorno
+## 🐛 Reporte de vulnerabilidades
 
-Valores sensibles y dependientes del entorno deben vivir en `.env`.
+Si detectas una vulnerabilidad de seguridad en Distrito Gourmet, te pedimos que actúes de forma responsable:
 
-No hardcodear:
+1. **No** abras un issue público describiendo el fallo en detalle.
+2. Contacta de forma privada con el autor del proyecto indicando una descripción del problema, pasos para reproducirlo y, si es posible, su impacto potencial.
+3. Se intentará confirmar la recepción del reporte y dar una valoración inicial en un plazo razonable.
 
-- Origenes de API.
-- IPs LAN.
-- URLs locales.
-- Credenciales.
-- Tokens.
-- Webhooks.
-
-En produccion:
-
-```env
-APP_ENV=production
-APP_DEBUG=false
-```
-
-Tambien se deben revisar:
-
-- `APP_KEY`.
-- Credenciales `DB_*`.
-- Configuracion de correo.
-- Webhooks externos.
-- Politica CORS si se sirve frontend y backend desde origenes distintos.
-
-## Rate limiting
-
-Las rutas publicas de autenticacion y contacto aplican `throttle:auth`.
-
-Objetivo:
-
-- Reducir abuso por fuerza bruta.
-- Limitar automatismos sobre formularios publicos.
-- Proteger recursos de API ante trafico repetitivo.
-
-Si el proyecto se expone publicamente, conviene revisar limites por entorno y combinarlo con protecciones de infraestructura cuando proceda.
-
-## Seguridad en pedidos y reservas
-
-### Pedidos
-
-- El backend recalcula precios desde base de datos.
-- El cliente no controla el total final.
-- Los estados se restringen a valores permitidos.
-- La administracion controla el avance operativo del pedido.
-
-### Reservas
-
-- El backend valida fecha, hora, comensales y capacidad.
-- Las reservas que exceden capacidad quedan pendientes.
-- Las canceladas no deben contar como ocupacion activa.
-
-## Cabeceras, HTTPS y proxy
-
-Para despliegues publicos:
-
-- Servir siempre bajo HTTPS.
-- Terminar TLS en proxy inverso o proveedor gestionado.
-- Revisar cabeceras de seguridad en Nginx/proxy.
-- Evitar exponer directamente servicios internos como MySQL.
-- Mantener `/api` correctamente proxificado hacia Laravel.
-
-Cabeceras recomendables a nivel proxy:
-
-- `Strict-Transport-Security`.
-- `X-Content-Type-Options`.
-- `X-Frame-Options` o `Content-Security-Policy` con `frame-ancestors`.
-- `Referrer-Policy`.
-- `Content-Security-Policy` adaptada a los recursos reales de la app.
-
-## Dependencias y mantenimiento
-
-Buenas practicas:
-
-- Mantener Composer y npm actualizados.
-- Revisar alertas de seguridad de dependencias.
-- Ejecutar build y tests antes de desplegar.
-- Evitar dependencias innecesarias.
-- Registrar cambios relevantes en documentacion.
-
-Comandos utiles:
-
-```bash
-composer audit
-npm audit --prefix frontend
-npm --prefix frontend run build
-cd backend && php artisan test
-```
-
-## Checklist antes de produccion
-
-- `APP_DEBUG=false`.
-- Credenciales reales y robustas.
-- Seeders de demo no expuestos como usuarios reales.
-- HTTPS activo.
-- Backups definidos y probados.
-- Logs sin datos sensibles.
-- Politica de privacidad preparada.
-- CORS/proxy revisado.
-- Rutas admin protegidas.
-- Tests y smoke test ejecutados.
-
-## Riesgos pendientes
-
-| Riesgo | Impacto | Mitigacion recomendada |
-| --- | --- | --- |
-| Uso de credenciales demo | Acceso no autorizado | Rotar usuarios y contrasenas antes de publicar |
-| Falta de recuperacion de contrasena | Soporte manual | Implementar flujo seguro de reset |
-| Configuracion estatica de capacidad/horarios | Cambios requieren despliegue | Mover reglas operativas a configuracion administrable |
-| Logs con datos personales | Riesgo de privacidad | Revisar contenido de logs y niveles por entorno |
-| Sin auditoria admin completa | Menor trazabilidad | Registrar acciones criticas de administracion |
+> Al tratarse de un Proyecto de Fin de Ciclo (PFC) académico, este proceso de reporte es informal; en un contexto de producción real se recomienda formalizarlo con un canal y SLA definidos (por ejemplo, una dirección de contacto dedicada a seguridad).
