@@ -140,41 +140,6 @@ export const ScrollReveal = ({
   );
 };
 
-// ─── 3. ParallaxSection ───────────────────────────────────────────────────────
-// Crea un efecto visual donde el contenido se mueve a distinta velocidad que la página al hacer scroll
-
-export const ParallaxSection = ({
-  children,
-  speed = 50,
-  className = "",
-  as: Component = "div",
-  ...props
-}) => {
-  const section = useRef(null);
-  const content = useRef(null);
-
-  useGSAP(
-    () => {
-      gsap.to(content.current, {
-        y: -speed,
-        ease: "none",
-        scrollTrigger: {
-          trigger: section.current,
-          start: "top bottom",
-          end: "bottom top",
-          scrub: 1,
-        },
-      });
-    },
-    { scope: section },
-  );
-
-  return (
-    <div ref={section} className={`overflow-hidden ${className}`} {...props}>
-      <Component ref={content}>{children}</Component>
-    </div>
-  );
-};
 
 // ─── 4. ParallaxImage ─────────────────────────────────────────────────────────
 // Efecto parallax específico para imágenes, moviéndolas ligeramente dentro de su contenedor al hacer scroll
@@ -234,77 +199,6 @@ export const ParallaxImage = ({
   );
 };
 
-// ─── 5. ImageReveal ───────────────────────────────────────────────────────────
-// Descubre una imagen progresivamente (como si se quitara una capa o cortina que la tapa)
-
-export const ImageReveal = ({
-  src,
-  alt = "",
-  revealFrom = "bottom",
-  duration = 1.2,
-  delay = 0,
-  once = true,
-  className = "",
-  imageClassName = "",
-  ...props
-}) => {
-  const container = useRef(null);
-
-  useGSAP(
-    () => {
-      const clipPaths = {
-        left: { hidden: "inset(0 100% 0 0)", visible: "inset(0 0% 0 0)" },
-        right: { hidden: "inset(0 0 0 100%)", visible: "inset(0 0 0 0%)" },
-        bottom: { hidden: "inset(100% 0 0 0)", visible: "inset(0% 0 0 0)" },
-        center: {
-          hidden: "inset(50% 50% 50% 50%)",
-          visible: "inset(0% 0% 0% 0%)",
-        },
-      };
-      const clip = clipPaths[revealFrom] || clipPaths.bottom;
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container.current,
-          start: "top 88%",
-          toggleActions: once
-            ? "play none none none"
-            : "play none none reverse",
-        },
-      });
-
-      tl.fromTo(
-        container.current,
-        { clipPath: clip.hidden, scale: 1.15 },
-        {
-          clipPath: clip.visible,
-          scale: 1,
-          duration,
-          delay,
-          ease: "expo.inOut",
-          clearProps: "all",
-        },
-      );
-    },
-    { scope: container },
-  );
-
-  return (
-    <div
-      ref={container}
-      className={`overflow-hidden ${className}`}
-      style={{ willChange: "clip-path, transform" }}
-      {...props}
-    >
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        className={`w-full h-full object-cover ${imageClassName}`}
-      />
-    </div>
-  );
-};
 
 // ─── 6. Marquee ───────────────────────────────────────────────────────────────
 // Texto en movimiento continuo de un lado a otro de la pantalla (como un ticker de noticias)
@@ -352,49 +246,6 @@ export const Marquee = ({
   );
 };
 
-// ─── 7. SmoothCounter ─────────────────────────────────────────────────────────
-// Animación que incrementa números de manera animada hasta una cifra (ej. para estadísticas)
-
-export const SmoothCounter = ({
-  target,
-  suffix = "",
-  prefix = "",
-  duration = 2,
-  once = true,
-  className = "",
-  ...props
-}) => {
-  const ref = useRef(null);
-  const countObj = { value: 0 };
-
-  useGSAP(
-    () => {
-      gsap.to(countObj, {
-        value: target,
-        duration,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: ref.current,
-          start: "top 92%",
-          toggleActions: once
-            ? "play none none none"
-            : "play none none reverse",
-        },
-        onUpdate: () => {
-          if (ref.current)
-            ref.current.innerText = `${prefix}${Math.floor(countObj.value)}${suffix}`;
-        },
-      });
-    },
-    { scope: ref },
-  );
-
-  return (
-    <span ref={ref} className={className} {...props}>
-      {prefix}0{suffix}
-    </span>
-  );
-};
 
 // ─── 8. MagneticButton ────────────────────────────────────────────────────────
 // Botón interactivo que es "atraído" por el puntero del ratón cuando pasas por encima

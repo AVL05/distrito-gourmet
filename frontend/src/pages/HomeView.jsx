@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
   PageTransition,
@@ -9,11 +10,16 @@ import {
   MagneticButton,
   LineReveal,
   ScrollProgress,
+  HoverCard,
 } from "@/motion";
 
 const HomeView = () => {
   return (
     <PageTransition className="w-full">
+      <Helmet>
+        <title>Distrito Gourmet | Cocina Española Contemporánea</title>
+        <meta name="description" content="Restaurante de cocina española contemporánea en Valencia. Carta de temporada, bodega seleccionada y reservas online." />
+      </Helmet>
       <ScrollProgress />
 
       <section className="relative min-h-[92svh] md:min-h-[88svh] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
@@ -247,22 +253,21 @@ const HomeView = () => {
             ["Reservas", "Elige día, turno, comensales y preferencias de sala.", "/reservations"],
             ["Contacto", "Horario, dirección y comunicación del restaurante.", "/contact"],
           ].map(([title, text, to]) => (
-            <ScrollReveal
-              key={title}
-              className="border border-text-main/10 bg-bg-body p-8 hover:border-primary/40 transition-colors"
-            >
-              <h3 className="font-heading text-3xl text-text-main mb-4">
-                {title}
-              </h3>
-              <p className="text-text-muted text-sm leading-relaxed mb-8">
-                {text}
-              </p>
-              <Link
-                to={to}
-                className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
-              >
-                Entrar
-              </Link>
+            <ScrollReveal key={title}>
+              <HoverCard className="border border-text-main/10 bg-bg-body p-8 hover:border-primary/40 transition-colors h-full">
+                <h3 className="font-heading text-3xl text-text-main mb-4">
+                  {title}
+                </h3>
+                <p className="text-text-muted text-sm leading-relaxed mb-8">
+                  {text}
+                </p>
+                <Link
+                  to={to}
+                  className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+                >
+                  Entrar
+                </Link>
+              </HoverCard>
             </ScrollReveal>
           ))}
         </div>

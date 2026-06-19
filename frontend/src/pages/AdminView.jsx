@@ -1,9 +1,9 @@
+import { Helmet } from "react-helmet-async";
 import { useAuthStore } from "@/store/auth";
 import { useMemo, useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
-import { AnimatePresence, motion, useReducedMotion } from "@/motion";
-import { DURATION, EASING } from "@/motion";
+import { FadeIn } from "@/motion";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { useAdminData } from "@/hooks/useAdminData";
 import { getApiErrorMessage, getApiFieldErrors } from "@/utils/apiErrors";
@@ -162,8 +162,6 @@ const AdminView = () => {
     beverages: false,
     users: false,
   });
-  const shouldReduceMotion = useReducedMotion();
-
   const [newDish, setNewDish] = useState({
     nombre: "",
     descripcion: "",
@@ -390,20 +388,6 @@ const AdminView = () => {
     ? "No hay reservas que coincidan con la búsqueda."
     : reservationFilterCopy[reservationFilter] ||
       "No hay reservas para este filtro.";
-
-  const sectionContentVariants = {
-    hidden: { opacity: 0, y: 8 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: DURATION.normal, ease: EASING.decelerate },
-    },
-    exit: {
-      opacity: 0,
-      y: -6,
-      transition: { duration: DURATION.fast, ease: EASING.accelerate },
-    },
-  };
 
   const handleAddItem = async (
     endpoint,
@@ -1777,6 +1761,10 @@ const AdminView = () => {
 
   return (
     <div className="min-h-screen bg-bg-body font-body text-text-main">
+      <Helmet>
+        <title>Administración | Distrito Gourmet</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
         <aside className="hidden border-r border-text-main/10 bg-text-main text-bg-body lg:flex lg:flex-col">
           <div className="border-b border-bg-body/10 px-6 py-6">
@@ -1906,19 +1894,9 @@ const AdminView = () => {
                 </div>
               ))}
             </div>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeSection}
-                variants={
-                  shouldReduceMotion ? undefined : sectionContentVariants
-                }
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-              >
-                {renderContent()}
-              </motion.div>
-            </AnimatePresence>
+            <FadeIn key={activeSection}>
+              {renderContent()}
+            </FadeIn>
           </section>
         </main>
       </div>

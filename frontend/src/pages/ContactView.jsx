@@ -1,14 +1,13 @@
+import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import {
-  AnimatePresence,
-  useReducedMotion,
   PageTransition,
   FadeIn,
   Toast,
   ScrollReveal,
   TextReveal,
   LineReveal,
-  motion,
+  MotionButton,
 } from "@/motion";
 import axios from "@/services/api";
 import { HAS_CONFIGURED_API, IS_PUBLIC_DEMO } from "@/config/demo";
@@ -26,7 +25,6 @@ const ContactView = () => {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [errors, setErrors] = useState({});
-  const shouldReduceMotion = useReducedMotion();
   const subjectOptions = [
     "Reserva",
     "Evento privado",
@@ -93,6 +91,10 @@ const ContactView = () => {
 
   return (
     <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
+      <Helmet>
+        <title>Contacto | Distrito Gourmet</title>
+        <meta name="description" content="Horario, dirección y formulario de contacto de Distrito Gourmet." />
+      </Helmet>
       {/* Líneas decorativas de fondo */}
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
@@ -338,12 +340,8 @@ const ContactView = () => {
                 </div>
 
                 <div className="pt-8">
-                  <motion.button
+                  <MotionButton
                     type="submit"
-                    whileHover={
-                      shouldReduceMotion ? undefined : { scale: 1.02 }
-                    }
-                    whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
                     className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
                     disabled={sending}
                   >
@@ -351,17 +349,15 @@ const ContactView = () => {
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                       {sending ? "ENVIANDO..." : "ENVIAR MENSAJE"}
                     </span>
-                  </motion.button>
+                  </MotionButton>
                 </div>
 
-                <AnimatePresence>
-                  {sent && (
-                    <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
-                      Su mensaje ha sido enviado. Le responderemos con la mayor
-                      brevedad posible.
-                    </Toast>
-                  )}
-                </AnimatePresence>
+                {sent && (
+                  <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
+                    Su mensaje ha sido enviado. Le responderemos con la mayor
+                    brevedad posible.
+                  </Toast>
+                )}
               </form>
             </div>
           </div>

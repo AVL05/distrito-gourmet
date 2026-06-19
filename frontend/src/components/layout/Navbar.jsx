@@ -177,7 +177,7 @@ const Navbar = () => {
       >
         <div
           className="absolute inset-0 bg-cover bg-center opacity-[0.07] grayscale"
-          style={{ backgroundImage: "url('/sala_de_restaurante .png')" }}
+          style={{ backgroundImage: "url('/sala_de_restaurante.png')" }}
           onClick={closeMenu}
         />
         <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-white/5 hidden md:block" />

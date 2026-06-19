@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Models\Bebida;
@@ -116,7 +117,7 @@ class PedidoController extends Controller
 
             $pedido = Pedido::create([
                 'usuario_id' => Auth::id(),
-                'numero_pedido' => 'DG-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -4)),
+                'numero_pedido' => 'DG-' . date('Ymd') . '-' . strtoupper(Str::random(4)),
                 'estado' => 'Pendiente',
                 'tipo_pedido' => 'Takeaway',
                 'subtotal' => $subtotal,

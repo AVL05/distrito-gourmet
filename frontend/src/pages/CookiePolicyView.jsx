@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
   PageTransition,
@@ -47,6 +48,7 @@ const sections = [
 
 const CookiePolicyView = () => (
   <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
+    <Helmet><title>Política de Cookies | Distrito Gourmet</title></Helmet>
     <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block" />
 
     <div className="container max-w-4xl relative z-10">

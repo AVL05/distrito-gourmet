@@ -2,6 +2,7 @@ import { useAuthStore } from "@/store/auth";
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
@@ -86,6 +87,9 @@ const LoginView = () => {
 
   return (
     <PageTransition className="min-h-screen flex items-center justify-center bg-bg-body pt-20 px-4">
+      <Helmet>
+        <title>Iniciar Sesión | Distrito Gourmet</title>
+      </Helmet>
       <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
         <div className="text-center mb-10">

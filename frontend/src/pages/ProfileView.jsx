@@ -1,8 +1,9 @@
+import { Helmet } from "react-helmet-async";
 import { useAuthStore } from "@/store/auth";
 import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
-import { useReducedMotion, PageTransition, FadeIn, motion } from "@/motion";
+import { PageTransition, FadeIn, MotionButton } from "@/motion";
 
 // Vista de perfil del usuario: permite gestionar información personal y credenciales de acceso
 const ProfileView = () => {
@@ -13,7 +14,6 @@ const ProfileView = () => {
     telefono: user?.telefono || "",
     password: "",
   });
-  const shouldReduceMotion = useReducedMotion();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,6 +60,10 @@ const ProfileView = () => {
 
   return (
     <PageTransition className="min-h-screen bg-bg-body relative overflow-hidden flex items-center justify-center py-32 px-4">
+      <Helmet>
+        <title>Mi Perfil | Distrito Gourmet</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
       <FadeIn className="w-full max-w-2xl bg-white/90 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
@@ -145,17 +149,15 @@ const ProfileView = () => {
           </div>
 
           <div className="pt-8">
-            <motion.button
+            <MotionButton
               type="submit"
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
-              whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
               className="group relative w-full py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
             >
               <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold tracking-[5px] group-hover:text-black transition-colors duration-300">
                 GUARDAR CAMBIOS
               </span>
-            </motion.button>
+            </MotionButton>
           </div>
         </form>
       </FadeIn>

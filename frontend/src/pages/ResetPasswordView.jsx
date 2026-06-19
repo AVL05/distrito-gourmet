@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import { useSearchParams, useNavigate, NavLink } from "react-router-dom";
 import axios from "@/services/api";
@@ -86,6 +87,7 @@ const ResetPasswordView = () => {
 
   return (
     <PageTransition className="min-h-screen flex items-center justify-center bg-bg-body pt-20 px-4">
+      <Helmet><title>Nueva Contraseña | Distrito Gourmet</title></Helmet>
       <FadeIn className="max-w-md w-full bg-bg-surface border border-text-main/10 p-10 sm:p-12 shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
 

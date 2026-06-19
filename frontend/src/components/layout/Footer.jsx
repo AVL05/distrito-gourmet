@@ -1,16 +1,9 @@
 import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
-import {
-  motion,
-  useReducedMotion,
-  FadeIn,
-  StaggerList,
-  StaggerItem,
-} from "@/motion";
+import { FadeIn } from "@/motion";
 import { Link } from "react-router-dom";
 
 // Pie de página del sitio web con animaciones sutiles
 const Footer = () => {
-  const shouldReduceMotion = useReducedMotion();
   const socialLinks = [
     {
       icon: FaFacebookF,
@@ -102,17 +95,13 @@ const Footer = () => {
         <div className="border-t border-text-main/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex gap-4">
             {socialLinks.map(({ icon: Icon, label }) => (
-              <motion.span
+              <span
                 key={label}
                 aria-label={label}
-                whileHover={
-                  shouldReduceMotion ? undefined : { scale: 1.1, y: -2 }
-                }
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
                 className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300"
               >
                 <Icon size={12} />
-              </motion.span>
+              </span>
             ))}
           </div>
 

@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-// Representa un pedido realizado en la tienda Gourmet
 class Pedido extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'pedidos';
     const CREATED_AT = 'creado_a';
     const UPDATED_AT = 'actualizado_a';
+    const DELETED_AT = 'eliminado_a';
 
     protected $fillable = [
         'usuario_id',

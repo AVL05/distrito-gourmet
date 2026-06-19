@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { useAuthStore } from "@/store/auth";
 import { Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
@@ -237,6 +238,10 @@ const DashboardView = () => {
 
   return (
     <PageTransition className="min-h-screen bg-bg-body pt-24 sm:pt-32 pb-32 px-4 relative overflow-hidden">
+      <Helmet>
+        <title>Mi Área Personal | Distrito Gourmet</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
 
       <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-6 md:px-12 4k:px-24 ultra:px-32">

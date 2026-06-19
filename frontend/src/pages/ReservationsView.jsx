@@ -1,10 +1,9 @@
+import { Helmet } from "react-helmet-async";
 import ReservationForm from "@/components/ReservationForm";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/services/api";
 import {
-  AnimatePresence,
-  useReducedMotion,
   PageTransition,
   FadeIn,
   StaggerList,
@@ -12,9 +11,7 @@ import {
   ScrollReveal,
   TextReveal,
   LineReveal,
-  motion,
 } from "@/motion";
-import { DURATION, EASING } from "@/motion";
 
 // Gestión de reservas: administra las pestañas de 'Nueva Reserva' e 'Historial'
 // Coordina la comunicación con la API para recuperar las reservas del usuario autenticado.
@@ -22,8 +19,6 @@ const ReservationsView = () => {
   const [activeTab, setActiveTab] = useState("new");
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
-
   // Carga las reservas del usuario cuando se activa la pestaña de historial.
   useEffect(() => {
     if (activeTab === "history") {
@@ -49,23 +44,12 @@ const ReservationsView = () => {
     }
   }, [activeTab]);
 
-  // Variante para el contenido de las pestañas
-  const tabContentVariants = {
-    hidden: { opacity: 0, y: 12 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: DURATION.normal, ease: EASING.decelerate },
-    },
-    exit: {
-      opacity: 0,
-      y: -8,
-      transition: { duration: DURATION.fast, ease: EASING.accelerate },
-    },
-  };
-
   return (
     <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 relative overflow-hidden">
+      <Helmet>
+        <title>Reservas | Distrito Gourmet</title>
+        <meta name="description" content="Reserva tu mesa en Distrito Gourmet. Elige día, hora y número de comensales." />
+      </Helmet>
       {/* Líneas decorativas de fondo */}
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
@@ -93,11 +77,10 @@ const ReservationsView = () => {
 
         {/* Tabs */}
         <div className="flex justify-center gap-8 sm:gap-12 mb-16 sm:mb-20">
-          <motion.button
+          <button
             type="button"
             onClick={() => setActiveTab("new")}
             aria-pressed={activeTab === "new"}
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
             className={`pb-2 px-2 text-[10px] sm:text-[11px] uppercase tracking-[3px] sm:tracking-[4px] transition-all relative font-body ${
               activeTab === "new"
                 ? "text-text-main font-bold"
@@ -105,18 +88,14 @@ const ReservationsView = () => {
             }`}
           >
             Nueva Reserva
-            <motion.div
-              className="absolute bottom-0 left-0 h-[1px] bg-text-main"
-              initial={false}
-              animate={{ width: activeTab === "new" ? "100%" : "0%" }}
-              transition={{ duration: DURATION.normal, ease: EASING.smooth }}
+            <div
+              className={`absolute bottom-0 left-0 h-[1px] bg-text-main transition-all duration-300 ${activeTab === "new" ? "w-full" : "w-0"}`}
             />
-          </motion.button>
-          <motion.button
+          </button>
+          <button
             type="button"
             onClick={() => setActiveTab("history")}
             aria-pressed={activeTab === "history"}
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.95 }}
             className={`pb-2 px-2 text-[10px] sm:text-[11px] uppercase tracking-[3px] sm:tracking-[4px] transition-all relative font-body ${
               activeTab === "history"
                 ? "text-text-main font-bold"
@@ -124,24 +103,13 @@ const ReservationsView = () => {
             }`}
           >
             Historial
-            <motion.div
-              className="absolute bottom-0 left-0 h-[1px] bg-text-main"
-              initial={false}
-              animate={{ width: activeTab === "history" ? "100%" : "0%" }}
-              transition={{ duration: DURATION.normal, ease: EASING.smooth }}
+            <div
+              className={`absolute bottom-0 left-0 h-[1px] bg-text-main transition-all duration-300 ${activeTab === "history" ? "w-full" : "w-0"}`}
             />
-          </motion.button>
+          </button>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            variants={shouldReduceMotion ? undefined : tabContentVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="relative"
-          >
+        <FadeIn key={activeTab} className="relative">
             {activeTab === "new" ? (
               <div className="bg-transparent border-0 shadow-none p-0 max-w-4xl mx-auto">
                 <ReservationForm compact={false} />
@@ -235,8 +203,7 @@ const ReservationsView = () => {
                 )}
               </div>
             )}
-          </motion.div>
-        </AnimatePresence>
+        </FadeIn>
       </div>
     </PageTransition>
   );

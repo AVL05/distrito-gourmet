@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet-async";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 import { getApiErrorMessage } from "@/utils/apiErrors";
@@ -288,6 +289,10 @@ const CartView = () => {
       className="bg-bg-body min-h-screen pt-20 sm:pt-28 pb-24 sm:pb-32 px-0 sm:px-4 relative overflow-hidden"
       key={step}
     >
+      <Helmet>
+        <title>Selección | Distrito Gourmet</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-4 sm:px-6 md:px-12 4k:px-24 ultra:px-32">

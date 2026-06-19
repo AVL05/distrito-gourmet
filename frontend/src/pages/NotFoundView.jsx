@@ -1,8 +1,10 @@
+import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { PageTransition, FadeIn } from "@/motion";
 
 const NotFoundView = () => (
   <PageTransition className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
+    <Helmet><title>Página no encontrada | Distrito Gourmet</title></Helmet>
     <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block" />
 
     <FadeIn className="bg-bg-surface border border-text-main/10 p-8 sm:p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">

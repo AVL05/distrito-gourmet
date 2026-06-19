@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { useCartStore } from "@/store/cart";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -31,13 +32,6 @@ const MenuView = () => {
   });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const [dishFilters, setDishFilters] = useState({
-    query: "",
-    allergen: "all",
-    takeawayOnly: false,
-    maxPrice: "",
-  });
-
   // Categorías del menú para las pestañas de filtro
   const categories = [
     { id: "carta", label: "Toda la Carta" },
@@ -153,46 +147,8 @@ const MenuView = () => {
 
   // Categorías de platos para "Toda la Carta"
   const dishCategories = ["entrantes", "principales", "postres"];
-  const allergenOptions = useMemo(() => {
-    const allergens = new Set();
-    menuData.dishes.forEach((dish) => {
-      String(dish.allergens || "")
-        .split(",")
-        .map((allergen) => allergen.trim().toLowerCase())
-        .filter(Boolean)
-        .forEach((allergen) => allergens.add(allergen));
-    });
-    return [...allergens].sort();
-  }, [menuData.dishes]);
-  const filteredDishes = useMemo(() => {
-    const query = dishFilters.query.trim().toLowerCase();
-    const maxPrice = Number.parseFloat(dishFilters.maxPrice);
-
-    return menuData.dishes.filter((dish) => {
-      const textMatch =
-        !query ||
-        dish.name.toLowerCase().includes(query) ||
-        String(dish.description || "")
-          .toLowerCase()
-          .includes(query);
-      const allergenMatch =
-        dishFilters.allergen === "all" ||
-        String(dish.allergens || "")
-          .toLowerCase()
-          .split(",")
-          .map((allergen) => allergen.trim())
-          .includes(dishFilters.allergen);
-      const takeawayMatch =
-        !dishFilters.takeawayOnly || dish.availableTakeaway !== false;
-      const priceMatch =
-        !dishFilters.maxPrice ||
-        (Number.isFinite(maxPrice) && dish.price <= maxPrice);
-
-      return textMatch && allergenMatch && takeawayMatch && priceMatch;
-    });
-  }, [dishFilters, menuData.dishes]);
   const getDishesForCategory = (cat) =>
-    filteredDishes.filter((d) => d.category === cat);
+    menuData.dishes.filter((d) => d.category === cat);
 
   // Tipos de bebidas para la pestaña de bebidas
   const beverageTypes = [
@@ -218,6 +174,10 @@ const MenuView = () => {
 
   return (
     <PageTransition className="bg-bg-body text-text-main min-h-screen pb-32 relative overflow-hidden">
+      <Helmet>
+        <title>La Carta | Distrito Gourmet</title>
+        <meta name="description" content="Descubre nuestra carta de temporada: entrantes, arroces, carnes, pescados, bodega y menús degustación." />
+      </Helmet>
       {/* Luz ambiental de fondo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[min(1000px,100vw)] h-[420px] sm:h-[600px] bg-primary/5 rounded-full blur-[120px] sm:blur-[150px] pointer-events-none"></div>
 
@@ -295,11 +255,6 @@ const MenuView = () => {
             {/* TODA LA CARTA */}
             {!loadError && activeCategory === "carta" && (
               <div className="space-y-20 sm:space-y-32">
-                <MenuFilters
-                  filters={dishFilters}
-                  allergenOptions={allergenOptions}
-                  onChange={setDishFilters}
-                />
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
                   if (items.length === 0) return null;
@@ -388,14 +343,6 @@ const MenuView = () => {
             {!loadError &&
               activeCategory === "carta" &&
               menuData.dishes.length === 0 && <EmptyState />}
-            {!loadError &&
-              activeCategory === "carta" &&
-              menuData.dishes.length > 0 &&
-              filteredDishes.length === 0 && (
-                <EmptyState>
-                  No hay platos que coincidan con los filtros seleccionados.
-                </EmptyState>
-              )}
             {!loadError &&
               activeCategory === "bebidas" &&
               menuData.beverages.length === 0 && <EmptyState />}
@@ -515,87 +462,6 @@ const SectionHeader = ({ index, label }) => (
     <LineReveal className="flex-grow bg-text-main/10 min-w-0" delay={0.3} />
   </ScrollReveal>
 );
-
-const MenuFilters = ({ filters, allergenOptions, onChange }) => {
-  const updateFilter = (field, value) =>
-    onChange((current) => ({ ...current, [field]: value }));
-  const hasActiveFilters =
-    filters.query ||
-    filters.allergen !== "all" ||
-    filters.takeawayOnly ||
-    filters.maxPrice;
-
-  return (
-    <FadeIn className="mx-auto mb-10 max-w-5xl border border-text-main/10 bg-bg-surface p-4 sm:p-5">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-[1.4fr_1fr_0.8fr_auto] md:items-end">
-        <div>
-          <label htmlFor="menu-search">Buscar plato</label>
-          <input
-            id="menu-search"
-            type="search"
-            value={filters.query}
-            onChange={(event) => updateFilter("query", event.target.value)}
-            placeholder="Nombre, ingrediente o descripción"
-          />
-        </div>
-        <div>
-          <label htmlFor="menu-allergen">Alérgeno</label>
-          <select
-            id="menu-allergen"
-            value={filters.allergen}
-            onChange={(event) => updateFilter("allergen", event.target.value)}
-          >
-            <option value="all">Todos</option>
-            {allergenOptions.map((allergen) => (
-              <option key={allergen} value={allergen}>
-                {allergen}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="menu-max-price">Precio máx.</label>
-          <input
-            id="menu-max-price"
-            type="number"
-            min="0"
-            step="1"
-            value={filters.maxPrice}
-            onChange={(event) => updateFilter("maxPrice", event.target.value)}
-            placeholder="€"
-          />
-        </div>
-        <label className="mb-0 flex min-h-12 items-center justify-between gap-3 border border-text-main/10 px-3 py-2 text-[11px] text-text-main">
-          <span>Solo takeaway</span>
-          <input
-            type="checkbox"
-            checked={filters.takeawayOnly}
-            onChange={(event) =>
-              updateFilter("takeawayOnly", event.target.checked)
-            }
-            className="h-4 w-4 accent-primary"
-          />
-        </label>
-      </div>
-      {hasActiveFilters && (
-        <button
-          type="button"
-          onClick={() =>
-            onChange({
-              query: "",
-              allergen: "all",
-              takeawayOnly: false,
-              maxPrice: "",
-            })
-          }
-          className="mt-4 text-[11px] font-semibold uppercase tracking-[1.6px] text-primary hover:text-primary-hover"
-        >
-          Limpiar filtros
-        </button>
-      )}
-    </FadeIn>
-  );
-};
 
 // Fila de plato individual. Aquí es donde se añade al carrito.
 const DishRow = ({ item, addItem, isAdded }) => (

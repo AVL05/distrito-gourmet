@@ -35,9 +35,5 @@ return [
         ],
     ],
 
-    'discord' => [
-        'reservation_webhook_url' => env('DISCORD_RESERVATION_WEBHOOK_URL'),
-        'verify_ssl' => env('DISCORD_VERIFY_SSL', true),
-    ],
 
 ];

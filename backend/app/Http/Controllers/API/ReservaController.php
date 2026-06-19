@@ -3,40 +3,29 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreReservaRequest;
+use App\Http\Resources\ReservaResource;
 use App\Models\Reserva;
-use App\Services\DiscordReservationNotifier;
 use App\Services\ReservationRules;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ReservaController extends Controller
 {
-    public function __construct(
-        private readonly DiscordReservationNotifier $discordReservationNotifier
-    ) {}
-
     public function index()
     {
         $reservas = Reserva::where('usuario_id', auth()->id())->get();
 
-        return response()->json($reservas);
+        return ReservaResource::collection($reservas);
     }
 
-    public function store(Request $request)
+    public function store(StoreReservaRequest $request)
     {
-        $request->merge([
-            'hora_reserva' => ReservationRules::normalizeTime($request->input('hora_reserva')),
-        ]);
+        $data = $request->validated();
+        $data['hora_reserva'] = ReservationRules::normalizeTime($data['hora_reserva']);
 
-        $request->validate([
-            'fecha_reserva'       => 'required|date|after_or_equal:today',
-            'hora_reserva'        => ['required', Rule::in(ReservationRules::TURNS)],
-            'comensales'          => 'required|integer|min:1|max:8',
-            'peticiones_especiales' => 'nullable|string',
-        ]);
-
-        $fecha = $request->fecha_reserva;
-        $hora  = $request->hora_reserva;
+        $fecha = $data['fecha_reserva'];
+        $hora  = $data['hora_reserva'];
 
         $exists = Reserva::where('usuario_id', auth()->id())
             ->where('fecha_reserva', $fecha)
@@ -54,7 +43,7 @@ class ReservaController extends Controller
             ->where('estado', '!=', 'Cancelada')
             ->sum('comensales');
 
-        $estado = ($totalOccupancy + $request->comensales) > ReservationRules::CAPACITY
+        $estado = ($totalOccupancy + $data['comensales']) > ReservationRules::CAPACITY
             ? 'Pendiente'
             : 'Confirmada';
 
@@ -62,19 +51,17 @@ class ReservaController extends Controller
             'usuario_id'            => auth()->id(),
             'fecha_reserva'         => $fecha,
             'hora_reserva'          => $hora,
-            'comensales'            => $request->comensales,
+            'comensales'            => $data['comensales'],
             'estado'                => $estado,
-            'peticiones_especiales' => $request->peticiones_especiales,
-            'codigo_reserva'        => strtoupper(substr(uniqid(), -8)),
+            'peticiones_especiales' => $data['peticiones_especiales'] ?? null,
+            'codigo_reserva'        => strtoupper(Str::random(8)),
         ]);
-
-        $this->discordReservationNotifier->notify($res, auth()->user());
 
         $mensaje = $estado === 'Pendiente'
             ? 'Su reserva ha quedado PENDIENTE de aprobación.'
             : 'Reserva confirmada correctamente';
 
-        return response()->json(['mensaje' => $mensaje, 'reserva' => $res], 201);
+        return response()->json(['mensaje' => $mensaje, 'reserva' => new ReservaResource($res)], 201);
     }
 
     public function all()
@@ -89,7 +76,7 @@ class ReservaController extends Controller
             ->orderBy('hora_reserva', 'asc')
             ->paginate(request()->integer('per_page', 50));
 
-        return response()->json($reservas);
+        return ReservaResource::collection($reservas);
     }
 
     public function updateStatus(Request $request, $id)

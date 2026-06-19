@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { useRef } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -20,8 +20,18 @@ const EASING = {
   back: "back.out(1.7)",
 };
 
-export const useMotionProps = (_variants) => ({});
-export const useReducedMotion = () => false;
+export const useReducedMotion = () => {
+  const [reduced, setReduced] = React.useState(
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  React.useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handler = (e) => setReduced(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return reduced;
+};
 
 // ─── FadeIn ───────────────────────────────────────────────────────────────────
 // Componente que hace aparecer elementos suavemente y puede desplazarlos desde una dirección (arriba, abajo, izquierda, derecha)

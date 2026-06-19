@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  AnimatePresence,
-  useReducedMotion,
-  FadeIn,
-  Toast,
-  motion,
-} from "@/motion";
+import { FadeIn, Toast, MotionButton } from "@/motion";
 import { useAuthStore } from "@/store/auth";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
@@ -45,7 +39,6 @@ const ReservationForm = ({ compact = false }) => {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [availability, setAvailability] = useState([]);
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
-  const shouldReduceMotion = useReducedMotion();
   const formatShortReservationDate = (date) =>
     date.toLocaleDateString("es-ES", {
       weekday: "short",
@@ -530,49 +523,39 @@ const ReservationForm = ({ compact = false }) => {
                 ↓
               </span>
             </button>
-            <AnimatePresence initial={false}>
-              {isDatePickerOpen && (
-                <motion.div
-                  initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
-                  animate={
-                    shouldReduceMotion ? undefined : { opacity: 1, y: 0 }
-                  }
-                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
-                  transition={{ duration: 0.18 }}
-                  className="mt-4 max-h-64 overflow-y-auto border border-text-main/10 bg-bg-body/95 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.12)]"
-                >
-                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-3">
-                    {reservationDateOptions.map((date) => {
-                      const isSelected = date.value === form.date;
+            {isDatePickerOpen && (
+              <div className="mt-4 max-h-64 overflow-y-auto border border-text-main/10 bg-bg-body/95 p-3 shadow-[0_18px_40px_rgba(0,0,0,0.12)] animate-[fadeSlideDown_0.18s_ease-out]">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-3">
+                  {reservationDateOptions.map((date) => {
+                    const isSelected = date.value === form.date;
 
-                      return (
-                        <button
-                          key={date.value}
-                          type="button"
-                          onClick={() => handleDateSelect(date)}
-                          aria-pressed={isSelected}
-                          className={`min-h-[72px] border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-body ${
-                            isSelected
-                              ? "border-primary bg-primary text-white"
-                              : "border-text-main/10 bg-white/70 text-gray-900 hover:border-primary hover:bg-primary/10"
-                          }`}
-                        >
-                          <span className="block text-[10px] font-bold uppercase tracking-[1.2px] opacity-70">
-                            {date.weekday}
-                          </span>
-                          <span className="mt-1 block font-heading text-2xl leading-none">
-                            {date.day}
-                          </span>
-                          <span className="mt-1 block text-[10px] font-bold uppercase tracking-[1px]">
-                            {date.month}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    return (
+                      <button
+                        key={date.value}
+                        type="button"
+                        onClick={() => handleDateSelect(date)}
+                        aria-pressed={isSelected}
+                        className={`min-h-[72px] border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-body ${
+                          isSelected
+                            ? "border-primary bg-primary text-white"
+                            : "border-text-main/10 bg-white/70 text-gray-900 hover:border-primary hover:bg-primary/10"
+                        }`}
+                      >
+                        <span className="block text-[10px] font-bold uppercase tracking-[1.2px] opacity-70">
+                          {date.weekday}
+                        </span>
+                        <span className="mt-1 block font-heading text-2xl leading-none">
+                          {date.day}
+                        </span>
+                        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[1px]">
+                          {date.month}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {errors.date && (
               <p
                 id="reservation-date-error"
@@ -717,10 +700,8 @@ const ReservationForm = ({ compact = false }) => {
 
         {/* Botón para enviar el formulario de reserva */}
         <div className="mt-10 flex justify-center">
-          <motion.button
+          <MotionButton
             type="submit"
-            whileHover={shouldReduceMotion ? undefined : { scale: 1.03 }}
-            whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
             className="group relative px-6 sm:px-12 md:px-16 py-4 sm:py-5 bg-transparent border border-primary text-primary font-body text-[11px] sm:text-xs uppercase tracking-[2px] sm:tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto md:min-w-[300px]"
             disabled={loading || IS_PUBLIC_DEMO}
           >
@@ -728,7 +709,7 @@ const ReservationForm = ({ compact = false }) => {
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
               {loading ? "PROCESANDO..." : "SOLICITAR RESERVA"}
             </span>
-          </motion.button>
+          </MotionButton>
         </div>
       </form>
     </FadeIn>
