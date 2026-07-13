@@ -8,6 +8,15 @@ use Illuminate\Validation\Rule;
 
 class StoreReservaRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('hora_reserva')) {
+            $this->merge([
+                'hora_reserva' => ReservationRules::normalizeTime($this->input('hora_reserva')),
+            ]);
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -16,9 +25,9 @@ class StoreReservaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fecha_reserva'         => 'required|date|after_or_equal:today',
-            'hora_reserva'          => ['required', Rule::in(ReservationRules::TURNS)],
-            'comensales'            => 'required|integer|min:1|max:8',
+            'fecha_reserva' => 'required|date|after_or_equal:today',
+            'hora_reserva' => ['required', Rule::in(ReservationRules::TURNS)],
+            'comensales' => 'required|integer|min:1|max:8',
             'peticiones_especiales' => 'nullable|string|max:500',
         ];
     }

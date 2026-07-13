@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { useCartStore } from "@/store/cart";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "@/services/api";
 import { HAS_CONFIGURED_API, USE_STATIC_DEMO_DATA } from "@/config/demo";

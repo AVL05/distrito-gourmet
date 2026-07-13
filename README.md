@@ -1,105 +1,141 @@
 <p align="center">
-  <img src="frontend/public/favicon.png" alt="Distrito Gourmet" width="90">
+  <img src="frontend/public/favicon.png" alt="Logotipo de Distrito Gourmet" width="88">
 </p>
 
 <h1 align="center">Distrito Gourmet</h1>
-<p align="center"><i>Aplicacion full-stack para gestion digital de restaurante, reservas, carta y pedidos takeaway.</i></p>
 
 <p align="center">
-  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white">
-  <img alt="Laravel" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white">
-  <img alt="Vite" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white">
-  <img alt="Sanctum" src="https://img.shields.io/badge/Auth-Laravel%20Sanctum-FF2D20">
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
-  <img alt="Estado" src="https://img.shields.io/badge/Estado-En%20desarrollo-yellow">
+  Plataforma full-stack para centralizar la experiencia del comensal y la operativa diaria de un restaurante.
 </p>
 
----
+<p align="center">
+  <a href="https://distrito.aleviclop.dev/"><strong>Ver demo</strong></a>
+  ·
+  <a href="./docs/MANUAL_USUARIO.md"><strong>Manual de usuario</strong></a>
+  ·
+  <a href="./docs/API_DOCS.md"><strong>API</strong></a>
+</p>
 
-## Indice
+<p align="center">
+  <img alt="React 19" src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white">
+  <img alt="Laravel 12" src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white">
+  <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white">
+  <img alt="MySQL 8" src="https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white">
+  <img alt="Laravel Sanctum" src="https://img.shields.io/badge/Auth-Sanctum-FF2D20">
+  <img alt="Docker Compose" src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white">
+</p>
 
-- [Resumen](#resumen)
-- [Funcionalidades](#funcionalidades)
-- [Arquitectura](#arquitectura)
-- [Stack tecnologico](#stack-tecnologico)
-- [Estructura del repositorio](#estructura-del-repositorio)
-- [Puesta en marcha](#puesta-en-marcha)
-- [Scripts disponibles](#scripts-disponibles)
-- [Documentacion](#documentacion)
-- [Validacion](#validacion)
-- [Autor](#autor)
+![Portada de Distrito Gourmet](docs/screenshots/home.png)
 
----
+## El producto
 
-## Resumen
+Distrito Gourmet es una aplicación web desacoplada que reúne en un único sistema la carta digital, las reservas, los pedidos para recoger y la gestión interna del restaurante.
 
-**Distrito Gourmet** es una plataforma web desacoplada para digitalizar la operativa de un restaurante. El proyecto combina una API REST en Laravel con una SPA en React/Vite para cubrir la experiencia publica del comensal y la gestion interna del restaurante.
+El proyecto nace para resolver un problema habitual: la experiencia pública y la operativa del equipo suelen depender de herramientas distintas, plataformas con comisiones y datos fragmentados. La solución mantiene el control de clientes, catálogo, reservas y pedidos dentro de una arquitectura propia.
 
-El objetivo principal es ofrecer una alternativa propia frente a plataformas de terceros: el restaurante conserva el control de su carta, reservas, pedidos y datos de clientes, sin depender de comisiones externas ni paneles cerrados.
+### Qué demuestra
+
+- Diseño e implementación de un producto completo, no solo una landing page.
+- SPA responsive con navegación, estado global, animaciones y flujos autenticados.
+- API REST con reglas de negocio, validación, roles y persistencia relacional.
+- Separación entre experiencia de cliente, operativa de staff y administración.
+- Arranque local unificado y despliegue reproducible mediante Docker Compose.
+
+## Recorrido visual
+
+### Carta digital y pedidos para recoger
+
+La carta organiza platos, bebidas, vinos y menús de degustación. Cada artículo expone precio, alérgenos, disponibilidad y límites por pedido.
+
+![Carta digital de Distrito Gourmet](docs/screenshots/menu.png)
+
+### Reservas
+
+El formulario guía la selección de comensales, fecha y turno, consulta disponibilidad y resume los datos antes de confirmar.
+
+![Flujo de reservas de Distrito Gourmet](docs/screenshots/reservations.png)
+
+### Panel de trabajo
+
+El panel interno reúne métricas y herramientas para pedidos, reservas, carta, degustación, bodega, bebidas y permisos de usuarios.
+
+![Panel de administración de Distrito Gourmet](docs/screenshots/admin.png)
 
 ## Funcionalidades
 
-| Area | Cliente | Administracion |
+| Área | Cliente | Staff y administración |
 | --- | --- | --- |
-| Carta | Consulta de platos, vinos, bebidas y menus degustacion | Alta, edicion, disponibilidad y eliminacion de elementos |
-| Reservas | Consulta de disponibilidad, seleccion de fecha, hora y comensales | Revision, confirmacion, cancelacion y control de ocupacion |
-| Pedidos | Carrito y pedidos takeaway con hora de recogida | Seguimiento de estados operativos del pedido |
-| Usuarios | Registro, login, perfil y actividad personal | Gestion de usuarios y roles |
-| Contacto | Envio de consultas desde formulario publico | Recepcion estructurada de solicitudes |
-| Metricas | No aplica | Indicadores de pedidos, reservas, aforo y ticket medio |
+| Carta | Consulta de platos, bebidas, vinos y menús | Alta, edición, disponibilidad, alérgenos y eliminación |
+| Reservas | Disponibilidad por fecha, turno y comensales | Agenda, confirmación, cancelación y control de ocupación |
+| Pedidos | Carrito, hora de recogida y seguimiento | Monitor operativo y actualización de estados |
+| Usuarios | Registro, acceso, perfil e historial | Gestión de usuarios, roles y permisos |
+| Contacto | Formulario público con validación | Recepción estructurada de solicitudes |
+| Métricas | — | Pedidos activos, reservas, cubiertos y ticket medio |
+
+La autorización diferencia tres perfiles:
+
+- `Cliente`: reservas, pedidos, perfil e historial.
+- `Staff`: operación de sala y cocina.
+- `Administrador`: catálogo, métricas, reservas, pedidos y usuarios.
 
 ## Arquitectura
 
-El proyecto sigue una arquitectura headless:
+```mermaid
+flowchart LR
+    U[Cliente / Staff / Admin] --> SPA[React 19 + Vite]
+    SPA -->|JSON / REST| API[Laravel 12]
+    API --> AUTH[Sanctum + roles]
+    API --> DB[(MySQL 8)]
+    API --> RULES[Reservas, pedidos y catálogo]
+```
 
-- `frontend/`: aplicacion React servida por Vite en desarrollo y Nginx en despliegue Docker.
-- `backend/`: API Laravel 12 con autenticacion mediante Laravel Sanctum.
-- `database/`: activos y datos auxiliares del proyecto.
-- `scripts/`: automatizacion local para levantar backend y frontend desde un unico comando.
-- `docs/`: documentacion funcional, tecnica, despliegue, seguridad y roadmap.
+- `frontend/`: SPA en React, React Router y Zustand; Vite durante desarrollo y Nginx en el contenedor.
+- `backend/`: API Laravel con Sanctum, middleware por rol, validación y reglas de negocio.
+- `database/`: recursos y datos auxiliares del dominio.
+- `scripts/`: automatización para levantar el entorno completo desde la raíz.
+- `docs/`: documentación técnica, funcional, de despliegue y seguridad.
 
-La comunicacion entre frontend y backend se realiza mediante rutas con prefijo `/api`. Los origenes, puertos y URLs especificos del entorno se configuran con variables `.env`; no deben hardcodearse en el codigo fuente.
+Las URLs y credenciales dependen del entorno y se configuran mediante archivos `.env`; no están acopladas al código de la aplicación.
 
-## Stack tecnologico
+## Stack tecnológico
 
-| Capa | Tecnologia | Uso |
+| Capa | Tecnologías | Responsabilidad |
 | --- | --- | --- |
-| Frontend | React 19, Vite 7, React Router, Zustand | Interfaz SPA, navegacion y estado cliente |
-| UI y experiencia | Tailwind CSS, GSAP, Lenis, SweetAlert2 | Estilos, animaciones y feedback visual |
-| Backend | Laravel 12, PHP 8.2+, Sanctum | API REST, autenticacion y reglas de negocio |
-| Datos | MySQL 8 | Persistencia de usuarios, carta, reservas y pedidos |
-| Infraestructura | Docker Compose, Nginx | Orquestacion local/produccion y servicio del frontend |
+| Frontend | React 19, Vite 7, React Router, Zustand, Axios | Interfaz SPA, navegación, sesión y consumo de API |
+| UI | Tailwind CSS, GSAP, Lenis, SweetAlert2 | Sistema visual, movimiento y feedback |
+| Backend | Laravel 12, PHP 8.2+, Sanctum | API REST, autenticación y lógica de negocio |
+| Datos | MySQL 8 | Usuarios, catálogo, reservas y pedidos |
+| Infraestructura | Docker Compose, Nginx | Servicios y despliegue reproducible |
 
-## Estructura del repositorio
+## Estructura
 
 ```text
 distrito-gourmet/
-|-- backend/                # API Laravel
-|   |-- app/
-|   |-- database/
-|   |-- routes/
-|   `-- tests/
-|-- frontend/               # SPA React + Vite
-|   |-- public/
-|   `-- src/
-|-- database/               # Activos de base de datos del proyecto
-|-- docs/                   # Documentacion del proyecto
-|-- scripts/                # Automatizacion de desarrollo/despliegue
-|-- docker-compose.yml      # Servicios db, backend y frontend
-|-- package.json            # Scripts raiz
-`-- README.md
+├── backend/                  # API Laravel
+│   ├── app/
+│   ├── database/
+│   ├── routes/
+│   └── tests/
+├── frontend/                 # SPA React + Vite
+│   ├── public/
+│   └── src/
+├── database/                 # Recursos de datos
+├── docs/                     # Guías y capturas
+├── scripts/                  # Automatización local
+├── docker-compose.yml
+├── package.json
+└── README.md
 ```
 
-## Puesta en marcha
+## Puesta en marcha local
 
 ### Requisitos
 
-- Git.
-- Node.js y npm para scripts raiz y frontend.
-- PHP 8.2+ y Composer si se trabaja sin Docker.
-- Docker y Docker Compose para el entorno contenerizado.
+- Node.js y npm.
+- PHP 8.2 o superior y Composer.
+- MySQL 8.
 
-### Instalacion rapida con Docker
+### Instalación
 
 ```bash
 git clone https://github.com/AVL05/distrito-gourmet.git
@@ -108,69 +144,85 @@ cd distrito-gourmet
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-docker-compose up -d --build
-docker exec -it distrito-backend php artisan migrate --seed
+npm run install:all
+cd backend
+php artisan key:generate
+php artisan migrate --seed
+cd ..
+
+npm start
+```
+
+Antes de migrar, configura en `backend/.env` la conexión de MySQL. El script raíz levanta Laravel en el puerto `8000` y Vite en el `5173`.
+
+En Windows, `scripts/dev.js` detecta el binario de PHP disponible, prepara las extensiones necesarias y lanza el frontend de forma compatible con PowerShell.
+
+### Cuentas sembradas para desarrollo local
+
+| Perfil | Email | Contraseña |
+| --- | --- | --- |
+| Administrador | `admin@distritogourmet.com` | `password` |
+| Cliente | `cliente@distritogourmet.com` | `vA391878` |
+| Staff | `alex@distritogourmet.com` | `vA391878` |
+
+Estas credenciales pertenecen exclusivamente al seeder de desarrollo. Deben sustituirse en cualquier entorno público o de producción.
+
+## Docker
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+
+docker compose up -d --build
+docker compose exec backend php artisan migrate --seed
 ```
 
 Servicios por defecto:
 
-- Frontend: puerto `80`.
-- Backend: puerto `8000`.
-- MySQL: puerto `3306`.
+- Frontend: `http://localhost`
+- Backend: `http://localhost:8000`
+- MySQL: `localhost:3306`
 
-### Desarrollo local
+## API principal
 
-```bash
-npm run install:all
-npm start
-```
+| Método | Endpoint | Acceso | Uso |
+| --- | --- | --- | --- |
+| `GET` | `/api/dishes` | Público | Carta y categorías |
+| `GET` | `/api/reservation-availability` | Público | Turnos y disponibilidad |
+| `POST` | `/api/contact` | Público | Solicitudes de contacto |
+| `POST` | `/api/reservations` | Autenticado | Crear una reserva |
+| `POST` | `/api/orders` | Autenticado | Crear un pedido |
+| `GET` | `/api/staff/orders` | Staff | Operativa de pedidos |
+| `GET` | `/api/admin/metrics` | Administrador | Indicadores del panel |
 
-El script `npm start` levanta Laravel y Vite de forma coordinada. En Windows intenta resolver el binario de PHP disponible y configura variables necesarias para que Vite consuma la API.
+La referencia completa de payloads y respuestas está en [docs/API_DOCS.md](./docs/API_DOCS.md).
 
-## Scripts disponibles
+## Scripts y validación
 
-| Comando | Descripcion |
+| Comando | Uso |
 | --- | --- |
-| `npm run install:all` | Instala dependencias de backend con Composer y frontend con npm |
-| `npm start` | Inicia el entorno de desarrollo completo mediante `scripts/dev.js` |
-| `npm --prefix frontend run lint` | Ejecuta ESLint en la SPA |
-| `npm --prefix frontend run build` | Genera build de produccion del frontend |
-| `cd backend && php artisan test` | Ejecuta la suite de tests Laravel |
-| `cd backend && php artisan route:list --path=api` | Lista rutas expuestas por la API |
+| `npm run install:all` | Instala Composer y dependencias del frontend |
+| `npm start` | Levanta backend y frontend de forma coordinada |
+| `npm --prefix frontend run lint` | Ejecuta ESLint |
+| `npm --prefix frontend run build` | Genera el build de producción |
+| `cd backend && php artisan test` | Ejecuta las pruebas Laravel |
+| `cd backend && php artisan route:list --path=api` | Comprueba el contrato de rutas |
+| `cd backend && vendor/bin/pint --test` | Revisa el formato PHP |
 
-## Documentacion
+## Documentación
 
-| Documento | Proposito |
-| --- | --- |
-| [Documentacion tecnica](./Documentacion.md) | Contexto amplio del proyecto y decisiones de implementacion |
-| [API](./docs/API_DOCS.md) | Endpoints, autenticacion, payloads y codigos de respuesta |
-| [Despliegue](./docs/DEPLOY.md) | Instalacion, Docker, entorno local, produccion y checklist |
-| [Manual de usuario](./docs/MANUAL_USUARIO.md) | Uso funcional para cliente, staff y administrador |
-| [Roadmap](./docs/ROADMAP.md) | Evolucion prevista y prioridades futuras |
-| [Seguridad](./docs/SECURITY.md) | Medidas aplicadas, buenas practicas y riesgos pendientes |
-
-## Validacion
-
-Antes de entregar cambios relevantes:
-
-```bash
-npm --prefix frontend run lint
-npm --prefix frontend run build
-cd backend && php artisan test
-cd backend && php artisan route:list --path=api
-```
-
-Smoke test recomendado:
-
-1. Cargar carta publica.
-2. Registrar o iniciar sesion.
-3. Crear reserva.
-4. Crear pedido takeaway.
-5. Revisar perfil, pedidos y reservas del usuario.
-6. Acceder como administrador y actualizar estados.
+- [Documentación técnica](./Documentacion.md)
+- [Referencia de la API](./docs/API_DOCS.md)
+- [Despliegue](./docs/DEPLOY.md)
+- [Manual de usuario](./docs/MANUAL_USUARIO.md)
+- [Roadmap](./docs/ROADMAP.md)
+- [Seguridad](./docs/SECURITY.md)
 
 ## Autor
 
-Alex Vicente Lopez
+**Alex Vicente López**<br>
+Proyecto de Fin de Ciclo · Desarrollo de Aplicaciones Web · IES Serra Perenxisa · 2025–2026
 
-Proyecto de Fin de Ciclo, IES Serra Perenxisa, 2025-2026
+- [Portfolio](https://aleviclop.dev)
+- [LinkedIn](https://www.linkedin.com/in/aleviclop/)
+- [GitHub](https://github.com/AVL05)
