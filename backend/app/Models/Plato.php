@@ -11,6 +11,7 @@ class Plato extends Model
     use HasFactory;
 
     protected $table = 'platos';
+
     public $timestamps = false; // Manejado manualmente o no requerido
 
     protected $fillable = [
@@ -25,7 +26,7 @@ class Plato extends Model
         'visible_en_degustacion',
         'disponible_para_llevar',
         'es_por_unidad',
-        'maximo_por_pedido'
+        'maximo_por_pedido',
     ];
 
     // Relación con la categoría del menú a la que pertenece el plato

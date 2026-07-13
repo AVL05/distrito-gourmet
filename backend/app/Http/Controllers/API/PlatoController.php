@@ -16,17 +16,17 @@ class PlatoController extends Controller
 {
     public function index()
     {
-        $platos          = Plato::with('categoria')->get();
-        $categorias      = CategoriaMenu::orderBy('orden_visualizacion')->get();
-        $vinos           = Vino::all();
-        $bebidas         = Bebida::all();
+        $platos = Plato::with('categoria')->get();
+        $categorias = CategoriaMenu::orderBy('orden_visualizacion')->get();
+        $vinos = Vino::all();
+        $bebidas = Bebida::all();
         $menusDegustacion = MenuDegustacion::with('platos')->get();
 
         return response()->json([
-            'categorias'        => $categorias,
-            'platos'            => PlatoResource::collection($platos),
-            'vinos'             => $vinos,
-            'bebidas'           => $bebidas,
+            'categorias' => $categorias,
+            'platos' => PlatoResource::collection($platos),
+            'vinos' => $vinos,
+            'bebidas' => $bebidas,
             'menus_degustacion' => $menusDegustacion,
         ]);
     }
@@ -37,7 +37,7 @@ class PlatoController extends Controller
 
         return response()->json([
             'mensaje' => 'Plato creado correctamente',
-            'plato'   => new PlatoResource($plato->load('categoria')),
+            'plato' => new PlatoResource($plato->load('categoria')),
         ], 201);
     }
 
@@ -53,7 +53,7 @@ class PlatoController extends Controller
 
         return response()->json([
             'mensaje' => 'Plato actualizado correctamente',
-            'plato'   => new PlatoResource($plato->load('categoria')),
+            'plato' => new PlatoResource($plato->load('categoria')),
         ]);
     }
 

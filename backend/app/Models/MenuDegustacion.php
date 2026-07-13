@@ -11,6 +11,7 @@ class MenuDegustacion extends Model
     use HasFactory;
 
     protected $table = 'menus_degustacion';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,7 +22,7 @@ class MenuDegustacion extends Model
         'precio_maridaje',
         'pasos',
         'duracion_estimada_minutos',
-        'disponible'
+        'disponible',
     ];
 
     // Relación con los platos que componen el menú (tabla pivote)

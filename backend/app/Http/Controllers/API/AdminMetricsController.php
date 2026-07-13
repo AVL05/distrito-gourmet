@@ -33,7 +33,7 @@ class AdminMetricsController extends Controller
             ->orderByDesc('unidades')
             ->limit(5)
             ->get()
-            ->map(fn(DetallePedido $detail) => [
+            ->map(fn (DetallePedido $detail) => [
                 'name' => $detail->plato?->nombre ?? 'Plato eliminado',
                 'units' => (int) $detail->unidades,
             ])
@@ -45,7 +45,7 @@ class AdminMetricsController extends Controller
             ->groupBy('hora_reserva')
             ->pluck('ocupacion', 'hora_reserva');
 
-        $turnOccupancy = collect(ReservationRules::TURNS)->map(fn(string $turn) => [
+        $turnOccupancy = collect(ReservationRules::TURNS)->map(fn (string $turn) => [
             'time' => substr($turn, 0, 5),
             'occupied' => (int) ($occupancyByTurn[$turn] ?? 0),
             'capacity' => ReservationRules::CAPACITY,

@@ -25,7 +25,7 @@ class DistritoGourmetSeeder extends Seeder
             'bebidas',
             'reservas',
             'pedidos',
-            'detalles_pedido'
+            'detalles_pedido',
         ];
 
         foreach ($tablas as $tabla) {

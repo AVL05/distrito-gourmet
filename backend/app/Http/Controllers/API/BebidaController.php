@@ -28,6 +28,7 @@ class BebidaController extends Controller
         ]);
 
         $bebida = Bebida::create($request->all());
+
         return response()->json($bebida, 201);
     }
 
@@ -42,6 +43,7 @@ class BebidaController extends Controller
         ]);
 
         $bebida->update($request->all());
+
         return response()->json($bebida);
     }
 
@@ -49,6 +51,7 @@ class BebidaController extends Controller
     public function destroy($id)
     {
         Bebida::findOrFail($id)->delete();
+
         return response()->json(['mensaje' => 'Bebida eliminada']);
     }
 }

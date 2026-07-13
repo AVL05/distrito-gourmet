@@ -19,7 +19,7 @@ class ContactController extends Controller
         return response()->json([
             'mensaje' => 'Consulta recibida correctamente',
             'contact' => [
-                'reference' => 'DG-C-' . now()->format('Ymd') . '-' . strtoupper(substr(md5($validated['email'] . microtime()), 0, 6)),
+                'reference' => 'DG-C-'.now()->format('Ymd').'-'.strtoupper(substr(md5($validated['email'].microtime()), 0, 6)),
                 'subject' => $validated['subject'],
             ],
         ], 201);

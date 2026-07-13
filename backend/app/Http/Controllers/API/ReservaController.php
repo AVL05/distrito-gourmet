@@ -25,7 +25,7 @@ class ReservaController extends Controller
         $data['hora_reserva'] = ReservationRules::normalizeTime($data['hora_reserva']);
 
         $fecha = $data['fecha_reserva'];
-        $hora  = $data['hora_reserva'];
+        $hora = $data['hora_reserva'];
 
         $exists = Reserva::where('usuario_id', auth()->id())
             ->where('fecha_reserva', $fecha)
@@ -48,13 +48,13 @@ class ReservaController extends Controller
             : 'Confirmada';
 
         $res = Reserva::create([
-            'usuario_id'            => auth()->id(),
-            'fecha_reserva'         => $fecha,
-            'hora_reserva'          => $hora,
-            'comensales'            => $data['comensales'],
-            'estado'                => $estado,
+            'usuario_id' => auth()->id(),
+            'fecha_reserva' => $fecha,
+            'hora_reserva' => $hora,
+            'comensales' => $data['comensales'],
+            'estado' => $estado,
             'peticiones_especiales' => $data['peticiones_especiales'] ?? null,
-            'codigo_reserva'        => strtoupper(Str::random(8)),
+            'codigo_reserva' => strtoupper(Str::random(8)),
         ]);
 
         $mensaje = $estado === 'Pendiente'

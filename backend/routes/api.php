@@ -1,19 +1,19 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AdminMetricsController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BebidaController;
+use App\Http\Controllers\API\ContactController;
+use App\Http\Controllers\API\MenuDegustacionController;
+use App\Http\Controllers\API\PasswordResetController;
+use App\Http\Controllers\API\PedidoController;
+use App\Http\Controllers\API\PickupTimesController;
 use App\Http\Controllers\API\PlatoController;
 use App\Http\Controllers\API\ReservaController;
-use App\Http\Controllers\API\PedidoController;
-use App\Http\Controllers\API\VinoController;
-use App\Http\Controllers\API\BebidaController;
-use App\Http\Controllers\API\MenuDegustacionController;
-use App\Http\Controllers\API\UsuarioController;
-use App\Http\Controllers\API\AdminMetricsController;
-use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\ReservationAvailabilityController;
-use App\Http\Controllers\API\PasswordResetController;
-use App\Http\Controllers\API\PickupTimesController;
+use App\Http\Controllers\API\UsuarioController;
+use App\Http\Controllers\API\VinoController;
+use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');

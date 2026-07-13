@@ -18,19 +18,19 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre'   => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:usuarios',
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:usuarios',
             'telefono' => 'required|string|max:20',
             'password' => 'required|string|min:8',
-            'rol'      => ['required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
+            'rol' => ['required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
         ]);
 
         $user = Usuario::create([
-            'nombre'   => $request->nombre,
-            'email'    => $request->email,
+            'nombre' => $request->nombre,
+            'email' => $request->email,
             'telefono' => $request->telefono,
             'password' => Hash::make($request->password),
-            'rol'      => $request->rol,
+            'rol' => $request->rol,
         ]);
 
         return response()->json(['message' => 'Usuario creado correctamente', 'user' => $user], 201);
@@ -46,11 +46,11 @@ class UsuarioController extends Controller
         }
 
         $request->validate([
-            'nombre'   => 'sometimes|required|string|max:255',
-            'email'    => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
+            'nombre' => 'sometimes|required|string|max:255',
+            'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'telefono' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8',
-            'rol'      => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
+            'rol' => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
         ]);
 
         $data = $request->only(['nombre', 'email', 'telefono']);

@@ -12,9 +12,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Usuario extends Authenticatable implements CanResetPasswordContract
 {
-    use HasApiTokens, HasFactory, Notifiable, CanResetPassword;
+    use CanResetPassword, HasApiTokens, HasFactory, Notifiable;
 
     protected $table = 'usuarios';
+
     public $timestamps = false;
 
     // Atributos asignables de forma masiva

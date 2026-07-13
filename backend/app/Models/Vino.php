@@ -11,6 +11,7 @@ class Vino extends Model
     use HasFactory;
 
     protected $table = 'vinos';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -24,6 +25,6 @@ class Vino extends Model
         'precio_copa',
         'disponible',
         'destacado',
-        'maximo_por_pedido'
+        'maximo_por_pedido',
     ];
 }

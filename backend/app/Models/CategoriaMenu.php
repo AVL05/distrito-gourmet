@@ -11,13 +11,15 @@ class CategoriaMenu extends Model
     use HasFactory;
 
     protected $table = 'categorias_menu';
+
     const CREATED_AT = 'creado_a';
+
     const UPDATED_AT = 'actualizado_a';
 
     protected $fillable = [
         'nombre',
         'descripcion',
-        'orden_visualizacion'
+        'orden_visualizacion',
     ];
 
     // Relación con los platos pertenecientes a esta categoría

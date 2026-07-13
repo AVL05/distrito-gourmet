@@ -11,8 +11,11 @@ class Pedido extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'pedidos';
+
     const CREATED_AT = 'creado_a';
+
     const UPDATED_AT = 'actualizado_a';
+
     const DELETED_AT = 'eliminado_a';
 
     protected $fillable = [
@@ -26,7 +29,7 @@ class Pedido extends Model
         'direccion',
         'hora_recogida',
         'fecha_recogida',
-        'metodo_pago'
+        'metodo_pago',
     ];
 
     // Relación con el usuario que realizó el pedido

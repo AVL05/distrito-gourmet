@@ -11,6 +11,7 @@ class DetallePedido extends Model
     use HasFactory;
 
     protected $table = 'detalles_pedido';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -21,7 +22,7 @@ class DetallePedido extends Model
         'menu_degustacion_id',
         'cantidad',
         'precio_unitario',
-        'precio_total'
+        'precio_total',
     ];
 
     // Relación con el pedido principal

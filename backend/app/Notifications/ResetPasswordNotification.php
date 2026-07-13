@@ -21,7 +21,7 @@ class ResetPasswordNotification extends ResetPassword
             ->greeting('Hola,')
             ->line('Ha solicitado restablecer la contraseña de su cuenta.')
             ->action('Restablecer contraseña', $this->resetUrl($notifiable))
-            ->line('Este enlace caduca en ' . config('auth.passwords.users.expire') . ' minutos.')
+            ->line('Este enlace caduca en '.config('auth.passwords.users.expire').' minutos.')
             ->line('Si no ha solicitado este cambio, puede ignorar este mensaje.')
             ->salutation('Distrito Gourmet');
     }

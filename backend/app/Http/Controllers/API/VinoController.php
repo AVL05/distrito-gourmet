@@ -25,6 +25,7 @@ class VinoController extends Controller
         ]);
 
         $vino = Vino::create($request->all());
+
         return response()->json($vino, 201);
     }
 
@@ -33,6 +34,7 @@ class VinoController extends Controller
     {
         $vino = Vino::findOrFail($id);
         $vino->update($request->all());
+
         return response()->json($vino);
     }
 
@@ -40,6 +42,7 @@ class VinoController extends Controller
     public function destroy($id)
     {
         Vino::findOrFail($id)->delete();
+
         return response()->json(['mensaje' => 'Vino eliminado']);
     }
 }

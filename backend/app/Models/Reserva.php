@@ -11,8 +11,11 @@ class Reserva extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'reservas';
+
     const CREATED_AT = 'creado_a';
+
     const UPDATED_AT = 'actualizado_a';
+
     const DELETED_AT = 'eliminado_a';
 
     protected $fillable = [
@@ -23,7 +26,7 @@ class Reserva extends Model
         'comensales',
         'menu_degustacion_id',
         'estado',
-        'peticiones_especiales'
+        'peticiones_especiales',
     ];
 
     // Relación con el usuario que ha realizado la reserva

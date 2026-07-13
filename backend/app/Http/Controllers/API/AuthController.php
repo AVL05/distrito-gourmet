@@ -13,27 +13,27 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'nombre'   => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:usuarios',
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:usuarios',
             'password' => 'required|string|min:8',
             'telefono' => 'required|string|max:20',
         ], [
-            'nombre.required'   => 'El nombre es obligatorio.',
-            'email.required'    => 'El correo electrónico es obligatorio.',
-            'email.email'       => 'El formato del correo electrónico no es válido.',
-            'email.unique'      => 'Este correo electrónico ya está registrado.',
+            'nombre.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo electrónico no es válido.',
+            'email.unique' => 'Este correo electrónico ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
-            'password.min'      => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.max'      => 'El teléfono no puede tener más de 20 caracteres.',
+            'telefono.max' => 'El teléfono no puede tener más de 20 caracteres.',
         ]);
 
         $usuario = Usuario::create([
-            'nombre'   => $request->nombre,
-            'email'    => $request->email,
+            'nombre' => $request->nombre,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
             'telefono' => $request->telefono,
-            'rol'      => 'Cliente',
+            'rol' => 'Cliente',
         ]);
 
         $token = $usuario->createToken('auth_token')->plainTextToken;
@@ -46,7 +46,7 @@ class AuthController extends Controller
         $request->merge(['email' => trim($request->email)]);
 
         $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 

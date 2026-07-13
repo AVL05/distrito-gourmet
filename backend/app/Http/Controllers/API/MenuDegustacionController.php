@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\MenuDegustacion;
+use Illuminate\Http\Request;
 
 // Gestión de menús degustación: administración de experiencias gastronómicas por pasos
 class MenuDegustacionController extends Controller
@@ -30,15 +30,15 @@ class MenuDegustacionController extends Controller
         ]);
 
         $menu = MenuDegustacion::create($request->only([
-            'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos', 
-            'duracion_estimada_minutos', 'disponible', 'slug'
+            'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos',
+            'duracion_estimada_minutos', 'disponible', 'slug',
         ]));
-        
+
         if ($request->has('platos')) {
             $syncData = [];
             foreach ($request->platos as $p) {
                 $syncData[$p['id']] = [
-                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1
+                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1,
                 ];
             }
             $menu->platos()->sync($syncData);
@@ -63,15 +63,15 @@ class MenuDegustacionController extends Controller
 
         $menu = MenuDegustacion::findOrFail($id);
         $menu->update($request->only([
-            'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos', 
-            'duracion_estimada_minutos', 'disponible', 'slug'
+            'nombre', 'descripcion', 'precio', 'precio_maridaje', 'pasos',
+            'duracion_estimada_minutos', 'disponible', 'slug',
         ]));
 
         if ($request->has('platos')) {
             $syncData = [];
             foreach ($request->platos as $p) {
                 $syncData[$p['id']] = [
-                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1
+                    'numero_paso' => $p['pivot']['numero_paso'] ?? 1,
                 ];
             }
             $menu->platos()->sync($syncData);
@@ -84,6 +84,7 @@ class MenuDegustacionController extends Controller
     public function destroy($id)
     {
         MenuDegustacion::destroy($id);
+
         return response()->json(['mensaje' => 'Menú degustación eliminado correctamente']);
     }
 }

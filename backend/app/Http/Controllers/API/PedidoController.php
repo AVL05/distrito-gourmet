@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bebida;
+use App\Models\DetallePedido;
+use App\Models\MenuDegustacion;
+use App\Models\Pedido;
+use App\Models\Plato;
+use App\Models\Vino;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use App\Models\Bebida;
-use App\Models\MenuDegustacion;
-use App\Models\Pedido;
-use App\Models\DetallePedido;
-use App\Models\Plato;
-use App\Models\Vino;
 
 class PedidoController extends Controller
 {
@@ -117,7 +117,7 @@ class PedidoController extends Controller
 
             $pedido = Pedido::create([
                 'usuario_id' => Auth::id(),
-                'numero_pedido' => 'DG-' . date('Ymd') . '-' . strtoupper(Str::random(4)),
+                'numero_pedido' => 'DG-'.date('Ymd').'-'.strtoupper(Str::random(4)),
                 'estado' => 'Pendiente',
                 'tipo_pedido' => 'Takeaway',
                 'subtotal' => $subtotal,

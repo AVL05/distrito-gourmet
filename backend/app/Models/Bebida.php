@@ -11,6 +11,7 @@ class Bebida extends Model
     use HasFactory;
 
     protected $table = 'bebidas';
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -19,6 +20,6 @@ class Bebida extends Model
         'tipo',
         'precio',
         'disponible',
-        'destacado'
+        'destacado',
     ];
 }
