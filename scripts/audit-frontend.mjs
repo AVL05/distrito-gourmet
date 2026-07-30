@@ -8,8 +8,8 @@ const allowedAdvisories = new Set([
 const npmExecutable = process.env.npm_execpath;
 const command = npmExecutable ? process.execPath : "npm";
 const args = npmExecutable
-  ? [npmExecutable, "audit", "--omit=dev", "--json"]
-  : ["audit", "--omit=dev", "--json"];
+  ? [npmExecutable, "audit", "--json"]
+  : ["audit", "--json"];
 const result = spawnSync(command, args, {
   cwd: process.cwd(),
   encoding: "utf8",
@@ -69,5 +69,5 @@ if (Object.keys(vulnerabilities).length > 0) {
     "Auditoría correcta: solo se omite GHSA-qwww-vcr4-c8h2, exclusivo de APIs RSC no utilizadas.",
   );
 } else {
-  console.log("Auditoría correcta: sin vulnerabilidades de producción.");
+  console.log("Auditoría correcta: sin vulnerabilidades.");
 }

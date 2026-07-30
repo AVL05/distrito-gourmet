@@ -22,17 +22,6 @@ const ReservationForm = ({ compact = false }) => {
     comments: "",
   });
 
-  // Sincronizar con el usuario si cambia (ej: login posterior)
-  useEffect(() => {
-    if (user) {
-      setForm((prev) => ({
-        ...prev,
-        name: prev.name || user.nombre || "",
-        phone: prev.phone || user.telefono || "",
-      }));
-    }
-  }, [user]);
-
   // Estados para controlar si está cargando
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -137,7 +126,6 @@ const ReservationForm = ({ compact = false }) => {
 
   useEffect(() => {
     if (!form.date || IS_PUBLIC_DEMO) {
-      setAvailability([]);
       return;
     }
 

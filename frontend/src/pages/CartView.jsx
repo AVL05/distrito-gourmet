@@ -75,12 +75,7 @@ const CartView = () => {
   }, []);
 
   const pickupOptions = useMemo(() => buildPickupOptions(validTimes), [validTimes]);
-
-  useEffect(() => {
-    if (pickupOptions.length > 0 && !pickupTime) {
-      setPickupTime(pickupOptions[0].value);
-    }
-  }, [pickupOptions, pickupTime]);
+  const selectedPickupTime = pickupTime || pickupOptions[0]?.value || "";
 
   const cartItems = useCartStore((state) => state.items);
   const total = items.reduce(
@@ -134,7 +129,7 @@ const CartView = () => {
     }
 
     setIsProcessing(true);
-    if (!pickupTime) {
+    if (!selectedPickupTime) {
       setCheckoutError("Seleccione una hora de recogida para continuar.");
       setIsProcessing(false);
       return;
@@ -150,8 +145,8 @@ const CartView = () => {
       })),
       total: parseFloat(total),
       metodo_pago: paymentMethod,
-      hora_recogida: pickupTime.split("-")[1] || pickupTime,
-      fecha_recogida: pickupTime.startsWith("today")
+      hora_recogida: selectedPickupTime.split("-")[1] || selectedPickupTime,
+      fecha_recogida: selectedPickupTime.startsWith("today")
         ? new Date().toISOString().split("T")[0]
         : new Date(Date.now() + 86400000).toISOString().split("T")[0],
     };
@@ -222,7 +217,7 @@ const CartView = () => {
             <p class="mb-4">Su solicitud ha sido procesada con éxito mediante <b>${paymentMethod === "card" ? "Tarjeta" : paymentMethod === "cash" ? "Efectivo" : "PayPal"}</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
               <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Hora Estimada de Recogida</p>
-              <p class="text-4xl font-heading text-primary">${pickupOptions.find((o) => o.value === pickupTime)?.label || pickupTime}</p>
+              <p class="text-4xl font-heading text-primary">${pickupOptions.find((o) => o.value === selectedPickupTime)?.label || selectedPickupTime}</p>
               <p className="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos en nuestro local.</p>
             </div>
           </div>
@@ -485,7 +480,7 @@ const CartView = () => {
                       Hora de Recogida
                     </label>
                     <select
-                      value={pickupTime}
+                      value={selectedPickupTime}
                       onChange={(e) => setPickupTime(e.target.value)}
                       className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-none focus:border-primary transition-colors font-body text-sm cursor-pointer"
                     >

@@ -117,7 +117,12 @@ export const useAdminData = ({
   }, [activeSection, newDishCategoryId, setNewDish]);
 
   useEffect(() => {
-    fetchData();
+    const loadData = async () => {
+      await Promise.resolve();
+      await fetchData();
+    };
+
+    loadData();
   }, [fetchData]);
 
   return { data, setData, loading, fetchData };
