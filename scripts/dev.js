@@ -107,7 +107,19 @@ const ensurePhpIni = dir => {
   let ini = fs.readFileSync(iniPath, 'utf8');
   ini = ini.replace(/^\s*;?\s*extension_dir\s*=.*$/m, 'extension_dir = "ext"');
 
-  const requiredExtensions = ['curl', 'fileinfo', 'intl', 'mbstring', 'mysqli', 'openssl', 'pdo_mysql', 'sodium', 'zip'];
+  const requiredExtensions = [
+    'curl',
+    'fileinfo',
+    'intl',
+    'mbstring',
+    'mysqli',
+    'openssl',
+    'pdo_mysql',
+    'pdo_sqlite',
+    'sodium',
+    'sqlite3',
+    'zip',
+  ];
   for (const ext of requiredExtensions) {
     const lineRegex = new RegExp(`^\\s*;?\\s*extension\\s*=\\s*${ext}\\s*$`, 'mi');
     if (lineRegex.test(ini)) {

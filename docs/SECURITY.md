@@ -17,12 +17,14 @@ La seguridad es un pilar fundamental en el desarrollo de **Distrito Gourmet**. S
 
 ## 🔐 Autenticación y autorización
 
-### 1. Autenticación stateless (Laravel Sanctum)
+### 1. Autenticación SPA con Laravel Sanctum
 
-En lugar de sesiones tradicionales por cookies, el sistema utiliza **tokens de portador (Bearer Tokens)**:
+El frontend utiliza sesiones de primera parte protegidas por Laravel Sanctum:
 
-- Los tokens son únicos por sesión y se almacenan de forma segura en el cliente.
-- Permiten una comunicación desacoplada y segura entre el frontend (React) y el backend (Laravel).
+- La cookie de sesión es `HttpOnly`, por lo que JavaScript no puede leerla.
+- Las peticiones mutables exigen token CSRF y envían credenciales de forma explícita.
+- La sesión se regenera tras registro o login y se invalida completamente durante logout.
+- Los orígenes stateful y CORS se definen por entorno.
 
 ### 2. Control de acceso basado en roles (RBAC)
 
@@ -78,8 +80,8 @@ Las siguientes prácticas son recomendaciones de hardening estándar de la indus
 - **`APP_DEBUG=false`** en producción, para no exponer trazas de error ni información interna del stack.
 - **Gestión de secretos:** mantener `backend/.env` y `frontend/.env` fuera del control de versiones, y rotar credenciales (DB, claves de aplicación) periódicamente.
 - **Copias de seguridad:** establecer una política de backups automáticos de la base de datos, con pruebas periódicas de restauración.
-- **Expiración y revocación de tokens:** revisar la configuración de expiración de los tokens de Sanctum y ofrecer al usuario la posibilidad de revocar sesiones activas.
-- **Cabeceras de seguridad HTTP:** considerar cabeceras como `Content-Security-Policy`, `X-Content-Type-Options` y `Strict-Transport-Security` a nivel de proxy/Nginx.
+- **Expiración y revocación de sesiones:** ajustar `SESSION_LIFETIME` a las necesidades reales y ofrecer al usuario control sobre sesiones activas.
+- **Cabeceras de seguridad HTTP:** mantener CSP, protección contra framing, `X-Content-Type-Options`, `Referrer-Policy` y HSTS en el proxy de producción.
 
 ---
 

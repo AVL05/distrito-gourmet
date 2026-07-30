@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -36,9 +37,10 @@ class AuthController extends Controller
             'rol' => 'Cliente',
         ]);
 
-        $token = $usuario->createToken('auth_token')->plainTextToken;
+        Auth::guard('web')->login($usuario);
+        $request->session()->regenerate();
 
-        return response()->json(['usuario' => $usuario, 'token' => $token], 201);
+        return response()->json(['usuario' => $usuario], 201);
     }
 
     public function login(Request $request)
@@ -50,22 +52,22 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $usuario = Usuario::where('email', $request->email)->first();
-
-        if (! $usuario || ! Hash::check($request->password, $usuario->password)) {
+        if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales son incorrectas.'],
             ]);
         }
 
-        $token = $usuario->createToken('auth_token')->plainTextToken;
+        $request->session()->regenerate();
 
-        return response()->json(['usuario' => $usuario, 'token' => $token]);
+        return response()->json(['usuario' => Auth::guard('web')->user()]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json(['mensaje' => 'Sesión cerrada correctamente']);
     }

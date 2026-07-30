@@ -90,7 +90,7 @@ flowchart LR
 ```
 
 - `frontend/`: SPA en React, React Router y Zustand; Vite durante desarrollo y Nginx en el contenedor.
-- `backend/`: API Laravel con Sanctum, middleware por rol, validación y reglas de negocio.
+- `backend/`: API Laravel con Sanctum, sesión web mediante cookie `HttpOnly`, middleware por rol, validación y reglas de negocio.
 - `database/`: recursos y datos auxiliares del dominio.
 - `scripts/`: automatización para levantar el entorno completo desde la raíz.
 - `docs/`: documentación técnica, funcional, de despliegue y seguridad.
@@ -103,7 +103,7 @@ Las URLs y credenciales dependen del entorno y se configuran mediante archivos `
 | --- | --- | --- |
 | Frontend | React 19, Vite 7, React Router, Zustand, Axios | Interfaz SPA, navegación, sesión y consumo de API |
 | UI | Tailwind CSS, GSAP, Lenis, SweetAlert2 | Sistema visual, movimiento y feedback |
-| Backend | Laravel 12, PHP 8.2+, Sanctum | API REST, autenticación y lógica de negocio |
+| Backend | Laravel 12, PHP 8.2+, Sanctum | API REST, autenticación SPA segura y lógica de negocio |
 | Datos | MySQL 8 | Usuarios, catálogo, reservas y pedidos |
 | Infraestructura | Docker Compose, Nginx | Servicios y despliegue reproducible |
 
@@ -205,9 +205,11 @@ La referencia completa de payloads y respuestas está en [docs/API_DOCS.md](./do
 | `npm start` | Levanta backend y frontend de forma coordinada |
 | `npm --prefix frontend run lint` | Ejecuta ESLint |
 | `npm --prefix frontend run build` | Genera el build de producción |
+| `npm --prefix frontend run audit:security` | Audita vulnerabilidades frontend |
 | `cd backend && php artisan test` | Ejecuta las pruebas Laravel |
 | `cd backend && php artisan route:list --path=api` | Comprueba el contrato de rutas |
 | `cd backend && vendor/bin/pint --test` | Revisa el formato PHP |
+| `cd backend && composer audit --locked` | Audita vulnerabilidades PHP |
 
 ## Documentación
 

@@ -26,6 +26,11 @@ export default defineConfig(({ mode }) => {
                 changeOrigin: true,
                 secure: false,
               },
+              "/sanctum": {
+                target: backendTarget,
+                changeOrigin: true,
+                secure: false,
+              },
             },
           }
         : {}),

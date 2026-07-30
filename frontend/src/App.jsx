@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import MainLayout from "./layouts/MainLayout";
 import ScrollToTop from "./components/layout/ScrollToTop";
 import SmoothScroll from "./components/layout/SmoothScroll";
@@ -39,7 +39,11 @@ const PageLoader = () => (
 
 // Componente para proteger rutas que requieren autenticación
 const ProtectedRoute = ({ children, requireAdmin }) => {
-  const { isAuthenticated, isAdmin } = useAuthStore();
+  const { initialized, isAuthenticated, isAdmin } = useAuthStore();
+
+  if (!initialized) {
+    return <PageLoader />;
+  }
 
   // Si no está logueado, redirigir al login
   if (!isAuthenticated()) {
@@ -55,6 +59,16 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 };
 
 const App = () => {
+  const { initialize, initialized } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  if (!initialized) {
+    return <PageLoader />;
+  }
+
   return (
     <>
       <ScrollToTop />

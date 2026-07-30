@@ -16,23 +16,33 @@ class PfcClosureTest extends TestCase
 
     public function test_register_login_logout_and_login_rate_limit(): void
     {
+        $this->withHeaders([
+            'Origin' => 'http://localhost',
+            'Referer' => 'http://localhost/',
+        ]);
+
         $this->postJson('/api/register', [
             'nombre' => 'Cliente Test',
             'email' => 'cliente@test.local',
             'password' => 'password123',
             'telefono' => '+34 600 000 001',
-        ])->assertCreated()->assertJsonStructure(['usuario', 'token']);
+        ])->assertCreated()->assertJsonStructure(['usuario']);
 
-        $login = $this->postJson('/api/login', [
+        $this->assertAuthenticated();
+
+        $this->postJson('/api/logout')->assertOk();
+        $this->app['auth']->forgetGuards();
+        $this->getJson('/api/user')->assertUnauthorized();
+
+        $this->postJson('/api/login', [
             'email' => 'cliente@test.local',
             'password' => 'password123',
-        ])->assertOk()->assertJsonStructure(['usuario', 'token']);
+        ])->assertOk()->assertJsonStructure(['usuario']);
 
-        $token = $login->json('token');
-
-        $this->withHeader('Authorization', "Bearer {$token}")
-            ->postJson('/api/logout')
-            ->assertOk();
+        $this->assertAuthenticated();
+        $this->postJson('/api/logout')->assertOk();
+        $this->app['auth']->forgetGuards();
+        $this->getJson('/api/user')->assertUnauthorized();
 
         for ($i = 0; $i < 5; $i++) {
             $this->postJson('/api/login', [

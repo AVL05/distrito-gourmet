@@ -25,6 +25,10 @@ jobs:
         run: npm ci
         working-directory: frontend
 
+      - name: Security audit
+        run: npm run audit:security
+        working-directory: frontend
+
       - name: Lint
         run: npm run lint
         working-directory: frontend
@@ -52,6 +56,10 @@ jobs:
         run: composer install --no-interaction --prefer-dist
         working-directory: backend
 
+      - name: Security audit
+        run: composer audit --locked
+        working-directory: backend
+
       - name: Prepare environment
         run: |
           cp .env.example .env
@@ -60,6 +68,10 @@ jobs:
 
       - name: Route list
         run: php artisan route:list --path=api
+        working-directory: backend
+
+      - name: Code style
+        run: vendor/bin/pint --test
         working-directory: backend
 
       - name: Tests

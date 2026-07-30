@@ -21,7 +21,7 @@ const sections = [
     body: [
       "La aplicación puede solicitar datos en formularios de registro, login, reserva, contacto o pedido para simular una experiencia completa de restaurante digital.",
       "No deben introducirse datos personales reales. Se recomienda usar nombres, correos, teléfonos y credenciales ficticias durante cualquier prueba.",
-      "También puede almacenarse información técnica local, como token de sesión de prueba, usuario simulado, carrito y preferencias necesarias para el funcionamiento de la SPA.",
+      "La sesión autenticada usa una cookie protegida que JavaScript no puede leer. El modo demo, el carrito y algunas preferencias sí pueden mantenerse localmente para el funcionamiento de la SPA.",
     ],
   },
   {

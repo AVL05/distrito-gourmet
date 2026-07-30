@@ -14,7 +14,7 @@
 ### Objetivos principales
 
 - Implementar una arquitectura desacoplada frontend/backend con API REST.
-- Aplicar buenas prácticas de seguridad (autenticación stateless, validación en ambas capas).
+- Aplicar buenas prácticas de seguridad (sesión SPA protegida, CSRF y validación en ambas capas).
 - Lograr una experiencia de usuario premium mediante animaciones y diseño editorial.
 - Garantizar la escalabilidad mediante contenedores Docker.
 
@@ -31,7 +31,7 @@ El proyecto adopta una arquitectura **Cliente–Servidor desacoplada** organizad
 │   Presentation Layer    │  React 19 SPA (Vite) — Puerto 5173 (dev) / 8001 (prod)
 │   frontend/src/         │
 └──────────┬──────────────┘
-           │ REST API (JSON) · Bearer Token (Sanctum)
+           │ REST API (JSON) · Sesión SPA (Sanctum)
 ┌──────────▼──────────────┐
 │   Application Layer     │  Laravel 12 API — Puerto 8000 (dev) / 8001/api (prod)
 │   backend/app/          │
@@ -237,14 +237,14 @@ php artisan route:list         # Lista todos los endpoints registrados
 
 ## 🔌 API REST — Referencia de Endpoints
 
-Todos los endpoints están bajo el prefijo `/api/`. La autenticación se realiza mediante **Bearer Token** en la cabecera `Authorization`.
+Todos los endpoints de negocio están bajo el prefijo `/api/`. La SPA se autentica mediante sesión de Laravel Sanctum en cookie `HttpOnly`, con protección CSRF.
 
 ### Autenticación (`/api/`)
 
 ```
 POST   /api/register           → Registro de usuario (público)
-POST   /api/login              → Login — devuelve { token, usuario } (público)
-POST   /api/logout             → Logout — invalida el token (auth)
+POST   /api/login              → Login — crea sesión y devuelve { usuario } (público)
+POST   /api/logout             → Logout — invalida la sesión (auth)
 GET    /api/user               → Datos del usuario autenticado (auth)
 ```
 
@@ -333,7 +333,7 @@ DELETE /api/admin/users/{id}   → Eliminar usuario (admin)
 | `reservas`                | Reservas de mesa con fecha, hora, comensales y estado                   |
 | `pedidos`                 | Cabecera de pedido; el flujo público actual crea pedidos Takeaway        |
 | `detalles_pedido`         | Líneas de pedido con referencia al ítem y precio unitario               |
-| `personal_access_tokens`  | Tokens Sanctum para autenticación stateless                             |
+| `personal_access_tokens`  | Compatibilidad de Sanctum con clientes API basados en token              |
 
 ### Diagrama de relaciones clave
 
@@ -371,17 +371,17 @@ platos ──── categorias_menu
 2. Laravel valida credenciales → crea PersonalAccessToken
         │
         ▼
-3. Respuesta: { token: "1|xxxx...", usuario: { id, nombre, rol } }
+3. Respuesta: { usuario: { id, nombre, rol } } y cookie de sesión HttpOnly
         │
         ▼
-4. Frontend guarda token en Zustand store (auth.js)
+4. Frontend guarda solo el usuario en memoria mediante Zustand (auth.js)
         │
         ▼
 5. Peticiones posteriores:
-   Header: Authorization: Bearer 1|xxxx...
+   Cookie de sesión enviada automáticamente con `withCredentials`
         │
         ▼
-6. Middleware auth:sanctum valida el token en cada request
+6. Middleware `auth:sanctum` valida la sesión en cada request
 ```
 
 ### Protección de Rutas en el Frontend

@@ -9,12 +9,19 @@ export { HAS_CONFIGURED_API };
 // Instancia de Axios preconfigurada para el backend
 const api = axios.create({
   baseURL: API_URL ? `${API_URL}/api` : "/api",
+  withCredentials: true,
+  withXSRFToken: true,
   headers: {
     Accept: "application/json",
   },
 });
 
-// Incluir automáticamente el token de autenticación en cada petición si existe en localStorage
+export const initializeCsrfProtection = () =>
+  axios.get(API_URL ? `${API_URL}/sanctum/csrf-cookie` : "/sanctum/csrf-cookie", {
+    withCredentials: true,
+    withXSRFToken: true,
+  });
+
 api.interceptors.request.use((config) => {
   if (IS_PUBLIC_DEMO && ["post", "put", "patch", "delete"].includes(config.method)) {
     return Promise.reject({
@@ -27,23 +34,17 @@ api.interceptors.request.use((config) => {
     });
   }
 
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    delete config.headers.Authorization;
-  }
   return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (!IS_PUBLIC_DEMO && error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      delete api.defaults.headers.common.Authorization;
-
+    if (
+      !IS_PUBLIC_DEMO &&
+      error.response?.status === 401 &&
+      !error.config?.skipAuthRedirect
+    ) {
       if (window.location.pathname !== "/login") {
         window.location.assign("/login");
       }

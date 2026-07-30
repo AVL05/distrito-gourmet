@@ -27,13 +27,13 @@
 |---|---|
 | **Base URL** | `/api` cuando frontend y backend comparten dominio. En desarrollo con Vite separado, configurar `VITE_API_URL` y usar `{VITE_API_URL}/api`. |
 | **Formato** | `Content-Type: application/json` en peticiones y respuestas. |
-| **Autenticación** | Bearer Token (Laravel Sanctum) en el header `Authorization: Bearer {token}` para las rutas protegidas. |
+| **Autenticación** | Sesión SPA de Laravel Sanctum mediante cookie `HttpOnly`; Axios envía credenciales y protección CSRF automáticamente. |
 | **Idioma** | Mensajes de respuesta en castellano. |
 | **Fechas** | Formato `YYYY-MM-DD`. |
 | **Horas** | Formato `HH:MM` (24h). |
 | **Paginación** | No aplica en los endpoints actuales; las listas se devuelven completas. |
 
-> 💡 Las rutas bajo `/api/admin/*` requieren, además del token válido, que el usuario autenticado tenga el rol `Administrador`.
+> 💡 Las rutas bajo `/api/admin/*` requieren una sesión válida y que el usuario autenticado tenga el rol `Administrador`.
 
 ---
 
@@ -77,6 +77,14 @@
 
 ### Registro
 
+Antes de cualquier petición que cree o modifique sesión, el cliente SPA obtiene la cookie CSRF:
+
+```text
+GET /sanctum/csrf-cookie
+```
+
+La cookie de sesión se devuelve mediante `Set-Cookie`, es `HttpOnly` y no se expone a JavaScript.
+
 ```
 POST /api/register
 ```
@@ -96,7 +104,6 @@ POST /api/register
 
 ```json
 {
-  "token": "1|xxxx...",
   "usuario": { "id": 4, "nombre": "Nuevo Cliente", "rol": "Cliente" }
 }
 ```
@@ -122,7 +129,6 @@ POST /api/login
 
 ```json
 {
-  "token": "1|xxxx...",
   "usuario": { "id": 1, "nombre": "Admin Michelin", "rol": "Administrador" }
 }
 ```
@@ -135,7 +141,6 @@ POST /api/login
 
 ```
 POST /api/logout
-Authorization: Bearer {token}
 ```
 
 **Respuesta:** `200 OK`
@@ -150,8 +155,9 @@ Authorization: Bearer {token}
 
 ```
 GET /api/user
-Authorization: Bearer {token}
 ```
+
+Las rutas protegidas reciben automáticamente la cookie de sesión. En despliegues con frontend y API en orígenes distintos deben configurarse `SANCTUM_STATEFUL_DOMAINS`, `CORS_ALLOWED_ORIGINS` y las opciones seguras de sesión.
 
 ---
 
@@ -246,7 +252,6 @@ POST /api/contact
 
 ```
 GET /api/reservations
-Authorization: Bearer {token}
 ```
 
 ---
@@ -255,7 +260,6 @@ Authorization: Bearer {token}
 
 ```
 POST /api/reservations
-Authorization: Bearer {token}
 ```
 
 **Body:**
@@ -296,7 +300,6 @@ Authorization: Bearer {token}
 
 ```
 POST /api/orders
-Authorization: Bearer {token}
 ```
 
 **Body:**
@@ -336,7 +339,6 @@ Authorization: Bearer {token}
 
 ```
 GET /api/orders
-Authorization: Bearer {token}
 ```
 
 ---
@@ -431,7 +433,7 @@ Devuelve KPIs para el panel:
 |---|---|
 | `200` | OK — Petición correcta |
 | `201` | Created — Recurso creado |
-| `401` | Unauthorized — Token ausente o inválido |
+| `401` | Unauthorized — Sesión ausente o inválida |
 | `403` | Forbidden — Usuario sin permisos suficientes |
 | `422` | Unprocessable Entity — Error de validación |
 | `429` | Too Many Requests — Rate limit alcanzado |
