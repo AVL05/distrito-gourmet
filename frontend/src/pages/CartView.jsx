@@ -18,6 +18,7 @@ import { Helmet } from "react-helmet-async";
 import { PageTransition, FadeIn } from "@/motion";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 import { getApiErrorMessage } from "@/utils/apiErrors";
+import { getPickupDate } from "@/utils/pickupDate";
 
 const buildPickupOptions = (validTimes) => {
   const options = [];
@@ -146,9 +147,7 @@ const CartView = () => {
       total: parseFloat(total),
       metodo_pago: paymentMethod,
       hora_recogida: selectedPickupTime.split("-")[1] || selectedPickupTime,
-      fecha_recogida: selectedPickupTime.startsWith("today")
-        ? new Date().toISOString().split("T")[0]
-        : new Date(Date.now() + 86400000).toISOString().split("T")[0],
+      fecha_recogida: getPickupDate(selectedPickupTime),
     };
 
     try {
