@@ -1,0 +1,96 @@
+name: Implementation task
+description: Define a scoped feature, refactor, test, documentation or maintenance task for human or AI implementation.
+title: "[Task] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for work that should be implemented through the normal **Issue → branch → validation → PR** workflow.
+
+        Keep the issue focused. If several independent outcomes are required, create separate issues.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What is the current situation and why is this work needed?
+      placeholder: Describe the problem or opportunity without prescribing unnecessary implementation details.
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should be true when this issue is complete?
+      placeholder: One clear outcome.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use verifiable criteria. These define completion for Codex/reviewers.
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals / out of scope
+      description: Explicitly state what must not be changed as part of this issue.
+      placeholder: |
+        - Do not migrate JavaScript to TypeScript.
+        - Do not redesign unrelated screens.
+        - Do not change public API contracts unless listed above.
+    validations:
+      required: false
+
+  - type: textarea
+    id: technical_notes
+    attributes:
+      label: Technical notes
+      description: Known files, architectural constraints, API contracts, edge cases or implementation hints.
+      placeholder: Optional. Prefer constraints and useful context over a full solution.
+    validations:
+      required: false
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Checks that must be performed before the PR is ready.
+      placeholder: |
+        - [ ] Relevant automated tests
+        - [ ] Frontend lint/build if frontend changes
+        - [ ] Laravel tests/Pint if backend changes
+        - [ ] Manual verification of ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: ui_evidence
+    attributes:
+      label: UI / evidence requirements
+      description: For visual changes, specify screenshots, viewport sizes or flows that should be demonstrated in the PR.
+      placeholder: Optional for non-UI work.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: agent_ready
+    attributes:
+      label: Ready for implementation
+      options:
+        - label: The scope is small enough for one PR.
+          required: true
+        - label: Acceptance criteria are testable or objectively reviewable.
+          required: true
+        - label: This issue does not request an implicit TypeScript migration or framework rewrite.
+          required: true
