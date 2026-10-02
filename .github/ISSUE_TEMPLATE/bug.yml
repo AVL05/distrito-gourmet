@@ -1,0 +1,92 @@
+name: Bug report
+description: Report a reproducible defect for scoped investigation and repair.
+title: "[Bug] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Provide enough evidence to reproduce the bug. A bug-fix PR should normally include a regression test when practical.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+      placeholder: Describe the defect in one or two clear paragraphs.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      placeholder: What should happen instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      placeholder: What happens now? Include exact errors when available.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Frontend
+        - Backend / API
+        - Authentication / authorization
+        - Reservations
+        - Orders / cart
+        - Catalogue
+        - Admin / staff
+        - Database
+        - Docker / deployment
+        - CI / tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Logs, response payloads, screenshots, affected route/endpoint, browser/device, or other useful context. Remove secrets before posting.
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] The reproduction no longer fails.
+        - [ ] A regression test covers the defect when practical.
+        - [ ] No unrelated behavior changes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      placeholder: List the automated and manual checks required for the affected area.
+    validations:
+      required: true
