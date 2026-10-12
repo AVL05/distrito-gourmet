@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { lazy, Suspense, useEffect } from "react";
 import MainLayout from "./layouts/MainLayout";
 import ScrollToTop from "./components/layout/ScrollToTop";
@@ -39,6 +39,7 @@ const PageLoader = () => (
 
 // Componente para proteger rutas que requieren autenticación
 const ProtectedRoute = ({ children, requireAdmin }) => {
+  const location = useLocation();
   const { initialized, isAuthenticated, isAdmin } = useAuthStore();
 
   if (!initialized) {
@@ -47,7 +48,7 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 
   // Si no está logueado, redirigir al login
   if (!isAuthenticated()) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ returnTo: location.pathname + location.search }} replace />;
   }
 
   // Si requiere admin y no lo es, redirigir al inicio

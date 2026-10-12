@@ -12,7 +12,7 @@ const NotFoundView = () => (
         / 404
       </span>
       <h1 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">
-        Página no <span className="italic font-normal text-primary">Encontrada</span>
+        Página no <span className="italic font-normal text-primary-hover">Encontrada</span>
       </h1>
       <div className="w-16 h-[1px] bg-text-main/10 mb-8" />
       <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
@@ -31,19 +31,19 @@ const NotFoundView = () => (
         </Link>
         <Link
           to="/menu"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary-hover hover:border-primary transition-colors font-medium"
         >
           Ver la carta
         </Link>
         <Link
           to="/reservations"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary-hover hover:border-primary transition-colors font-medium"
         >
           Reservar mesa
         </Link>
         <Link
           to="/contact"
-          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary hover:border-primary transition-colors font-medium"
+          className="font-body text-[12px] uppercase tracking-[2px] text-text-main border border-text-main/20 px-8 py-4 hover:text-primary-hover hover:border-primary transition-colors font-medium"
         >
           Contacto
         </Link>

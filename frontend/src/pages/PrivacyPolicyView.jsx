@@ -115,13 +115,13 @@ const PrivacyPolicyView = () => (
         <div className="mt-14 pt-8 border-t border-text-main/10 flex flex-col sm:flex-row gap-4 sm:gap-8">
           <Link
             to="/legal"
-            className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+            className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary-hover hover:border-primary transition-colors font-medium"
           >
             Aviso legal
           </Link>
           <Link
             to="/cookies"
-            className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors font-medium"
+            className="font-body text-[11px] uppercase tracking-[2px] text-text-main border-b border-text-main pb-1 hover:text-primary-hover hover:border-primary transition-colors font-medium"
           >
             Política de cookies
           </Link>

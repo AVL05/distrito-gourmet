@@ -1,4 +1,5 @@
 export const getPickupDate = (pickupTime, now = new Date()) => {
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(pickupTime)) return pickupTime.split("T")[0];
   const date = new Date(now);
 
   if (pickupTime.startsWith("tomorrow")) {

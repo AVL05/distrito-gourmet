@@ -33,7 +33,7 @@ const ForgotPasswordView = () => {
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
 
         <div className="text-center mb-10">
-          <span className="text-primary text-[10px] uppercase tracking-[5px] font-body block mb-4">
+          <span className="text-primary-hover text-[10px] uppercase tracking-[5px] font-body block mb-4">
             Recuperación
           </span>
           <h1 className="font-heading text-[1.8rem] sm:text-4xl text-text-main uppercase tracking-[0.05em] sm:tracking-widest">
@@ -48,7 +48,7 @@ const ForgotPasswordView = () => {
             </p>
             <NavLink
               to="/login"
-              className="text-primary hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors"
+              className="text-primary-hover hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors"
             >
               Volver al acceso
             </NavLink>

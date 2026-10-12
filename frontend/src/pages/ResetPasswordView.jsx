@@ -55,7 +55,7 @@ const ResetPasswordView = () => {
         text: "Su contraseña se ha actualizado. Por favor, inicie sesión.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
         timer: 2500,
       });
 
@@ -76,7 +76,7 @@ const ResetPasswordView = () => {
           </p>
           <NavLink
             to="/forgot-password"
-            className="text-primary hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors"
+            className="text-primary-hover hover:text-primary-hover font-bold text-[11px] uppercase tracking-[3px] transition-colors"
           >
             Solicitar nuevo enlace
           </NavLink>
@@ -92,7 +92,7 @@ const ResetPasswordView = () => {
         <div className="absolute top-0 left-0 w-full h-1 bg-primary"></div>
 
         <div className="text-center mb-10">
-          <span className="text-primary text-[10px] uppercase tracking-[5px] font-body block mb-4">
+          <span className="text-primary-hover text-[10px] uppercase tracking-[5px] font-body block mb-4">
             Nueva Contraseña
           </span>
           <h1 className="font-heading text-[1.8rem] sm:text-4xl text-text-main uppercase tracking-[0.05em] sm:tracking-widest">

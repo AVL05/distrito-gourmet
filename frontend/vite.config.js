@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const backendTarget = env.VITE_API_URL?.trim();
+  const backendTarget = env.VITE_PROXY_TARGET?.trim() || env.VITE_API_URL?.trim();
 
   return {
     server: {

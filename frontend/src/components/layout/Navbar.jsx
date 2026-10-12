@@ -1,12 +1,14 @@
 import { useAuthStore } from "@/store/auth";
 import { useCartStore } from "@/store/cart";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Barra de navegación principal con overlay a pantalla completa.
 // Gestiona el menú modal, cambios al hacer scroll y accesos dinámicos según sesión y carrito
 const Navbar = () => {
+  const root = useRef(null);
+  const menu = useRef(null);
   const { isAuthenticated, isAdmin, logout } = useAuthStore();
   const { totalItems } = useCartStore();
   const navigate = useNavigate();
@@ -36,12 +38,28 @@ const Navbar = () => {
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    const previous = document.activeElement;
+    const content = [document.querySelector('main'), document.querySelector('footer'), document.querySelector('.skip-link')].filter(Boolean);
+    content.forEach((element) => { element.inert = true; });
+    menu.current.querySelector('a')?.focus();
+
     const handleKeyDown = (event) => {
       if (event.key === "Escape") setIsOpen(false);
+      if (event.key === "Tab") {
+        const targets = [...root.current.querySelectorAll('a[href], button:not([disabled])')].filter((element) => element.getClientRects().length && !element.closest('[inert]'));
+        const first = targets[0];
+        const last = targets[targets.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      content.forEach((element) => { element.inert = false; });
+      previous?.focus();
+    };
   }, [isOpen]);
 
   // Finalizar sesión y redirigir al login
@@ -67,14 +85,8 @@ const Navbar = () => {
     { to: "/reservations", label: "Reservas" },
     { to: "/contact", label: "Contacto" },
   ];
-  const socialLinks = [
-    { label: "Instagram", text: "Ig" },
-    { label: "Facebook", text: "Fb" },
-    { label: "TikTok", text: "Tk" },
-  ];
-
   return (
-    <div>
+    <div ref={root} role={isOpen ? "dialog" : undefined} aria-modal={isOpen || undefined} aria-label={isOpen ? "Navegación" : undefined}>
       <nav
         className={
           isAdminPage
@@ -100,11 +112,11 @@ const Navbar = () => {
               to="/cart"
               onClick={closeMenu}
               className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
-              title="Selección"
-              aria-label={`Ver selección (${totalItems()} artículos)`}
+              title="Carrito"
+              aria-label={`Ver carrito (${totalItems()} artículos)`}
             >
               <svg
-                className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary"
+                className="w-[18px] h-[18px] group-hover:scale-110 transition-transform group-hover:text-primary-hover"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -138,21 +150,23 @@ const Navbar = () => {
               >
                 Distrito
               </span>
-              <span className="font-heading text-[9px] sm:text-[10px] md:text-xs text-primary italic tracking-[0.24em] sm:tracking-[0.3em] leading-none mt-[2px]">
+              <span className="font-heading text-[9px] sm:text-[10px] md:text-xs text-primary-hover italic tracking-[0.24em] sm:tracking-[0.3em] leading-none mt-[2px]">
                 Gourmet
               </span>
             </NavLink>
           )}
 
+          <div className="flex items-center gap-6">
           <button
             className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-[70] ${
               isAdminPage && !isOpen
                 ? "h-11 w-11 border border-text-main/10 bg-bg-body/90 p-2 shadow-sm backdrop-blur"
-                : "w-8 h-8 bg-transparent"
+                : "w-11 h-11 bg-transparent"
             }`}
             onClick={toggleMenu}
             aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={isOpen}
+            aria-controls="navigation-menu"
           >
             <span
               className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 -rotate-45 translate-x-[2px]" : "bg-text-main w-6"}`}
@@ -164,11 +178,16 @@ const Navbar = () => {
               className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 rotate-45 translate-x-[2px]" : "bg-text-main w-5"}`}
             />
           </button>
+          </div>
         </div>
       </nav>
 
       <div
-        className={`fixed inset-0 z-[55] bg-text-main overflow-hidden transition-[clip-path] duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+        ref={menu}
+        id="navigation-menu"
+        inert={!isOpen}
+        aria-hidden={!isOpen}
+        className={`fixed inset-0 z-[55] bg-text-main overflow-x-clip transition-[clip-path] duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
           isOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
         style={{
@@ -177,7 +196,7 @@ const Navbar = () => {
       >
         <div
           className="absolute inset-0 bg-cover bg-center opacity-[0.07] grayscale"
-          style={{ backgroundImage: "url('/sala_de_restaurante.png')" }}
+          style={{ backgroundImage: "url('/sala-restaurante.webp')" }}
           onClick={closeMenu}
         />
         <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-white/5 hidden md:block" />
@@ -210,15 +229,15 @@ const Navbar = () => {
                     }`
                   }
                 >
-                  <span className="font-body text-[10px] md:text-[11px] text-primary tracking-[0.2em] w-6 md:w-8 shrink-0 font-bold">
+                  <span className="font-body text-[10px] md:text-[11px] text-primary-hover tracking-[0.2em] w-6 md:w-8 shrink-0 font-bold">
                     {romanNumerals[i]}
                   </span>
-                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-6xl lg:text-[5.25rem] 2xl:text-[5.75rem] text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary transition-colors duration-500 group-hover:italic break-words">
+                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-6xl lg:text-[5.25rem] 2xl:text-[5.75rem] text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary-hover transition-colors duration-500 group-hover:italic break-words">
                     {link.label}
                   </span>
                 </NavLink>
                 {i < mainLinks.length - 1 && (
-                  <div className="w-full h-[1px] bg-white/5 ml-10 md:ml-16" />
+                  <div className="h-[1px] bg-white/5 ml-10 md:ml-16" />
                 )}
               </div>
             ))}
@@ -229,7 +248,7 @@ const Navbar = () => {
               }`}
               style={{ transitionDelay: isOpen ? "440ms" : "0ms" }}
             >
-              <span className="text-primary text-[10px] uppercase tracking-[4px] font-body font-bold mb-2">
+              <span className="text-primary-hover text-[10px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Acceso
               </span>
               <div className="flex flex-wrap gap-x-6 md:gap-x-8 gap-y-3">
@@ -238,16 +257,16 @@ const Navbar = () => {
                     <NavLink
                       to="/admin"
                       onClick={closeMenu}
-                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                      className="text-bg-body/60 hover:text-primary-hover text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
                     >
                       Administración
                     </NavLink>
                     <NavLink
                       to="/dashboard"
                       onClick={closeMenu}
-                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                      className="text-bg-body/60 hover:text-primary-hover text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
                     >
-                      Área Personal
+                      Mi cuenta
                     </NavLink>
                     <span className="text-bg-body/40 text-[11px] font-body uppercase tracking-[2px]">
                       Vista pública
@@ -259,7 +278,7 @@ const Navbar = () => {
                       <NavLink
                         to="/admin"
                         onClick={closeMenu}
-                        className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                        className="text-bg-body/60 hover:text-primary-hover text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
                       >
                         Administración
                       </NavLink>
@@ -267,16 +286,16 @@ const Navbar = () => {
                     <NavLink
                       to="/dashboard"
                       onClick={closeMenu}
-                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                      className="text-bg-body/60 hover:text-primary-hover text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
                     >
-                      Área Personal
+                      Mi cuenta
                     </NavLink>
                     <button
                       onClick={() => {
                         handleLogout();
                         closeMenu();
                       }}
-                      className="text-bg-body/40 hover:text-primary text-[11px] font-body uppercase tracking-[2px] transition-colors border-b border-bg-body/20 hover:border-primary pb-[2px]"
+                      className="text-bg-body/40 hover:text-primary-hover text-[11px] font-body uppercase tracking-[2px] transition-colors border-b border-bg-body/20 hover:border-primary pb-[2px]"
                     >
                       Cerrar Sesión
                     </button>
@@ -286,14 +305,14 @@ const Navbar = () => {
                     <NavLink
                       to="/login"
                       onClick={closeMenu}
-                      className="text-bg-body/60 hover:text-primary text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
+                      className="text-bg-body/60 hover:text-primary-hover text-sm md:text-base font-heading tracking-widest uppercase transition-colors"
                     >
                       Iniciar Sesión
                     </NavLink>
                     <NavLink
                       to="/register"
                       onClick={closeMenu}
-                      className="text-bg-body/40 hover:text-primary text-[11px] font-body uppercase tracking-[2px] transition-colors border-b border-bg-body/20 hover:border-primary pb-[2px]"
+                      className="text-bg-body/40 hover:text-primary-hover text-[11px] font-body uppercase tracking-[2px] transition-colors border-b border-bg-body/20 hover:border-primary pb-[2px]"
                     >
                       Crear Cuenta
                     </NavLink>
@@ -310,41 +329,14 @@ const Navbar = () => {
             style={{ transitionDelay: isOpen ? "520ms" : "0ms" }}
           >
             <div className="flex flex-col gap-1">
-              <span className="text-primary text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">
+              <span className="text-primary-hover text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">
                 Reservas
               </span>
-              <span className="text-bg-body/50 text-[12px] font-body tracking-widest">
-                +34 960 00 00 00
-              </span>
-              <span className="text-bg-body/50 text-[12px] font-body tracking-widest">
-                reservas@distritogourmet.es
-              </span>
+              <a href="tel:+34960000000" className="text-bg-body text-sm underline">+34 960 00 00 00</a>
+              <a href="mailto:reservas@distritogourmet.es" className="text-bg-body text-sm underline break-all">reservas@distritogourmet.es</a>
             </div>
 
-            <div className="hidden md:flex flex-col gap-1 text-center">
-              <span className="text-primary text-[9px] uppercase tracking-[4px] font-body font-bold mb-2">
-                Servicio
-              </span>
-              <span className="text-bg-body/40 text-[11px] font-body tracking-widest">
-                Mar–Dom 13:30–15:30 · Mar–Sáb 20:30–22:30
-              </span>
-            </div>
 
-            <div className="flex items-center gap-6">
-              {socialLinks.map((link, index) => (
-                <div key={link.label} className="flex items-center gap-6">
-                  <span
-                    aria-label={link.label}
-                    className="text-bg-body/40 hover:text-primary transition-colors text-[11px] font-body tracking-[3px] uppercase"
-                  >
-                    {link.text}
-                  </span>
-                  {index < socialLinks.length - 1 && (
-                    <span className="text-bg-body/10">|</span>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

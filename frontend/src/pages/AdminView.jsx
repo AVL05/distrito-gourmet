@@ -104,7 +104,7 @@ const orderItemsText = (order) =>
     .join(", ") || "Sin detalle";
 
 const statusTone = {
-  Pendiente: "border-primary/30 bg-primary/10 text-primary",
+  Pendiente: "border-primary/30 bg-primary/10 text-primary-hover",
   Preparando: "border-amber-500/30 bg-amber-500/10 text-amber-700",
   Listo: "border-emerald-700/25 bg-emerald-700/10 text-emerald-800",
   Entregado: "border-text-main/15 bg-text-main/5 text-text-muted",
@@ -569,7 +569,7 @@ const AdminView = () => {
               type="button"
               disabled={savingKey === `order-${order.id}`}
               onClick={() => handleUpdateOrderStatus(order.id, "Preparando")}
-              className="border border-primary/30 bg-primary/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary transition hover:bg-primary hover:text-white disabled:opacity-50"
+              className="border border-primary/30 bg-primary/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary-hover transition hover:bg-primary hover:text-white disabled:opacity-50"
             >
               Preparar
             </button>
@@ -614,11 +614,7 @@ const AdminView = () => {
             }
             className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
           >
-            <option value="Pendiente">Pendiente</option>
-            <option value="Preparando">Preparando</option>
-            <option value="Listo">Listo</option>
-            <option value="Entregado">Entregado</option>
-            <option value="Cancelado">Cancelado</option>
+            {["Pendiente", "Preparando", "Listo", "Entregado", "Cancelado"].map((status) => <option key={status} value={status} disabled={status !== order.estado && !({ Pendiente: ["Preparando", "Cancelado"], Preparando: ["Listo", "Cancelado"], Listo: ["Entregado", "Cancelado"] }[order.estado] || []).includes(status)}>{status}</option>)}
           </select>
           {order.estado === "Cancelado" && (
             <button
@@ -877,12 +873,12 @@ const AdminView = () => {
                 >
                   <header className="flex items-center justify-between border-b border-text-main/10 bg-bg-surface px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Icon className="text-primary" />
+                      <Icon className="text-primary-hover" />
                       <h3 className="text-sm font-semibold text-text-main">
                         {column.title}
                       </h3>
                     </div>
-                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                    <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary-hover">
                       {orders.length}
                     </span>
                   </header>
@@ -988,7 +984,7 @@ const AdminView = () => {
                   <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-text-muted">
                     {group.title}
                   </h3>
-                  <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                  <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary-hover">
                     {reservations.length}
                   </span>
                 </div>
@@ -1034,7 +1030,7 @@ const AdminView = () => {
       className={adminFormClass}
     >
       <div className={adminFormHeaderClass}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-hover">
           Alta rápida
         </p>
         <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
@@ -1207,7 +1203,7 @@ const AdminView = () => {
           className={adminFormClass}
         >
           <div className={adminFormHeaderClass}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-hover">
               Alta rápida
             </p>
             <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
@@ -1362,7 +1358,7 @@ const AdminView = () => {
           className={adminFormClass}
         >
           <div className={adminFormHeaderClass}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-hover">
               Alta rápida
             </p>
             <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
@@ -1501,7 +1497,7 @@ const AdminView = () => {
           className={adminFormClass}
         >
           <div className={adminFormHeaderClass}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-hover">
               Alta rápida
             </p>
             <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
@@ -1634,7 +1630,7 @@ const AdminView = () => {
           className={adminFormClass}
         >
           <div className={adminFormHeaderClass}>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary-hover">
               Alta rápida
             </p>
             <h3 className="mt-1 font-heading text-2xl font-normal tracking-[0.08em] text-text-main">
@@ -1768,7 +1764,7 @@ const AdminView = () => {
       <div className="grid min-h-screen lg:grid-cols-[280px_1fr]">
         <aside className="hidden border-r border-text-main/10 bg-text-main text-bg-body lg:flex lg:flex-col">
           <div className="border-b border-bg-body/10 px-6 py-6">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-primary-hover">
               Distrito Gourmet
             </p>
             <h1 className="mt-3 font-heading text-3xl font-normal tracking-[0.12em] text-bg-body">
@@ -1796,7 +1792,7 @@ const AdminView = () => {
                 >
                   <Icon
                     className={`text-lg ${
-                      isActive ? "text-primary" : "text-bg-body/45"
+                      isActive ? "text-primary-hover" : "text-bg-body/45"
                     }`}
                   />
                   <span>
@@ -1832,7 +1828,7 @@ const AdminView = () => {
             <div className="flex flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary-hover">
                     <ActiveIcon />
                     {activeMeta?.description}
                   </div>

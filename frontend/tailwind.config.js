@@ -1,6 +1,4 @@
-import typography from "@tailwindcss/typography";
 import forms from "@tailwindcss/forms";
-import aspectRatio from "@tailwindcss/aspect-ratio";
 
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -13,7 +11,7 @@ export default {
       },
       colors: {
         primary: "#A68A56",
-        "primary-hover": "#8D7344",
+        "primary-hover": "#81683C",
         // Tono más luminoso para hovers sobre fondos oscuros (ej. sección negra del hero)
         "primary-light": "#C4A46E",
         "bg-body": "#FCFBF8",
@@ -43,5 +41,5 @@ export default {
       },
     },
   },
-  plugins: [typography, forms, aspectRatio],
+  plugins: [forms],
 };

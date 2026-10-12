@@ -1,3 +1,6 @@
+import MyReservations from "@/components/MyReservations";
+import { IS_PUBLIC_DEMO } from "@/config/demo";
+import { demoAdminData } from "@/data/demoAdmin";
 import { Helmet } from "react-helmet-async";
 import { useAuthStore } from "@/store/auth";
 import { Link } from "react-router-dom";
@@ -10,6 +13,7 @@ import {
   StaggerList,
   StaggerItem,
   HoverCard,
+  useReducedMotion,
 } from "@/motion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -18,6 +22,7 @@ gsap.registerPlugin(useGSAP);
 
 // Este es cada pedido de la lista. Tiene la lógica para abrir y cerrar los detalles.
 const OrderItem = ({ order }) => {
+  const reduced = useReducedMotion();
   const [showDetails, setShowDetails] = useState(false);
   const detailsRef = useRef(null);
 
@@ -28,14 +33,14 @@ const OrderItem = ({ order }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Recibido":
+      case "Pendiente":
         return "text-blue-500 bg-blue-500/10 border-blue-500/20";
       case "Preparando":
         return "text-amber-500 bg-amber-500/10 border-amber-500/20";
       case "Listo":
         return "text-green-500 bg-green-500/10 border-green-500/20";
-      case "Recogido":
-        return "text-primary bg-primary/10 border-primary/20";
+      case "Entregado":
+        return "text-primary-hover bg-primary/10 border-primary/20";
       case "Cancelado":
         return "text-red-500 bg-red-500/10 border-red-500/20";
       default:
@@ -45,14 +50,14 @@ const OrderItem = ({ order }) => {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case "Recibido":
+      case "Pendiente":
         return "Recibido";
       case "Preparando":
         return "Preparando";
       case "Listo":
         return "Listo para Recogida";
-      case "Recogido":
-        return "Recogido";
+      case "Entregado":
+        return "Entregado";
       case "Cancelado":
         return "Cancelado";
       default:
@@ -63,6 +68,10 @@ const OrderItem = ({ order }) => {
   // Animación suave con GSAP para cuando se despliegan los platos del pedido
   useGSAP(
     () => {
+      if (reduced) {
+        gsap.set(detailsRef.current, { height: showDetails ? 'auto' : 0, opacity: showDetails ? 1 : 0 });
+        return;
+      }
       if (showDetails) {
         gsap.fromTo(
           detailsRef.current,
@@ -78,14 +87,14 @@ const OrderItem = ({ order }) => {
         });
       }
     },
-    { dependencies: [showDetails] },
+    { dependencies: [showDetails, reduced], revertOnUpdate: true },
   );
 
   return (
     <div className="group relative bg-bg-surface/50 border border-text-main/10 p-6 sm:p-8 hover:bg-text-main/[0.07] transition-[border-color,box-shadow] duration-300 rounded-sm">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-start gap-4 flex-1">
-          <div className="w-12 h-12 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary rounded-sm mt-1 flex-shrink-0">
+          <div className="w-12 h-12 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-hover rounded-sm mt-1 flex-shrink-0">
             <HiShoppingBag size={20} />
           </div>
           <div className="flex-1 min-w-0">
@@ -103,13 +112,13 @@ const OrderItem = ({ order }) => {
               <span className="flex items-center gap-1.5 font-medium">
                 <HiClock size={16} className="text-primary/70" /> {date}
               </span>
-              {pickupTime && order.estado !== "Recogido" && (
-                <span className="flex items-center gap-1.5 font-medium text-primary">
+              {pickupTime && order.estado !== "Entregado" && (
+                <span className="flex items-center gap-1.5 font-medium text-primary-hover">
                   <HiCheckCircle size={16} /> Recogida a las {pickupTime}
                 </span>
               )}
-              {order.estado === "Recogido" && (
-                <span className="flex items-center gap-1.5 font-medium text-primary opacity-70">
+              {order.estado === "Entregado" && (
+                <span className="flex items-center gap-1.5 font-medium text-primary-hover opacity-70">
                   <HiCheckCircle size={16} /> Finalizado
                 </span>
               )}
@@ -122,6 +131,8 @@ const OrderItem = ({ order }) => {
 
         <div className="flex items-center gap-4 w-full md:w-auto">
           <button
+            aria-expanded={showDetails}
+            aria-controls={`order-details-${order.id}`}
             onClick={() => setShowDetails(!showDetails)}
             className="w-full md:w-auto px-6 py-2 bg-text-main text-bg-body text-[10px] uppercase tracking-[2px] font-bold hover:bg-primary-hover transition-[border-color,box-shadow] duration-300"
           >
@@ -130,7 +141,7 @@ const OrderItem = ({ order }) => {
         </div>
       </div>
 
-      <div ref={detailsRef} className="overflow-hidden h-0 opacity-0">
+      <div ref={detailsRef} id={`order-details-${order.id}`} aria-hidden={!showDetails} inert={!showDetails} className="overflow-hidden h-0 opacity-0">
         <div className="mt-8 pt-8 border-t border-text-main/10 space-y-6">
           <p className="text-[10px] uppercase tracking-[3px] text-text-muted font-bold flex items-center gap-2">
             <span className="w-1 h-1 bg-primary rounded-full"></span> Detalle
@@ -144,7 +155,7 @@ const OrderItem = ({ order }) => {
                 className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/[0.02] px-2 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <span className="w-7 h-7 flex items-center justify-center bg-primary/5 text-[10px] font-bold text-primary border border-primary/10 rounded-full">
+                  <span className="w-7 h-7 flex items-center justify-center bg-primary/5 text-[10px] font-bold text-primary-hover border border-primary/10 rounded-full">
                     {item.cantidad}
                   </span>
                   <div className="flex flex-col">
@@ -181,19 +192,19 @@ const OrderItem = ({ order }) => {
                 Resumen de Pago
               </span>
               <span className="text-[12px] font-medium italic opacity-70">
-                Abonado mediante:{" "}
+                Forma de pago elegida:{" "}
                 {order.metodo_pago === "card"
                   ? "Tarjeta Bancaria"
                   : order.metodo_pago === "paypal"
                     ? "PayPal"
-                    : "Efectivo en Local"}
+                    : "Pago en el local (sin cobro online)"}
               </span>
             </div>
             <div className="text-right">
               <div className="text-[10px] uppercase tracking-[3px] text-text-muted mb-1 font-bold">
                 Suma Total
               </div>
-              <div className="text-2xl font-heading text-primary leading-none">
+              <div className="text-2xl font-heading text-primary-hover leading-none">
                 {parseFloat(order.total).toFixed(2)}€
               </div>
             </div>
@@ -208,33 +219,33 @@ const OrderItem = ({ order }) => {
 const DashboardView = () => {
   const { user, logout, isAdmin } = useAuthStore();
   const [orders, setOrders] = useState([]);
+  const [orderError, setOrderError] = useState("");
+  const [orderRetry, setOrderRetry] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const totalSpent = orders.reduce(
-    (total, order) => total + Number.parseFloat(order.total || 0),
-    0,
-  );
-  const activeOrders = orders.filter(
-    (order) => !["Recogido", "Cancelado", "Entregado"].includes(order.estado),
-  ).length;
 
   useEffect(() => {
+    let cancelled = false;
     const fetchOrders = async () => {
+      if (IS_PUBLIC_DEMO) { setOrders(demoAdminData.orders); setIsLoading(false); return; }
+      setIsLoading(true);
       try {
         const response = await axios.get("/orders");
         const ordersData = Array.isArray(response.data)
           ? response.data
           : response.data?.data;
 
-        setOrders(Array.isArray(ordersData) ? ordersData : []);
+        if (!Array.isArray(ordersData)) throw new Error("Invalid orders");
+        if (!cancelled) { setOrders(ordersData); setOrderError(""); }
       } catch (error) {
         console.error("Error fetching orders:", error);
-        setOrders([]);
+        if (!cancelled) setOrderError("No pudimos cargar sus pedidos.");
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
     fetchOrders();
-  }, []);
+    return () => { cancelled = true; };
+  }, [orderRetry]);
 
   return (
     <PageTransition className="min-h-screen bg-bg-body pt-24 sm:pt-32 pb-32 px-4 relative overflow-hidden">
@@ -247,7 +258,7 @@ const DashboardView = () => {
       <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-6 md:px-12 4k:px-24 ultra:px-32">
         <FadeIn className="flex flex-col md:flex-row justify-between items-end mb-12 sm:mb-16 gap-6 sm:gap-8 border-b border-text-main/10 pb-8">
           <div>
-            <span className="block text-primary text-[10px] uppercase tracking-[5px] mb-3 font-body opacity-90">
+            <span className="block text-primary-hover text-[10px] uppercase tracking-[5px] mb-3 font-body opacity-90">
               Área Privada
             </span>
             <h1 className="font-heading text-4xl sm:text-5xl text-text-main uppercase tracking-widest leading-tight">
@@ -261,9 +272,6 @@ const DashboardView = () => {
               <p className="text-text-muted font-normal tracking-wide text-sm">
                 {user?.email} {user?.telefono && ` | ${user.telefono}`}
               </p>
-              <span className="text-[9px] bg-black text-white px-2 py-0.5 rounded-sm font-bold uppercase tracking-widest">
-                Miembro Gourmet
-              </span>
             </div>
           </div>
           <button
@@ -280,8 +288,8 @@ const DashboardView = () => {
         <StaggerList className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
-              <Link to="/reservations" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
+              <Link to="/reservations?tab=history" className="block h-full relative z-10">
+                <span className="text-primary-hover text-3xl mb-6 block font-normal opacity-80 ">
                   ✦
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
@@ -293,8 +301,8 @@ const DashboardView = () => {
                   historial de visitas.
                 </p>
                 <div className="mt-auto">
-                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
-                    Ver Detalles{" "}
+                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
+                    Ver mis reservas{" "}
                     <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
@@ -306,7 +314,7 @@ const DashboardView = () => {
             <StaggerItem>
               <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-6 sm:p-8 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.25)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
                 <Link to="/admin" className="block h-full relative z-10">
-                  <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
+                  <span className="text-primary-hover text-3xl mb-6 block font-normal opacity-80 ">
                     ⚙
                   </span>
                   <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
@@ -320,7 +328,7 @@ const DashboardView = () => {
                     usuarios del sistema.
                   </p>
                   <div className="mt-auto">
-                    <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-primary-hover">
+                    <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-primary-hover">
                       Acceder al Panel{" "}
                       <span className="w-6 h-[1px] bg-primary group-hover:bg-primary-hover transition-colors"></span>
                     </span>
@@ -333,7 +341,7 @@ const DashboardView = () => {
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-text-main/10 p-6 sm:p-8 hover:border-primary/40 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
               <Link to="/profile" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
+                <span className="text-primary-hover text-3xl mb-6 block font-normal opacity-80 ">
                   ✧
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
@@ -341,11 +349,10 @@ const DashboardView = () => {
                   <span className="italic text-primary-hover">Personales</span>
                 </h3>
                 <p className="text-text-muted text-sm font-normal leading-relaxed mb-8">
-                  Actualice sus preferencias, alergias y configuración de
-                  contacto.
+                  Actualice su nombre, correo, teléfono o contraseña.
                 </p>
                 <div className="mt-auto">
-                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
+                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
                     Editar Perfil{" "}
                     <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
@@ -357,7 +364,7 @@ const DashboardView = () => {
           <StaggerItem>
             <HoverCard className="group bg-bg-surface/90 backdrop-blur-md border border-primary/20 p-6 sm:p-8 hover:border-primary/60 hover:shadow-[0_0_40px_rgba(166,138,86,0.15)] transition-[border-color,box-shadow] duration-300 cursor-pointer relative overflow-hidden h-full">
               <Link to="/menu" className="block h-full relative z-10">
-                <span className="text-primary text-3xl mb-6 block font-normal opacity-80 ">
+                <span className="text-primary-hover text-3xl mb-6 block font-normal opacity-80 ">
                   ⋆
                 </span>
                 <h3 className="font-heading text-2xl text-text-main mb-3 tracking-wide">
@@ -369,7 +376,7 @@ const DashboardView = () => {
                   disfrutar en casa.
                 </p>
                 <div className="mt-auto">
-                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary transition-all group-hover:text-text-main">
+                  <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
                     Ver Menú{" "}
                     <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
@@ -379,25 +386,8 @@ const DashboardView = () => {
           </StaggerItem>
         </StaggerList>
 
-        <FadeIn className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            ["Pedidos activos", activeOrders],
-            ["Historial total", orders.length],
-            ["Importe total", `${totalSpent.toFixed(2)}€`],
-          ].map(([label, value]) => (
-            <div
-              key={label}
-              className="border border-text-main/10 bg-bg-surface/90 p-5"
-            >
-              <span className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-2">
-                {label}
-              </span>
-              <span className="font-heading text-3xl text-text-main">
-                {value}
-              </span>
-            </div>
-          ))}
-        </FadeIn>
+
+        <section className="mt-12"><h2 className="font-heading text-2xl normal-case">Mis reservas</h2><MyReservations /></section>
 
         <FadeIn
           delay={0.3}
@@ -418,6 +408,7 @@ const DashboardView = () => {
           </div>
 
           <div>
+            {orderError && <div role="alert" className="mb-5 text-red-800"><p>{orderError}</p><button className="btn mt-3" onClick={() => setOrderRetry((value) => value + 1)}>Reintentar pedidos</button></div>}
             {isLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((item) => (
@@ -442,13 +433,13 @@ const DashboardView = () => {
                   <OrderItem key={order.id} order={order} />
                 ))}
               </div>
-            ) : (
+            ) : !orderError ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="w-16 h-16 bg-text-main/5 border border-text-main/10 flex items-center justify-center text-text-main/20 rounded-full mb-8">
                   <HiShoppingBag size={32} />
                 </div>
                 <p className="text-text-main font-heading text-2xl mb-4 italic font-normal">
-                  Sin Registros
+                  Aún no tiene pedidos
                 </p>
                 <p className="text-text-muted font-body font-normal text-sm max-w-xs mx-auto mb-10 leading-relaxed">
                   Aún no ha realizado ningún pedido gourmet para llevar.
@@ -460,7 +451,7 @@ const DashboardView = () => {
                   Explorar la Carta
                 </Link>
               </div>
-            )}
+            ) : null}
           </div>
         </FadeIn>
       </div>

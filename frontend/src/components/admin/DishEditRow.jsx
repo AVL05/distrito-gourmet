@@ -39,7 +39,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
     return (
       <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-sm transition-all">
         <div className="flex justify-between items-start mb-2">
-          <h4 className="text-primary font-heading text-xl uppercase tracking-widest">
+          <h4 className="text-primary-hover font-heading text-xl uppercase tracking-widest">
             Editando Plato
           </h4>
           <span className="text-[10px] text-text-muted font-bold opacity-40">
@@ -154,7 +154,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
                 }
                 className="w-4 h-4 accent-primary"
               />
-              <span className="text-[11px] uppercase tracking-[1px] text-text-muted group-hover:text-primary transition-colors">
+              <span className="text-[11px] uppercase tracking-[1px] text-text-muted group-hover:text-primary-hover transition-colors">
                 P/ Unidad
               </span>
             </label>
@@ -167,7 +167,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
                 }
                 className="w-4 h-4 accent-primary"
               />
-              <span className="text-[11px] uppercase tracking-[1px] text-text-muted group-hover:text-primary transition-colors">
+              <span className="text-[11px] uppercase tracking-[1px] text-text-muted group-hover:text-primary-hover transition-colors">
                 Disponible
               </span>
             </label>
@@ -199,11 +199,11 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
       <div>
         <div className="flex justify-between items-start mb-6">
           <div className="flex flex-col gap-2">
-            <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
+            <span className="text-primary-hover text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
               {item.categoria?.nombre}
             </span>
             {!item.disponible && (
-              <div className="bg-primary/10 text-primary text-[7px] px-2 py-0.5 uppercase tracking-widest font-bold border border-primary/20 w-fit">
+              <div className="bg-primary/10 text-primary-hover text-[7px] px-2 py-0.5 uppercase tracking-widest font-bold border border-primary/20 w-fit">
                 Solo en Menús
               </div>
             )}
@@ -211,7 +211,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
           <div className="flex gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0">
             <button
               onClick={() => setIsEditing(true)}
-              className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold"
+              className="text-text-main hover:text-primary-hover text-[10px] uppercase tracking-[2px] font-bold"
             >
               Editar
             </button>
@@ -224,7 +224,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
           </div>
         </div>
 
-        <h4 className="text-text-main font-heading text-2xl mb-3 leading-tight group-hover:text-primary transition-colors">
+        <h4 className="text-text-main font-heading text-2xl mb-3 leading-tight group-hover:text-primary-hover transition-colors">
           {item.nombre}
         </h4>
       </div>

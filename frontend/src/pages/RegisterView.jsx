@@ -1,6 +1,7 @@
+import { getReturnTo } from "@/utils/authReturn";
 import { Helmet } from "react-helmet-async";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../store/auth";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
@@ -22,6 +23,9 @@ const RegisterView = () => {
   });
   const { register, loading, error } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnState = location.state || {};
+  const returnTo = getReturnTo(returnState.returnTo || new URLSearchParams(location.search).get("next"));
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,7 +39,7 @@ const RegisterView = () => {
         icon: "info",
         title: "Registro no disponible",
         text: "El alta de usuarios no está disponible en esta vista pública.",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -47,7 +51,7 @@ const RegisterView = () => {
         icon: "error",
         title: "Error",
         text: "Las contraseñas no coinciden",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -59,7 +63,7 @@ const RegisterView = () => {
         icon: "warning",
         title: "Contraseña débil",
         text: "La contraseña debe tener al menos 8 caracteres.",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -74,7 +78,7 @@ const RegisterView = () => {
     });
 
     if (success) {
-      navigate("/dashboard");
+      navigate(returnTo, { replace: true, state: { reservationDraft: returnState.reservationDraft } });
     }
   };
 
@@ -92,12 +96,12 @@ const RegisterView = () => {
           <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-6 block font-body">
             / Unirse al Club
           </span>
-          <h2 className="text-4xl sm:text-5xl font-heading text-text-main leading-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl font-heading text-text-main leading-tight mb-6">
             Su{" "}
-            <span className="block sm:inline italic text-primary text-[2.65rem] sm:text-inherit">
+            <span className="block sm:inline italic text-primary-hover text-[2.65rem] sm:text-inherit">
               Inscripción
             </span>
-          </h2>
+          </h1>
           <div className="w-16 h-[1px] bg-text-main/10 mx-auto mb-6"></div>
           <p className="text-text-muted text-[13px] tracking-widest font-body uppercase">
             Círculo Exclusivo Distrito Gourmet
@@ -106,84 +110,87 @@ const RegisterView = () => {
 
         <form onSubmit={handleSubmit} className="space-y-10">
           {IS_PUBLIC_DEMO && (
-            <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary font-body font-bold">
+            <div className="border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[11px] uppercase tracking-[2px] text-primary-hover font-body font-bold">
               Registro no disponible en esta vista
             </div>
           )}
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-              Nombre Completo
-            </label>
+            <label htmlFor="register-name" className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">Nombre Completo</label>
             <input
               type="text"
               name="name"
+                id="register-name"
+                autoComplete="name"
               value={form.name}
               onChange={handleChange}
               required
               placeholder=" "
-              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading"
+              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 text-lg font-heading"
             />
           </div>
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-              Correo Electrónico
-            </label>
+            <label htmlFor="register-email" className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">Correo Electrónico</label>
             <input
               type="email"
               name="email"
+                id="register-email"
+                autoComplete="email"
               value={form.email}
               onChange={handleChange}
               required
               placeholder=" "
-              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading"
+              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 text-lg font-heading"
             />
           </div>
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-              Teléfono de Contacto
-            </label>
+            <label htmlFor="register-phone" className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">Teléfono de Contacto</label>
             <input
               type="tel"
               name="phone"
+                id="register-phone"
+                autoComplete="tel"
               value={form.phone}
               onChange={handleChange}
               required
               placeholder=" "
-              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading"
+              className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 text-lg font-heading"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div className="relative group">
-              <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-                Contraseña
-              </label>
+              <label htmlFor="register-password" className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">Contraseña</label>
               <input
                 type="password"
                 name="password"
+                id="register-password"
+                minLength={8}
+                aria-describedby="register-password-help"
+                autoComplete="new-password"
                 value={form.password}
                 onChange={handleChange}
                 required
                 placeholder=" "
-                className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading tracking-widest"
+                className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 text-lg font-heading tracking-widest"
               />
+              <p id="register-password-help" className="mt-2 text-sm text-text-muted">Al menos 8 caracteres.</p>
             </div>
 
             <div className="relative group">
-              <label className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">
-                Confirmar
-              </label>
+              <label htmlFor="register-confirmPassword" className="text-[10px] uppercase tracking-[3px] text-text-muted block mb-2 font-body">Repetir contraseña</label>
               <input
                 type="password"
                 name="confirmPassword"
+                id="register-confirmPassword"
+                autoComplete="new-password"
                 value={form.confirmPassword}
                 onChange={handleChange}
                 required
                 placeholder=" "
-                className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading tracking-widest"
+                className="w-full bg-transparent border-0 border-b border-text-main/20 text-text-main py-2 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 text-lg font-heading tracking-widest"
               />
             </div>
           </div>
@@ -214,7 +221,8 @@ const RegisterView = () => {
           </p>
           <Link
             to="/login"
-            className="text-text-main text-[10px] uppercase tracking-[3px] font-bold pb-1 group relative inline-block border-b border-text-main hover:text-primary hover:border-primary transition-colors"
+            state={{ ...returnState, returnTo }}
+            className="text-text-main text-[10px] uppercase tracking-[3px] font-bold pb-1 group relative inline-block border-b border-text-main hover:text-primary-hover hover:border-primary transition-colors"
           >
             Iniciar Sesión
           </Link>

@@ -1,3 +1,4 @@
+import ServiceHours from "@/components/ServiceHours";
 import { Helmet } from "react-helmet-async";
 import { useState } from "react";
 import {
@@ -149,13 +150,13 @@ const ContactView = () => {
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Mesa y Reservas
                   </span>
-                  <span>+34 960 00 00 00</span>
+                  <a href="tel:+34960000000" className="underline">+34 960 00 00 00</a>
                 </p>
                 <p className="mb-4">
                   <span className="block text-[10px] uppercase tracking-[3px] text-text-main/50 mb-1">
                     Privados & Eventos
                   </span>
-                  <span>eventos@distritogourmet.es</span>
+                  <a href="mailto:eventos@distritogourmet.es" className="underline break-all">eventos@distritogourmet.es</a>
                 </p>
               </div>
             </div>
@@ -164,22 +165,7 @@ const ContactView = () => {
               <h3 className="font-heading text-2xl text-text-main mb-6">
                 Horario
               </h3>
-              <div className="grid grid-cols-2 gap-8 text-text-muted font-body font-normal text-[14px] tracking-wide">
-                <div>
-                  <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">
-                    Comidas
-                  </span>
-                  <span className="block mb-1">Martes a Domingo</span>
-                  <span className="block text-text-main">13:30 - 15:30</span>
-                </div>
-                <div>
-                  <span className="block text-primary uppercase text-[10px] tracking-[3px] mb-2 font-bold">
-                    Cenas
-                  </span>
-                  <span className="block mb-1">Martes a Sábado</span>
-                  <span className="block text-text-main">20:30 - 22:30</span>
-                </div>
-              </div>
+              <ServiceHours />
             </div>
           </div>
 
@@ -188,7 +174,7 @@ const ContactView = () => {
             <div className="p-8 sm:p-12 md:p-16 h-full flex flex-col justify-center relative">
               <h3 className="font-heading text-3xl sm:text-4xl text-text-main mb-4 leading-tight">
                 Atención{" "}
-                <span className="italic text-primary">Personalizada</span>
+                <span className="italic text-primary-hover">Personalizada</span>
               </h3>
               <p className="text-text-muted text-[13px] sm:text-[14px] font-body font-normal tracking-wide mb-10 sm:mb-12">
                 Cuéntenos el motivo de su consulta y el equipo de sala le
@@ -353,7 +339,7 @@ const ContactView = () => {
                 </div>
 
                 {sent && (
-                  <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
+                  <Toast className="p-4 bg-primary/5 border border-primary/20 text-primary-hover text-center text-[12px] sm:text-[13px] font-normal tracking-wide mt-6 font-body">
                     Su mensaje ha sido enviado. Le responderemos con la mayor
                     brevedad posible.
                   </Toast>

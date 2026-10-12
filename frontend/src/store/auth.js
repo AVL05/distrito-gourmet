@@ -27,7 +27,7 @@ export const useAuthStore = create((set, get) => ({
   isAdmin: () =>
     IS_PUBLIC_DEMO || ["Administrador", "admin"].includes(get().user?.rol),
 
-  // Iniciar sesión y persistir datos en localStorage
+  // Iniciar sesión mediante la cookie Sanctum.
   login: async (credentials) => {
     if (IS_PUBLIC_DEMO) {
       set({

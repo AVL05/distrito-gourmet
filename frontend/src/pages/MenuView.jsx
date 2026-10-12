@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet-async";
 import { useCartStore } from "@/store/cart";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { filterDishes, getAllergens } from "@/utils/menuFilters";
 import axios from "@/services/api";
-import { HAS_CONFIGURED_API, USE_STATIC_DEMO_DATA } from "@/config/demo";
+import { USE_STATIC_DEMO_DATA } from "@/config/demo";
 import { demoMenuData } from "@/data/demoMenu";
 import {
   PageTransition,
@@ -21,7 +22,13 @@ const MENU_REQUEST_TIMEOUT_MS = 7000;
 // Carga y organización de la carta gastronómica por categorías desde el servidor
 const MenuView = () => {
   const { addItem, totalItems, totalPrice } = useCartStore();
-  const [activeCategory, setActiveCategory] = useState("carta");
+  const [params, setParams] = useSearchParams();
+  const activeCategory = ["carta", "bebidas", "bodega", "menus"].includes(params.get("category")) ? params.get("category") : "carta";
+  const updateFilter = (name, value) => setParams((current) => {
+    if (value) current.set(name, value); else current.delete(name);
+    return current;
+  }, { replace: true });
+  const setActiveCategory = (value) => updateFilter("category", value);
   const [addedItemId, setAddedItemId] = useState(null);
   const [addedItem, setAddedItem] = useState(null);
   const [menuData, setMenuData] = useState({
@@ -32,6 +39,7 @@ const MenuView = () => {
   });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   // Categorías del menú para las pestañas de filtro
   const categories = [
     { id: "carta", label: "Toda la Carta" },
@@ -143,12 +151,13 @@ const MenuView = () => {
       }
     };
     fetchMenu();
-  }, []);
+  }, [loadAttempt]);
 
   // Categorías de platos para "Toda la Carta"
-  const dishCategories = ["entrantes", "principales", "postres"];
+  const dishCategories = [...new Set(["entrantes", "principales", "postres", ...menuData.dishes.map((dish) => dish.category)])];
+  const filteredDishes = filterDishes(menuData.dishes, params.get("q") || "", params.get("exclude") || "", params.get("takeaway") === "true");
   const getDishesForCategory = (cat) =>
-    menuData.dishes.filter((d) => d.category === cat);
+    filteredDishes.filter((d) => d.category === cat);
 
   // Tipos de bebidas para la pestaña de bebidas
   const beverageTypes = [
@@ -185,7 +194,7 @@ const MenuView = () => {
       <div className="relative pt-32 sm:pt-40 pb-16 sm:pb-20 border-b border-text-main/10 z-10">
         <div className="container text-center max-w-4xl mx-auto">
           <FadeIn delay={0.05}>
-            <span className="block text-primary text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 font-body font-bold">
+            <span className="block text-primary-hover text-[12px] sm:text-sm md:text-base uppercase tracking-[4px] mb-6 font-body font-bold">
               Gastronomía
             </span>
           </FadeIn>
@@ -221,9 +230,10 @@ const MenuView = () => {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
+                aria-pressed={activeCategory === cat.id}
                 className={`uppercase text-[11px] sm:text-[13px] tracking-[1.5px] sm:tracking-[2px] transition-all duration-500 pb-2 relative group whitespace-nowrap font-medium ${
                   activeCategory === cat.id
-                    ? "text-primary"
+                    ? "text-primary-hover"
                     : "text-text-muted hover:text-text-main"
                 }`}
               >
@@ -250,11 +260,32 @@ const MenuView = () => {
           <MenuSkeleton />
         ) : (
           <PageTransition key={activeCategory}>
-            {loadError && HAS_CONFIGURED_API && <ApiUnavailableState />}
+            {loadError && <ApiUnavailableState onRetry={() => { setLoading(true); setLoadAttempt((value) => value + 1); }} />}
 
             {/* TODA LA CARTA */}
             {!loadError && activeCategory === "carta" && (
               <div className="space-y-20 sm:space-y-32">
+                <div className="border-y border-text-main/15 py-6 space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <label htmlFor="dish-search">Buscar en la carta</label>
+                      <input id="dish-search" type="search" value={params.get("q") || ""} onChange={(event) => updateFilter("q", event.target.value)} placeholder="Nombre o ingrediente" />
+                    </div>
+                    <div>
+                      <label htmlFor="dish-allergen">Excluir un alérgeno declarado</label>
+                      <select id="dish-allergen" value={params.get("exclude") || ""} onChange={(event) => updateFilter("exclude", event.target.value)}>
+                        <option value="">Sin filtro</option>
+                        {getAllergens(menuData.dishes).map((allergen) => <option key={allergen} value={allergen}>{allergen}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-3 text-sm normal-case tracking-normal font-normal">
+                    <input type="checkbox" checked={params.get("takeaway") === "true"} onChange={(event) => updateFilter("takeaway", event.target.checked ? "true" : "")} /> Solo platos para llevar
+                  </label>
+                  <p className="text-sm text-text-muted">El filtro usa la información declarada y omite platos sin datos de alérgenos. Consulte al equipo de sala sobre alergias y posibles trazas.</p>
+                  <p role="status" className="text-sm text-text-muted">{filteredDishes.length} platos encontrados</p>
+                  {filteredDishes.length === 0 && <button type="button" className="btn" onClick={() => setParams({ category: "carta" })}>Limpiar filtros</button>}
+                </div>
                 {dishCategories.map((catKey, index) => {
                   const items = getDishesForCategory(catKey);
                   if (items.length === 0) return null;
@@ -356,7 +387,7 @@ const MenuView = () => {
         <div className="fixed bottom-20 left-4 right-4 z-[53] mx-auto max-w-md border border-text-main/10 bg-bg-body/95 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-xl md:bottom-24 md:left-auto md:right-8">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <span className="block font-body text-[10px] uppercase tracking-[1.6px] text-primary">
+              <span className="block font-body text-[10px] uppercase tracking-[1.6px] text-primary-hover">
                 Añadido
               </span>
               <p className="text-sm font-medium text-text-main">
@@ -365,9 +396,9 @@ const MenuView = () => {
             </div>
             <Link
               to="/cart"
-              className="shrink-0 font-body text-[11px] uppercase tracking-[1.5px] text-text-main border-b border-text-main pb-1 hover:text-primary hover:border-primary transition-colors"
+              className="shrink-0 font-body text-[11px] uppercase tracking-[1.5px] text-text-main border-b border-text-main pb-1 hover:text-primary-hover hover:border-primary transition-colors"
             >
-              Ver selección
+              Ver carrito
             </Link>
           </div>
         </div>
@@ -377,7 +408,7 @@ const MenuView = () => {
           <div className="container flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-center sm:text-left">
               <span className="block text-[10px] uppercase tracking-[3px] text-text-muted font-body">
-                Selección para recogida
+                Pedido para recoger
               </span>
               <span className="font-heading text-xl text-text-main">
                 {cartCount} {cartCount === 1 ? "artículo" : "artículos"} ·{" "}
@@ -469,7 +500,7 @@ const DishRow = ({ item, addItem, isAdded }) => (
     <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
       <div className="flex-grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
-          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
@@ -538,7 +569,7 @@ const DisplayRow = ({ item }) => (
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
-          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
@@ -564,7 +595,7 @@ const WineDisplayRow = ({ item }) => (
     <div className="flex items-center gap-8 w-full md:w-3/4">
       <div className="flex-grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
-          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary transition-colors leading-tight">
+          <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
           </h3>
           <span className="md:hidden font-body font-normal text-text-main text-lg tracking-widest">
@@ -603,7 +634,7 @@ const TastingMenuCard = ({ menu }) => (
       {/* Cabecera del menú */}
       <div className="text-center mb-12 sm:mb-16">
         <div className="flex items-center justify-center gap-4 mb-4">
-          <span className="text-primary text-[11px] tracking-[4px] font-body font-bold uppercase">
+          <span className="text-primary-hover text-[11px] tracking-[4px] font-body font-bold uppercase">
             {menu.courses} Tiempos
           </span>
           {menu.isSeasonal && (
@@ -639,7 +670,7 @@ const TastingMenuCard = ({ menu }) => (
             key={`${menu.id}-${dish.id}-${i}`}
             className="flex items-baseline gap-4 py-4 border-b border-text-main/5 last:border-0"
           >
-            <span className="text-primary text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
+            <span className="text-primary-hover text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
               {String(dish.pivot?.numero_paso || i + 1).padStart(2, "0")}
             </span>
             <div className="flex-grow">
@@ -669,10 +700,10 @@ const TastingMenuCard = ({ menu }) => (
 
         {menu.pairing_available && (
           <div className="text-center border-l border-text-main/10 pl-8 sm:pl-16">
-            <span className="font-heading text-4xl sm:text-5xl text-primary">
+            <span className="font-heading text-4xl sm:text-5xl text-primary-hover">
               {menu.pairing_price.toFixed(0)}€
             </span>
-            <span className="block text-primary text-[11px] tracking-[2px] font-body mt-1 uppercase font-bold">
+            <span className="block text-primary-hover text-[11px] tracking-[2px] font-body mt-1 uppercase font-bold">
               Maridaje sugerido
             </span>
           </div>
@@ -691,7 +722,7 @@ const TastingMenuCard = ({ menu }) => (
 // Estado visual cuando una categoría de menú no tiene elementos disponibles.
 const EmptyState = ({ children }) => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
-    <span className="text-primary text-4xl mb-6 opacity-80">✦</span>
+    <span className="text-primary-hover text-4xl mb-6 opacity-80">✦</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
       {children ||
         "Ahora mismo no hay referencias disponibles en esta categoría."}
@@ -699,24 +730,23 @@ const EmptyState = ({ children }) => (
     <button
       type="button"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary transition-colors"
+      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary-hover transition-colors"
     >
       Volver a categorías
     </button>
   </FadeIn>
 );
 
-const ApiUnavailableState = () => (
+const ApiUnavailableState = ({ onRetry }) => (
   <FadeIn className="flex flex-col items-center justify-center py-32 text-center">
-    <span className="text-primary text-4xl mb-6 opacity-80">!</span>
+    <span className="text-primary-hover text-4xl mb-6 opacity-80">!</span>
     <p className="text-text-muted font-normal tracking-wide text-base sm:text-lg max-w-md mx-auto">
-      La carta no está disponible en este momento. Compruebe la conexión con la
-      API o vuelva a intentarlo en unos segundos.
+      No pudimos cargar la carta. Compruebe su conexión a internet y vuelva a intentarlo.
     </p>
     <button
       type="button"
-      onClick={() => window.location.reload()}
-      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary transition-colors font-medium"
+      onClick={onRetry}
+      className="mt-8 min-h-11 border border-text-main/20 px-5 font-body text-[11px] uppercase tracking-[1.6px] text-text-main hover:border-primary hover:text-primary-hover transition-colors font-medium"
     >
       Reintentar carga
     </button>

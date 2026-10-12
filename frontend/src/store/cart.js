@@ -1,17 +1,12 @@
 import { create } from 'zustand';
 import Swal from 'sweetalert2';
+import { loadCart, saveCart } from '../utils/cartPersistence.js';
 
 // Store del carrito de compras usando Zustand
 export const useCartStore = create((set, get) => ({
   // Cargar items guardados en localStorage o empezar vacío
-  items: (() => {
-    try {
-      const savedCart = localStorage.getItem('cart');
-      return savedCart && savedCart !== 'undefined' ? JSON.parse(savedCart) : [];
-    } catch {
-      return [];
-    }
-  })(),
+  items: loadCart(),
+  storageAvailable: true,
 
   // Calcular total de artículos en el carrito
   totalItems: () => get().items.reduce((total, item) => total + item.quantity, 0),
@@ -47,16 +42,14 @@ export const useCartStore = create((set, get) => ({
         newItems = [...state.items, { ...product, quantity: 1 }];
       }
 
-      localStorage.setItem('cart', JSON.stringify(newItems));
-      return { items: newItems };
+      return { items: newItems, storageAvailable: saveCart(newItems) };
     }),
 
   // Eliminar un producto del carrito
   removeItem: productId =>
     set(state => {
       const newItems = state.items.filter(item => item.id !== productId);
-      localStorage.setItem('cart', JSON.stringify(newItems));
-      return { items: newItems };
+      return { items: newItems, storageAvailable: saveCart(newItems) };
     }),
 
   // Actualizar cantidad de un producto (+1 o -1). Si llega a 0, se elimina
@@ -86,13 +79,11 @@ export const useCartStore = create((set, get) => ({
         })
         .filter(item => item.quantity > 0);
 
-      localStorage.setItem('cart', JSON.stringify(newItems));
-      return { items: newItems };
+      return { items: newItems, storageAvailable: saveCart(newItems) };
     }),
 
   // Vaciar todo el carrito
   clearCart: () => {
-    localStorage.removeItem('cart');
-    set({ items: [] });
+    set({ items: [], storageAvailable: saveCart([]) });
   },
 }));

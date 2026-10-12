@@ -16,6 +16,10 @@ export const getApiErrorMessage = (
 ) => {
   const data = error?.response?.data;
 
+  if (error?.response?.status >= 500) {
+    return "No pudimos completar la operación. Inténtelo más tarde.";
+  }
+
   if (data?.message) return data.message;
   if (data?.mensaje) return data.mensaje;
 
@@ -29,10 +33,6 @@ export const getApiErrorMessage = (
 
   if (error?.response?.status === 404) {
     return "No se encontró el recurso solicitado.";
-  }
-
-  if (error?.response?.status >= 500) {
-    return "El servidor no ha respondido correctamente. Inténtelo más tarde.";
   }
 
   return fallback;

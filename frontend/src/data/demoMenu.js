@@ -1,6 +1,11 @@
 export const demoMenuData = {
   dishes: [
     {
+      id: "demo-dish-3-pulpo", item_type: "plato", name: "Pulpo a la Brasa con Parmentier Trufado",
+      description: "Tentáculo de pulpo de roca, puré de patata sedoso con aceite de trufa blanca y pimentón de la Vera.",
+      price: 19, category: "entrantes", allergens: "moluscos, lácteos", max_per_order: 6, availableTakeaway: false, isPerUnit: false,
+    },
+    {
       id: "demo-dish-1",
       item_type: "plato",
       name: "Croquetas de jamón ibérico",
@@ -10,6 +15,7 @@ export const demoMenuData = {
       allergens: "gluten, leche, huevo",
       max_per_order: 6,
       isPerUnit: false,
+      availableTakeaway: true,
     },
     {
       id: "demo-dish-2",
@@ -21,6 +27,7 @@ export const demoMenuData = {
       allergens: "pescado, soja, sésamo",
       max_per_order: 4,
       isPerUnit: false,
+      availableTakeaway: true,
     },
     {
       id: "demo-dish-3",
@@ -32,6 +39,7 @@ export const demoMenuData = {
       allergens: "leche",
       max_per_order: 4,
       isPerUnit: false,
+      availableTakeaway: true,
     },
     {
       id: "demo-dish-4",
@@ -43,6 +51,7 @@ export const demoMenuData = {
       allergens: "",
       max_per_order: 3,
       isPerUnit: false,
+      availableTakeaway: true,
     },
     {
       id: "demo-dish-5",
@@ -54,6 +63,7 @@ export const demoMenuData = {
       allergens: "gluten, leche, huevo",
       max_per_order: 5,
       isPerUnit: false,
+      availableTakeaway: true,
     },
   ],
   beverages: [

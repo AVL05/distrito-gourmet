@@ -1,3 +1,4 @@
+import { useReducedMotion } from "./MotionComponents";
 import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -19,11 +20,13 @@ export const TextReveal = ({
   className = "",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const container = useRef(null);
   const units = splitBy === "char" ? text.split("") : text.split(" ");
 
   useGSAP(
     () => {
+      if (reduced) return;
       const targets = container.current.querySelectorAll(".reveal-unit-inner");
 
       gsap.from(targets, {
@@ -44,7 +47,7 @@ export const TextReveal = ({
         },
       });
     },
-    { scope: container },
+    { scope: container, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -101,10 +104,12 @@ export const ScrollReveal = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       const fromVars = {
         opacity: 0,
         duration,
@@ -122,15 +127,12 @@ export const ScrollReveal = ({
 
       if (direction === "up") fromVars.y = distance;
       if (direction === "down") fromVars.y = -distance;
-      const horizontalDistance =
-        window.innerWidth < 640 ? 0 : distance;
-      if (direction === "left") fromVars.x = horizontalDistance;
-      if (direction === "right") fromVars.x = -horizontalDistance;
+      if (direction === "left" || direction === "right") fromVars.y = Math.min(distance, 32);
       if (direction === "scale") fromVars.scale = 0.9;
 
       gsap.from(el.current, fromVars);
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -152,11 +154,13 @@ export const ParallaxImage = ({
   imageClassName = "",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const container = useRef(null);
   const image = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       // Movimiento parallax fluido al hacer scroll
       gsap.to(image.current, {
         yPercent: speed / 10,
@@ -182,7 +186,7 @@ export const ParallaxImage = ({
         },
       });
     },
-    { scope: container },
+    { scope: container, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -192,7 +196,7 @@ export const ParallaxImage = ({
         src={src}
         alt={alt}
         loading="lazy"
-        className={`w-full h-full object-cover scale-[1.15] ${imageClassName}`}
+        className={`w-full h-full object-cover ${reduced ? "" : "scale-[1.15]"} ${imageClassName}`}
         style={{ willChange: "transform" }}
       />
     </div>
@@ -212,12 +216,14 @@ export const Marquee = ({
   textClassName = "",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const container = useRef(null);
   const track = useRef(null);
   const repeated = Array(6).fill(`${text} ${separator} `).join("");
 
   useGSAP(
     () => {
+      if (reduced) return;
       const xDist = track.current.offsetWidth / 2;
 
       gsap.set(track.current, { x: reverse ? 0 : -xDist });
@@ -229,7 +235,7 @@ export const Marquee = ({
         repeat: -1,
       });
     },
-    { scope: container },
+    { scope: container, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -258,9 +264,11 @@ export const MagneticButton = ({
   as: Component = "button",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const button = useRef(null);
 
   const onMouseMove = (e) => {
+    if (reduced) return;
     const { clientX, clientY } = e;
     const { left, top, width, height } = button.current.getBoundingClientRect();
     const x = clientX - (left + width / 2);
@@ -276,6 +284,7 @@ export const MagneticButton = ({
   };
 
   const onMouseLeave = () => {
+    if (reduced) return;
     gsap.to(button.current, {
       x: 0,
       y: 0,
@@ -311,11 +320,13 @@ export const LineReveal = ({
   className = "",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const line = useRef(null);
   const isHorizontal = orientation === "horizontal";
 
   useGSAP(
     () => {
+      if (reduced) return;
       gsap.from(line.current, {
         scaleX: isHorizontal ? 0 : 1,
         scaleY: isHorizontal ? 1 : 0,
@@ -332,7 +343,7 @@ export const LineReveal = ({
         },
       });
     },
-    { scope: line },
+    { scope: line, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -354,9 +365,11 @@ export const LineReveal = ({
 // Barra de carga fija en la parte superior que muestra cuánto scroll hemos hecho en la página actual
 
 export const ScrollProgress = ({ className = "", ...props }) => {
+  const reduced = useReducedMotion();
   const line = useRef(null);
 
   useGSAP(() => {
+    if (reduced) return;
     gsap.fromTo(
       line.current,
       { scaleX: 0 },
@@ -371,7 +384,7 @@ export const ScrollProgress = ({ className = "", ...props }) => {
         },
       },
     );
-  });
+  }, { dependencies: [reduced], revertOnUpdate: true });
 
   return (
     <div

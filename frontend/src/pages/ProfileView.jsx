@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn, MotionButton } from "@/motion";
+import { Link } from "react-router-dom";
 
 // Vista de perfil del usuario: permite gestionar información personal y credenciales de acceso
 const ProfileView = () => {
@@ -26,7 +27,7 @@ const ProfileView = () => {
         text: "Por seguridad, la nueva contraseña debe tener al menos 8 caracteres.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
       return;
     }
@@ -38,7 +39,7 @@ const ProfileView = () => {
         title: "Perfil Actualizado",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
 
       // Actualizar localStorage y contexto si cambia email/nombre
@@ -53,7 +54,7 @@ const ProfileView = () => {
         text: err.response?.data?.message || "Error al actualizar",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
     }
   };
@@ -67,34 +68,32 @@ const ProfileView = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px] pointer-events-none"></div>
 
       <FadeIn className="w-full max-w-2xl bg-white/90 backdrop-blur-xl p-10 md:p-16 border border-gray-200 relative z-10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+        <Link to="/dashboard" className="inline-flex min-h-11 items-center text-sm underline mb-6">Volver a mi cuenta</Link>
         <div className="text-center mb-12">
-          <span className="text-primary text-3xl mb-4 opacity-80 block font-normal">
+          <span className="text-primary-hover text-3xl mb-4 opacity-80 block font-normal">
             ✧
           </span>
-          <h2 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
+          <h1 className="text-3xl md:text-4xl font-heading text-gray-900 tracking-[0.2em] mb-4">
             Datos{" "}
             <span className="italic text-primary-hover font-normal">
               Personales
             </span>
-          </h2>
-          <div className="mb-4">
-            <span className="text-[10px] bg-black text-white px-3 py-1 font-bold uppercase tracking-[3px]">
-              Miembro Distrito Gourmet
-            </span>
-          </div>
+          </h1>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
           <p className="text-gray-500 text-sm tracking-wide font-normal">
-            Gestione su información de contacto y credenciales.
+            Actualice sus datos de contacto. Cambie la contraseña solo si lo necesita.
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label htmlFor="profile-name" className="text-[10px] uppercase tracking-[3px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover">
               Nombre Completo
             </label>
             <input
               type="text"
+              id="profile-name"
+              autoComplete="name"
               value={formData.nombre}
               onChange={(e) =>
                 setFormData({ ...formData, nombre: e.target.value })
@@ -105,11 +104,13 @@ const ProfileView = () => {
           </div>
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label htmlFor="profile-email" className="text-[10px] uppercase tracking-[3px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover">
               Correo Electrónico
             </label>
             <input
               type="email"
+              id="profile-email"
+              autoComplete="email"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
@@ -120,11 +121,13 @@ const ProfileView = () => {
           </div>
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
-              Teléfono de Contacto
+            <label htmlFor="profile-phone" className="text-[10px] uppercase tracking-[3px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover">
+              Teléfono de contacto (opcional)
             </label>
             <input
               type="tel"
+              id="profile-phone"
+              autoComplete="tel"
               value={formData.telefono}
               onChange={(e) =>
                 setFormData({ ...formData, telefono: e.target.value })
@@ -134,11 +137,15 @@ const ProfileView = () => {
           </div>
 
           <div className="relative group">
-            <label className="text-[10px] uppercase tracking-[3px] text-primary/80 block mb-2 transition-colors group-focus-within:text-primary">
+            <label htmlFor="profile-password" className="text-[10px] uppercase tracking-[3px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover">
               Nueva Contraseña (Opcional)
             </label>
             <input
               type="password"
+              id="profile-password"
+              autoComplete="new-password"
+              minLength={8}
+              aria-describedby="profile-password-help"
               placeholder="Deje en blanco para mantener la actual"
               value={formData.password}
               onChange={(e) =>
@@ -146,12 +153,13 @@ const ProfileView = () => {
               }
               className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
+            <p id="profile-password-help" className="text-sm text-text-muted mt-2">Al menos 8 caracteres. Déjelo vacío para mantener su contraseña actual.</p>
           </div>
 
           <div className="pt-8">
             <MotionButton
               type="submit"
-              className="group relative w-full py-5 bg-transparent border border-primary text-primary font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
+              className="group relative w-full py-5 bg-transparent border border-primary text-primary-hover font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
             >
               <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold tracking-[5px] group-hover:text-black transition-colors duration-300">

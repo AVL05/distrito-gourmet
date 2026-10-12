@@ -1,5 +1,6 @@
 import axios from "axios";
 import { HAS_CONFIGURED_API, IS_PUBLIC_DEMO } from "@/config/demo";
+import { isDemoWrite } from "@/utils/demoProtection";
 
 // Configuración de la URL base de la API desde las variables de entorno
 const rawApiUrl = import.meta.env.VITE_API_URL || "";
@@ -23,7 +24,8 @@ export const initializeCsrfProtection = () =>
   });
 
 api.interceptors.request.use((config) => {
-  if (IS_PUBLIC_DEMO && ["post", "put", "patch", "delete"].includes(config.method)) {
+  if (config.method === "get" && !config.timeout) config.timeout = 7000;
+  if (isDemoWrite(config.method, IS_PUBLIC_DEMO)) {
     return Promise.reject({
       response: {
         data: {
@@ -46,7 +48,7 @@ api.interceptors.response.use(
       !error.config?.skipAuthRedirect
     ) {
       if (window.location.pathname !== "/login") {
-        window.location.assign("/login");
+        window.location.assign(`/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`);
       }
     }
 

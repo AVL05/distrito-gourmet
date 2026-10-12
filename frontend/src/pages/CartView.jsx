@@ -4,14 +4,12 @@ import {
   HiMinus,
   HiPlus,
   HiTrash,
-  HiCreditCard,
   HiCash,
   HiArrowLeft,
   HiCheckCircle,
 } from "react-icons/hi";
-import { FaPaypal } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet-async";
@@ -20,63 +18,37 @@ import { IS_PUBLIC_DEMO } from "@/config/demo";
 import { getApiErrorMessage } from "@/utils/apiErrors";
 import { getPickupDate } from "@/utils/pickupDate";
 
-const buildPickupOptions = (validTimes) => {
-  const options = [];
-  const now = new Date();
-
-  const addSlotsForDay = (date, isToday) => {
-    validTimes.forEach((timeStr) => {
-      const [hours, minutes] = timeStr.split(":").map(Number);
-      const timeDate = new Date(date);
-      timeDate.setHours(hours, minutes, 0, 0);
-
-      if (timeDate > now || !isToday) {
-        const label = hours >= 20 ? "Cena" : "Comida";
-        const dayLabel = isToday ? "Hoy" : "Mañana";
-        options.push({
-          label: `${dayLabel} - ${timeStr} (${label})`,
-          value: `${isToday ? "today" : "tomorrow"}-${timeStr}`,
-          actualTime: timeStr,
-        });
-      }
-    });
-  };
-
-  addSlotsForDay(now, true);
-  if (options.length < 5) {
-    const tomorrow = new Date();
-    tomorrow.setDate(now.getDate() + 1);
-    addSlotsForDay(tomorrow, false);
-  }
-
-  return options;
-};
-
 const CartView = () => {
-  const { items, updateQuantity, removeItem, clearCart } = useCartStore();
+  const { items, updateQuantity, removeItem, clearCart, storageAvailable } = useCartStore();
   const { isAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [step, setStep] = useState("cart");
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const paymentMethod = "cash";
   const [pickupTime, setPickupTime] = useState("");
   const [checkoutError, setCheckoutError] = useState("");
-  const [validTimes, setValidTimes] = useState([]);
-
+  const [pickupOptions, setPickupOptions] = useState([]);
+  const [pickupError, setPickupError] = useState("");
+  const [pickupLoading, setPickupLoading] = useState(!IS_PUBLIC_DEMO);
+  const [pickupRetry, setPickupRetry] = useState(0);
   useEffect(() => {
-    axios.get("/pickup-times")
-      .then((res) => setValidTimes(res.data.horarios ?? []))
-      .catch(() => {
-        // Fallback con los horarios habituales si la API no responde
-        setValidTimes([
-          "13:00","13:30","14:00","14:30","15:00","15:30",
-          "20:00","20:30","21:00","21:30","22:00","22:30",
-        ]);
-      });
-  }, []);
-
-  const pickupOptions = useMemo(() => buildPickupOptions(validTimes), [validTimes]);
-  const selectedPickupTime = pickupTime || pickupOptions[0]?.value || "";
+    if (IS_PUBLIC_DEMO) return;
+    let cancelled = false;
+    axios.get("/pickup-times", { timeout: 7000 })
+      .then((res) => {
+        if (cancelled) return;
+        if (!Array.isArray(res.data.days)) throw new Error("Invalid pickup calendar");
+        setPickupOptions(res.data.days.flatMap((day) => day.times.map((time) => ({
+          label: `${new Date(`${day.date}T12:00:00`).toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" })} · ${time}`,
+          value: `${day.date}T${time}`,
+        }))));
+        setPickupError("");
+      })
+      .catch(() => { if (!cancelled) { setPickupOptions([]); setPickupError("No pudimos consultar las horas de recogida."); } })
+      .finally(() => { if (!cancelled) setPickupLoading(false); });
+    return () => { cancelled = true; };
+  }, [pickupRetry]);
+  const selectedPickupTime = pickupOptions.some((option) => option.value === pickupTime) ? pickupTime : pickupOptions[0]?.value || "";
 
   const cartItems = useCartStore((state) => state.items);
   const total = items.reduce(
@@ -84,7 +56,7 @@ const CartView = () => {
     0,
   );
 
-  const goToCheckout = () => {
+  const goToCheckout = async () => {
     if (IS_PUBLIC_DEMO) {
       Swal.fire({
         icon: "info",
@@ -92,22 +64,22 @@ const CartView = () => {
         text: "La selección es navegable, pero el pedido de recogida no está disponible en esta vista pública.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
       return;
     }
 
     if (!isAuthenticated()) {
-      // Forzar login si el usuario intenta pagar sin sesión
-      Swal.fire({
+      // Solicitar sesión antes de confirmar un pedido
+      await Swal.fire({
         icon: "info",
         title: "Acceso Requerido",
         text: "Por favor, inicie sesión para finalizar su pedido.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
-      navigate("/login");
+      navigate("/login", { state: { returnTo: "/cart" } });
       return;
     }
     setStep("checkout");
@@ -124,13 +96,13 @@ const CartView = () => {
         text: "Los pedidos de recogida no están disponibles en esta vista pública.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
       return;
     }
 
     setIsProcessing(true);
-    if (!selectedPickupTime) {
+    if (!selectedPickupTime || pickupError || pickupLoading) {
       setCheckoutError("Seleccione una hora de recogida para continuar.");
       setIsProcessing(false);
       return;
@@ -146,7 +118,7 @@ const CartView = () => {
       })),
       total: parseFloat(total),
       metodo_pago: paymentMethod,
-      hora_recogida: selectedPickupTime.split("-")[1] || selectedPickupTime,
+      hora_recogida: selectedPickupTime.split("T")[1],
       fecha_recogida: getPickupDate(selectedPickupTime),
     };
 
@@ -205,25 +177,25 @@ const CartView = () => {
         return;
       }
 
-      await axios.post("/orders", payload);
+      const response = await axios.post("/orders", payload);
 
       clearCart();
-      Swal.fire({
+      await Swal.fire({
         icon: "success",
         title: "Pedido Confirmado",
         html: `
           <div class="text-center font-body">
-            <p class="mb-4">Su solicitud ha sido procesada con éxito mediante <b>${paymentMethod === "card" ? "Tarjeta" : paymentMethod === "cash" ? "Efectivo" : "PayPal"}</b>.</p>
+            <p class="mb-4">Pedido recibido. Pago pendiente en el local: <b>${Number(response.data.pedido.total).toFixed(2)} €</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
-              <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Hora Estimada de Recogida</p>
-              <p class="text-4xl font-heading text-primary">${pickupOptions.find((o) => o.value === selectedPickupTime)?.label || selectedPickupTime}</p>
-              <p className="text-[10px] text-text-muted mt-3 uppercase tracking-tighter">Le esperamos en nuestro local.</p>
+              <p class="text-xs font-semibold text-primary-hover uppercase tracking-widest mb-1 opacity-70">Hora Estimada de Recogida</p>
+              <p class="text-4xl font-heading text-primary-hover">${pickupOptions.find((o) => o.value === selectedPickupTime)?.label || selectedPickupTime}</p>
+              <p class="text-sm text-text-muted mt-3">Le esperamos en nuestro local.</p>
             </div>
           </div>
         `,
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#c5a059",
+        confirmButtonColor: "var(--accent)",
         confirmButtonText: "Ver mis pedidos",
       });
       navigate("/dashboard");
@@ -244,21 +216,14 @@ const CartView = () => {
       <PageTransition className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
         <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <FadeIn className="bg-bg-surface border border-text-main/10 p-8 sm:p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
-          <span className="text-text-main text-[12px] uppercase tracking-[3px] mb-8 font-body font-bold">
-            / 00 Vacío
-          </span>
-          <h2 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">
-            Su Selección <br />
-            <span className="italic font-normal text-primary">Inactiva</span>
-          </h2>
+          <h1 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">Su carrito está vacío</h1>
           <div className="w-16 h-[1px] bg-text-main/10 mb-8"></div>
           <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
-            Le invitamos a explorar nuestra carta y descubrir las creaciones que
-            nuestro equipo de cocina ha preparado para usted.
+            Añada los platos disponibles para llevar y prepare su pedido para recoger en el restaurante.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
             <Link
-              to="/menu"
+              to="/menu?category=carta&takeaway=true"
               className="group relative px-8 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[1.8px] overflow-hidden transition-all duration-300 hover:border-text-main inline-block"
             >
               <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full"></div>
@@ -268,7 +233,7 @@ const CartView = () => {
             </Link>
             <Link
               to="/reservations"
-              className="px-8 py-4 border border-text-main/20 font-body text-[12px] uppercase tracking-[1.8px] text-text-main hover:border-primary hover:text-primary transition-colors"
+              className="px-8 py-4 border border-text-main/20 font-body text-[12px] uppercase tracking-[1.8px] text-text-main hover:border-primary hover:text-primary-hover transition-colors"
             >
               Reservar mesa
             </Link>
@@ -284,11 +249,13 @@ const CartView = () => {
       key={step}
     >
       <Helmet>
-        <title>Selección | Distrito Gourmet</title>
+        <title>Mi pedido | Distrito Gourmet</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
+      {!storageAvailable && <p role="status" className="container text-sm text-text-muted">El navegador no permite guardar la selección. Se conservará mientras esta pestaña permanezca abierta.</p>}
+      {IS_PUBLIC_DEMO && <p className="container text-sm text-text-muted mb-6">Está viendo una demostración. Puede preparar un carrito, pero no enviar pedidos.</p>}
       <div className="container max-w-6xl 2k:max-w-7xl 4k:max-w-[130rem] ultra:max-w-[160rem] relative z-10 px-4 sm:px-6 md:px-12 4k:px-24 ultra:px-32">
         {step === "cart" ? (
           <div key="cart-step">
@@ -297,7 +264,7 @@ const CartView = () => {
                 / 01 Resumen
               </span>
               <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight">
-                Su <span className="italic text-primary">Selección</span>
+                Su <span className="italic text-primary-hover">pedido</span>
               </h1>
               <div className="w-16 h-[1px] bg-text-main/10 mx-auto"></div>
             </FadeIn>
@@ -311,9 +278,9 @@ const CartView = () => {
                   >
                     <div className="flex items-center gap-4 sm:gap-8 w-full sm:w-auto">
                       <div className="text-left">
-                        <h3 className="font-heading text-2xl sm:text-3xl text-text-main mb-2 leading-tight">
+                        <h2 className="font-heading text-2xl sm:text-3xl text-text-main mb-2 leading-tight">
                           {item.name}
-                        </h3>
+                        </h2>
                         <p className="text-text-muted font-body font-normal text-[13px] tracking-widest uppercase">
                           {item.price.toFixed(2)}€{item.isPerUnit && " / Ud."}
                         </p>
@@ -325,7 +292,7 @@ const CartView = () => {
                         <button
                           onClick={() => updateQuantity(item.id, -1)}
                           aria-label={`Reducir cantidad de ${item.name}`}
-                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           <HiMinus size={12} />
                         </button>
@@ -335,7 +302,7 @@ const CartView = () => {
                         <button
                           onClick={() => updateQuantity(item.id, 1)}
                           aria-label={`Aumentar cantidad de ${item.name}`}
-                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                          className="flex h-11 w-11 items-center justify-center text-text-muted transition-colors hover:bg-text-main/5 hover:text-text-main focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary"
                         >
                           <HiPlus size={12} />
                         </button>
@@ -343,7 +310,7 @@ const CartView = () => {
                       <button
                         onClick={() => removeItem(item.id)}
                         aria-label={`Eliminar ${item.name}`}
-                        className="min-h-11 min-w-11 p-2 text-text-muted transition-colors hover:text-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="min-h-11 min-w-11 p-2 text-text-muted transition-colors hover:text-red-800 focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary"
                         title="Eliminar"
                       >
                         <HiTrash size={18} />
@@ -356,16 +323,16 @@ const CartView = () => {
                     onClick={clearCart}
                     className="font-body text-[11px] uppercase tracking-[2px] text-text-muted border-b border-transparent hover:border-text-main hover:text-text-main transition-colors pb-1 font-medium"
                   >
-                    Vaciar Selección
+                    Vaciar carrito
                   </button>
                 </div>
               </div>
 
               <div className="lg:col-span-1">
                 <div className="bg-bg-surface border border-text-main/10 p-6 sm:p-10 lg:sticky lg:top-32">
-                  <h3 className="font-heading text-3xl text-text-main mb-8 pb-6 border-b border-text-main/10">
+                  <h2 className="font-heading text-3xl text-text-main mb-8 pb-6 border-b border-text-main/10">
                     Resumen
-                  </h3>
+                  </h2>
                   <div className="space-y-6 mb-12 text-[14px] font-normal font-body tracking-wide text-text-muted">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
@@ -382,7 +349,7 @@ const CartView = () => {
                   >
                     <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
-                      CONTINUAR COBRO
+                      ELEGIR RECOGIDA
                     </span>
                   </button>
                 </div>
@@ -396,7 +363,7 @@ const CartView = () => {
               className="flex items-center gap-2 text-text-muted hover:text-text-main transition-colors mb-12 uppercase text-[10px] tracking-[3px] font-bold group"
             >
               <HiArrowLeft className="group-hover:-translate-x-1 transition-transform" />{" "}
-              Regresar a la Selección
+              Volver al carrito
             </button>
 
             <div className="text-center mb-16">
@@ -404,85 +371,42 @@ const CartView = () => {
                 / 02 Recogida
               </span>
               <h1 className="font-heading text-4xl sm:text-6xl text-text-main mb-6">
-                Pedido de <span className="italic text-primary">Recogida</span>
+                Pedido de <span className="italic text-primary-hover">Recogida</span>
               </h1>
               <p className="text-text-muted uppercase text-[10px] sm:text-[11px] tracking-[2px] sm:tracking-[4px] font-normal">
-                Seleccione su preferencia de abono
+                Compruebe su pedido y elija una hora de recogida
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-              <div className="space-y-4">
-                {[
-                  {
-                    id: "card",
-                    name: "Tarjeta de Crédito",
-                    icon: HiCreditCard,
-                    desc: "Visa o Mastercard",
-                  },
-                  {
-                    id: "cash",
-                    name: "Pago en el Local",
-                    icon: HiCash,
-                    desc: "Abonar al recoger el pedido",
-                  },
-                  {
-                    id: "paypal",
-                    name: "PayPal",
-                    icon: FaPaypal,
-                    desc: "Pago seguro en línea",
-                  },
-                ].map((method) => (
-                  <div
-                    key={method.id}
-                    onClick={() => setPaymentMethod(method.id)}
-                    className={`group relative p-5 sm:p-8 border cursor-pointer transition-all duration-300 flex items-center gap-4 sm:gap-6 ${
-                      paymentMethod === method.id
-                        ? "bg-text-main border-text-main text-white shadow-xl sm:translate-x-2"
-                        : "bg-bg-surface border-text-main/10 text-text-main hover:border-text-main/40"
-                    }`}
-                  >
-                    <div
-                      className={`p-4 border rounded-sm transition-colors ${paymentMethod === method.id ? "bg-white/10 border-white/20 text-white" : "bg-primary/5 border-primary/10 text-primary"}`}
-                    >
-                      <method.icon size={28} />
-                    </div>
-                    <div className="flex-1">
-                      <h4
-                        className={`font-heading text-lg sm:text-xl mb-1 ${paymentMethod === method.id ? "text-white" : ""}`}
-                      >
-                        {method.name}
-                      </h4>
-                      <p
-                        className={`text-[11px] uppercase tracking-wider opacity-60 font-medium ${paymentMethod === method.id ? "text-white" : "text-text-muted"}`}
-                      >
-                        {method.desc}
-                      </p>
-                    </div>
-                    {paymentMethod === method.id && (
-                      <div className="text-primary-hover">
-                        <HiCheckCircle size={24} className="text-white" />
-                      </div>
-                    )}
-                  </div>
-                ))}
+              <div className="border border-text-main/15 bg-bg-surface p-6 sm:p-8">
+                <HiCash size={28} aria-hidden="true" className="mb-4 text-primary-hover" />
+                <h2 className="font-heading text-2xl normal-case">Pago en el local</h2>
+                <p className="text-text-muted leading-relaxed">Pague en efectivo al recoger su pedido en el restaurante.</p>
               </div>
 
               <div className="bg-bg-surface border border-text-main/10 p-6 sm:p-10 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-                <h3 className="font-heading text-2xl text-text-main mb-8 border-b border-text-main/10 pb-6">
-                  Finalización
-                </h3>
+                <h2 className="font-heading text-2xl text-text-main mb-8 border-b border-text-main/10 pb-6">
+                  Revise su pedido
+                </h2>
                 <div className="space-y-4 mb-10 text-[14px]">
+                  <ul className="space-y-3 border-b border-text-main/10 pb-4" aria-label="Productos del pedido">
+                    {cartItems.map((item) => <li key={item.id} className="flex justify-between gap-4"><span>{item.quantity} × {item.name}</span><span className="shrink-0">{(item.price * item.quantity).toFixed(2)}€</span></li>)}
+                  </ul>
                   <div className="mb-6">
-                    <label className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-3 font-bold">
-                      Hora de Recogida
+                    <label htmlFor="pickup-time" className="block text-[10px] uppercase tracking-[3px] text-text-muted mb-3 font-bold">
+                      Día y hora de recogida
                     </label>
                     <select
+                      id="pickup-time"
+                      aria-label="Hora de recogida"
+                      disabled={pickupLoading || Boolean(pickupError)}
                       value={selectedPickupTime}
                       onChange={(e) => setPickupTime(e.target.value)}
                       className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-none focus:border-primary transition-colors font-body text-sm cursor-pointer"
                     >
+                      {pickupOptions.length === 0 && <option value="">{pickupLoading ? "Consultando horarios…" : "No hay recogidas disponibles"}</option>}
                       {pickupOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>
                           {opt.label}
@@ -491,35 +415,35 @@ const CartView = () => {
                     </select>
                   </div>
 
+                  {pickupError && <div role="alert" className="text-red-800"><p>{pickupError}</p><button type="button" className="btn mt-3" onClick={() => { setPickupLoading(true); setPickupRetry((value) => value + 1); }}>Reintentar horarios</button></div>}
                   <div className="flex justify-between text-text-muted">
                     <span>Subtotal Pedido</span>
                     <span>{total.toFixed(2)}€</span>
                   </div>
                   <div className="flex justify-between text-text-main text-2xl pt-6 border-t border-text-main/10 mt-6 font-normal">
                     <span>Total Final</span>
-                    <span className="font-heading text-primary">
+                    <span className="font-heading text-primary-hover">
                       {total.toFixed(2)}€
                     </span>
                   </div>
                 </div>
                 {checkoutError && (
-                  <div className="mb-6 border border-red-800/20 bg-red-50 px-4 py-3 text-sm text-red-800">
+                  <div role="alert" className="mb-6 border border-red-800/20 bg-red-50 px-4 py-3 text-sm text-red-800">
                     {checkoutError}
                   </div>
                 )}
                 <button
                   onClick={handleCheckout}
-                  disabled={isProcessing}
+                  disabled={isProcessing || pickupLoading || Boolean(pickupError) || !selectedPickupTime}
                   className="group relative w-full py-5 bg-text-main text-white font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all duration-300 disabled:opacity-50"
                 >
                   <div className="absolute inset-0 w-0 bg-primary-hover transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
                   <span className="relative z-10 font-bold">
-                    {isProcessing ? "PROCESANDO..." : "CONFIRMAR Y PAGAR"}
+                    {isProcessing ? "PROCESANDO..." : "CONFIRMAR PEDIDO"}
                   </span>
                 </button>
                 <p className="text-[10px] text-text-muted text-center mt-6 uppercase tracking-widest leading-relaxed opacity-60">
-                  Al confirmar, acepta nuestras políticas de <br /> cancelación
-                  y términos de servicio.
+                  Pagará {total.toFixed(2)}€ en el restaurante. Consulte el estado del pedido en su cuenta.
                 </p>
               </div>
             </div>
@@ -539,7 +463,7 @@ const CartView = () => {
                 {cartItems.length === 1 ? "producto" : "productos"}
               </span>
               <span className="font-body text-[12px] font-bold uppercase tracking-[1.8px]">
-                Continuar · {total.toFixed(2)}€
+                Elegir recogida · {total.toFixed(2)}€
               </span>
             </span>
             <span aria-hidden="true" className="text-lg leading-none">

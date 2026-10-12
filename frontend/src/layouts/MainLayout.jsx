@@ -15,9 +15,12 @@ const MainLayout = () => {
     <div className="flex flex-col min-h-screen bg-bg-body text-text-main font-body">
       {/* Barra de navegación superior */}
       <Navbar />
+      <a href="#main-content" className="skip-link">Saltar al contenido</a>
 
       {/* Contenedor central donde se cargan las distintas páginas (Outlet) */}
       <main
+        id="main-content"
+        tabIndex={-1}
         className={`flex-grow ${isAdminPage ? "" : "pt-20 md:pt-24 md:px-0"}`}
       >
         <Outlet key={location.pathname} />

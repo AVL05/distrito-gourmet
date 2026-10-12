@@ -10,6 +10,11 @@
 }
 
 @layer base {
+  :root {
+    --surface: #FCFBF8;
+    --ink: #224032;
+    --accent: #81683C;
+  }
   html {
     @screen 2k {
       font-size: 110%;
@@ -60,9 +65,12 @@
   }
 
   :focus-visible {
-    outline: 2px solid #c5a059;
+    outline: 2px solid var(--accent);
     outline-offset: 4px;
   }
+  .skip-link { position: fixed; top: 1rem; left: 1rem; z-index: 100; padding: 0.75rem 1rem; background: var(--surface); color: var(--ink); transform: translateY(-200%); }
+  .skip-link:focus { transform: translateY(0); }
+  button:disabled { cursor: not-allowed; opacity: 0.6; }
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -99,6 +107,8 @@
     @apply uppercase relative inline-block pb-2;
     font-size: clamp(2rem, 6vw, 4.5rem);
   }
+  h1, h2, h3 { text-wrap: balance; }
+  p { overflow-wrap: break-word; }
 
   h2::after {
     content: none;
@@ -164,7 +174,7 @@
   input:not([type="checkbox"]):not([type="radio"]),
   select,
   textarea {
-    @apply bg-transparent border-none border-b border-text-main/20 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:outline-none focus:border-primary placeholder-text-muted/50;
+    @apply bg-transparent border-none border-b border-text-main/20 text-text-main py-3 w-full font-body text-base transition-colors duration-300 focus:border-primary-hover placeholder-text-muted/70;
   }
 
   button,

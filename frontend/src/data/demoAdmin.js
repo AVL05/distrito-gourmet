@@ -193,7 +193,7 @@ export const demoAdminData = {
       usuario_id: 2,
       usuario: { nombre: "Cliente Demo" },
       total: "45.50",
-      metodo_pago: "card",
+      metodo_pago: "cash",
       fecha_recogida: isoDate(0),
       hora_recogida: "21:30:00",
       estado: "Pendiente",

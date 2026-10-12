@@ -29,7 +29,7 @@ const UserEditRow = ({ user, fetchData }) => {
         text: "La nueva contraseña debe tener al menos 8 caracteres para ser segura.",
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
       return;
     }
@@ -58,7 +58,7 @@ const UserEditRow = ({ user, fetchData }) => {
         text: `En la demo no se puede eliminar a ${user.nombre}.`,
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#e76f51",
+        confirmButtonColor: "var(--accent)",
       });
       return;
     }
@@ -210,7 +210,7 @@ const UserEditRow = ({ user, fetchData }) => {
         <span
           className={`text-[8px] uppercase tracking-[2px] px-3 py-1 rounded-full font-bold border mb-2 ${
             user.rol === "Administrador"
-              ? "bg-primary/10 text-primary border-primary/20"
+              ? "bg-primary/10 text-primary-hover border-primary/20"
               : "bg-text-main/5 text-text-muted border-text-main/10"
           }`}
         >
@@ -232,7 +232,7 @@ const UserEditRow = ({ user, fetchData }) => {
       <div className="mt-auto pt-6 border-t border-text-main/5 w-full flex items-center justify-center gap-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-500 transform translate-y-0 md:translate-y-4 md:group-hover:translate-y-0">
         <button
           onClick={() => setIsEditing(true)}
-          className="text-text-main hover:text-primary text-[9px] uppercase tracking-[2px] font-bold transition-colors"
+          className="text-text-main hover:text-primary-hover text-[9px] uppercase tracking-[2px] font-bold transition-colors"
         >
           Editar
         </button>

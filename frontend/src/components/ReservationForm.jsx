@@ -1,15 +1,18 @@
+import { useServiceCalendar } from "@/hooks/useServiceCalendar";
 import { useState, useEffect } from "react";
 import { FadeIn, Toast, MotionButton } from "@/motion";
 import { useAuthStore } from "@/store/auth";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { calendar, loading: calendarLoading, error: calendarError, retry: retryCalendar } = useServiceCalendar();
   const COMMENTS_MAX_LENGTH = 300;
 
   // Estado principal que guarda los datos introducidos en el formulario
@@ -20,6 +23,7 @@ const ReservationForm = ({ compact = false }) => {
     date: "",
     time: "",
     comments: "",
+    ...location.state?.reservationDraft,
   });
 
   // Estados para controlar si está cargando
@@ -41,64 +45,20 @@ const ReservationForm = ({ compact = false }) => {
       month: "long",
     });
 
-  const reservationDateOptions = (() => {
-    const dates = [];
-    const cursor = new Date();
-    cursor.setHours(0, 0, 0, 0);
-
-    const end = new Date();
-    end.setMonth(end.getMonth() + 2);
-    end.setHours(0, 0, 0, 0);
-
-    while (cursor <= end) {
-      dates.push({
-        value: cursor.toLocaleDateString("en-CA"),
-        label: formatShortReservationDate(cursor),
-        fullLabel: formatFullReservationDate(cursor),
-        day: cursor.toLocaleDateString("es-ES", { day: "2-digit" }),
-        month: cursor.toLocaleDateString("es-ES", { month: "short" }),
-        weekday: cursor.toLocaleDateString("es-ES", { weekday: "short" }),
-      });
-      cursor.setDate(cursor.getDate() + 1);
-    }
-
-    return dates;
-  })();
+  const reservationDateOptions = (calendar?.days || []).filter((day) => day.reservations.length > 0).map((day) => {
+    const date = new Date(`${day.date}T12:00:00`);
+    return { value: day.date, label: formatShortReservationDate(date), fullLabel: formatFullReservationDate(date),
+      day: date.toLocaleDateString("es-ES", { day: "2-digit" }), month: date.toLocaleDateString("es-ES", { month: "short" }), weekday: date.toLocaleDateString("es-ES", { weekday: "short" }) };
+  });
   const selectedDate = reservationDateOptions.find(
     (option) => option.value === form.date,
   );
-  const baseAvailableTimes = [
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "20:00",
-    "20:30",
-    "21:00",
-    "21:30",
-  ];
-  const demoAvailability = baseAvailableTimes.map((time, index) => {
-    const occupied = index === 6 ? 36 : index === 2 ? 18 : 0;
-    const availableSeats = Math.max(44 - occupied, 0);
-
-    return {
-      time,
-      occupied,
-      available_seats: availableSeats,
-      capacity: 44,
-      status:
-        availableSeats === 0
-          ? "complete"
-          : availableSeats <= 8
-            ? "limited"
-            : "available",
-    };
-  });
-  const availabilityTurns = form.date
-    ? availability.length > 0
-      ? availability
-      : demoAvailability
-    : [];
+  const [availabilityError, setAvailabilityError] = useState("");
+  const [availabilityDate, setAvailabilityDate] = useState("");
+  const [availabilityRetry, setAvailabilityRetry] = useState(0);
+  const availabilityTurns = IS_PUBLIC_DEMO
+    ? (calendar?.days.find((day) => day.date === form.date)?.reservations || []).map((time) => ({ time, available_seats: calendar.capacity, capacity: calendar.capacity, status: "available" }))
+    : availabilityDate === form.date ? availability : [];
   const selectedTurn = availabilityTurns.find(
     (turn) => turn.time === form.time,
   );
@@ -118,10 +78,7 @@ const ReservationForm = ({ compact = false }) => {
   ];
 
   // Horarios disponibles para reservar
-  const availableTimes =
-    availabilityTurns.length > 0
-      ? availabilityTurns
-      : baseAvailableTimes.map((time) => ({ time }));
+  const availableTimes = availabilityTurns;
   const phonePattern = /^\+?\d[\d\s]{8,17}$/;
 
   useEffect(() => {
@@ -132,16 +89,19 @@ const ReservationForm = ({ compact = false }) => {
     let cancelled = false;
     const fetchAvailability = async () => {
       setAvailabilityLoading(true);
+      setAvailabilityError("");
+      setAvailabilityDate("");
       try {
         const response = await axios.get("/reservation-availability", {
           params: { date: form.date },
         });
-        if (!cancelled) setAvailability(response.data?.turns || []);
+        if (!Array.isArray(response.data?.turns)) throw new Error("Invalid availability");
+        if (!cancelled) { setAvailability(response.data.turns); setAvailabilityDate(form.date); }
       } catch (error) {
         if (import.meta.env.DEV) {
           console.warn("No se pudo cargar disponibilidad", error);
         }
-        if (!cancelled) setAvailability([]);
+        if (!cancelled) { setAvailability([]); setAvailabilityError("No pudimos consultar las plazas disponibles."); }
       } finally {
         if (!cancelled) setAvailabilityLoading(false);
       }
@@ -151,7 +111,7 @@ const ReservationForm = ({ compact = false }) => {
     return () => {
       cancelled = true;
     };
-  }, [form.date]);
+  }, [form.date, availabilityRetry]);
 
   const validateForm = () => {
     const nextErrors = {};
@@ -165,7 +125,7 @@ const ReservationForm = ({ compact = false }) => {
     }
     if (!form.guests) nextErrors.guests = "Seleccione el número de comensales.";
     if (!form.date) nextErrors.date = "Seleccione una fecha.";
-    if (!form.time) nextErrors.time = "Seleccione un turno.";
+    if (!form.time || !selectedTurn || availabilityLoading || availabilityError || calendarError) nextErrors.time = "Consulte la disponibilidad y seleccione un turno válido.";
     if (
       selectedTurn?.available_seats !== undefined &&
       Number(form.guests || 0) > selectedTurn.available_seats
@@ -190,7 +150,7 @@ const ReservationForm = ({ compact = false }) => {
         title: "Servicio no disponible",
         text: "La reserva online no está disponible en esta vista pública.",
         icon: "info",
-        confirmButtonColor: "#c5a059",
+        confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -206,9 +166,9 @@ const ReservationForm = ({ compact = false }) => {
         showCancelButton: true,
         confirmButtonText: "Ir al Login",
         cancelButtonText: "Cerrar",
-        confirmButtonColor: "#c5a059",
+        confirmButtonColor: "var(--accent)",
       }).then((result) => {
-        if (result.isConfirmed) navigate("/login");
+        if (result.isConfirmed) navigate("/login", { state: { returnTo: "/reservations", reservationDraft: form } });
       });
       return;
     }
@@ -232,13 +192,13 @@ const ReservationForm = ({ compact = false }) => {
       // Mostrar mensaje de confirmación mediante SweetAlert2 (estilo premium)
       Swal.fire({
         icon: "success",
-        title: "Reserva Confirmada",
+        title: reservation?.estado === "Confirmada" ? "Reserva confirmada" : "Reserva pendiente de aprobación",
         html: `
           <div class="text-center font-body">
             <p class="mb-4">Hemos recibido su solicitud de mesa en <b>Distrito Gourmet</b>.</p>
             <div class="bg-primary/10 p-6 rounded-lg border border-primary/20">
-              <p class="text-xs font-semibold text-primary uppercase tracking-widest mb-1 opacity-70">Código de reserva</p>
-              <p class="text-3xl font-heading text-primary">${reservation?.codigo_reserva || "Pendiente"}</p>
+              <p class="text-xs font-semibold text-primary-hover uppercase tracking-widest mb-1 opacity-70">Código de reserva</p>
+              <p class="text-3xl font-heading text-primary-hover">${reservation?.codigo_reserva || "Pendiente"}</p>
               <p class="mt-3 text-sm">${form.date} — ${form.time} · ${form.guests} pax</p>
             </div>
             <p class="mt-4 text-[11px] text-text-muted">El equipo de sala revisará cualquier preferencia indicada.</p>
@@ -246,11 +206,11 @@ const ReservationForm = ({ compact = false }) => {
         `,
         background: "#fdfaf6",
         color: "#2c302e",
-        confirmButtonColor: "#c5a059",
+        confirmButtonColor: "var(--accent)",
         confirmButtonText: "Ver mis Reservas",
       }).then(() => {
         // Redirigir al historial para que vea su nueva reserva
-        window.location.href = "/reservations";
+        navigate("/reservations?tab=history");
       });
 
       // Vaciar el formulario
@@ -281,7 +241,7 @@ const ReservationForm = ({ compact = false }) => {
         icon: "error",
         title: "Atención",
         text: errorMsg,
-        confirmButtonColor: "#c5a059",
+        confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",
       });
@@ -306,7 +266,7 @@ const ReservationForm = ({ compact = false }) => {
   };
 
   const handleDateSelect = (date) => {
-    setForm((prev) => ({ ...prev, date: date.value }));
+    setForm((prev) => ({ ...prev, date: date.value, time: "" }));
     clearFieldError("date");
     setIsDatePickerOpen(false);
   };
@@ -318,8 +278,14 @@ const ReservationForm = ({ compact = false }) => {
       <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
       <form onSubmit={handleSubmit} className="relative z-10">
+        <p className="text-sm text-text-muted mb-6">Las horas corresponden a la hora local de Valencia. Puede cancelar desde «Mis reservas» antes de la hora reservada.</p>
+        {calendarLoading && <p role="status">Consultando calendario…</p>}
+        {calendarError && <div role="alert" className="mb-6 text-red-800"><p>{calendarError}</p><button type="button" className="btn mt-3" onClick={retryCalendar}>Reintentar calendario</button></div>}
+        {availabilityError && <div role="alert" className="mb-6 text-red-800"><p>{availabilityError}</p><button type="button" className="btn mt-3" onClick={() => setAvailabilityRetry((value) => value + 1)}>Reintentar disponibilidad</button></div>}
+        {form.date && availabilityDate === form.date && availableTimes.length === 0 && !availabilityLoading && <p role="status" className="mb-6">No hay turnos disponibles para esta fecha. Elija otro día.</p>}
+
         {IS_PUBLIC_DEMO && (
-          <div className="mb-8 border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] text-primary font-body font-bold">
+          <div className="mb-8 border border-primary/20 bg-primary/10 px-4 py-3 text-center text-[10px] sm:text-[11px] uppercase tracking-[1.5px] sm:tracking-[2px] text-primary-hover font-body font-bold">
             Reserva online no disponible en esta vista
           </div>
         )}
@@ -328,7 +294,8 @@ const ReservationForm = ({ compact = false }) => {
             Para confirmar la reserva necesita{" "}
             <Link
               to="/login"
-              className="text-primary border-b border-primary pb-[1px] hover:text-primary-hover hover:border-primary-hover transition-colors"
+              state={{ returnTo: "/reservations", reservationDraft: form }}
+              className="text-primary-hover border-b border-primary pb-[1px] hover:text-primary-hover hover:border-primary-hover transition-colors"
             >
               iniciar sesión
             </Link>
@@ -338,12 +305,12 @@ const ReservationForm = ({ compact = false }) => {
 
         {!compact && (
           <div className="text-center mb-10 md:mb-12">
-            <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-gray-900 tracking-[0.14em] sm:tracking-[0.2em] mb-4 drop-shadow-lg font-normal">
+            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl text-gray-900 tracking-[0.14em] sm:tracking-[0.2em] mb-4 drop-shadow-lg font-normal">
               Su{" "}
               <span className="italic font-normal text-primary-hover">
                 Reserva
               </span>
-            </h3>
+            </h2>
             <div className="w-16 h-[1px] bg-primary mx-auto opacity-70"></div>
           </div>
         )}
@@ -352,7 +319,7 @@ const ReservationForm = ({ compact = false }) => {
           {/* Campo: Nombre del cliente */}
           <label
             htmlFor="reservation-name"
-            className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+            className="text-[12px] uppercase tracking-[2px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover font-bold"
           >
             Nombre Completo
           </label>
@@ -369,7 +336,7 @@ const ReservationForm = ({ compact = false }) => {
               errors.name ? "reservation-name-error" : undefined
             }
             placeholder="Ej. Laura Martínez"
-            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
               errors.name ? "border-red-700" : "border-gray-200"
             }`}
           />
@@ -391,7 +358,7 @@ const ReservationForm = ({ compact = false }) => {
             {/* Campo: Teléfono de contacto */}
             <label
               htmlFor="reservation-phone"
-              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+              className="text-[12px] uppercase tracking-[2px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover font-bold"
             >
               Teléfono
             </label>
@@ -409,7 +376,7 @@ const ReservationForm = ({ compact = false }) => {
                 errors.phone ? "reservation-phone-error" : undefined
               }
               placeholder="+34 000 000 000"
-              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
                 errors.phone ? "border-red-700" : "border-gray-200"
               }`}
             />
@@ -429,7 +396,7 @@ const ReservationForm = ({ compact = false }) => {
             {/* Desplegable: Número de comensales */}
             <label
               htmlFor="reservation-guests"
-              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+              className="text-[12px] uppercase tracking-[2px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover font-bold"
             >
               Comensales (Máx. 8)
             </label>
@@ -443,7 +410,7 @@ const ReservationForm = ({ compact = false }) => {
               aria-describedby={
                 errors.guests ? "reservation-guests-error" : undefined
               }
-              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
                 errors.guests ? "border-red-700" : "border-gray-200"
               }`}
             >
@@ -476,12 +443,12 @@ const ReservationForm = ({ compact = false }) => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-1 mb-2">
               <label
                 htmlFor="reservation-date"
-                className="text-[12px] uppercase tracking-[2px] text-primary transition-colors group-focus-within:text-primary font-bold mb-0"
+                className="text-[12px] uppercase tracking-[2px] text-primary-hover transition-colors group-focus-within:text-primary-hover font-bold mb-0"
               >
                 Fecha de la Reserva
               </label>
               <span className="text-[9px] uppercase tracking-[2px] text-text-muted/60 italic">
-                Agenda abierta a 2 meses
+                Fechas de servicio disponibles
               </span>
             </div>
             <button
@@ -489,11 +456,12 @@ const ReservationForm = ({ compact = false }) => {
               type="button"
               onClick={() => setIsDatePickerOpen((open) => !open)}
               aria-expanded={isDatePickerOpen}
+              disabled={calendarLoading || Boolean(calendarError)}
               aria-invalid={!!errors.date}
               aria-describedby={
                 errors.date ? "reservation-date-error" : undefined
               }
-              className={`flex min-h-12 w-full items-center justify-between border-0 border-b bg-transparent py-3 text-left text-base font-normal text-gray-900 transition-all duration-300 focus:outline-none focus:ring-0 focus:border-primary sm:text-lg ${
+              className={`flex min-h-12 w-full items-center justify-between border-0 border-b bg-transparent py-3 text-left text-base font-normal text-gray-900 transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus:border-primary sm:text-lg ${
                 errors.date ? "border-red-700" : "border-gray-200"
               }`}
             >
@@ -503,7 +471,7 @@ const ReservationForm = ({ compact = false }) => {
                 {selectedDate?.fullLabel || "Seleccione fecha"}
               </span>
               <span
-                className={`text-primary transition-transform duration-300 ${
+                className={`text-primary-hover transition-transform duration-300 ${
                   isDatePickerOpen ? "rotate-180" : ""
                 }`}
                 aria-hidden="true"
@@ -522,8 +490,9 @@ const ReservationForm = ({ compact = false }) => {
                         key={date.value}
                         type="button"
                         onClick={() => handleDateSelect(date)}
+                        aria-label={date.fullLabel}
                         aria-pressed={isSelected}
-                        className={`min-h-[72px] border px-2 py-3 text-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-body ${
+                        className={`min-h-[72px] border px-2 py-3 text-center transition-colors focus-visible:outline focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-bg-body ${
                           isSelected
                             ? "border-primary bg-primary text-white"
                             : "border-text-main/10 bg-white/70 text-gray-900 hover:border-primary hover:bg-primary/10"
@@ -557,9 +526,9 @@ const ReservationForm = ({ compact = false }) => {
             {/* Desplegable: Turnos disponibles */}
             <label
               htmlFor="reservation-time"
-              className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+              className="text-[12px] uppercase tracking-[2px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover font-bold"
             >
-              Turno
+              Hora de llegada
             </label>
             <select
               id="reservation-time"
@@ -567,12 +536,12 @@ const ReservationForm = ({ compact = false }) => {
               value={form.time}
               onChange={handleChange}
               required
-              disabled={!form.date || availabilityLoading}
+              disabled={!form.date || availabilityLoading || Boolean(availabilityError) || availableTimes.length === 0}
               aria-invalid={!!errors.time}
               aria-describedby={
                 errors.time ? "reservation-time-error" : undefined
               }
-              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
+              className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 [&>option]:bg-[#fdfaf6] text-base sm:text-lg font-normal appearance-none cursor-pointer ${
                 errors.time ? "border-red-700" : "border-gray-200"
               }`}
             >
@@ -596,18 +565,14 @@ const ReservationForm = ({ compact = false }) => {
                       ? "Servicio disponible"
                       : isFull
                         ? "Completo"
-                        : `${turn.available_seats} plazas libres`}
+                        : "Disponible"}
                   </option>
                 );
               })}
             </select>
-            {selectedTurn?.available_seats !== undefined && (
+            {selectedTurn?.status === "limited" && (
               <p className="mt-2 text-[11px] leading-relaxed text-gray-500">
-                {selectedTurn.status === "limited"
-                  ? "Últimas plazas para este turno."
-                  : "Disponibilidad calculada con las reservas activas."}{" "}
-                {selectedTurn.occupied}/{selectedTurn.capacity} cubiertos
-                ocupados.
+                Quedan pocas plazas para esta hora.
               </p>
             )}
             {errors.time && (
@@ -625,9 +590,9 @@ const ReservationForm = ({ compact = false }) => {
           {/* Campo opcional para alergias o comentarios */}
           <label
             htmlFor="reservation-comments"
-            className="text-[12px] uppercase tracking-[2px] text-primary block mb-2 transition-colors group-focus-within:text-primary font-bold"
+            className="text-[12px] uppercase tracking-[2px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover font-bold"
           >
-            Preferencias / Restricciones
+            Alergias o peticiones especiales (opcional)
           </label>
           <textarea
             id="reservation-comments"
@@ -641,7 +606,7 @@ const ReservationForm = ({ compact = false }) => {
               errors.comments ? "reservation-comments-error" : undefined
             }
             placeholder="Alergias, celebraciones u otros detalles importantes para el equipo de sala..."
-            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
+            className={`w-full bg-transparent border-0 border-b text-gray-900 py-3 focus-visible:outline focus-visible:outline-2 focus:border-primary transition-all duration-300 resize-none placeholder:text-gray-900/20 text-base sm:text-lg font-normal ${
               errors.comments ? "border-red-700" : "border-gray-200"
             }`}
           ></textarea>
@@ -665,10 +630,10 @@ const ReservationForm = ({ compact = false }) => {
 
         <div className="mb-10 border border-text-main/10 bg-bg-body/80 p-5 sm:p-6">
           <div className="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <h4 className="font-heading text-2xl text-gray-900 mb-0">
+            <h3 className="font-heading text-2xl text-gray-900 mb-0">
               Resumen
-            </h4>
-            <span className="font-body text-[10px] uppercase tracking-[1.6px] text-primary">
+            </h3>
+            <span className="font-body text-[10px] uppercase tracking-[1.6px] text-primary-hover">
               Revise antes de enviar
             </span>
           </div>
@@ -690,8 +655,8 @@ const ReservationForm = ({ compact = false }) => {
         <div className="mt-10 flex justify-center">
           <MotionButton
             type="submit"
-            className="group relative px-6 sm:px-12 md:px-16 py-4 sm:py-5 bg-transparent border border-primary text-primary font-body text-[11px] sm:text-xs uppercase tracking-[2px] sm:tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto md:min-w-[300px]"
-            disabled={loading || IS_PUBLIC_DEMO}
+            className="group relative px-6 sm:px-12 md:px-16 py-4 sm:py-5 bg-transparent border border-primary text-primary-hover font-body text-[11px] sm:text-xs uppercase tracking-[2px] sm:tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto md:min-w-[300px]"
+            disabled={loading || IS_PUBLIC_DEMO || calendarLoading || availabilityLoading || Boolean(availabilityError) || Boolean(calendarError)}
           >
             <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">

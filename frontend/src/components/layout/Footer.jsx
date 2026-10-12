@@ -1,24 +1,9 @@
-import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
+import ServiceHours from "@/components/ServiceHours";
 import { FadeIn } from "@/motion";
 import { Link } from "react-router-dom";
 
 // Pie de página del sitio web con animaciones sutiles
 const Footer = () => {
-  const socialLinks = [
-    {
-      icon: FaFacebookF,
-      label: "Facebook",
-    },
-    {
-      icon: FaInstagram,
-      label: "Instagram",
-    },
-    {
-      icon: FaTiktok,
-      label: "TikTok",
-    },
-  ];
-
   return (
     <footer className="bg-bg-body relative border-t border-text-main/10 pt-20 pb-10 overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
@@ -28,15 +13,15 @@ const Footer = () => {
           {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">
             <Link to="/" className="group max-w-full">
-              <h3 className="font-heading text-[2rem] sm:text-3xl text-text-main tracking-[0.14em] sm:tracking-[0.2em] mb-6 flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1 font-normal leading-tight group-hover:text-primary transition-colors">
-                <span className="text-primary opacity-80 text-xl shrink-0">
+              <p className="font-heading text-[2rem] sm:text-3xl text-text-main tracking-[0.14em] sm:tracking-[0.2em] mb-6 flex max-w-full flex-wrap items-baseline gap-x-3 gap-y-1 font-normal leading-tight group-hover:text-primary-hover transition-colors">
+                <span className="text-primary-hover opacity-80 text-xl shrink-0">
                   ✦
                 </span>
                 <span className="min-w-0">DISTRITO</span>
                 <span className="italic text-primary-hover min-w-0 break-words">
                   GOURMET
                 </span>
-              </h3>
+              </p>
             </Link>
             <p className="text-text-main/80 text-sm leading-loose max-w-sm font-medium">
               Cocina española contemporánea, producto de temporada y una sala
@@ -47,10 +32,10 @@ const Footer = () => {
           {/* Información de contacto */}
           <div className="md:w-7/12 grid grid-cols-1 sm:grid-cols-3 gap-12 w-full">
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
+              <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Ubicación
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
-              </h4>
+              </h2>
               <p className="text-text-main/80 text-sm leading-loose font-medium">
                 Calle del Mercado, 18
                 <br />
@@ -60,51 +45,27 @@ const Footer = () => {
               </p>
             </div>
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
+              <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Comunicación
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
-              </h4>
+              </h2>
               <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
-                <span className="py-1">+34 960 00 00 00</span>
-                <span className="py-1 break-all">
-                  reservas@distritogourmet.es
-                </span>
+                <a href="tel:+34960000000" className="py-1 underline">+34 960 00 00 00</a>
+                <a href="mailto:reservas@distritogourmet.es" className="py-1 break-all underline">reservas@distritogourmet.es</a>
               </p>
             </div>
             <div className="text-left">
-              <h4 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
+              <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Servicio
                 <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
-              </h4>
-              <p className="text-text-main/80 text-sm leading-loose font-medium">
-                <span className="block mb-1">
-                  <span className="text-primary text-xs">M - D:</span> 13:30 a
-                  15:30
-                </span>
-                <span className="block mb-2">
-                  <span className="text-primary text-xs">M - S:</span> 20:30 a
-                  22:30
-                </span>
-                <span className="text-text-main/75 italic">Lunes: cerrado</span>
-              </p>
+              </h2>
+              <ServiceHours />
             </div>
           </div>
         </FadeIn>
 
         {/* Barra inferior con redes sociales y links legales */}
         <div className="border-t border-text-main/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex gap-4">
-            {socialLinks.map(({ icon: Icon, label }) => (
-              <span
-                key={label}
-                aria-label={label}
-                className="p-3 border border-text-main/20 rounded-full text-text-main/70 hover:text-text-main hover:bg-primary hover:border-primary transition-all duration-300"
-              >
-                <Icon size={12} />
-              </span>
-            ))}
-          </div>
-
           <div className="text-text-main/70 text-[10px] uppercase tracking-[3px] flex flex-wrap justify-center gap-5 sm:gap-8 font-medium">
             <Link to="/menu" className="hover:text-text-main transition-colors">
               Carta

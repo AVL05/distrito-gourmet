@@ -56,7 +56,7 @@ const TastingMenuEditRow = ({
     return (
       <div className="lg:col-span-2 bg-bg-surface border border-primary/30 p-10 flex flex-col gap-10 shadow-[0_40px_80px_rgba(0,0,0,0.4)] relative z-20">
         <div className="flex justify-between items-start">
-          <h4 className="text-primary font-heading text-xl uppercase tracking-widest">
+          <h4 className="text-primary-hover font-heading text-xl uppercase tracking-widest">
             Configurando Menú Degustación
           </h4>
           <span className="text-[10px] text-text-muted font-bold tracking-[3px]">
@@ -67,7 +67,7 @@ const TastingMenuEditRow = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-8">
             <div className="group/field relative">
-              <label className="text-primary text-[11px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary">
+              <label className="text-primary-hover text-[11px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary-hover">
                 Título del Menú
               </label>
               <input
@@ -79,7 +79,7 @@ const TastingMenuEditRow = ({
               />
             </div>
             <div className="group/field relative">
-              <label className="text-primary text-[11px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary">
+              <label className="text-primary-hover text-[11px] uppercase tracking-[3px] block mb-2 font-bold transition-all group-focus-within/field:text-primary-hover">
                 Relato / Descripción
               </label>
               <textarea
@@ -155,7 +155,7 @@ const TastingMenuEditRow = ({
                   </div>
                 </div>
                 <span
-                  className={`text-[11px] uppercase tracking-[2px] font-bold leading-tight transition-colors ${edit._hasMaridaje || !!edit.precio_maridaje ? "text-primary" : "text-text-muted group-hover:text-text-main"}`}
+                  className={`text-[11px] uppercase tracking-[2px] font-bold leading-tight transition-colors ${edit._hasMaridaje || !!edit.precio_maridaje ? "text-primary-hover" : "text-text-muted group-hover:text-text-main"}`}
                 >
                   Maridaje opcional
                 </span>
@@ -180,7 +180,7 @@ const TastingMenuEditRow = ({
                 </div>
                 {!!(edit._hasMaridaje || edit.precio_maridaje) && (
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                    <label className="text-primary text-[9px] uppercase tracking-[2px] block mb-2 font-bold opacity-80">
+                    <label className="text-primary-hover text-[9px] uppercase tracking-[2px] block mb-2 font-bold opacity-80">
                       Precio Maridaje (€)
                     </label>
                     <input
@@ -190,7 +190,7 @@ const TastingMenuEditRow = ({
                       onChange={(e) =>
                         setEdit({ ...edit, precio_maridaje: e.target.value })
                       }
-                      className={`${adminEditInputClass} text-xl font-heading font-bold text-primary`}
+                      className={`${adminEditInputClass} text-xl font-heading font-bold text-primary-hover`}
                     />
                   </div>
                 )}
@@ -215,7 +215,7 @@ const TastingMenuEditRow = ({
                   addDishToMenu(e.target.value);
                   e.target.value = "";
                 }}
-                className="w-full bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 text-primary text-[10px] p-3 px-5 outline-none focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-[3px] font-bold"
+                className="w-full bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 text-primary-hover text-[10px] p-3 px-5 outline-none focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-[3px] font-bold"
               >
                 <option value="" className="bg-bg-surface text-text-muted">
                   + Añadir pase al menú
@@ -265,7 +265,7 @@ const TastingMenuEditRow = ({
 
                 <div className="flex flex-wrap items-center gap-6">
                   <div className="flex items-center gap-4">
-                    <span className="text-primary font-heading text-2xl opacity-20 w-8 tabular-nums">
+                    <span className="text-primary-hover font-heading text-2xl opacity-20 w-8 tabular-nums">
                       {(idx + 1).toString().padStart(2, "0")}
                     </span>
                     <div className="w-[2px] h-8 bg-text-main/5"></div>
@@ -361,7 +361,7 @@ const TastingMenuEditRow = ({
         <div>
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
-              <span className="bg-primary/10 text-primary text-[10px] uppercase tracking-[4px] font-bold px-4 py-1.5 rounded-full">
+              <span className="bg-primary/10 text-primary-hover text-[10px] uppercase tracking-[4px] font-bold px-4 py-1.5 rounded-full">
                 {item.pasos} Pasos
               </span>
               <span className="w-1 h-1 bg-text-main/20 rounded-full"></span>
@@ -371,7 +371,7 @@ const TastingMenuEditRow = ({
             </div>
           </div>
 
-          <h4 className="text-text-main font-heading text-5xl mb-8 leading-tight group-hover:text-primary transition-colors duration-700">
+          <h4 className="text-text-main font-heading text-5xl mb-8 leading-tight group-hover:text-primary-hover transition-colors duration-700">
             {item.nombre}
           </h4>
 
@@ -385,13 +385,13 @@ const TastingMenuEditRow = ({
             {item.platos?.slice(0, 6).map((d) => (
               <span
                 key={d.id}
-                className="text-[11px] bg-bg-body text-text-main/60 px-4 py-2 uppercase tracking-[2px] border border-text-main/5 font-medium hover:border-primary/30 hover:text-primary transition-all cursor-default"
+                className="text-[11px] bg-bg-body text-text-main/60 px-4 py-2 uppercase tracking-[2px] border border-text-main/5 font-medium hover:border-primary/30 hover:text-primary-hover transition-all cursor-default"
               >
                 {d.nombre}
               </span>
             ))}
             {item.platos?.length > 6 && (
-              <span className="text-[11px] text-primary bg-primary/5 px-4 py-2 uppercase tracking-[2px] font-bold border border-primary/10">
+              <span className="text-[11px] text-primary-hover bg-primary/5 px-4 py-2 uppercase tracking-[2px] font-bold border border-primary/10">
                 + {item.platos.length - 6} más
               </span>
             )}
@@ -416,14 +416,14 @@ const TastingMenuEditRow = ({
             {!!item.precio_maridaje && (
               <div className="flex flex-col relative pl-12">
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-10 bg-text-main/10"></div>
-                <span className="text-primary text-[10px] uppercase tracking-[3px] mb-3 font-bold">
+                <span className="text-primary-hover text-[10px] uppercase tracking-[3px] mb-3 font-bold">
                   Maridaje sugerido
                 </span>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-primary font-heading text-3xl leading-none">
+                  <span className="text-primary-hover font-heading text-3xl leading-none">
                     +{parseFloat(item.precio_maridaje).toFixed(0)}
                   </span>
-                  <span className="text-primary font-heading text-lg opacity-40">
+                  <span className="text-primary-hover font-heading text-lg opacity-40">
                     €
                   </span>
                 </div>
@@ -437,7 +437,7 @@ const TastingMenuEditRow = ({
         <div className="flex gap-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0">
           <button
             onClick={() => setIsEditing(true)}
-            className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold"
+            className="text-text-main hover:text-primary-hover text-[10px] uppercase tracking-[2px] font-bold"
           >
             Editar
           </button>

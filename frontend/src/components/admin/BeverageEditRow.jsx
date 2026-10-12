@@ -93,7 +93,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
                 }
                 className="w-4 h-4 accent-primary"
               />
-              <span className="text-[11px] uppercase tracking-[2px] text-text-muted group-hover:text-primary transition-colors">
+              <span className="text-[11px] uppercase tracking-[2px] text-text-muted group-hover:text-primary-hover transition-colors">
                 Destacado
               </span>
             </label>
@@ -106,7 +106,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
                 }
                 className="w-4 h-4 accent-primary"
               />
-              <span className="text-[11px] uppercase tracking-[2px] text-text-muted group-hover:text-primary transition-colors">
+              <span className="text-[11px] uppercase tracking-[2px] text-text-muted group-hover:text-primary-hover transition-colors">
                 Disponible
               </span>
             </label>
@@ -135,13 +135,13 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
     <div className="group bg-bg-surface/90 border border-text-main/10 p-7 flex flex-col justify-between transition-all duration-500 relative overflow-hidden h-full hover:border-primary/40 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)]">
       <div>
         <div className="flex justify-between items-start mb-6">
-          <span className="text-primary text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
+          <span className="text-primary-hover text-[10px] uppercase tracking-[4px] font-bold opacity-60 group-hover:opacity-100 transition-opacity">
             {item.tipo}
           </span>
           <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
             <button
               onClick={() => setIsEditing(true)}
-              className="text-text-main hover:text-primary text-[10px] uppercase tracking-[2px] font-bold"
+              className="text-text-main hover:text-primary-hover text-[10px] uppercase tracking-[2px] font-bold"
             >
               Editar
             </button>
@@ -153,7 +153,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
             </button>
           </div>
         </div>
-        <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary transition-colors">
+        <h4 className="text-text-main font-heading text-2xl mb-2 leading-tight group-hover:text-primary-hover transition-colors">
           {item.nombre}
         </h4>
         {/* Muestra la descripción si el producto la tiene definida */}

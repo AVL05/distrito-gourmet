@@ -44,10 +44,12 @@ export const FadeIn = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       const fromVars = {
         opacity: 0,
         duration: DURATION.slow,
@@ -69,7 +71,7 @@ export const FadeIn = ({
         },
       });
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -88,10 +90,12 @@ export const StaggerList = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       const kids = el.current?.children;
       if (!kids || kids.length === 0) return;
 
@@ -109,7 +113,7 @@ export const StaggerList = ({
         },
       });
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -142,10 +146,12 @@ export const PageTransition = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       gsap.from(el.current, {
         opacity: 0,
         y: 24,
@@ -154,7 +160,7 @@ export const PageTransition = ({
         clearProps: "all",
       });
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -174,10 +180,12 @@ export const ScaleIn = ({
   delay = 0,
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       gsap.from(el.current, {
         opacity: 0,
         scale: 0.88,
@@ -192,7 +200,7 @@ export const ScaleIn = ({
         },
       });
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -211,10 +219,12 @@ export const Toast = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   useGSAP(
     () => {
+      if (reduced) return;
       gsap.from(el.current, {
         opacity: 0,
         y: 40,
@@ -224,7 +234,7 @@ export const Toast = ({
         clearProps: "all",
       });
     },
-    { scope: el },
+    { scope: el, dependencies: [reduced], revertOnUpdate: true },
   );
 
   return (
@@ -243,9 +253,11 @@ export const HoverCard = ({
   as: Component = "div",
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const el = useRef(null);
 
   const onMouseEnter = () => {
+    if (reduced) return;
     gsap.to(el.current, {
       y: -8,
       duration: 0.3,
@@ -255,6 +267,7 @@ export const HoverCard = ({
   };
 
   const onMouseLeave = () => {
+    if (reduced) return;
     gsap.to(el.current, {
       y: 0,
       duration: 0.3,
@@ -287,12 +300,13 @@ export const MotionButton = ({
   disabled = false,
   ...props
 }) => {
+  const reduced = useReducedMotion();
   const btn = useRef(null);
 
   const onMouseDown = () =>
-    gsap.to(btn.current, { scale: 0.95, duration: 0.1, ease: "power2.in" });
+    !reduced && gsap.to(btn.current, { scale: 0.95, duration: 0.1, ease: "power2.in" });
   const onMouseUp = () =>
-    gsap.to(btn.current, { scale: 1, duration: 0.15, ease: EASING.back });
+    !reduced && gsap.to(btn.current, { scale: 1, duration: 0.15, ease: EASING.back });
 
   return (
     <button
