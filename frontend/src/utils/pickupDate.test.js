@@ -4,10 +4,10 @@ import test from "node:test";
 import { getPickupDate } from "./pickupDate.js";
 
 test("uses the local calendar date for pickup orders", () => {
-  const shortlyAfterMidnightInSpain = new Date("2026-09-21T00:30:00+02:00");
+  const shortlyAfterMidnight = new Date(2026, 8, 21, 0, 30);
 
-  assert.equal(getPickupDate("today-13:00", shortlyAfterMidnightInSpain), "2026-09-21");
-  assert.equal(getPickupDate("tomorrow-13:00", shortlyAfterMidnightInSpain), "2026-09-22");
+  assert.equal(getPickupDate("today-13:00", shortlyAfterMidnight), "2026-09-21");
+  assert.equal(getPickupDate("tomorrow-13:00", shortlyAfterMidnight), "2026-09-22");
 });
 
 test("uses the restaurant calendar date regardless of the customer's timezone", () => {
