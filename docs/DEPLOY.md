@@ -20,7 +20,9 @@ El backend y la base de datos todavía deben desplegarse y conectarse. La carta,
 
 ## Render y Supabase
 
-El backend se prepara para un Web Service Docker gratuito en Render: rama `main`, directorio raíz `backend`, Dockerfile `Dockerfile.render` y comprobación de salud `/up`. El contenedor usa Apache, PHP 8.4 y PDO PostgreSQL; al iniciar ejecuta únicamente las migraciones pendientes. No ejecuta el seeder destructivo automáticamente.
+El backend se prepara para un Web Service Docker gratuito en Render: rama `main`, directorio raíz `backend`, Dockerfile `Dockerfile.render` y comprobación de salud `/up`. El contenedor usa Apache, PHP 8.4 y PDO PostgreSQL; al iniciar ejecuta las migraciones pendientes. Con `INITIALIZE_DATABASE=true`, ejecuta `restaurant:initialize`: solo carga el catálogo y las cuentas iniciales si todas las tablas del restaurante están vacías, bajo bloqueo y transacción. Un reinicio conserva cualquier dato existente. Nunca ejecutar el seeder destructivo directamente sobre una base con datos.
+
+Las cuentas iniciales de prueba mantienen `password` según la configuración solicitada para este proyecto. Sustituir sus contraseñas antes de usar datos reales o abrir la administración a usuarios de producción.
 
 Crear un proyecto gratuito dedicado en Supabase, en Europa, con Data API desactivada. Usar su pooler de **sesión**, puerto 5432, y contraseña propia. Para aislar las tablas, ejecutar una vez `CREATE SCHEMA distrito_gourmet;` con el propietario de la base.
 

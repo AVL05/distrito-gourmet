@@ -9,6 +9,7 @@ use App\Notifications\RestaurantUpdate;
 use Database\Seeders\DistritoGourmetSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\ChannelManager;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
@@ -144,5 +145,23 @@ class RestaurantOperationsTest extends TestCase
     {
         Route::get('/proxy-check', fn () => ['secure' => request()->isSecure()]);
         $this->getJson('/proxy-check', ['X-Forwarded-Proto' => 'https'])->assertOk()->assertJsonPath('secure', true);
+    }
+
+    public function test_initialization_seeds_empty_database_and_preserves_changes_on_restart(): void
+    {
+        $this->artisan('restaurant:initialize')->assertSuccessful();
+        $this->assertDatabaseCount('usuarios', 3);
+        $this->user('preserve@test.local');
+        $this->artisan('restaurant:initialize')->assertSuccessful();
+        $this->assertDatabaseHas('usuarios', ['email' => 'preserve@test.local']);
+        $this->assertDatabaseCount('usuarios', 4);
+    }
+
+    public function test_initialization_preserves_partial_catalogue_without_creating_demo_accounts(): void
+    {
+        DB::table('categorias_menu')->insert(['nombre' => 'Existing category', 'orden_visualizacion' => 1]);
+        $this->artisan('restaurant:initialize')->assertSuccessful();
+        $this->assertDatabaseCount('usuarios', 0);
+        $this->assertDatabaseHas('categorias_menu', ['nombre' => 'Existing category']);
     }
 }

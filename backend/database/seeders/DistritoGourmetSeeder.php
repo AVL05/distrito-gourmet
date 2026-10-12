@@ -9,27 +9,19 @@ use Illuminate\Support\Facades\Schema;
 
 class DistritoGourmetSeeder extends Seeder
 {
+    public const TABLES = [
+        'usuarios', 'categorias_menu', 'platos', 'menus_degustacion',
+        'platos_menu_degustacion', 'vinos', 'maridajes_plato_vino',
+        'bebidas', 'reservas', 'pedidos', 'detalles_pedido',
+    ];
+
     // Seeder principal para poblar la base de datos con el catálogo gastronómico completo.
     public function run(): void
     {
         Schema::disableForeignKeyConstraints();
 
         // Truncar todas las tablas para sustituir los datos
-        $tablas = [
-            'usuarios',
-            'categorias_menu',
-            'platos',
-            'menus_degustacion',
-            'platos_menu_degustacion',
-            'vinos',
-            'maridajes_plato_vino',
-            'bebidas',
-            'reservas',
-            'pedidos',
-            'detalles_pedido',
-        ];
-
-        foreach ($tablas as $tabla) {
+        foreach (self::TABLES as $tabla) {
             DB::table($tabla)->truncate();
         }
 
