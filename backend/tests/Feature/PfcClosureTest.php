@@ -7,12 +7,20 @@ use App\Models\Reserva;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Notification;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class PfcClosureTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Notification::fake();
+        $this->travelTo(new \DateTimeImmutable('2026-10-13 10:00:00 Europe/Madrid'));
+    }
 
     public function test_register_login_logout_and_login_rate_limit(): void
     {
@@ -113,7 +121,7 @@ class PfcClosureTest extends TestCase
 
         $this->postJson('/api/reservations', [
             'fecha_reserva' => $fecha,
-            'hora_reserva' => '20:00',
+            'hora_reserva' => '20:30',
             'comensales' => 2,
         ])->assertUnprocessable()
             ->assertJsonPath('mensaje', 'Ya dispone de una reserva para esta fecha.');
@@ -147,7 +155,8 @@ class PfcClosureTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['metodo_pago']);
 
-        $payload['metodo_pago'] = 'card';
+        $payload['metodo_pago'] = 'cash';
+        $payload['hora_recogida'] = '13:30';
 
         $this->postJson('/api/orders', $payload)
             ->assertUnprocessable()
@@ -160,8 +169,8 @@ class PfcClosureTest extends TestCase
         $plato = $this->plato(['precio' => 10.00]);
 
         $response = $this->postJson('/api/orders', [
-            'metodo_pago' => 'card',
-            'hora_recogida' => '13:00',
+            'metodo_pago' => 'cash',
+            'hora_recogida' => '13:30',
             'fecha_recogida' => now()->toDateString(),
             'total' => 999,
             'articulos' => [[

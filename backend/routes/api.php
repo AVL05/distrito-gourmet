@@ -13,6 +13,7 @@ use App\Http\Controllers\API\ReservaController;
 use App\Http\Controllers\API\ReservationAvailabilityController;
 use App\Http\Controllers\API\UsuarioController;
 use App\Http\Controllers\API\VinoController;
+use App\Services\RestaurantSchedule;
 use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
@@ -23,6 +24,12 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 Route::get('/dishes', [PlatoController::class, 'index']);
 Route::get('/pickup-times', PickupTimesController::class);
 Route::get('/reservation-availability', ReservationAvailabilityController::class);
+Route::get('/service-calendar', fn () => response()->json([
+    'timezone' => config('app.timezone'),
+    'capacity' => config('restaurant.capacity'),
+    'days' => RestaurantSchedule::calendar(),
+    'services' => config('restaurant.services'),
+]));
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:auth');
 
 // Rutas protegidas
@@ -33,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/reservations', [ReservaController::class, 'index']);
     Route::post('/reservations', [ReservaController::class, 'store']);
+    Route::patch('/reservations/{id}/cancel', [ReservaController::class, 'cancel']);
 
     Route::post('/orders', [PedidoController::class, 'store']);
     Route::get('/orders', [PedidoController::class, 'index']);

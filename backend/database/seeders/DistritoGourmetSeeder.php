@@ -5,13 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class DistritoGourmetSeeder extends Seeder
 {
     // Seeder principal para poblar la base de datos con el catálogo gastronómico completo.
     public function run(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        Schema::disableForeignKeyConstraints();
 
         // Truncar todas las tablas para sustituir los datos
         $tablas = [
@@ -137,8 +138,8 @@ class DistritoGourmetSeeder extends Seeder
         // 9. Usuarios
         DB::table('usuarios')->insert([
             ['id' => 1, 'nombre' => 'Admin Michelin', 'email' => 'admin@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Administrador', 'telefono' => '+34 600 000 000'],
-            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'cliente@distritogourmet.com', 'password' => Hash::make('vA391878'), 'rol' => 'Cliente', 'telefono' => '+34 611 111 111'],
-            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@distritogourmet.com', 'password' => Hash::make('vA391878'), 'rol' => 'Staff', 'telefono' => '+34 622 222 222'],
+            ['id' => 2, 'nombre' => 'Cliente VIP', 'email' => 'cliente@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Cliente', 'telefono' => '+34 611 111 111'],
+            ['id' => 3, 'nombre' => 'Alex', 'email' => 'alex@distritogourmet.com', 'password' => Hash::make('password'), 'rol' => 'Staff', 'telefono' => '+34 622 222 222'],
         ]);
 
         // 10. Reservas
@@ -147,6 +148,6 @@ class DistritoGourmetSeeder extends Seeder
             ['usuario_id' => 3, 'codigo_reserva' => 'RSV-2026-014', 'fecha_reserva' => '2026-06-16', 'hora_reserva' => '14:30:00', 'comensales' => 2, 'menu_degustacion_id' => 1, 'estado' => 'Pendiente', 'peticiones_especiales' => 'Celebración aniversario.'],
         ]);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        Schema::enableForeignKeyConstraints();
     }
 }

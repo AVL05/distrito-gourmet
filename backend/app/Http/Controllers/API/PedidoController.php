@@ -9,6 +9,8 @@ use App\Models\MenuDegustacion;
 use App\Models\Pedido;
 use App\Models\Plato;
 use App\Models\Vino;
+use App\Notifications\RestaurantUpdate;
+use App\Services\RestaurantSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -18,27 +20,7 @@ use Illuminate\Validation\ValidationException;
 
 class PedidoController extends Controller
 {
-    private const METODOS_PAGO = ['card', 'cash', 'paypal'];
-
-    public const HORAS_RECOGIDA = [
-        '13:00:00',
-        '13:30:00',
-        '14:00:00',
-        '14:30:00',
-        '15:00:00',
-        '15:30:00',
-        '20:00:00',
-        '20:30:00',
-        '21:00:00',
-        '21:30:00',
-        '22:00:00',
-        '22:30:00',
-    ];
-
-    public static function getPickupTimes(): array
-    {
-        return array_map(fn ($t) => substr($t, 0, 5), self::HORAS_RECOGIDA);
-    }
+    private const METODOS_PAGO = ['cash'];
 
     public function index()
     {
@@ -58,8 +40,9 @@ class PedidoController extends Controller
 
         $request->validate([
             'metodo_pago' => ['required', Rule::in(self::METODOS_PAGO)],
-            'hora_recogida' => ['nullable', Rule::in(self::HORAS_RECOGIDA)],
-            'fecha_recogida' => ['nullable', 'date', Rule::in([
+            'hora_recogida' => ['required', Rule::in(array_map(fn ($time) => $time.':00',
+                preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $request->fecha_recogida) ? RestaurantSchedule::times($request->fecha_recogida, 'pickup') : []))],
+            'fecha_recogida' => ['required', 'date', Rule::in([
                 now()->toDateString(),
                 now()->addDay()->toDateString(),
             ])],
@@ -70,7 +53,7 @@ class PedidoController extends Controller
             'articulos.*.cantidad' => 'required|integer|min:1',
         ]);
 
-        return DB::transaction(function () use ($request) {
+        $response = DB::transaction(function () use ($request) {
             $articulos = collect($request->articulos)->map(function (array $item) {
                 $catalogItem = match ($item['tipo_item']) {
                     'plato' => Plato::where('disponible', true)
@@ -147,6 +130,10 @@ class PedidoController extends Controller
                 'pedido' => $pedido->load('detalles'),
             ], 201);
         });
+        $pedido = $response->getData()->pedido;
+        RestaurantUpdate::send(auth()->user(), 'Pedido recibido', $pedido->numero_pedido, 'Recogida: '.$pedido->fecha_recogida.' '.substr($pedido->hora_recogida, 0, 5).'. Pago pendiente en el local.');
+
+        return $response;
     }
 
     public function all()
@@ -164,9 +151,20 @@ class PedidoController extends Controller
             'estado' => 'required|in:Pendiente,Preparando,Listo,Entregado,Cancelado',
         ]);
 
-        $pedido = Pedido::findOrFail($id);
-        $pedido->estado = $request->input('estado');
-        $pedido->save();
+        $pedido = DB::transaction(function () use ($request, $id) {
+            $pedido = Pedido::lockForUpdate()->findOrFail($id);
+            $next = $request->input('estado');
+            $transitions = ['Pendiente' => ['Preparando', 'Cancelado'], 'Preparando' => ['Listo', 'Cancelado'], 'Listo' => ['Entregado', 'Cancelado'], 'Entregado' => [], 'Cancelado' => []];
+            if ($next !== $pedido->estado && ! in_array($next, $transitions[$pedido->estado] ?? [], true)) {
+                throw ValidationException::withMessages(['estado' => 'No puede realizar esa transición de estado.']);
+            }
+            $pedido->update(['estado' => $next]);
+
+            return $pedido;
+        });
+        if ($pedido->wasChanged('estado')) {
+            RestaurantUpdate::send($pedido->usuario, 'Pedido '.$pedido->estado, $pedido->numero_pedido, 'Consulte el estado de su pedido en su cuenta.');
+        }
 
         return response()->json(['mensaje' => 'Estado del pedido actualizado']);
     }

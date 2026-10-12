@@ -21,7 +21,7 @@ class AdminMetricsController extends Controller
             ->where('estado', '!=', 'Cancelada')
             ->count();
         $todaySeats = (int) Reserva::where('fecha_reserva', $today)
-            ->where('estado', '!=', 'Cancelada')
+            ->where('estado', 'Confirmada')
             ->sum('comensales');
         $averageTicket = (float) Pedido::where('estado', '!=', 'Cancelado')->avg('total');
 
@@ -39,16 +39,8 @@ class AdminMetricsController extends Controller
             ])
             ->values();
 
-        $occupancyByTurn = Reserva::where('fecha_reserva', $today)
-            ->where('estado', '!=', 'Cancelada')
-            ->selectRaw('hora_reserva, SUM(comensales) as ocupacion')
-            ->groupBy('hora_reserva')
-            ->pluck('ocupacion', 'hora_reserva');
-
-        $turnOccupancy = collect(ReservationRules::TURNS)->map(fn (string $turn) => [
-            'time' => substr($turn, 0, 5),
-            'occupied' => (int) ($occupancyByTurn[$turn] ?? 0),
-            'capacity' => ReservationRules::CAPACITY,
+        $turnOccupancy = collect(ReservationRules::availabilityForDate($today))->map(fn ($turn) => [
+            'time' => $turn['time'], 'occupied' => $turn['occupied'], 'capacity' => $turn['capacity'],
         ])->values();
 
         return response()->json([
@@ -56,7 +48,7 @@ class AdminMetricsController extends Controller
             'pending_reservations' => $pendingReservations,
             'upcoming_reservations' => $upcomingReservations,
             'today_seats' => $todaySeats,
-            'capacity' => ReservationRules::CAPACITY,
+            'capacity' => config('restaurant.capacity'),
             'average_ticket' => round($averageTicket, 2),
             'top_dishes' => $topDishes,
             'turn_occupancy' => $turnOccupancy,

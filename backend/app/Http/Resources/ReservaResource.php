@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\RestaurantSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,6 +17,7 @@ class ReservaResource extends JsonResource
             'hora_reserva' => $this->hora_reserva,
             'comensales' => $this->comensales,
             'estado' => $this->estado,
+            'puede_cancelar' => $this->estado !== 'Cancelada' && RestaurantSchedule::isFuture($this->fecha_reserva, $this->hora_reserva),
             'peticiones_especiales' => $this->peticiones_especiales,
             'creado_a' => $this->creado_a,
             'usuario' => $this->whenLoaded('usuario', fn () => [

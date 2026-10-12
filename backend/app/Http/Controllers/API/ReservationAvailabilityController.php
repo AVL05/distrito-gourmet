@@ -11,12 +11,12 @@ class ReservationAvailabilityController extends Controller
     public function __invoke(Request $request)
     {
         $validated = $request->validate([
-            'date' => 'required|date|after_or_equal:today',
+            'date' => 'required|date_format:Y-m-d|after_or_equal:today',
         ]);
 
         return response()->json([
             'date' => $validated['date'],
-            'capacity' => ReservationRules::CAPACITY,
+            'capacity' => config('restaurant.capacity'),
             'turns' => ReservationRules::availabilityForDate($validated['date']),
         ]);
     }
