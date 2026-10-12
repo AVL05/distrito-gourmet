@@ -16,9 +16,13 @@ El subdominio está asociado al proyecto y el DNS está verificado. En Cloudflar
 
 Proyecto `aleviclop/distrito-gourmet`, conectado a `AVL05/distrito-gourmet`, con `main` como rama de producción. El primer despliegue se publicó desde los archivos locales con `vercel deploy --prod`; los siguientes pushes pueden generar despliegues desde GitHub. `.vercelignore` excluye el backend, archivos de entorno y dependencias locales.
 
-El backend y la base de datos todavía deben desplegarse y conectarse. La carta, autenticación, reservas y pedidos que dependen de la API requieren esa conexión; este despliegue no activa datos de demostración.
+Vercel tiene `VITE_API_URL=https://distrito-gourmet-api.aleviclop.dev` en producción y CSP permite únicamente ese origen adicional para la API. Este despliegue no activa datos de demostración.
 
 ## Render y Supabase
+
+Estado al 12 de octubre de 2026: servicio gratuito `distrito-gourmet-api-avl05` creado en Render, con dominio `distrito-gourmet-api.aleviclop.dev` verificado y certificado emitido. Cloudflare usa un CNAME hacia `distrito-gourmet-api-avl05.onrender.com`, sin proxy. El contenedor compila correctamente, pero el arranque está bloqueado por una contraseña de PostgreSQL rechazada por Supabase. No se han validado todavía catálogo ni autenticación en producción.
+
+El proyecto dedicado de Supabase es `distrito-gourmet` (`jobtbxxtkpipkkiqrogi`, Europa), con Data API desactivada y esquema `distrito_gourmet` creado. La conexión usa el pooler de sesión `aws-0-eu-west-1.pooler.supabase.com:5432` y usuario `postgres.jobtbxxtkpipkkiqrogi`; la contraseña se configura exclusivamente en Render.
 
 El backend se prepara para un Web Service Docker gratuito en Render: rama `main`, directorio raíz `backend`, Dockerfile `Dockerfile.render` y comprobación de salud `/up`. El contenedor usa Apache, PHP 8.4 y PDO PostgreSQL; al iniciar ejecuta las migraciones pendientes. Con `INITIALIZE_DATABASE=true`, ejecuta `restaurant:initialize`: solo carga el catálogo y las cuentas iniciales si todas las tablas del restaurante están vacías, bajo bloqueo y transacción. Un reinicio conserva cualquier dato existente. Nunca ejecutar el seeder destructivo directamente sobre una base con datos.
 
