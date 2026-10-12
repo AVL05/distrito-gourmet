@@ -2,7 +2,9 @@
 
 ## Estado posterior al arranque local completo
 
-El modo público de demostración está desactivado de forma permanente. La aplicación consulta Laravel y utiliza sesiones reales. `npm start` crea una SQLite temporal aislada con catálogo y cuentas iniciales; las tres contraseñas son `password`. El proxy de Vite mantiene `/api` y `/sanctum` en el origen de la web para evitar el fallo CSRF entre localhost y 127.0.0.1.
+Actualización del gestor y despliegue: raíz y frontend utilizan pnpm 12.8.1 con lockfiles independientes. Ambas auditorías nativas pasan sin vulnerabilidades, y se mantiene el build, lint y los 11 tests frontend. `pnpm start` se ha comprobado con SQLite temporal y proxy HTTP. Laravel pasa 19 tests (92 aserciones) y Pint; se añade validación PostgreSQL a CI. El contenedor de Render no se ha construido localmente porque Docker Desktop no está en ejecución; el despliegue y las pruebas PostgreSQL remotas deben verificarse antes de declararlos operativos.
+
+El modo público de demostración está desactivado de forma permanente. La aplicación consulta Laravel y utiliza sesiones reales. `pnpm start` crea una SQLite temporal aislada con catálogo y cuentas iniciales; las tres contraseñas son `password`. El proxy de Vite mantiene `/api` y `/sanctum` en el origen de la web para evitar el fallo CSRF entre localhost y 127.0.0.1.
 
 Validaciones posteriores realizadas: 11 tests frontend, lint y build correctos; 18 tests backend y Pint correctos. Se comprobó el login mediante navegador con acceso al área personal y la eliminación de la base temporal al detener. Los recuentos y pruebas de demostración más abajo son evidencia histórica de las etapas anteriores.
 
@@ -51,7 +53,7 @@ Capturas de evidencia: [portada](screenshots/home-desktop.jpg) y [carta móvil](
 
 ## Límites y puesta en servicio
 
-Los avisos restantes afectan a `braces`, `chokidar`, `fast-glob`, `micromatch`, `postcss-nested`, `postcss-selector-parser` y `tailwindcss` en el árbol de herramientas de Tailwind 3. No se suprimen ni se declara limpia la auditoría. La solución automática propone Tailwind 4, una migración que requiere alcance propio.
+Revisión posterior autorizada: migración a Tailwind CSS 4.3.3 con `@tailwindcss/postcss`, tema y utilidades en `frontend/src/index.css`. Eliminadas las dependencias vulnerables de Tailwind 3 y el plugin redundante Autoprefixer. `pnpm audit` y `audit:security` devuelven cero vulnerabilidades; lint, 11 tests y build pasan. No se añadieron excepciones a la auditoría. Tailwind 4 requiere Safari 16.4+, Chrome 111+ o Firefox 128+; véase la [guía oficial de migración](https://tailwindcss.com/docs/upgrade-guide).
 
 No se ha ejecutado concurrencia real sobre MySQL ni entrega SMTP de correo ni verificación en producción. Las pruebas cubren capacidad y persistencia de notificaciones en cola, pero no sustituyen esas comprobaciones operativas.
 

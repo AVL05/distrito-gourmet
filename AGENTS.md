@@ -198,20 +198,20 @@ Run commands from the repository root unless stated otherwise.
 ### Install
 
 ```bash
-npm run install:all
+pnpm run install:all
 ```
 
 ### Development
 
 ```bash
-npm start
+pnpm start
 ```
 
 Frontend only:
 
 ```bash
 cd frontend
-npm run dev
+pnpm run dev
 ```
 
 Backend only:
@@ -224,10 +224,10 @@ php artisan serve
 ### Frontend validation
 
 ```bash
-npm --prefix frontend run lint
-npm --prefix frontend run test
-npm --prefix frontend run build
-npm --prefix frontend run audit:security
+pnpm --dir frontend run lint
+pnpm --dir frontend run test
+pnpm --dir frontend run build
+pnpm --dir frontend run audit:security
 ```
 
 ### Backend validation

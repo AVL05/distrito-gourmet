@@ -98,6 +98,6 @@ El estado de tu pedido se actualiza en tu área personal cuando se consulta o ac
 - `Reservas → Mis reservas` y el área personal muestran sus reservas, código y estado. Puede cancelar una reserva propia antes de su inicio; la acción pide confirmación y conserva el historial.
 - Las horas se muestran en `Europe/Madrid`. Lunes y cenas de domingo están cerrados en el calendario inicial; los cierres puntuales también se excluyen. Si falla una consulta de disponibilidad, use **Reintentar**; no se sustituye la disponibilidad por datos inventados.
 - Confirme el pedido y pague al recogerlo en el local. La confirmación no cobra tarjeta ni PayPal. Su cuenta muestra el estado del pedido; podrá recibir avisos si el operador configura el correo y el worker.
-- La aplicación utiliza la API y sesiones reales. Para pruebas locales, `npm start` crea una base temporal con las tres cuentas iniciales y contraseña `password`; los cambios se pierden al reiniciar.
+- La aplicación utiliza la API y sesiones reales. Para pruebas locales, `pnpm start` crea una base temporal con las tres cuentas iniciales y contraseña `password`; los cambios se pierden al reiniciar.
 
 Configuración técnica del calendario y correo: [DEPLOY.md](DEPLOY.md#calendario-y-avisos-por-correo).

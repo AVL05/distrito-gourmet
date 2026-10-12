@@ -18,28 +18,42 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup pnpm
+        run: corepack enable && corepack prepare pnpm@12.8.1 --activate
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
         working-directory: frontend
 
       - name: Security audit
-        run: npm run audit:security
+        run: pnpm run audit:security
         working-directory: frontend
 
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
         working-directory: frontend
 
       - name: Build
-        run: npm run build
+        run: pnpm run build
+        working-directory: frontend
+
+      - name: Tests
+        run: pnpm run test
         working-directory: frontend
 
   backend:
     name: Backend
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: distrito_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: [5432:5432]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
 
     steps:
       - name: Checkout
@@ -49,7 +63,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mbstring, intl, pdo_sqlite, sqlite3, fileinfo, openssl, zip
+          extensions: mbstring, intl, pdo_sqlite, pdo_pgsql, sqlite3, fileinfo, openssl, zip
           coverage: none
 
       - name: Install dependencies
@@ -77,3 +91,15 @@ jobs:
       - name: Tests
         run: php artisan test
         working-directory: backend
+
+      - name: PostgreSQL tests
+        run: php artisan test
+        working-directory: backend
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: distrito_test
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          DB_SSLMODE: disable

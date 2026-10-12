@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Route;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -18,7 +19,7 @@ class RestaurantOperationsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_catalogue_and_login_accounts_can_be_seeded_in_sqlite(): void
+    public function test_catalogue_and_login_accounts_can_be_seeded_without_id_collisions(): void
     {
         $this->seed(DistritoGourmetSeeder::class);
         $this->assertDatabaseHas('usuarios', ['email' => 'admin@distritogourmet.com', 'rol' => 'Administrador']);
@@ -27,6 +28,7 @@ class RestaurantOperationsTest extends TestCase
         foreach (Usuario::all() as $user) {
             $this->assertTrue(Hash::check('password', $user->password));
         }
+        $this->assertGreaterThan(3, $this->user('after-seed@test.local')->id);
     }
 
     protected function setUp(): void
@@ -136,5 +138,11 @@ class RestaurantOperationsTest extends TestCase
         Notification::swap(new ChannelManager($this->app));
         RestaurantUpdate::send($this->user(), 'Reserva confirmada', 'QA-QUEUE', '2026-10-14 21:00');
         $this->assertDatabaseCount('jobs', 1);
+    }
+
+    public function test_https_is_detected_behind_the_hosting_proxy(): void
+    {
+        Route::get('/proxy-check', fn () => ['secure' => request()->isSecure()]);
+        $this->getJson('/proxy-check', ['X-Forwarded-Proto' => 'https'])->assertOk()->assertJsonPath('secure', true);
     }
 }

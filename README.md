@@ -131,7 +131,7 @@ distrito-gourmet/
 
 ### Requisitos
 
-- Node.js y npm.
+- Node.js y pnpm 12.8.1 (`packageManager` fija la versión).
 - PHP 8.2 o superior y Composer.
 - MySQL 8.
 
@@ -144,15 +144,17 @@ cd distrito-gourmet
 cp backend/.env.example backend/.env
 cp frontend/.env.example frontend/.env
 
-npm run install:all
+corepack enable
+corepack prepare pnpm@12.8.1 --activate
+pnpm run install:all
 cd backend
 php artisan key:generate
 cd ..
 
-npm start
+pnpm start
 ```
 
-`npm start` crea y carga automáticamente una SQLite temporal y levanta Laravel en `8000` y Vite en `5173`. No necesita MySQL ni migraciones manuales. Cada arranque empieza de cero y Ctrl+C elimina la base temporal. Para trabajar con MySQL persistente, configure `backend/.env` y arranque los servicios por separado. Consulte [DEPLOY.md](docs/DEPLOY.md).
+`pnpm start` crea y carga automáticamente una SQLite temporal y levanta Laravel en `8000` y Vite en `5173`. No necesita MySQL ni migraciones manuales. Cada arranque empieza de cero y Ctrl+C elimina la base temporal. Para trabajar con MySQL persistente, configure `backend/.env` y arranque los servicios por separado. Consulte [DEPLOY.md](docs/DEPLOY.md).
 
 En Windows, `scripts/dev.js` detecta el binario de PHP disponible, prepara las extensiones necesarias y lanza el frontend de forma compatible con PowerShell.
 
@@ -200,11 +202,11 @@ La referencia completa de payloads y respuestas está en [docs/API_DOCS.md](./do
 
 | Comando | Uso |
 | --- | --- |
-| `npm run install:all` | Instala Composer y dependencias del frontend |
-| `npm start` | Crea una SQLite temporal con datos iniciales y levanta backend y frontend |
-| `npm --prefix frontend run lint` | Ejecuta ESLint |
-| `npm --prefix frontend run build` | Genera el build de producción |
-| `npm --prefix frontend run audit:security` | Audita vulnerabilidades frontend |
+| `pnpm run install:all` | Instala Composer y dependencias del frontend |
+| `pnpm start` | Crea una SQLite temporal con datos iniciales y levanta backend y frontend |
+| `pnpm --dir frontend run lint` | Ejecuta ESLint |
+| `pnpm --dir frontend run build` | Genera el build de producción |
+| `pnpm --dir frontend run audit:security` | Audita vulnerabilidades frontend |
 | `cd backend && php artisan test` | Ejecuta las pruebas Laravel |
 | `cd backend && php artisan route:list --path=api` | Comprueba el contrato de rutas |
 | `cd backend && vendor/bin/pint --test` | Revisa el formato PHP |

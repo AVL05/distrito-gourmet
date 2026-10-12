@@ -168,7 +168,7 @@ backend/
 | PHP         |      8.2+      | Extensiones: mbstring, pdo, pdo_mysql, pdo_sqlite, xml, zip |
 | Composer    |      2.x       | Gestor de dependencias PHP                 |
 | Node.js     |      20+       | Recomendado Node.js 22 LTS                 |
-| npm         |       9+       | Incluido con Node.js                       |
+| pnpm        |     12.8.1     | Instalar mediante Corepack                  |
 | MySQL       |      8.0+      | O Docker para no instalarlo localmente     |
 | Git         |      2.x       | Para clonar el repositorio                 |
 
@@ -209,17 +209,17 @@ VITE_PROXY_TARGET=http://127.0.0.1:8000
 ### Raíz del monorepo (`package.json`)
 
 ```bash
-npm start              # Crea SQLite temporal, migra, carga datos y arranca Vite y Laravel
-npm run install:all    # Instala dependencias de backend (Composer) y frontend (npm)
+pnpm start              # Crea SQLite temporal, migra, carga datos y arranca Vite y Laravel
+pnpm run install:all    # Instala dependencias de backend (Composer) y frontend (pnpm)
 ```
 
 ### Frontend (`frontend/package.json`)
 
 ```bash
-npm run dev       # Servidor de desarrollo Vite (HMR, puerto 5173)
-npm run build     # Build de producción → genera frontend/dist/
-npm run preview   # Previsualiza el build de producción localmente
-npm run lint      # Análisis estático con ESLint
+pnpm run dev       # Servidor de desarrollo Vite (HMR, puerto 5173)
+pnpm run build     # Build de producción → genera frontend/dist/
+pnpm run preview   # Previsualiza el build de producción localmente
+pnpm run lint      # Análisis estático con ESLint
 ```
 
 ### Backend (`backend/`)
@@ -526,8 +526,8 @@ php artisan test --filter=PfcClosure # Tests feature de cierre PFC
 
 ```bash
 cd frontend
-npm run lint
-npm run build
+pnpm run lint
+pnpm run build
 ```
 
 ---
@@ -552,7 +552,7 @@ El `docker-compose.yml` orquesta:
 
 ```bash
 cd frontend
-npm run build
+pnpm run build
 # Subir frontend/dist/ a tu plataforma de hosting estático
 ```
 
@@ -620,12 +620,12 @@ DB_PASSWORD=contraseña_segura
 
 | Problema                       | Causa probable                                                | Solución                                                         |
 | :----------------------------- | :------------------------------------------------------------ | :--------------------------------------------------------------- |
-| `/api/dishes` devuelve 404     | Vite está sin proxy al backend en desarrollo separado          | Definir `VITE_API_URL=` o usar `npm start`  |
+| `/api/dishes` devuelve 404     | Vite está sin proxy al backend en desarrollo separado          | Definir `VITE_API_URL=` o usar `pnpm start`  |
 | `401 Unauthorized`             | Token expirado o no enviado en la cabecera                    | Revisar el store de auth y el interceptor de Axios               |
 | `500 Error` en migraciones     | Credenciales de BD incorrectas en `.env`                      | Verificar `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` |
-| Estilos Tailwind no se aplican | `tailwind.config.js` no incluye la ruta del archivo           | Añadir la ruta en `content: ['./src/**/*.{js,jsx}']`             |
+| Estilos Tailwind no se aplican | Clase construida dinámicamente o fuente no detectada | Usar clases completas y revisar `@source` en `frontend/src/index.css` (Tailwind 4) |
 | Animaciones GSAP no funcionan  | GSAP no está instalado o el elemento no existe en el DOM      | Verificar instalación y usar `useEffect` con `gsap.context()`    |
-| Build de frontend falla        | Dependencias o variables de entorno incorrectas               | Ejecutar `npm install` y revisar `frontend/.env.example`         |
+| Build de frontend falla        | Dependencias o variables de entorno incorrectas               | Ejecutar `pnpm install` y revisar `frontend/.env.example`         |
 | `php artisan test` falla SQLite | Falta la extensión `pdo_sqlite` en PHP                         | Activar `pdo_sqlite` o ejecutar la suite en CI                   |
 
 ---

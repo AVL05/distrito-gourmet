@@ -148,6 +148,13 @@ class DistritoGourmetSeeder extends Seeder
             ['usuario_id' => 3, 'codigo_reserva' => 'RSV-2026-014', 'fecha_reserva' => '2026-06-16', 'hora_reserva' => '14:30:00', 'comensales' => 2, 'menu_degustacion_id' => 1, 'estado' => 'Pendiente', 'peticiones_especiales' => 'Celebración aniversario.'],
         ]);
 
+        if (DB::getDriverName() === 'pgsql') {
+            // PostgreSQL no avanza las secuencias cuando se insertan IDs explícitos.
+            foreach (['categorias_menu', 'vinos', 'platos', 'menus_degustacion', 'usuarios'] as $table) {
+                DB::statement('SELECT setval(pg_get_serial_sequence(?, ?), (SELECT MAX(id) FROM "'.$table.'"))', [$table, 'id']);
+            }
+        }
+
         Schema::enableForeignKeyConstraints();
     }
 }

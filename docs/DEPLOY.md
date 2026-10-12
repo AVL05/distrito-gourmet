@@ -18,6 +18,24 @@ Proyecto `aleviclop/distrito-gourmet`, conectado a `AVL05/distrito-gourmet`, con
 
 El backend y la base de datos todavía deben desplegarse y conectarse. La carta, autenticación, reservas y pedidos que dependen de la API requieren esa conexión; este despliegue no activa datos de demostración.
 
+## Render y Supabase
+
+El backend se prepara para un Web Service Docker gratuito en Render: rama `main`, directorio raíz `backend`, Dockerfile `Dockerfile.render` y comprobación de salud `/up`. El contenedor usa Apache, PHP 8.4 y PDO PostgreSQL; al iniciar ejecuta únicamente las migraciones pendientes. No ejecuta el seeder destructivo automáticamente.
+
+Crear un proyecto gratuito dedicado en Supabase, en Europa, con Data API desactivada. Usar su pooler de **sesión**, puerto 5432, y contraseña propia. Para aislar las tablas, ejecutar una vez `CREATE SCHEMA distrito_gourmet;` con el propietario de la base.
+
+Configurar en Render, sin subir secretos al repositorio:
+
+- `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` estable generado con Laravel y `LOG_CHANNEL=stderr`.
+- `DB_CONNECTION=pgsql`, `DB_HOST`, `DB_USERNAME` y `DB_PASSWORD` del pooler; `DB_PORT=5432`, `DB_DATABASE=postgres`, `DB_SCHEMA=distrito_gourmet`, `DB_SSLMODE=require`.
+- `APP_URL` con la URL HTTPS del backend; `FRONTEND_URL` y `CORS_ALLOWED_ORIGINS` con el origen HTTPS del frontend; `SANCTUM_STATEFUL_DOMAINS` con su host sin protocolo.
+- `SESSION_DRIVER=database`, `SESSION_SECURE_COOKIE=true`, `SESSION_HTTP_ONLY=true`, `SESSION_SAME_SITE=lax`; `SESSION_DOMAIN` debe compartir el dominio principal de frontend y backend.
+- `CACHE_STORE=database`. En el plan gratuito, usar `QUEUE_CONNECTION=sync` salvo que exista un worker operativo; configurar SMTP antes de exigir envío real de correo.
+
+El backend necesita un subdominio del mismo dominio principal que la SPA para Sanctum. Configurar `VITE_API_URL` en Vercel y permitir únicamente ese origen en `connect-src` de CSP. Verificar catálogo, cookies CSRF, login, reservas y pedidos antes de considerar el despliegue completo.
+
+Render gratuito puede detenerse por inactividad; Supabase gratuito tiene límites de almacenamiento y actividad. Las sesiones permanecen en PostgreSQL aunque Render reinicie. No usar el almacenamiento local del contenedor para datos persistentes.
+
 ---
 
 ## 📑 Índice
@@ -119,9 +137,9 @@ La aplicación utiliza siempre Laravel y sesiones reales; `VITE_DEMO_MODE` ya no
 
 ## 💻 Desarrollo local (sin Docker)
 
-`npm start` crea una SQLite temporal fuera del repositorio, ejecuta migraciones y carga el catálogo y las tres cuentas iniciales. Arranca Laravel y Vite automáticamente. Cada arranque empieza de cero; Ctrl+C detiene los servicios y elimina la base temporal. No modifica `.env` ni la base MySQL configurada. Si se termina el proceso a la fuerza, puede quedar una carpeta temporal, pero el siguiente arranque crea otra base nueva. Requiere PHP con PDO SQLite y las dependencias instaladas.
+`pnpm start` crea una SQLite temporal fuera del repositorio, ejecuta migraciones y carga el catálogo y las tres cuentas iniciales. Arranca Laravel y Vite automáticamente. Cada arranque empieza de cero; Ctrl+C detiene los servicios y elimina la base temporal. No modifica `.env` ni la base MySQL configurada. Si se termina el proceso a la fuerza, puede quedar una carpeta temporal, pero el siguiente arranque crea otra base nueva. Requiere PHP con PDO SQLite y las dependencias instaladas.
 
-Los correos locales se escriben en el log y las colas se ejecutan de forma síncrona. Para desarrollo con persistencia, arrancar Laravel y Vite por separado con su configuración habitual. El despliegue sigue utilizando MySQL; esta SQLite es únicamente para `npm start`.
+Los correos locales se escriben en el log y las colas se ejecutan de forma síncrona. Para desarrollo con persistencia, arrancar Laravel y Vite por separado con su configuración habitual. El despliegue sigue utilizando MySQL; esta SQLite es únicamente para `pnpm start`.
 
 El arranque unificado utiliza `/api` y `/sanctum` en el mismo origen que la web. `VITE_PROXY_TARGET` conecta el proxy de Vite con Laravel; `VITE_API_URL` permanece vacío para que la cookie CSRF sea accesible desde localhost o la dirección de red utilizada para abrir la web.
 
@@ -138,9 +156,9 @@ Si prefieres trabajar directamente sobre tu sistema operativo:
 ### Frontend (React)
 
 1. Entra en `/frontend`.
-2. Ejecuta `npm install`.
+2. Ejecuta `pnpm install`.
 3. Configura `VITE_API_URL` en `frontend/.env` si el backend está en otro origen.
-4. Inicia el entorno de desarrollo: `npm run dev`.
+4. Inicia el entorno de desarrollo: `pnpm run dev`.
 
 ---
 
@@ -196,8 +214,8 @@ Para el entorno de producción en un servidor Ubuntu, se utiliza el script de ge
 Antes de entregar o desplegar:
 
 ```bash
-npm --prefix frontend run lint
-npm --prefix frontend run build
+pnpm --dir frontend run lint
+pnpm --dir frontend run build
 cd backend && php artisan test
 cd backend && php artisan route:list --path=api
 ```

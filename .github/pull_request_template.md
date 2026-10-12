@@ -28,10 +28,10 @@ Mark only checks that were actually run.
 
 ### Frontend
 
-- [ ] `npm --prefix frontend run lint`
-- [ ] `npm --prefix frontend run test`
-- [ ] `npm --prefix frontend run build`
-- [ ] `npm --prefix frontend run audit:security` (when dependencies/security-sensitive code changed)
+- [ ] `pnpm --dir frontend run lint`
+- [ ] `pnpm --dir frontend run test`
+- [ ] `pnpm --dir frontend run build`
+- [ ] `pnpm --dir frontend run audit:security` (when dependencies/security-sensitive code changed)
 - [ ] Not applicable
 
 ### Backend

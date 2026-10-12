@@ -21,13 +21,13 @@ Claude Code must read and follow [`AGENTS.md`](./AGENTS.md) before making change
 ## Common commands
 
 ```bash
-npm run install:all
-npm start
+pnpm run install:all
+pnpm start
 
-npm --prefix frontend run lint
-npm --prefix frontend run test
-npm --prefix frontend run build
-npm --prefix frontend run audit:security
+pnpm --dir frontend run lint
+pnpm --dir frontend run test
+pnpm --dir frontend run build
+pnpm --dir frontend run audit:security
 
 cd backend
 php artisan test
