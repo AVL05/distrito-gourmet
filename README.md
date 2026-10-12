@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://distrito.aleviclop.dev/"><strong>Ver demo</strong></a>
+  <a href="https://distrito-gourmet.aleviclop.dev/"><strong>Ver proyecto</strong></a>
   ·
   <a href="./docs/MANUAL_USUARIO.md"><strong>Manual de usuario</strong></a>
   ·
@@ -147,13 +147,12 @@ cp frontend/.env.example frontend/.env
 npm run install:all
 cd backend
 php artisan key:generate
-php artisan migrate --seed
 cd ..
 
 npm start
 ```
 
-Antes de migrar, configura en `backend/.env` la conexión de MySQL. El script raíz levanta Laravel en el puerto `8000` y Vite en el `5173`.
+`npm start` crea y carga automáticamente una SQLite temporal y levanta Laravel en `8000` y Vite en `5173`. No necesita MySQL ni migraciones manuales. Cada arranque empieza de cero y Ctrl+C elimina la base temporal. Para trabajar con MySQL persistente, configure `backend/.env` y arranque los servicios por separado. Consulte [DEPLOY.md](docs/DEPLOY.md).
 
 En Windows, `scripts/dev.js` detecta el binario de PHP disponible, prepara las extensiones necesarias y lanza el frontend de forma compatible con PowerShell.
 
@@ -162,8 +161,8 @@ En Windows, `scripts/dev.js` detecta el binario de PHP disponible, prepara las e
 | Perfil | Email | Contraseña |
 | --- | --- | --- |
 | Administrador | `admin@distritogourmet.com` | `password` |
-| Cliente | `cliente@distritogourmet.com` | `vA391878` |
-| Staff | `alex@distritogourmet.com` | `vA391878` |
+| Cliente | `cliente@distritogourmet.com` | `password` |
+| Staff | `alex@distritogourmet.com` | `password` |
 
 Estas credenciales pertenecen exclusivamente al seeder de desarrollo. Deben sustituirse en cualquier entorno público o de producción.
 
@@ -202,7 +201,7 @@ La referencia completa de payloads y respuestas está en [docs/API_DOCS.md](./do
 | Comando | Uso |
 | --- | --- |
 | `npm run install:all` | Instala Composer y dependencias del frontend |
-| `npm start` | Levanta backend y frontend de forma coordinada |
+| `npm start` | Crea una SQLite temporal con datos iniciales y levanta backend y frontend |
 | `npm --prefix frontend run lint` | Ejecuta ESLint |
 | `npm --prefix frontend run build` | Genera el build de producción |
 | `npm --prefix frontend run audit:security` | Audita vulnerabilidades frontend |

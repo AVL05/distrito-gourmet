@@ -196,8 +196,8 @@ SESSION_DRIVER=database
 #### Frontend (`frontend/.env`)
 
 ```env
-VITE_API_URL=http://127.0.0.1:8000
-VITE_DEMO_MODE=false
+VITE_API_URL=
+VITE_PROXY_TARGET=http://127.0.0.1:8000
 ```
 
 > Deja `VITE_API_URL` vacío cuando frontend y backend compartan dominio mediante Nginx/Docker y se use `/api` relativo.
@@ -209,7 +209,7 @@ VITE_DEMO_MODE=false
 ### Raíz del monorepo (`package.json`)
 
 ```bash
-npm start              # Arranca frontend (Vite) y backend (Laravel) en paralelo
+npm start              # Crea SQLite temporal, migra, carga datos y arranca Vite y Laravel
 npm run install:all    # Instala dependencias de backend (Composer) y frontend (npm)
 ```
 
@@ -288,7 +288,7 @@ DELETE /api/admin/orders/{id}   → Eliminar pedido (admin)
 }
 ```
 
-**Métodos de pago válidos:** `card` · `cash` · `paypal`
+**Método de pago para nuevos pedidos:** `cash` (efectivo al recoger). No se procesa un cobro online. Fecha y hora de recogida son obligatorias y se validan con el calendario del servidor. Los métodos históricos no habilitan tarjeta ni PayPal en nuevos pedidos.
 > El backend calcula precios y totales desde el catálogo; no confía en `precio` ni `total` enviados por cliente.
 
 **Estados del pedido (ENUM):** `Pendiente` · `Preparando` · `Listo` · `Entregado` · `Cancelado`
@@ -405,9 +405,9 @@ const ProtectedRoute = ({ children, requireAdmin }) => {
 - **Ejemplo en PedidoController:**
   ```php
   $request->validate([
-      'metodo_pago' => ['required', Rule::in(['card', 'cash', 'paypal'])],
-      'hora_recogida' => ['nullable', Rule::in([...])],
-      'fecha_recogida' => ['nullable', 'date'],
+      'metodo_pago' => ['required', Rule::in(['cash'])],
+      'hora_recogida' => ['required', 'date_format:H:i'],
+      'fecha_recogida' => ['required', 'date_format:Y-m-d'],
       'articulos'   => 'required|array|min:1',
       'articulos.*.tipo_item' => 'required|in:plato,vino,bebida,menu_degustacion',
       'articulos.*.cantidad'  => 'required|integer|min:1',
@@ -620,7 +620,7 @@ DB_PASSWORD=contraseña_segura
 
 | Problema                       | Causa probable                                                | Solución                                                         |
 | :----------------------------- | :------------------------------------------------------------ | :--------------------------------------------------------------- |
-| `/api/dishes` devuelve 404     | Vite está sin proxy al backend en desarrollo separado          | Definir `VITE_API_URL=http://127.0.0.1:8000` o usar `npm start`  |
+| `/api/dishes` devuelve 404     | Vite está sin proxy al backend en desarrollo separado          | Definir `VITE_API_URL=` o usar `npm start`  |
 | `401 Unauthorized`             | Token expirado o no enviado en la cabecera                    | Revisar el store de auth y el interceptor de Axios               |
 | `500 Error` en migraciones     | Credenciales de BD incorrectas en `.env`                      | Verificar `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` |
 | Estilos Tailwind no se aplican | `tailwind.config.js` no incluye la ruta del archivo           | Añadir la ruta en `content: ['./src/**/*.{js,jsx}']`             |

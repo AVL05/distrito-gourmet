@@ -17,7 +17,7 @@ Bienvenido a la guía de uso de **Distrito Gourmet**. Esta plataforma está dise
 
 ### 1. Registro e inicio de sesión
 
-Para realizar reservas o pedidos, el usuario debe crear una cuenta en la sección "Registro". Una vez logueado, podrá acceder a su historial personal de reservas y pedidos.
+Para realizar reservas o pedidos, el usuario debe crear una cuenta en la menú → «Crear cuenta». Una vez logueado, podrá acceder a su historial personal de reservas y pedidos.
 
 ### 2. Carta interactiva
 
@@ -28,7 +28,7 @@ Para realizar reservas o pedidos, el usuario debe crear una cuenta en la secció
 ### 3. Reservas de mesa
 
 - El cliente selecciona la fecha y hora deseada entre los turnos disponibles.
-- **Control de aforo por turno:** si el turno elegido supera el límite de 44 comensales, la reserva quedará en estado **"Pendiente"** hasta que un administrador la valide.
+- **Disponibilidad:** la web muestra las horas disponibles para el número de comensales. Una solicitud pendiente todavía no confirma la mesa; un administrador solo puede confirmarla si queda aforo en el servicio.
 - **Preferencias:** el cliente puede indicar alergias, celebraciones u observaciones para el equipo de sala.
 - El cliente puede consultar el estado de sus reservas (`Pendiente`, `Confirmada`, `Cancelada`) desde su área personal.
 
@@ -44,7 +44,7 @@ Para realizar reservas o pedidos, el usuario debe crear una cuenta en la secció
 
 El personal de sala y cocina dispone de un acceso operativo más ligero que el del Administrador, pensado para el día a día del servicio:
 
-- **Monitor de pedidos:** interfaz optimizada para cocina donde se actualiza el estado de los pedidos en tiempo real, sin necesidad de acceder a la gestión completa de la carta o de usuarios.
+- **Monitor de pedidos:** interfaz optimizada para cocina donde se actualiza el estado de los pedidos cuando se consulta o actualiza la vista, sin necesidad de acceder a la gestión completa de la carta o de usuarios.
 - **Consulta de reservas del turno:** visión rápida de las reservas confirmadas y pendientes para organizar la sala.
 
 > El alcance exacto de los permisos de Staff puede ampliarse en el futuro; revisa la [documentación técnica](../Documentacion.md) si necesitas el detalle de los permisos actuales por rol.
@@ -63,14 +63,14 @@ El personal del restaurante con privilegios de **Administrador** accede a la ges
 
 ### 2. Control operativo
 
-- **Dashboard:** vista rápida de reservas, pedidos, cubiertos y venta simulada.
+- **Dashboard:** vista rápida de reservas, pedidos, cubiertos e importes de pedidos.
 - **Gestión de reservas:** el administrador puede cambiar el estado de las reservas (confirmar/cancelar) y gestionar las peticiones especiales de los clientes.
-- **Monitor de pedidos:** interfaz optimizada para cocina donde se actualiza el estado de los pedidos en tiempo real.
+- **Monitor de pedidos:** interfaz optimizada para cocina donde se actualiza el estado de los pedidos cuando se consulta o actualiza la vista.
 - **Gestión de usuarios:** edición de datos y roles de los usuarios registrados (un administrador no puede eliminar su propia cuenta).
 
 ### 3. Configuración del local
 
-- Los horarios y el límite de aforo (44 comensales) están definidos por la lógica actual del sistema.
+- Los horarios y el límite de aforo (44 comensales) se definen en `backend/config/restaurant.php`.
 - Cambios de horario o capacidad requieren ajuste técnico en la aplicación.
 
 ---
@@ -78,7 +78,7 @@ El personal del restaurante con privilegios de **Administrador** accede a la ges
 ## ❓ Preguntas frecuentes
 
 **¿Por qué mi reserva aparece como "Pendiente" en vez de "Confirmada"?**
-Ocurre cuando el turno elegido ya está cerca del límite de aforo (44 comensales). Un administrador revisará y confirmará la reserva en cuanto sea posible.
+Ocurre cuando el turno elegido ya está cerca del límite de aforo (44 comensales). La mesa no está confirmada. Consulte su estado en «Mis reservas» antes de acudir; la confirmación depende de que quede aforo.
 
 **¿Puedo modificar un pedido después de enviarlo?**
 Actualmente no es posible editar un pedido ya creado desde el área de cliente; si necesitas un cambio, contacta directamente con el restaurante a través del formulario de contacto.
@@ -87,4 +87,17 @@ Actualmente no es posible editar un pedido ya creado desde el área de cliente; 
 La plataforma no gestiona automáticamente los retrasos; te recomendamos avisar al restaurante directamente si vas a llegar tarde.
 
 **¿Cómo sé si mi pedido takeaway ya está listo para recoger?**
-El estado de tu pedido se actualiza en tu área personal en tiempo real (`Pendiente` → `Preparando` → `Listo` → `Entregado`).
+El estado de tu pedido se actualiza en tu área personal cuando se consulta o actualiza la vista (`Pendiente` → `Preparando` → `Listo` → `Entregado`).
+
+
+## Mejoras de navegación y operaciones
+
+- La carta mantiene una presentación formal sin fotos. Puede buscar por nombre o descripción, excluir un alérgeno declarado y mostrar platos para llevar. Los filtros se conservan en la URL. La ausencia de información no acredita la ausencia de alérgenos; consulte las trazas con sala.
+- La portada incluye una ilustración generada del pulpo a la brasa con parmentier trufado, basada en el catálogo. No es una fotografía de un plato servido.
+- Si necesita iniciar sesión durante una reserva o pedido, vuelve al flujo original. El borrador de reserva se conserva durante esa navegación, sin guardar contraseñas ni tokens.
+- `Reservas → Mis reservas` y el área personal muestran sus reservas, código y estado. Puede cancelar una reserva propia antes de su inicio; la acción pide confirmación y conserva el historial.
+- Las horas se muestran en `Europe/Madrid`. Lunes y cenas de domingo están cerrados en el calendario inicial; los cierres puntuales también se excluyen. Si falla una consulta de disponibilidad, use **Reintentar**; no se sustituye la disponibilidad por datos inventados.
+- Confirme el pedido y pague al recogerlo en el local. La confirmación no cobra tarjeta ni PayPal. Su cuenta muestra el estado del pedido; podrá recibir avisos si el operador configura el correo y el worker.
+- La aplicación utiliza la API y sesiones reales. Para pruebas locales, `npm start` crea una base temporal con las tres cuentas iniciales y contraseña `password`; los cambios se pierden al reiniciar.
+
+Configuración técnica del calendario y correo: [DEPLOY.md](DEPLOY.md#calendario-y-avisos-por-correo).

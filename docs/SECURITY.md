@@ -40,11 +40,11 @@ Se ha implementado una lógica de roles diferenciada:
 
 ### 1. Prevención de inyección SQL
 
-Gracias al uso de **Eloquent ORM**, todas las consultas a la base de datos utilizan sentencias preparadas y vinculación de parámetros (*parameter binding*). Esto hace que sea técnicamente imposible realizar ataques de inyección SQL a través de los formularios de la aplicación.
+Gracias al uso de **Eloquent ORM**, todas las consultas a la base de datos utilizan sentencias preparadas y vinculación de parámetros (*parameter binding*). Esto reduce el riesgo de inyección SQL; las consultas SQL construidas manualmente requieren revisión y parámetros vinculados.
 
-### 2. Cifrado de contraseñas
+### 2. Hash de contraseñas
 
-Nunca se almacenan contraseñas en texto plano. Se utiliza el algoritmo de hashing **Bcrypt** (el estándar de Laravel), lo que garantiza que, incluso en el caso improbable de un acceso no autorizado a la base de datos, las credenciales de los usuarios permanezcan cifradas y sean ilegibles.
+Nunca se almacenan contraseñas en texto plano. Se utiliza el algoritmo de hashing **Bcrypt** (el estándar de Laravel), lo que garantiza que, incluso en el caso improbable de un acceso no autorizado a la base de datos, se almacenen hashes en lugar de contraseñas recuperables. Las contraseñas débiles siguen siendo vulnerables a ataques por diccionario.
 
 ---
 
@@ -56,7 +56,7 @@ Cada petición sensible que llega a la API es validada mediante las reglas de va
 
 ### 2. Control de origen y API
 
-El frontend consume la API mediante el prefijo `/api` y, en desarrollo, Vite puede proxificar las peticiones hacia Laravel usando `VITE_API_URL`. Los orígenes concretos se gestionan por entorno y no se hardcodean en el código fuente.
+El frontend consume la API mediante el prefijo `/api` y, en desarrollo, Vite puede proxificar las peticiones hacia Laravel usando `VITE_PROXY_TARGET` en el arranque unificado. Los orígenes concretos se gestionan por entorno y no se hardcodean en el código fuente.
 
 ### 3. Rate limiting
 
@@ -66,8 +66,8 @@ Las rutas públicas de autenticación (`/api/login` y `/api/register`) aplican l
 
 ## 📜 Cumplimiento de normativa (RGPD)
 
-- **Soberanía de datos:** a diferencia de las plataformas de terceros, el restaurante es el único dueño de su base de datos, cumpliendo con el principio de control sobre la información de carácter personal.
-- **Información nutricional:** el sistema incluye la gestión obligatoria de **alérgenos**, cumpliendo con la normativa europea de información alimentaria.
+- El alojamiento propio y el control de la base de datos no acreditan por sí solos cumplimiento normativo. La documentación legal y el tratamiento real de datos requieren revisión antes de admitir usuarios públicos.
+- La carta muestra los alérgenos declarados. La integridad del catálogo y las posibles trazas deben verificarse con el responsable de cocina; no se declara certificación ni cumplimiento automático.
 
 ---
 

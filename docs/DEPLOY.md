@@ -8,6 +8,16 @@
 
 Esta guía detalla los pasos necesarios para poner en marcha el proyecto tanto en entornos de desarrollo local como en producción utilizando Docker.
 
+## Frontend publicado en Vercel
+
+Dominio de producción: https://distrito-gourmet.aleviclop.dev. URL de Vercel: https://distrito-gourmet.vercel.app (12 de octubre de 2026).
+
+El subdominio está asociado al proyecto y el DNS está verificado. En Cloudflare tiene un CNAME `distrito-gourmet` hacia `3898b1ed8220916b.vercel-dns-017.com`, sin proxy. Vercel gestiona el certificado HTTPS.
+
+Proyecto `aleviclop/distrito-gourmet`, conectado a `AVL05/distrito-gourmet`, con `main` como rama de producción. El primer despliegue se publicó desde los archivos locales con `vercel deploy --prod`; los siguientes pushes pueden generar despliegues desde GitHub. `.vercelignore` excluye el backend, archivos de entorno y dependencias locales.
+
+El backend y la base de datos todavía deben desplegarse y conectarse. La carta, autenticación, reservas y pedidos que dependen de la API requieren esa conexión; este despliegue no activa datos de demostración.
+
 ---
 
 ## 📑 Índice
@@ -64,6 +74,8 @@ docker-compose up -d --build
 
 Una vez los contenedores estén corriendo, ejecuta las migraciones y el seeder para tener datos reales de prueba:
 
+**Solo en una base nueva de pruebas:** el seeder trunca las tablas y carga tres cuentas con contraseña `password`. No ejecutarlo sobre datos que deban conservarse ni usar esas cuentas en una exposición pública con permisos administrativos. En producción, aplicar `php artisan migrate --force` sin `--seed` y preparar el catálogo y las cuentas de forma controlada.
+
 ```bash
 docker exec -it distrito-backend php artisan migrate --seed
 ```
@@ -98,13 +110,20 @@ Si todo ha ido bien, deberías ver los tres servicios en estado `Up` y una respu
 | Variable | Descripción | Ejemplo |
 |---|---|---|
 | `VITE_API_URL` | Origen del backend Laravel. Vacío si frontend y API comparten dominio vía Nginx/Docker; con Vite separado, indicar el origen del backend. | `http://localhost:8000` |
-| `VITE_DEMO_MODE` | Activa la demo pública sin escrituras reales cuando no hay API configurada | `true` / `false` |
+
+La aplicación utiliza siempre Laravel y sesiones reales; `VITE_DEMO_MODE` ya no activa una demostración. No se sustituye una API caída por datos estáticos. Vercel publica únicamente el frontend: requiere alojar Laravel y MySQL por separado y configurar su acceso. La configuración actual de CSP admite conexiones al mismo origen; un backend en otro origen necesita una política que permita expresamente ese origen y configurar CORS/Sanctum. No dejar `VITE_API_URL` vacío en un alojamiento sin proxy para `/api` y `/sanctum`.
 
 > 🔒 Nunca subas archivos `.env` reales al repositorio. Mantén `backend/.env.example` y `frontend/.env.example` como plantillas sin credenciales sensibles.
 
 ---
 
 ## 💻 Desarrollo local (sin Docker)
+
+`npm start` crea una SQLite temporal fuera del repositorio, ejecuta migraciones y carga el catálogo y las tres cuentas iniciales. Arranca Laravel y Vite automáticamente. Cada arranque empieza de cero; Ctrl+C detiene los servicios y elimina la base temporal. No modifica `.env` ni la base MySQL configurada. Si se termina el proceso a la fuerza, puede quedar una carpeta temporal, pero el siguiente arranque crea otra base nueva. Requiere PHP con PDO SQLite y las dependencias instaladas.
+
+Los correos locales se escriben en el log y las colas se ejecutan de forma síncrona. Para desarrollo con persistencia, arrancar Laravel y Vite por separado con su configuración habitual. El despliegue sigue utilizando MySQL; esta SQLite es únicamente para `npm start`.
+
+El arranque unificado utiliza `/api` y `/sanctum` en el mismo origen que la web. `VITE_PROXY_TARGET` conecta el proxy de Vite con Laravel; `VITE_API_URL` permanece vacío para que la cookie CSRF sea accesible desde localhost o la dirección de red utilizada para abrir la web.
 
 Si prefieres trabajar directamente sobre tu sistema operativo:
 
@@ -187,7 +206,7 @@ cd backend && php artisan route:list --path=api
 
 - Carta pública carga platos, vinos, bebidas y menús degustación.
 - Login, perfil y dashboard funcionan con usuario cliente.
-- Reserva válida queda confirmada o pendiente según aforo del turno.
+- Reserva válida queda confirmada o pendiente según aforo del servicio.
 - Pedido takeaway calcula total desde catálogo y aparece en dashboard.
 - Panel admin lista y actualiza reservas, pedidos, carta y usuarios.
 
@@ -201,3 +220,24 @@ cd backend && php artisan route:list --path=api
 | `backend/Dockerfile` | Configuración de la imagen PHP 8.2 con las extensiones necesarias |
 | `frontend/Dockerfile` | Construcción de la app React y servicio mediante Nginx |
 | `frontend/nginx.conf` | Configuración del servidor web para manejar las rutas de la SPA y el proxy inverso hacia la API |
+
+
+## Calendario y avisos por correo
+
+Antes de activar esta versión, ejecutar `php artisan migrate --force` en el entorno previsto. Las nuevas migraciones crean el bloqueo estable del aforo y las tablas `jobs`/`failed_jobs`; no modifican reservas ni pedidos existentes. No usar `migrate:fresh` en datos reales.
+
+`backend/config/restaurant.php` define capacidad, horizonte de reserva y servicios semanales. `RESTAURANT_CLOSED_DATES` permite cierres puntuales, por ejemplo `2026-12-25,2027-01-01`. Tras cambiar configuración en producción, regenerar `php artisan config:cache`. La web consulta esos datos mediante `/api/service-calendar`.
+
+Los avisos usan las variables Laravel `MAIL_*`. `MAIL_MAILER=log` solo escribe en el log y no entrega correos. Para entrega real, configurar un transporte SMTP válido y comprobarlo con un destinatario de prueba autorizado.
+
+Con `QUEUE_CONNECTION=database`, mantener un worker supervisado:
+
+```bash
+php artisan queue:work --tries=3 --timeout=60
+```
+
+Reiniciar workers después de desplegar (`php artisan queue:restart`) y revisar `php artisan queue:failed` si hay fallos. La operación de negocio queda guardada aunque no se pueda encolar el aviso; el fallo se registra para diagnóstico. El estado en la cuenta es la fuente de verdad.
+
+En desarrollo local deben existir `storage/framework/sessions`, `storage/framework/views` y `storage/framework/cache/data`, con permisos de escritura. El Dockerfile ya prepara los directorios de Laravel.
+
+Pagos: los pedidos nuevos se pagan en el local. No hay pasarela ni confirmación de cobro online.

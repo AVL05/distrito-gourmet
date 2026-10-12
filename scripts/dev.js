@@ -50,10 +50,10 @@ log('         DISTRITO GOURMET DEV');
 log(`========================================${colors.reset}\n`);
 
 const networkHost = getNetworkHost();
-const backendPort = 8000;
-const frontendPort = 5173;
+const backendPort = Number(process.env.DG_BACKEND_PORT || 8000);
+const frontendPort = Number(process.env.DG_FRONTEND_PORT || 5173);
 const shouldFreePorts = process.env.DG_FREE_PORTS === 'true';
-const backendProxyUrl = process.env.VITE_API_URL || `http://${networkHost}:${backendPort}`;
+const backendProxyUrl = `http://127.0.0.1:${backendPort}`;
 
 const resolvePhpCommand = () => {
   if (process.env.PHP_BIN) return process.env.PHP_BIN;
@@ -188,14 +188,53 @@ if (!ensurePortAvailable(backendPort) || !ensurePortAvailable(frontendPort)) {
   process.exit(1);
 }
 
-const backend = spawn(phpCmd, ['artisan', 'serve', '--host=0.0.0.0', '--port=8000'], {
+const temporaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'distrito-gourmet-dev-'));
+const temporaryDatabase = path.join(temporaryDirectory, 'database.sqlite');
+fs.writeFileSync(temporaryDatabase, '');
+const backendEnvironment = {
+  ...process.env,
+  ...(phpIniPath ? { PHPRC: phpDir } : {}),
+  PHP_INI_SCAN_DIR: '',
+  APP_ENV: 'local',
+  APP_KEY: `base64:${require('crypto').randomBytes(32).toString('base64')}`,
+  APP_CONFIG_CACHE: path.join(temporaryDirectory, 'config.php'),
+  DB_CONNECTION: 'sqlite',
+  DB_DATABASE: temporaryDatabase,
+  DB_URL: '',
+  CACHE_STORE: 'array',
+  SESSION_DRIVER: 'file',
+  SESSION_DOMAIN: '',
+  SESSION_SECURE_COOKIE: 'false',
+  SANCTUM_STATEFUL_DOMAINS: `localhost:${frontendPort},127.0.0.1:${frontendPort},${networkHost}:${frontendPort}`,
+  CORS_ALLOWED_ORIGINS: `http://localhost:${frontendPort},http://127.0.0.1:${frontendPort},http://${networkHost}:${frontendPort}`,
+  QUEUE_CONNECTION: 'sync',
+  MAIL_MAILER: 'log',
+  DISCORD_WEBHOOK_URL: '',
+};
+for (const directory of ['sessions', 'views', 'cache/data']) {
+  fs.mkdirSync(path.join('backend', 'storage', 'framework', directory), { recursive: true });
+}
+logStep('Creating temporary local database');
+const databaseSetup = spawnSync(phpCmd, ['artisan', 'migrate', '--seed', '--force'], {
+  cwd: './backend', env: backendEnvironment, stdio: 'inherit', shell: false,
+});
+const removeTemporaryDatabase = () => {
+  const resolvedDirectory = path.resolve(temporaryDirectory);
+  if (path.dirname(resolvedDirectory) !== path.resolve(os.tmpdir()) || !path.basename(resolvedDirectory).startsWith('distrito-gourmet-dev-')) {
+    throw new Error('Unexpected temporary database directory');
+  }
+  fs.rmSync(resolvedDirectory, { recursive: true, force: true });
+};
+if (databaseSetup.error || databaseSetup.status !== 0) {
+  removeTemporaryDatabase();
+  process.exit(1);
+}
+logInfo('Base temporal: los cambios se pierden al detener o reiniciar npm start.');
+
+const backend = spawn(phpCmd, ['artisan', 'serve', '--host=0.0.0.0', `--port=${backendPort}`], {
   cwd: './backend',
   shell: false,
-  env: {
-    ...process.env,
-    ...(phpIniPath ? { PHPRC: phpDir } : {}),
-    PHP_INI_SCAN_DIR: '',
-  },
+  env: backendEnvironment,
 });
 
 const startFrontend = () => {
@@ -203,14 +242,15 @@ const startFrontend = () => {
 
   logInfo('Starting frontend (Vite)');
   const frontendCommand = process.platform === 'win32' ? 'cmd.exe' : 'npm';
-  const frontendArgs = process.platform === 'win32' ? ['/d', '/s', '/c', 'npm run dev'] : ['run', 'dev'];
+  const frontendArgs = process.platform === 'win32' ? ['/d', '/s', '/c', `npm run dev -- --port ${frontendPort} --strictPort`] : ['run', 'dev', '--', '--port', String(frontendPort), '--strictPort'];
 
   frontend = spawn(frontendCommand, frontendArgs, {
     cwd: './frontend',
     shell: false,
     env: {
       ...process.env,
-      VITE_API_URL: backendProxyUrl,
+      VITE_API_URL: '',
+      VITE_PROXY_TARGET: backendProxyUrl,
     },
   });
 
@@ -288,6 +328,7 @@ function cleanup() {
   killProcess(frontend);
 
   setTimeout(() => {
+    try { removeTemporaryDatabase(); } catch (error) { logInfo(`No se pudo borrar la base temporal: ${error.message}`); }
     logOk('Development environment stopped');
     process.exit(0);
   }, 1200);

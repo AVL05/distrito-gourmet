@@ -72,8 +72,8 @@
 | Rol | Email | Contraseña |
 |---|---|---|
 | Administrador | `admin@distritogourmet.com` | `password` |
-| Cliente | `cliente@distritogourmet.com` | `vA391878` |
-| Staff | `alex@distritogourmet.com` | `vA391878` |
+| Cliente | `cliente@distritogourmet.com` | `password` |
+| Staff | `alex@distritogourmet.com` | `password` |
 
 ### Registro
 
@@ -256,6 +256,18 @@ GET /api/reservations
 
 ---
 
+La respuesta de listado es `{ "data": [...] }`. Cada reserva incluye `puede_cancelar`, calculado en servidor.
+
+### Cancelar mi reserva
+
+`PATCH /api/reservations/{id}/cancel` requiere sesión Sanctum. Devuelve `200` con `mensaje` y `reserva`; `404` si pertenece a otro usuario, `422` si ya ha comenzado. Cancelar mantiene el registro y libera aforo. Repetir la cancelación antes de su inicio es idempotente.
+
+### Calendario y disponibilidad
+
+- `GET /api/service-calendar` (público): `timezone`, `capacity`, `services` y `days` (hoy y los siguientes 60 días). Cada día contiene `date`, `reservations` y `pickup`, con horas `HH:mm`; un día cerrado tiene listas vacías.
+- `GET /api/reservation-availability?date=YYYY-MM-DD`: `date`, `capacity`, `turns`. Cada turno tiene `time`, `time_value`, `occupied`, `available_seats`, `capacity`, `status`. Datos inválidos: `422`. Las plazas corresponden a reservas confirmadas del servicio.
+- `GET /api/pickup-times`: mantiene `horarios` para hoy y añade `timezone`, `days` para hoy/mañana, con `date` y `times`. No deben inventarse horarios si falla la consulta.
+
 ### Crear reserva
 
 ```
@@ -269,7 +281,6 @@ POST /api/reservations
   "fecha_reserva": "2026-06-20",
   "hora_reserva": "21:00",
   "comensales": 2,
-  "menu_degustacion_id": 2,
   "peticiones_especiales": "Celebración aniversario"
 }
 ```
@@ -289,8 +300,8 @@ POST /api/reservations
 **Reglas de negocio:**
 
 - Máximo **8 comensales** por reserva.
-- Horarios permitidos: `13:00`, `13:30`, `14:00`, `14:30`, `20:00`, `20:30`, `21:00`, `21:30`.
-- Si la ocupación supera **44 comensales en el mismo turno**, el estado será `"Pendiente"` en lugar de `"Confirmada"`.
+- Horarios y cierres se consultan en `GET /api/service-calendar`; zona `Europe/Madrid`. Por defecto: comida de martes a domingo (`13:30`, `14:00`, `14:30`), cena de martes a sábado (`20:30`, `21:00`, `21:30`). Se excluyen horas pasadas y fechas de cierre.
+- Aforo de **44 comensales confirmados por servicio** (comida/cena), compartido entre sus horas de llegada. Si no caben los comensales, la solicitud queda `Pendiente`; las pendientes no consumen plazas. Creación, confirmación y cancelación se serializan mediante bloqueo transaccional. Administración no puede confirmar por encima del aforo.
 
 ---
 
@@ -306,7 +317,7 @@ POST /api/orders
 
 ```json
 {
-  "metodo_pago": "card",
+  "metodo_pago": "cash",
   "hora_recogida": "14:30",
   "fecha_recogida": "2026-06-15",
   "articulos": [
@@ -329,7 +340,9 @@ POST /api/orders
 | Campo | Valores válidos |
 |---|---|
 | `tipo_item` | `plato` · `vino` · `bebida` · `menu_degustacion` |
-| `metodo_pago` | `card` · `cash` · `paypal` |
+| `metodo_pago` | `cash` (pago en el local; no cobra online) |
+
+`fecha_recogida` y `hora_recogida` son obligatorias: hoy o mañana y una hora futura del calendario de recogidas. Tarjeta/PayPal en nuevas solicitudes devuelven `422`; los registros históricos conservan su método. La creación confirma el pedido, no un pago.
 
 > ⚠️ El backend **ignora** `precio` y `total` enviados por el cliente; el importe se calcula siempre desde el catálogo disponible en servidor, evitando manipulación de precios desde el frontend.
 
@@ -460,3 +473,10 @@ Laravel devuelve los errores de validación agrupados por campo:
   "message": "No autenticado."
 }
 ```
+
+
+### Avisos y ciclo de pedidos
+
+La secuencia permitida es `Pendiente → Preparando → Listo → Entregado`. Puede cancelar antes de entregar; `Entregado` y `Cancelado` son finales. Una transición inválida devuelve `422` y no cambia el pedido. Repetir el mismo estado no genera otro aviso.
+
+Se encolan avisos de creación/cambio de reserva y pedido después de guardar la operación. Los correos no sustituyen la consulta del estado en la cuenta. Configuración y worker: [DEPLOY.md](DEPLOY.md#calendario-y-avisos-por-correo).

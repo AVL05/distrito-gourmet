@@ -10,7 +10,8 @@ Distrito Gourmet ha sido diseñado con una arquitectura escalable que permite la
 |---|---|---|
 | Entrega PFC | Disponibilidad pública de turnos, métricas de administración, revalidación de carrito y contacto validado desde API | ✅ Completado |
 | Fase 1 | Pasarela de pagos real (Stripe/PayPal) | 📋 Planificado |
-| Fase 1 | Notificaciones automáticas (Email / WhatsApp Business API) | 📋 Planificado |
+| Mantenimiento | Avisos de reservas y pedidos por email en cola | Implementado; entrega SMTP pendiente de validación |
+| Fase 1 | WhatsApp Business API | Planificado |
 | Fase 2 | Aplicación móvil nativa (React Native / Flutter) | 📋 Planificado |
 | Fase 2 | Programa de fidelización (puntos y cupones) | 📋 Planificado |
 | Fase 3 | Módulo de estadísticas avanzado | 📋 Planificado |
