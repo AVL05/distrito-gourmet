@@ -20,7 +20,7 @@ Vercel tiene `VITE_API_URL=https://distrito-gourmet-api.aleviclop.dev` en produc
 
 ## Render y Supabase
 
-Estado al 12 de octubre de 2026: servicio gratuito `distrito-gourmet-api-avl05` creado en Render, con dominio `distrito-gourmet-api.aleviclop.dev` verificado y certificado emitido. Cloudflare usa un CNAME hacia `distrito-gourmet-api-avl05.onrender.com`, sin proxy. El contenedor compila y arranca; la API de carta y calendario devuelve HTTP 200. El rechazo inicial de credenciales dejó de reproducirse al reintentar. Se añaden migraciones para `sessions`, `cache` y `cache_locks`, necesarias con los drivers de base de datos; la verificación del login en producción queda pendiente de ese despliegue.
+Estado al 12 de octubre de 2026: servicio gratuito `distrito-gourmet-api-avl05` creado en Render, con dominio `distrito-gourmet-api.aleviclop.dev` verificado y certificado emitido. Cloudflare usa un CNAME hacia `distrito-gourmet-api-avl05.onrender.com`, sin proxy. El contenedor compila y arranca; la API de carta y calendario devuelve HTTP 200. El rechazo inicial de credenciales dejó de reproducirse al reintentar. Las migraciones de `sessions`, `cache` y `cache_locks` están aplicadas. Validación en producción: `/up` y catálogo HTTP 200; CSRF HTTP 204; login administrativo correcto, sesión conservada al navegar al panel, carta cargada, turnos de reserva y recogida disponibles. No se han creado reservas ni pedidos de prueba en producción.
 
 El proyecto dedicado de Supabase es `distrito-gourmet` (`jobtbxxtkpipkkiqrogi`, Europa), con Data API desactivada y esquema `distrito_gourmet` creado. La conexión usa el pooler de sesión `aws-0-eu-west-1.pooler.supabase.com:5432` y usuario `postgres.jobtbxxtkpipkkiqrogi`; la contraseña se configura exclusivamente en Render.
 
@@ -38,7 +38,7 @@ Configurar en Render, sin subir secretos al repositorio:
 - `SESSION_DRIVER=database`, `SESSION_SECURE_COOKIE=true`, `SESSION_HTTP_ONLY=true`, `SESSION_SAME_SITE=lax`; `SESSION_DOMAIN` debe compartir el dominio principal de frontend y backend.
 - `CACHE_STORE=database`. En el plan gratuito, usar `QUEUE_CONNECTION=sync` salvo que exista un worker operativo; configurar SMTP antes de exigir envío real de correo.
 
-El backend necesita un subdominio del mismo dominio principal que la SPA para Sanctum. Configurar `VITE_API_URL` en Vercel y permitir únicamente ese origen en `connect-src` de CSP. Verificar catálogo, cookies CSRF, login, reservas y pedidos antes de considerar el despliegue completo.
+El backend necesita un subdominio del mismo dominio principal que la SPA para Sanctum. Configurar `VITE_API_URL` en Vercel y permitir únicamente ese origen en `connect-src` de CSP. Las comprobaciones anteriores verifican la conexión y las pantallas; la creación y cancelación reales de reservas/pedidos se cubren en tests, pero no se han ejercitado en producción.
 
 Render gratuito puede detenerse por inactividad; Supabase gratuito tiene límites de almacenamiento y actividad. Las sesiones permanecen en PostgreSQL aunque Render reinicie. No usar el almacenamiento local del contenedor para datos persistentes.
 
