@@ -58,7 +58,7 @@ const sections = [
 const LegalNoticeView = () => (
   <PageTransition className="bg-bg-body min-h-screen pt-32 sm:pt-40 pb-32 px-4 relative overflow-hidden">
     <Helmet><title>Aviso Legal | Distrito Gourmet</title></Helmet>
-    <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block" />
+    <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block" />
 
     <div className="container max-w-4xl relative z-10">
       <ScrollReveal className="text-center mb-16 sm:mb-20">

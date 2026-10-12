@@ -273,9 +273,9 @@ const ReservationForm = ({ compact = false }) => {
 
   return (
     // Contenedor principal con efecto de aparición
-    <FadeIn className="w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-5 sm:p-8 md:p-14 border border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.18)] rounded-sm relative overflow-hidden">
+    <FadeIn className="w-full max-w-3xl mx-auto bg-white/90 backdrop-blur-md p-5 sm:p-8 md:p-14 border border-gray-200 shadow-[0_20px_60px_rgba(0,0,0,0.18)] rounded-xs relative overflow-hidden">
       {/* Línea decorativa superior */}
-      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-50"></div>
+      <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-primary to-transparent opacity-50"></div>
 
       <form onSubmit={handleSubmit} className="relative z-10">
         <p className="text-sm text-text-muted mb-6">Las horas corresponden a la hora local de Valencia. Puede cancelar desde «Mis reservas» antes de la hora reservada.</p>
@@ -295,7 +295,7 @@ const ReservationForm = ({ compact = false }) => {
             <Link
               to="/login"
               state={{ returnTo: "/reservations", reservationDraft: form }}
-              className="text-primary-hover border-b border-primary pb-[1px] hover:text-primary-hover hover:border-primary-hover transition-colors"
+              className="text-primary-hover border-b border-primary pb-px hover:text-primary-hover hover:border-primary-hover transition-colors"
             >
               iniciar sesión
             </Link>
@@ -311,7 +311,7 @@ const ReservationForm = ({ compact = false }) => {
                 Reserva
               </span>
             </h2>
-            <div className="w-16 h-[1px] bg-primary mx-auto opacity-70"></div>
+            <div className="w-16 h-px bg-primary mx-auto opacity-70"></div>
           </div>
         )}
 
@@ -658,7 +658,7 @@ const ReservationForm = ({ compact = false }) => {
             className="group relative px-6 sm:px-12 md:px-16 py-4 sm:py-5 bg-transparent border border-primary text-primary-hover font-body text-[11px] sm:text-xs uppercase tracking-[2px] sm:tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] w-full md:w-auto md:min-w-[300px]"
             disabled={loading || IS_PUBLIC_DEMO || calendarLoading || availabilityLoading || Boolean(availabilityError) || Boolean(calendarError)}
           >
-            <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+            <div className="absolute inset-0 w-0 bg-primary transition-all duration-400 ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-black font-bold transition-colors duration-300">
               {loading ? "PROCESANDO..." : "SOLICITAR RESERVA"}
             </span>

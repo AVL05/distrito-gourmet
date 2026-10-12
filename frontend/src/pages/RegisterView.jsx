@@ -88,10 +88,10 @@ const RegisterView = () => {
         <title>Crear Cuenta | Distrito Gourmet</title>
       </Helmet>
       {/* Líneas de fondo decorativas */}
-      <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
-      <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
+      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+      <div className="absolute top-1/2 left-0 right-0 h-px bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-      <FadeIn className="w-full max-w-xl bg-bg-surface p-8 sm:p-12 md:p-16 border border-text-main/10 relative z-10 shadow-sm">
+      <FadeIn className="w-full max-w-xl bg-bg-surface p-8 sm:p-12 md:p-16 border border-text-main/10 relative z-10 shadow-xs">
         <div className="text-center mb-16">
           <span className="text-text-muted text-[10px] uppercase tracking-[4px] mb-6 block font-body">
             / Unirse al Club
@@ -102,7 +102,7 @@ const RegisterView = () => {
               Inscripción
             </span>
           </h1>
-          <div className="w-16 h-[1px] bg-text-main/10 mx-auto mb-6"></div>
+          <div className="w-16 h-px bg-text-main/10 mx-auto mb-6"></div>
           <p className="text-text-muted text-[13px] tracking-widest font-body uppercase">
             Círculo Exclusivo Distrito Gourmet
           </p>
@@ -207,7 +207,7 @@ const RegisterView = () => {
               className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
               disabled={loading || IS_PUBLIC_DEMO}
             >
-              <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
+              <div className="absolute inset-0 w-0 bg-text-main transition-all duration-400 ease-out group-hover:w-full z-0"></div>
               <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                 {loading ? "PROCESANDO..." : "SOLICITAR REGISTRO"}
               </span>

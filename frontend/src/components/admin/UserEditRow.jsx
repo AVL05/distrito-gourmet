@@ -85,7 +85,7 @@ const UserEditRow = ({ user, fetchData }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-6 flex flex-col gap-6 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-sm">
+      <div className="bg-bg-surface border border-primary/30 p-6 flex flex-col gap-6 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-xs">
         <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2 scrollbar-thin">
           <div className="text-left">
             <label className="text-text-muted text-[11px] uppercase tracking-[2px] block mb-1 font-bold">
@@ -181,7 +181,7 @@ const UserEditRow = ({ user, fetchData }) => {
   }
 
   return (
-    <div className="group bg-bg-surface/40 backdrop-blur-md border border-text-main/10 p-6 flex flex-col items-center text-center transition-all duration-700 relative overflow-hidden hover:border-primary/40 hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] rounded-sm h-full">
+    <div className="group bg-bg-surface/40 backdrop-blur-md border border-text-main/10 p-6 flex flex-col items-center text-center transition-all duration-700 relative overflow-hidden hover:border-primary/40 hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] rounded-xs h-full">
       <div className="absolute -right-4 -bottom-4 w-20 h-20 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-1000"></div>
 
       <div className="relative mb-6">
@@ -196,7 +196,7 @@ const UserEditRow = ({ user, fetchData }) => {
         </div>
         {/* Marca visual para diferenciar a los administradores del resto */}
         {user.rol === "Administrador" && (
-          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-bg-surface rounded-full flex items-center justify-center shadow-sm border border-primary/20">
+          <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-bg-surface rounded-full flex items-center justify-center shadow-xs border border-primary/20">
             <span className="text-[8px]">✦</span>
           </div>
         )}

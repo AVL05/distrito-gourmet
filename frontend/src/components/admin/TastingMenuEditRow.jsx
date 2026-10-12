@@ -94,7 +94,7 @@ const TastingMenuEditRow = ({
             </div>
           </div>
 
-          <div className="space-y-10 bg-black/5 p-6 rounded-sm border border-text-main/5">
+          <div className="space-y-10 bg-black/5 p-6 rounded-xs border border-text-main/5">
             <div className="space-y-8">
               <div className="group/field">
                 <label className="text-text-muted text-[11px] uppercase tracking-[2px] block mb-2 font-bold opacity-60">
@@ -215,7 +215,7 @@ const TastingMenuEditRow = ({
                   addDishToMenu(e.target.value);
                   e.target.value = "";
                 }}
-                className="w-full bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 text-primary-hover text-[10px] p-3 px-5 outline-none focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-[3px] font-bold"
+                className="w-full bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 text-primary-hover text-[10px] p-3 px-5 outline-hidden focus:border-primary transition-all appearance-none cursor-pointer uppercase tracking-[3px] font-bold"
               >
                 <option value="" className="bg-bg-surface text-text-muted">
                   + Añadir pase al menú
@@ -259,7 +259,7 @@ const TastingMenuEditRow = ({
             {edit.platos.map((plato, idx) => (
               <div
                 key={`${plato.id}-${idx}`}
-                className="bg-bg-surface/60 backdrop-blur-sm p-5 group/item hover:bg-bg-surface transition-all border border-text-main/5 hover:border-primary/30 shadow-sm hover:shadow-md relative overflow-hidden"
+                className="bg-bg-surface/60 backdrop-blur-xs p-5 group/item hover:bg-bg-surface transition-all border border-text-main/5 hover:border-primary/30 shadow-xs hover:shadow-md relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-1 h-full bg-primary/10 group-hover/item:bg-primary transition-colors"></div>
 
@@ -271,7 +271,7 @@ const TastingMenuEditRow = ({
                     <div className="w-[2px] h-8 bg-text-main/5"></div>
                   </div>
 
-                  <div className="flex-grow min-w-[200px]">
+                  <div className="grow min-w-[200px]">
                     <p className="text-text-main text-[11px] uppercase tracking-[2px] font-bold mb-1 opacity-50">
                       {plato.categoria?.nombre}
                     </p>
@@ -300,7 +300,7 @@ const TastingMenuEditRow = ({
                           // Sincroniza el orden del plato en el estado local
                           setEdit({ ...edit, platos: newPlatos });
                         }}
-                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-sm w-full outline-none focus:border-primary pb-1 font-bold transition-colors text-center"
+                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-sm w-full outline-hidden focus:border-primary pb-1 font-bold transition-colors text-center"
                       />
                     </div>
                     <div className="min-w-[240px]">
@@ -319,7 +319,7 @@ const TastingMenuEditRow = ({
                           };
                           setEdit({ ...edit, platos: newPlatos });
                         }}
-                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-xs w-full outline-none focus:border-primary pb-1 italic transition-colors"
+                        className="bg-transparent border-b-2 border-text-main/10 text-text-main text-xs w-full outline-hidden focus:border-primary pb-1 italic transition-colors"
                       />
                     </div>
                     <button
@@ -357,7 +357,7 @@ const TastingMenuEditRow = ({
     <div className="group bg-bg-surface border border-text-main/5 p-10 flex flex-col lg:flex-row gap-10 transition-all duration-700 relative overflow-hidden h-full hover:border-primary/30 hover:shadow-[0_40px_80px_rgba(0,0,0,0.15)]">
       <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-24 -mt-24 group-hover:bg-primary/10 transition-all duration-1000"></div>
 
-      <div className="flex-grow flex flex-col justify-between lg:w-2/3">
+      <div className="grow flex flex-col justify-between lg:w-2/3">
         <div>
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
@@ -415,7 +415,7 @@ const TastingMenuEditRow = ({
             </div>
             {!!item.precio_maridaje && (
               <div className="flex flex-col relative pl-12">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[1px] h-10 bg-text-main/10"></div>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-px h-10 bg-text-main/10"></div>
                 <span className="text-primary-hover text-[10px] uppercase tracking-[3px] mb-3 font-bold">
                   Maridaje sugerido
                 </span>

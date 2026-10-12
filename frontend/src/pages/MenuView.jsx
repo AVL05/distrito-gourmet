@@ -204,11 +204,11 @@ const MenuView = () => {
             as="h1"
             staggerDelay={0.05}
             delay={0.15}
-            className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 text-text-main drop-shadow-sm leading-tight justify-center"
+            className="font-heading text-4xl sm:text-5xl md:text-7xl uppercase tracking-widest mb-8 text-text-main drop-shadow-xs leading-tight justify-center"
           />
           <FadeIn delay={0.4}>
             <LineReveal
-              className="bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"
+              className="bg-linear-to-r from-transparent via-primary to-transparent mx-auto mb-8 sm:mb-10"
               style={{ maxWidth: "4rem" }}
             />
           </FadeIn>
@@ -384,7 +384,7 @@ const MenuView = () => {
         )}
       </div>
       {addedItem && (
-        <div className="fixed bottom-20 left-4 right-4 z-[53] mx-auto max-w-md border border-text-main/10 bg-bg-body/95 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-xl md:bottom-24 md:left-auto md:right-8">
+        <div className="fixed bottom-20 left-4 right-4 z-53 mx-auto max-w-md border border-text-main/10 bg-bg-body/95 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-xl md:bottom-24 md:left-auto md:right-8">
           <div className="flex items-center justify-between gap-4">
             <div>
               <span className="block font-body text-[10px] uppercase tracking-[1.6px] text-primary-hover">
@@ -429,7 +429,7 @@ const MenuView = () => {
 };
 
 const SkeletonLine = ({ className = "" }) => (
-  <div className={`skeleton rounded-sm ${className}`} />
+  <div className={`skeleton rounded-xs ${className}`} />
 );
 
 const MenuSkeleton = () => (
@@ -442,10 +442,10 @@ const MenuSkeleton = () => (
       <div key={sIdx}>
         {/* Cabecera de sección skeleton */}
         <div className="flex items-center gap-4 mb-16 px-4">
-          <SkeletonLine className="flex-grow h-px hidden sm:block" />
-          <SkeletonLine className={`h-3 ${section.labelW} flex-shrink-0`} />
-          <SkeletonLine className="h-10 w-48 flex-shrink-0" />
-          <SkeletonLine className="flex-grow h-px" />
+          <SkeletonLine className="grow h-px hidden sm:block" />
+          <SkeletonLine className={`h-3 ${section.labelW} shrink-0`} />
+          <SkeletonLine className="h-10 w-48 shrink-0" />
+          <SkeletonLine className="grow h-px" />
         </div>
 
         {/* Filas de plato skeleton */}
@@ -460,7 +460,7 @@ const MenuSkeleton = () => (
                 <SkeletonLine className={`h-3 ${i % 3 === 0 ? "w-full" : "w-4/5"}`} />
                 <SkeletonLine className="h-3 w-1/4" />
               </div>
-              <div className="flex-shrink-0 flex flex-col items-end gap-3 pt-1">
+              <div className="shrink-0 flex flex-col items-end gap-3 pt-1">
                 <SkeletonLine className="h-5 w-16" />
                 <SkeletonLine className="h-8 w-24" />
               </div>
@@ -480,7 +480,7 @@ const SectionHeader = ({ index, label }) => (
     className="flex items-center flex-nowrap gap-4 mb-16 sm:mb-20 max-w-6xl mx-auto opacity-90 w-full overflow-hidden px-4"
   >
     <LineReveal
-      className="flex-grow bg-text-main/10 hidden sm:block min-w-0"
+      className="grow bg-text-main/10 hidden sm:block min-w-0"
       delay={0.3}
     />
     <span className="text-[12px] tracking-[3px] font-body text-text-muted font-bold shrink-0">
@@ -490,7 +490,7 @@ const SectionHeader = ({ index, label }) => (
       <span className="italic">{label.split(" ")[0]}</span>{" "}
       {label.split(" ").slice(1).join(" ")}
     </h2>
-    <LineReveal className="flex-grow bg-text-main/10 min-w-0" delay={0.3} />
+    <LineReveal className="grow bg-text-main/10 min-w-0" delay={0.3} />
   </ScrollReveal>
 );
 
@@ -498,7 +498,7 @@ const SectionHeader = ({ index, label }) => (
 const DishRow = ({ item, addItem, isAdded }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
     <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
-      <div className="flex-grow">
+      <div className="grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
           <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
@@ -542,7 +542,7 @@ const DishRow = ({ item, addItem, isAdded }) => (
       <MotionButton
         onClick={() => addItem(item)}
         disabled={item.availableTakeaway === false}
-        className={`group w-full md:w-auto relative px-8 py-3 border font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 focus:outline-none ${
+        className={`group w-full md:w-auto relative px-8 py-3 border font-body text-[11px] uppercase tracking-[2px] overflow-hidden transition-all duration-500 focus:outline-hidden ${
           item.availableTakeaway === false
             ? "cursor-not-allowed border-text-main/10 text-text-muted/50"
             : isAdded
@@ -550,7 +550,7 @@ const DishRow = ({ item, addItem, isAdded }) => (
               : "bg-transparent border-text-main/30 text-text-main hover:border-primary"
         }`}
       >
-        <div className="absolute inset-0 w-0 bg-primary transition-all duration-[500ms] ease-out group-hover:w-full z-0"></div>
+        <div className="absolute inset-0 w-0 bg-primary transition-all duration-500 ease-out group-hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
           {item.availableTakeaway === false
             ? "Solo sala"
@@ -567,7 +567,7 @@ const DishRow = ({ item, addItem, isAdded }) => (
 const DisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
-      <div className="flex-grow">
+      <div className="grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
           <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
@@ -593,7 +593,7 @@ const DisplayRow = ({ item }) => (
 const WineDisplayRow = ({ item }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4 sm:gap-6">
     <div className="flex items-center gap-8 w-full md:w-3/4">
-      <div className="flex-grow">
+      <div className="grow">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
           <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
@@ -628,7 +628,7 @@ const WineDisplayRow = ({ item }) => (
 const TastingMenuCard = ({ menu }) => (
   <div className="border border-text-main/10 bg-bg-body relative overflow-hidden">
     {/* Línea decorativa superior */}
-    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+    <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-primary to-transparent"></div>
 
     <div className="p-8 sm:p-12 md:p-16">
       {/* Cabecera del menú */}
@@ -652,7 +652,7 @@ const TastingMenuCard = ({ menu }) => (
           <span className="italic">{menu.name.split(" ")[0]}</span>{" "}
           {menu.name.split(" ").slice(1).join(" ")}
         </h2>
-        <div className="w-12 h-[1px] bg-primary/50 mx-auto mb-6"></div>
+        <div className="w-12 h-px bg-primary/50 mx-auto mb-6"></div>
         <p className="text-text-muted font-normal leading-relaxed text-base sm:text-lg max-w-2xl mx-auto">
           {menu.description}
         </p>
@@ -673,7 +673,7 @@ const TastingMenuCard = ({ menu }) => (
             <span className="text-primary-hover text-[11px] tracking-[3px] font-body font-bold shrink-0 w-8">
               {String(dish.pivot?.numero_paso || i + 1).padStart(2, "0")}
             </span>
-            <div className="flex-grow">
+            <div className="grow">
               <span className="font-heading text-xl sm:text-2xl text-text-main">
                 {dish.nombre || dish.name}
               </span>
@@ -715,7 +715,7 @@ const TastingMenuCard = ({ menu }) => (
     </div>
 
     {/* Línea decorativa inferior */}
-    <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+    <div className="absolute bottom-0 left-0 w-full h-px bg-linear-to-r from-transparent via-primary/30 to-transparent"></div>
   </div>
 );
 

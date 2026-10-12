@@ -214,10 +214,10 @@ const CartView = () => {
   if (cartItems.length === 0 && step === "cart") {
     return (
       <PageTransition className="min-h-screen flex flex-col items-center justify-center text-center px-4 bg-bg-body relative overflow-hidden">
-        <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
         <FadeIn className="bg-bg-surface border border-text-main/10 p-8 sm:p-12 md:p-24 max-w-2xl w-full relative z-10 flex flex-col items-center">
           <h1 className="text-4xl md:text-5xl font-heading text-text-main leading-tight mb-8">Su carrito está vacío</h1>
-          <div className="w-16 h-[1px] bg-text-main/10 mb-8"></div>
+          <div className="w-16 h-px bg-text-main/10 mb-8"></div>
           <p className="text-text-main font-body font-medium mb-12 text-[15px] tracking-wide leading-relaxed opacity-90">
             Añada los platos disponibles para llevar y prepare su pedido para recoger en el restaurante.
           </p>
@@ -226,7 +226,7 @@ const CartView = () => {
               to="/menu?category=carta&takeaway=true"
               className="group relative px-8 py-4 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[1.8px] overflow-hidden transition-all duration-300 hover:border-text-main inline-block"
             >
-              <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+              <div className="absolute inset-0 w-0 bg-text-main transition-all duration-400 ease-out group-hover:w-full"></div>
               <span className="relative z-10 group-hover:text-white font-bold transition-colors duration-300">
                 Explorar la Carta
               </span>
@@ -252,7 +252,7 @@ const CartView = () => {
         <title>Mi pedido | Distrito Gourmet</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       {!storageAvailable && <p role="status" className="container text-sm text-text-muted">El navegador no permite guardar la selección. Se conservará mientras esta pestaña permanezca abierta.</p>}
       {IS_PUBLIC_DEMO && <p className="container text-sm text-text-muted mb-6">Está viendo una demostración. Puede preparar un carrito, pero no enviar pedidos.</p>}
@@ -266,7 +266,7 @@ const CartView = () => {
               <h1 className="font-heading text-4xl sm:text-5xl md:text-7xl text-text-main mb-8 leading-tight">
                 Su <span className="italic text-primary-hover">pedido</span>
               </h1>
-              <div className="w-16 h-[1px] bg-text-main/10 mx-auto"></div>
+              <div className="w-16 h-px bg-text-main/10 mx-auto"></div>
             </FadeIn>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 sm:gap-16">
@@ -347,7 +347,7 @@ const CartView = () => {
                     onClick={goToCheckout}
                     className="group relative w-full py-5 bg-transparent border border-text-main text-text-main font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all duration-300 hover:border-text-main mb-8"
                   >
-                    <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
+                    <div className="absolute inset-0 w-0 bg-text-main transition-all duration-400 ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                       ELEGIR RECOGIDA
                     </span>
@@ -404,7 +404,7 @@ const CartView = () => {
                       disabled={pickupLoading || Boolean(pickupError)}
                       value={selectedPickupTime}
                       onChange={(e) => setPickupTime(e.target.value)}
-                      className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-none focus:border-primary transition-colors font-body text-sm cursor-pointer"
+                      className="w-full bg-transparent border border-text-main/10 text-text-main p-3.5 outline-hidden focus:border-primary transition-colors font-body text-sm cursor-pointer"
                     >
                       {pickupOptions.length === 0 && <option value="">{pickupLoading ? "Consultando horarios…" : "No hay recogidas disponibles"}</option>}
                       {pickupOptions.map((opt) => (
@@ -437,7 +437,7 @@ const CartView = () => {
                   disabled={isProcessing || pickupLoading || Boolean(pickupError) || !selectedPickupTime}
                   className="group relative w-full py-5 bg-text-main text-white font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all duration-300 disabled:opacity-50"
                 >
-                  <div className="absolute inset-0 w-0 bg-primary-hover transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
+                  <div className="absolute inset-0 w-0 bg-primary-hover transition-all duration-400 ease-out group-hover:w-full z-0"></div>
                   <span className="relative z-10 font-bold">
                     {isProcessing ? "PROCESANDO..." : "CONFIRMAR PEDIDO"}
                   </span>
@@ -451,7 +451,7 @@ const CartView = () => {
         )}
       </div>
       {step === "cart" && cartItems.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-[54] border-t border-text-main/10 bg-bg-body/95 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:hidden">
+        <div className="fixed inset-x-0 bottom-0 z-54 border-t border-text-main/10 bg-bg-body/95 px-4 py-3 shadow-[0_-10px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:hidden">
           <button
             type="button"
             onClick={goToCheckout}

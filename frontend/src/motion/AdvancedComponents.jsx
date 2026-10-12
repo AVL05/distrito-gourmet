@@ -241,7 +241,7 @@ export const Marquee = ({
   return (
     <div
       ref={container}
-      className={`max-w-full overflow-hidden overflow-x-clip whitespace-nowrap [contain:paint] ${className}`}
+      className={`max-w-full overflow-hidden overflow-x-clip whitespace-nowrap contain-[paint] ${className}`}
       {...props}
     >
       <div ref={track} className="inline-flex will-change-transform">
@@ -389,7 +389,7 @@ export const ScrollProgress = ({ className = "", ...props }) => {
   return (
     <div
       ref={line}
-      className={`fixed top-0 left-0 right-0 h-[2px] bg-primary z-[100] origin-left ${className}`}
+      className={`fixed top-0 left-0 right-0 h-[2px] bg-primary z-100 origin-left ${className}`}
       {...props}
     />
   );

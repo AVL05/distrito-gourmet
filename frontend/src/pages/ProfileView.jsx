@@ -79,7 +79,7 @@ const ProfileView = () => {
               Personales
             </span>
           </h1>
-          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
+          <div className="w-16 h-px bg-linear-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
           <p className="text-gray-500 text-sm tracking-wide font-normal">
             Actualice sus datos de contacto. Cambie la contraseña solo si lo necesita.
           </p>
@@ -99,7 +99,7 @@ const ProfileView = () => {
                 setFormData({ ...formData, nombre: e.target.value })
               }
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -116,7 +116,7 @@ const ProfileView = () => {
                 setFormData({ ...formData, email: e.target.value })
               }
               required
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -132,7 +132,7 @@ const ProfileView = () => {
               onChange={(e) =>
                 setFormData({ ...formData, telefono: e.target.value })
               }
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
           </div>
 
@@ -151,7 +151,7 @@ const ProfileView = () => {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
-              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
+              className="w-full bg-transparent border-0 border-b border-gray-200 text-gray-900 py-3 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-gray-900/20 text-lg font-normal"
             />
             <p id="profile-password-help" className="text-sm text-text-muted mt-2">Al menos 8 caracteres. Déjelo vacío para mantener su contraseña actual.</p>
           </div>
@@ -161,7 +161,7 @@ const ProfileView = () => {
               type="submit"
               className="group relative w-full py-5 bg-transparent border border-primary text-primary-hover font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
             >
-              <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+              <div className="absolute inset-0 w-0 bg-primary transition-all duration-400 ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold tracking-[5px] group-hover:text-black transition-colors duration-300">
                 GUARDAR CAMBIOS
               </span>

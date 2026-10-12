@@ -20,4 +20,4 @@ export const showAdminErrorToast = (
 ) => showAdminToast(getApiErrorMessage(error, fallback), "error");
 
 export const adminEditInputClass =
-  "w-full border border-text-main/20 bg-white p-3 text-sm text-text-main shadow-sm outline-none transition placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "w-full border border-text-main/20 bg-white p-3 text-sm text-text-main shadow-xs outline-hidden transition placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15";

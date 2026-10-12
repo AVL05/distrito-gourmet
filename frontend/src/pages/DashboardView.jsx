@@ -91,10 +91,10 @@ const OrderItem = ({ order }) => {
   );
 
   return (
-    <div className="group relative bg-bg-surface/50 border border-text-main/10 p-6 sm:p-8 hover:bg-text-main/[0.07] transition-[border-color,box-shadow] duration-300 rounded-sm">
+    <div className="group relative bg-bg-surface/50 border border-text-main/10 p-6 sm:p-8 hover:bg-text-main/[0.07] transition-[border-color,box-shadow] duration-300 rounded-xs">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div className="flex items-start gap-4 flex-1">
-          <div className="w-12 h-12 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-hover rounded-sm mt-1 flex-shrink-0">
+          <div className="w-12 h-12 bg-primary/10 border border-primary/20 flex items-center justify-center text-primary-hover rounded-xs mt-1 shrink-0">
             <HiShoppingBag size={20} />
           </div>
           <div className="flex-1 min-w-0">
@@ -152,7 +152,7 @@ const OrderItem = ({ order }) => {
             {order.detalles?.map((item, idx) => (
               <div
                 key={idx}
-                className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/[0.02] px-2 transition-colors"
+                className="flex justify-between items-center text-sm font-body py-3 border-b border-text-main/5 last:border-0 hover:bg-text-main/2 px-2 transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <span className="w-7 h-7 flex items-center justify-center bg-primary/5 text-[10px] font-bold text-primary-hover border border-primary/10 rounded-full">
@@ -278,7 +278,7 @@ const DashboardView = () => {
             onClick={logout}
             className="group relative px-6 sm:px-8 py-3 bg-transparent border border-text-main/20 text-text-muted font-body text-[10px] uppercase tracking-[3px] overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-red-500/50 w-full md:w-auto text-center"
           >
-            <div className="absolute inset-0 w-0 bg-red-900/20 transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+            <div className="absolute inset-0 w-0 bg-red-900/20 transition-all duration-400 ease-out group-hover:w-full"></div>
             <span className="relative z-10 group-hover:text-red-800 transition-[border-color,box-shadow] duration-300">
               Cerrar Sesión
             </span>
@@ -303,7 +303,7 @@ const DashboardView = () => {
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
                     Ver mis reservas{" "}
-                    <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
+                    <span className="w-6 h-px bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
               </Link>
@@ -330,7 +330,7 @@ const DashboardView = () => {
                   <div className="mt-auto">
                     <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-primary-hover">
                       Acceder al Panel{" "}
-                      <span className="w-6 h-[1px] bg-primary group-hover:bg-primary-hover transition-colors"></span>
+                      <span className="w-6 h-px bg-primary group-hover:bg-primary-hover transition-colors"></span>
                     </span>
                   </div>
                 </Link>
@@ -354,7 +354,7 @@ const DashboardView = () => {
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
                     Editar Perfil{" "}
-                    <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
+                    <span className="w-6 h-px bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
               </Link>
@@ -378,7 +378,7 @@ const DashboardView = () => {
                 <div className="mt-auto">
                   <span className="inline-flex items-center gap-3 text-[10px] uppercase tracking-[3px] text-primary-hover transition-all group-hover:text-text-main">
                     Ver Menú{" "}
-                    <span className="w-6 h-[1px] bg-primary group-hover:bg-text-main transition-colors"></span>
+                    <span className="w-6 h-px bg-primary group-hover:bg-text-main transition-colors"></span>
                   </span>
                 </div>
               </Link>
@@ -417,12 +417,12 @@ const DashboardView = () => {
                     className="border border-text-main/10 bg-bg-body p-6 sm:p-8"
                   >
                     <div className="flex items-start gap-4 mb-5">
-                      <div className="skeleton rounded-sm w-12 h-12 flex-shrink-0" />
+                      <div className="skeleton rounded-xs w-12 h-12 shrink-0" />
                       <div className="flex-1 space-y-3 pt-1">
-                        <div className="skeleton rounded-sm h-5 w-2/5" />
-                        <div className="skeleton rounded-sm h-3 w-3/5" />
+                        <div className="skeleton rounded-xs h-5 w-2/5" />
+                        <div className="skeleton rounded-xs h-3 w-3/5" />
                       </div>
-                      <div className="skeleton rounded-sm h-8 w-28 flex-shrink-0" />
+                      <div className="skeleton rounded-xs h-8 w-28 shrink-0" />
                     </div>
                   </div>
                 ))}

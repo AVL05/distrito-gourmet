@@ -229,7 +229,7 @@ if (databaseSetup.error || databaseSetup.status !== 0) {
   removeTemporaryDatabase();
   process.exit(1);
 }
-logInfo('Base temporal: los cambios se pierden al detener o reiniciar npm start.');
+logInfo('Base temporal: los cambios se pierden al detener o reiniciar pnpm start.');
 
 const backend = spawn(phpCmd, ['artisan', 'serve', '--host=0.0.0.0', `--port=${backendPort}`], {
   cwd: './backend',
@@ -241,8 +241,8 @@ const startFrontend = () => {
   if (frontend) return;
 
   logInfo('Starting frontend (Vite)');
-  const frontendCommand = process.platform === 'win32' ? 'cmd.exe' : 'npm';
-  const frontendArgs = process.platform === 'win32' ? ['/d', '/s', '/c', `npm run dev -- --port ${frontendPort} --strictPort`] : ['run', 'dev', '--', '--port', String(frontendPort), '--strictPort'];
+  const frontendCommand = process.platform === 'win32' ? 'cmd.exe' : 'pnpm';
+  const frontendArgs = process.platform === 'win32' ? ['/d', '/s', '/c', `pnpm run dev --port ${frontendPort} --strictPort`] : ['run', 'dev', '--port', String(frontendPort), '--strictPort'];
 
   frontend = spawn(frontendCommand, frontendArgs, {
     cwd: './frontend',

@@ -24,10 +24,10 @@ const HomeView = () => {
           style={{ backgroundImage: "url('/sala-restaurante.webp')" }}
         ></div>
 
-        <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
-        <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
+        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+        <div className="absolute top-1/2 left-0 right-0 h-px bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
 
-        <div className="relative z-10 px-4 py-8 max-w-5xl 2k:max-w-7xl 4k:max-w-[90rem] mx-auto flex flex-col items-center justify-center">
+        <div className="relative z-10 px-4 py-8 max-w-5xl 2k:max-w-7xl 4k:max-w-360 mx-auto flex flex-col items-center justify-center">
           <TextReveal
             text="Distrito"
             aria-label="Distrito Gourmet"
@@ -71,7 +71,7 @@ const HomeView = () => {
                     to="/reservations"
                     className="group relative px-8 sm:px-10 py-4 bg-text-main text-bg-body font-body text-[11px] sm:text-[12px] uppercase tracking-[2px] sm:tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center inline-block"
                   >
-                    <div className="absolute inset-0 w-0 bg-primary transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+                    <div className="absolute inset-0 w-0 bg-primary transition-all duration-400 ease-out group-hover:w-full"></div>
                     <span className="relative z-10 font-semibold transition-colors duration-300 group-hover:text-white">
                       Reservar Mesa
                     </span>
@@ -86,7 +86,7 @@ const HomeView = () => {
       <section className="py-16 md:py-24 border-y border-text-main/10 bg-bg-surface">
         <div className="container grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           <div className="lg:col-span-7">
-            <img src="/pulpo-parmentier.webp" srcSet="/pulpo-parmentier-640.webp 640w, /pulpo-parmentier-960.webp 960w, /pulpo-parmentier.webp 1536w" sizes="(min-width: 1024px) 55vw, 100vw" width="1536" height="1024" loading="lazy" decoding="async" alt="Pulpo a la brasa sobre parmentier de patata, con pimentón" className="w-full h-auto aspect-[3/2] object-cover" />
+            <img src="/pulpo-parmentier.webp" srcSet="/pulpo-parmentier-640.webp 640w, /pulpo-parmentier-960.webp 960w, /pulpo-parmentier.webp 1536w" sizes="(min-width: 1024px) 55vw, 100vw" width="1536" height="1024" loading="lazy" decoding="async" alt="Pulpo a la brasa sobre parmentier de patata, con pimentón" className="w-full h-auto aspect-3/2 object-cover" />
           </div>
           <div className="lg:col-span-5">
             <p className="text-sm text-primary-hover mb-4">De nuestra carta</p>
@@ -117,7 +117,7 @@ const HomeView = () => {
                 className="text-4xl sm:text-5xl md:text-6xl lg:text-[4rem] font-heading text-text-main mb-7 leading-[1.1] tracking-normal"
               />
 
-              <div className="h-[1px] w-full bg-text-main/10 mb-7"></div>
+              <div className="h-px w-full bg-text-main/10 mb-7"></div>
 
               <p className="text-text-muted mb-4 leading-relaxed font-body font-normal text-[15px] tracking-wide">
                 Distrito Gourmet nace como una cocina urbana de raíz española,
@@ -149,7 +149,7 @@ const HomeView = () => {
               delay={0.1}
               className="lg:col-span-4 flex justify-center lg:justify-end order-1 lg:order-2 px-4 md:px-0"
             >
-              <div className="w-full max-w-[500px] aspect-[3/4] overflow-hidden rounded-t-[250px] relative">
+              <div className="w-full max-w-[500px] aspect-3/4 overflow-hidden rounded-t-[250px] relative">
                 <div className="absolute inset-0 border border-text-main/10 rounded-t-[250px] z-20 pointer-events-none"></div>
                 <ParallaxImage
                   src="/bodega.webp"
@@ -273,7 +273,7 @@ const HomeView = () => {
                   to="/reservations"
                   className="group relative px-12 py-5 bg-transparent border border-bg-body/60 text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-primary-light focus-visible:outline w-full sm:w-auto text-center inline-block"
                 >
-                  <div className="absolute inset-0 w-0 bg-primary-light transition-all duration-[400ms] ease-out group-hover:w-full"></div>
+                  <div className="absolute inset-0 w-0 bg-primary-light transition-all duration-400 ease-out group-hover:w-full"></div>
                   <span className="relative z-10 font-bold group-hover:text-white transition-colors duration-300">
                     Solicitar Reserva
                   </span>

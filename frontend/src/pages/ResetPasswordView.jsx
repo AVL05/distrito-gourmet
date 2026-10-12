@@ -95,7 +95,7 @@ const ResetPasswordView = () => {
           <span className="text-primary-hover text-[10px] uppercase tracking-[5px] font-body block mb-4">
             Nueva Contraseña
           </span>
-          <h1 className="font-heading text-[1.8rem] sm:text-4xl text-text-main uppercase tracking-[0.05em] sm:tracking-widest">
+          <h1 className="font-heading text-[1.8rem] sm:text-4xl text-text-main uppercase tracking-wider sm:tracking-widest">
             Restablecer
           </h1>
         </div>
@@ -110,7 +110,7 @@ const ResetPasswordView = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-normal"
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-hidden focus:border-primary transition-colors font-body font-normal"
               placeholder="Mínimo 8 caracteres"
               required
             />
@@ -125,7 +125,7 @@ const ResetPasswordView = () => {
               name="password_confirmation"
               value={formData.password_confirmation}
               onChange={handleChange}
-              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-none focus:border-primary transition-colors font-body font-normal"
+              className="w-full bg-transparent border-b border-text-main/20 py-3 px-1 text-text-main focus:outline-hidden focus:border-primary transition-colors font-body font-normal"
               placeholder="Repita la contraseña"
               required
             />

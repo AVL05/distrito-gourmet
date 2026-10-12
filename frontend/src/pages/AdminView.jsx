@@ -28,11 +28,11 @@ import UserEditRow from "@/components/admin/UserEditRow";
 import WineEditRow from "@/components/admin/WineEditRow";
 
 const inputClass =
-  "w-full border border-text-main/20 bg-white px-3 py-3 text-sm text-text-main shadow-sm outline-none transition placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15";
+  "w-full border border-text-main/20 bg-white px-3 py-3 text-sm text-text-main shadow-xs outline-hidden transition placeholder:text-text-muted/50 focus:border-primary focus:ring-2 focus:ring-primary/15";
 const labelClass =
   "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-text-muted";
 const adminFormClass =
-  "border border-text-main/10 bg-bg-surface p-5 shadow-sm sm:p-6";
+  "border border-text-main/10 bg-bg-surface p-5 shadow-xs sm:p-6";
 const adminFormHeaderClass = "mb-5 border-b border-text-main/10 pb-4";
 const adminFormGridClass = "grid grid-cols-1 gap-4 lg:grid-cols-6";
 const adminSubmitClass =
@@ -519,7 +519,7 @@ const AdminView = () => {
   const renderOrderCard = (order) => (
     <article
       key={order.id}
-      className="border border-text-main/10 bg-bg-surface p-5 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      className="border border-text-main/10 bg-bg-surface p-5 shadow-xs transition hover:border-primary/40 hover:shadow-md"
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
@@ -612,7 +612,7 @@ const AdminView = () => {
             onChange={(event) =>
               handleUpdateOrderStatus(order.id, event.target.value)
             }
-            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
+            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-hidden focus:border-primary disabled:opacity-50"
           >
             {["Pendiente", "Preparando", "Listo", "Entregado", "Cancelado"].map((status) => <option key={status} value={status} disabled={status !== order.estado && !({ Pendiente: ["Preparando", "Cancelado"], Preparando: ["Listo", "Cancelado"], Listo: ["Entregado", "Cancelado"] }[order.estado] || []).includes(status)}>{status}</option>)}
           </select>
@@ -638,7 +638,7 @@ const AdminView = () => {
   const renderReservationCard = (reservation) => (
     <article
       key={reservation.id}
-      className="border border-text-main/10 bg-bg-surface p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      className="border border-text-main/10 bg-bg-surface p-4 shadow-xs transition hover:border-primary/40 hover:shadow-md"
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
@@ -743,7 +743,7 @@ const AdminView = () => {
                 estado: event.target.value,
               })
             }
-            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-none focus:border-primary disabled:opacity-50"
+            className="min-w-0 flex-1 border border-text-main/10 bg-bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-main outline-hidden focus:border-primary disabled:opacity-50"
           >
             <option value="Pendiente">Pendiente</option>
             <option value="Confirmada">Confirmada</option>
@@ -1824,7 +1824,7 @@ const AdminView = () => {
         </aside>
 
         <main className="min-w-0">
-          <header className="sticky top-0 z-30 border-b border-text-main/10 bg-bg-body/95 backdrop-blur">
+          <header className="sticky top-0 z-30 border-b border-text-main/10 bg-bg-body/95 backdrop-blur-sm">
             <div className="flex flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">

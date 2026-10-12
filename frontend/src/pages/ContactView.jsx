@@ -97,7 +97,7 @@ const ContactView = () => {
         <meta name="description" content="Horario, dirección y formulario de contacto de Distrito Gourmet." />
       </Helmet>
       {/* Líneas decorativas de fondo */}
-      <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-6xl relative z-10">
         <ScrollReveal className="text-center mb-16 sm:mb-24 relative">
@@ -200,7 +200,7 @@ const ContactView = () => {
                     aria-describedby={
                       errors.name ? "contact-name-error" : undefined
                     }
-                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
                       errors.name ? "border-red-700" : "border-text-main/20"
                     }`}
                     placeholder="Escriba su nombre"
@@ -232,7 +232,7 @@ const ContactView = () => {
                     aria-describedby={
                       errors.email ? "contact-email-error" : undefined
                     }
-                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 placeholder:text-transparent text-lg font-heading ${
                       errors.email ? "border-red-700" : "border-text-main/20"
                     }`}
                     placeholder="contacto@ejemplo.com"
@@ -262,7 +262,7 @@ const ContactView = () => {
                     aria-describedby={
                       errors.subject ? "contact-subject-error" : undefined
                     }
-                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading ${
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 text-lg font-heading ${
                       errors.subject ? "border-red-700" : "border-text-main/20"
                     }`}
                   >
@@ -302,7 +302,7 @@ const ContactView = () => {
                     aria-describedby={
                       errors.message ? "contact-message-error" : undefined
                     }
-                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-none focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-transparent text-lg font-heading ${
+                    className={`w-full bg-transparent border-0 border-b text-text-main py-2 focus:outline-hidden focus:ring-0 focus:border-primary transition-all duration-300 resize-none placeholder:text-transparent text-lg font-heading ${
                       errors.message ? "border-red-700" : "border-text-main/20"
                     }`}
                     placeholder="¿En qué podemos ayudarle?"
@@ -331,7 +331,7 @@ const ContactView = () => {
                     className="group relative w-full py-4 bg-transparent border border-text-main text-text-main font-body text-[10px] uppercase tracking-[4px] overflow-hidden transition-all hover:border-text-main"
                     disabled={sending}
                   >
-                    <div className="absolute inset-0 w-0 bg-text-main transition-all duration-[400ms] ease-out group-hover:w-full z-0"></div>
+                    <div className="absolute inset-0 w-0 bg-text-main transition-all duration-400 ease-out group-hover:w-full z-0"></div>
                     <span className="relative z-10 font-bold group-hover:text-bg-body transition-colors duration-300">
                       {sending ? "ENVIANDO..." : "ENVIAR MENSAJE"}
                     </span>

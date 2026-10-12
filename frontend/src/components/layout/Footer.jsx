@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="bg-bg-body relative border-t border-text-main/10 pt-20 pb-10 overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-linear-to-r from-transparent via-primary/50 to-transparent"></div>
 
       <div className="container relative z-10">
         <FadeIn className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
@@ -18,7 +18,7 @@ const Footer = () => {
                   ✦
                 </span>
                 <span className="min-w-0">DISTRITO</span>
-                <span className="italic text-primary-hover min-w-0 break-words">
+                <span className="italic text-primary-hover min-w-0 wrap-break-word">
                   GOURMET
                 </span>
               </p>
@@ -34,7 +34,7 @@ const Footer = () => {
             <div className="text-left">
               <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Ubicación
-                <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
+                <span className="absolute -bottom-2 left-0 w-4 h-px bg-primary"></span>
               </h2>
               <p className="text-text-main/80 text-sm leading-loose font-medium">
                 Calle del Mercado, 18
@@ -47,7 +47,7 @@ const Footer = () => {
             <div className="text-left">
               <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Comunicación
-                <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
+                <span className="absolute -bottom-2 left-0 w-4 h-px bg-primary"></span>
               </h2>
               <p className="text-text-main/80 text-sm leading-loose font-medium flex flex-col">
                 <a href="tel:+34960000000" className="py-1 underline">+34 960 00 00 00</a>
@@ -57,7 +57,7 @@ const Footer = () => {
             <div className="text-left">
               <h2 className="font-heading text-[10px] text-text-main/80 uppercase tracking-[4px] mb-6 relative inline-block font-semibold">
                 Servicio
-                <span className="absolute -bottom-2 left-0 w-4 h-[1px] bg-primary"></span>
+                <span className="absolute -bottom-2 left-0 w-4 h-px bg-primary"></span>
               </h2>
               <ServiceHours />
             </div>

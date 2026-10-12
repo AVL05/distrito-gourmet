@@ -90,8 +90,8 @@ const Navbar = () => {
       <nav
         className={
           isAdminPage
-            ? "fixed right-4 top-4 z-[60] flex items-center transition-all duration-700 md:right-8 md:top-6"
-            : `fixed top-0 w-full z-[60] transition-all duration-700 flex items-center ${
+            ? "fixed right-4 top-4 z-60 flex items-center transition-all duration-700 md:right-8 md:top-6"
+            : `fixed top-0 w-full z-60 transition-all duration-700 flex items-center ${
                 isOpen
                   ? "bg-transparent border-b border-transparent h-20 md:h-28"
                   : scrolled
@@ -111,7 +111,7 @@ const Navbar = () => {
             <NavLink
               to="/cart"
               onClick={closeMenu}
-              className={`relative flex items-center group transition-colors z-[70] ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
+              className={`relative flex items-center group transition-colors z-70 ${isOpen ? "text-bg-body" : "text-text-main"}`}
               title="Carrito"
               aria-label={`Ver carrito (${totalItems()} artículos)`}
             >
@@ -142,11 +142,11 @@ const Navbar = () => {
           {!isAdminPage && (
             <NavLink
               to="/"
-              className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-[70] max-w-[58vw]"
+              className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-70 max-w-[58vw]"
               onClick={closeMenu}
             >
               <span
-                className={`font-heading text-base sm:text-lg md:text-2xl uppercase tracking-[0.18em] sm:tracking-[0.25em] leading-none transition-colors duration-500 truncate max-w-full ${isOpen ? "text-[#FCFBF8]" : "text-text-main"}`}
+                className={`font-heading text-base sm:text-lg md:text-2xl uppercase tracking-[0.18em] sm:tracking-[0.25em] leading-none transition-colors duration-500 truncate max-w-full ${isOpen ? "text-bg-body" : "text-text-main"}`}
               >
                 Distrito
               </span>
@@ -158,9 +158,9 @@ const Navbar = () => {
 
           <div className="flex items-center gap-6">
           <button
-            className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-[70] ${
+            className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-70 ${
               isAdminPage && !isOpen
-                ? "h-11 w-11 border border-text-main/10 bg-bg-body/90 p-2 shadow-sm backdrop-blur"
+                ? "h-11 w-11 border border-text-main/10 bg-bg-body/90 p-2 shadow-xs backdrop-blur-sm"
                 : "w-11 h-11 bg-transparent"
             }`}
             onClick={toggleMenu}
@@ -169,13 +169,13 @@ const Navbar = () => {
             aria-controls="navigation-menu"
           >
             <span
-              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 -rotate-45 translate-x-[2px]" : "bg-text-main w-6"}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-6 -rotate-45 translate-x-[2px]" : "bg-text-main w-6"}`}
             />
             <span
-              className={`block h-[1.5px] transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-0 opacity-0" : "bg-text-main w-4"}`}
+              className={`block h-[1.5px] transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-0 opacity-0" : "bg-text-main w-4"}`}
             />
             <span
-              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-[#FCFBF8] w-6 rotate-45 translate-x-[2px]" : "bg-text-main w-5"}`}
+              className={`block h-[1.5px] origin-right transition-all duration-500 group-hover:bg-primary ${isOpen ? "bg-bg-body w-6 rotate-45 translate-x-[2px]" : "bg-text-main w-5"}`}
             />
           </button>
           </div>
@@ -187,7 +187,7 @@ const Navbar = () => {
         id="navigation-menu"
         inert={!isOpen}
         aria-hidden={!isOpen}
-        className={`fixed inset-0 z-[55] bg-text-main overflow-x-clip transition-[clip-path] duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
+        className={`fixed inset-0 z-55 bg-text-main overflow-x-clip transition-[clip-path] duration-700 ease-[cubic-bezier(0.77,0,0.175,1)] ${
           isOpen ? "pointer-events-auto" : "pointer-events-none"
         }`}
         style={{
@@ -199,9 +199,9 @@ const Navbar = () => {
           style={{ backgroundImage: "url('/sala-restaurante.webp')" }}
           onClick={closeMenu}
         />
-        <div className="absolute top-0 bottom-0 left-1/3 w-[1px] bg-white/5 hidden md:block" />
-        <div className="absolute top-0 bottom-0 left-2/3 w-[1px] bg-white/5 hidden md:block" />
-        <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-white/5 hidden md:block" />
+        <div className="absolute top-0 bottom-0 left-1/3 w-px bg-white/5 hidden md:block" />
+        <div className="absolute top-0 bottom-0 left-2/3 w-px bg-white/5 hidden md:block" />
+        <div className="absolute left-0 right-0 top-1/2 h-px bg-white/5 hidden md:block" />
 
         <div className="relative z-10 h-full overflow-y-auto no-scrollbar flex flex-col justify-between mobile-safe-padding md:px-16 pt-24 sm:pt-28 md:pt-28 pb-8 md:pb-10">
           <nav
@@ -232,12 +232,12 @@ const Navbar = () => {
                   <span className="font-body text-[10px] md:text-[11px] text-primary-hover tracking-[0.2em] w-6 md:w-8 shrink-0 font-bold">
                     {romanNumerals[i]}
                   </span>
-                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-6xl lg:text-[5.25rem] 2xl:text-[5.75rem] text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary-hover transition-colors duration-500 group-hover:italic break-words">
+                  <span className="font-heading text-[clamp(2.25rem,13vw,4.5rem)] md:text-6xl lg:text-[5.25rem] 2xl:text-[5.75rem] text-bg-body uppercase tracking-wide sm:tracking-wider leading-none group-hover:text-primary-hover transition-colors duration-500 group-hover:italic wrap-break-word">
                     {link.label}
                   </span>
                 </NavLink>
                 {i < mainLinks.length - 1 && (
-                  <div className="h-[1px] bg-white/5 ml-10 md:ml-16" />
+                  <div className="h-px bg-white/5 ml-10 md:ml-16" />
                 )}
               </div>
             ))}

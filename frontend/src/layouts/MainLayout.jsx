@@ -21,7 +21,7 @@ const MainLayout = () => {
       <main
         id="main-content"
         tabIndex={-1}
-        className={`flex-grow ${isAdminPage ? "" : "pt-20 md:pt-24 md:px-0"}`}
+        className={`grow ${isAdminPage ? "" : "pt-20 md:pt-24 md:px-0"}`}
       >
         <Outlet key={location.pathname} />
       </main>

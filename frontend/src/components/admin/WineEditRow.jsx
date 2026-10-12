@@ -29,7 +29,7 @@ const WineEditRow = ({ item, fetchData, handleDelete }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.3)] relative h-full rounded-sm transition-all">
+      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.3)] relative h-full rounded-xs transition-all">
         <div className="flex justify-between items-start mb-2">
           <h4 className="text-primary-hover font-heading text-xl uppercase tracking-widest">
             Editando Bodega

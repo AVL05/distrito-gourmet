@@ -24,7 +24,7 @@ const ReservationsView = () => {
         <meta name="description" content="Reserva tu mesa en Distrito Gourmet. Elige día, hora y número de comensales." />
       </Helmet>
       {/* Líneas decorativas de fondo */}
-      <div className="absolute top-0 bottom-0 left-1/2 w-[1px] bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
+      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
 
       <div className="container max-w-5xl relative z-10">
         <ScrollReveal className="text-center mb-16 sm:mb-24 relative">
@@ -61,7 +61,7 @@ const ReservationsView = () => {
           >
             Nueva Reserva
             <div
-              className={`absolute bottom-0 left-0 h-[1px] bg-text-main transition-all duration-300 ${activeTab === "new" ? "w-full" : "w-0"}`}
+              className={`absolute bottom-0 left-0 h-px bg-text-main transition-all duration-300 ${activeTab === "new" ? "w-full" : "w-0"}`}
             />
           </button>
           <button
@@ -76,7 +76,7 @@ const ReservationsView = () => {
           >
             Mis reservas
             <div
-              className={`absolute bottom-0 left-0 h-[1px] bg-text-main transition-all duration-300 ${activeTab === "history" ? "w-full" : "w-0"}`}
+              className={`absolute bottom-0 left-0 h-px bg-text-main transition-all duration-300 ${activeTab === "history" ? "w-full" : "w-0"}`}
             />
           </button>
         </div>

@@ -37,7 +37,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-sm transition-all">
+      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-xs transition-all">
         <div className="flex justify-between items-start mb-2">
           <h4 className="text-primary-hover font-heading text-xl uppercase tracking-widest">
             Editando Plato
@@ -252,7 +252,7 @@ const DishEditRow = ({ item, fetchData, handleDelete, categories }) => {
             {item.alergenos.split(",").map((a) => (
               <span
                 key={a}
-                className="text-[8px] bg-text-main/5 text-text-muted px-2 py-0.5 uppercase tracking-tighter rounded-sm"
+                className="text-[8px] bg-text-main/5 text-text-muted px-2 py-0.5 uppercase tracking-tighter rounded-xs"
               >
                 {a.trim()}
               </span>

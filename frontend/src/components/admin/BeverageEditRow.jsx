@@ -25,7 +25,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
 
   if (isEditing) {
     return (
-      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-sm transition-all">
+      <div className="bg-bg-surface border border-primary/30 p-8 flex flex-col gap-8 shadow-[0_30px_60px_rgba(0,0,0,0.2)] relative h-full rounded-xs transition-all">
         <div className="space-y-6 overflow-y-auto max-h-[450px] pr-3 scrollbar-thin">
           <div className="text-left">
             <label className="text-text-muted text-[11px] uppercase tracking-[2px] block mb-2 font-bold opacity-70">
@@ -167,7 +167,7 @@ const BeverageEditRow = ({ item, fetchData, handleDelete }) => {
         <span className="text-text-main font-heading text-2xl">
           {parseFloat(item.precio).toFixed(2)}€
         </span>
-        <div className="w-8 h-[1px] bg-primary/20 group-hover:w-12 transition-all"></div>
+        <div className="w-8 h-px bg-primary/20 group-hover:w-12 transition-all"></div>
       </div>
     </div>
   );

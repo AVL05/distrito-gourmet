@@ -2,11 +2,12 @@
   "name": "distrito-gourmet",
   "version": "1.0.0",
   "private": true,
+  "packageManager": "pnpm@12.8.1",
   "scripts": {
-    "install:all": "cd backend && composer install && cd ../frontend && npm install",
+    "install:all": "cd backend && composer install && cd .. && pnpm install && pnpm --dir frontend install",
     "start": "node scripts/dev.js"
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.2.5"
   }
 }
