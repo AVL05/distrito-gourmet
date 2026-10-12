@@ -11,6 +11,12 @@ class DatabaseSessionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_api_root_redirects_to_the_configured_frontend(): void
+    {
+        config(['app.frontend_url' => 'https://restaurant.example']);
+        $this->get('/')->assertRedirect('https://restaurant.example');
+    }
+
     public function test_database_sessions_and_cache_support_spa_login(): void
     {
         config(['session.driver' => 'database', 'cache.default' => 'database']);
