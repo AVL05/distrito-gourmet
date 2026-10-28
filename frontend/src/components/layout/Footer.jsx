@@ -9,6 +9,7 @@ const Footer = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px bg-linear-to-r from-transparent via-primary/50 to-transparent"></div>
 
       <div className="container relative z-10">
+        <p className="mb-8 text-sm text-text-muted">Proyecto de portfolio. Restaurante, datos de contacto y servicios ficticios. Utilice únicamente datos de prueba.</p>
         <FadeIn className="flex flex-col md:flex-row justify-between items-start mb-20 gap-16">
           {/* Logo y descripción */}
           <div className="md:w-5/12 flex flex-col justify-start">

@@ -88,6 +88,7 @@ const Navbar = () => {
   return (
     <div ref={root} role={isOpen ? "dialog" : undefined} aria-modal={isOpen || undefined} aria-label={isOpen ? "Navegación" : undefined}>
       <nav
+        aria-label="Navegación principal"
         className={
           isAdminPage
             ? "fixed right-4 top-4 z-60 flex items-center transition-all duration-700 md:right-8 md:top-6"
@@ -96,7 +97,7 @@ const Navbar = () => {
                   ? "bg-transparent border-b border-transparent h-20 md:h-28"
                   : scrolled
                     ? "bg-bg-body/95 backdrop-blur-md border-b border-text-main/5 h-16 md:h-20"
-                    : "bg-transparent h-20 md:h-28"
+                    : "bg-bg-body/95 h-20 md:h-24"
               }`
         }
       >
@@ -111,7 +112,7 @@ const Navbar = () => {
             <NavLink
               to="/cart"
               onClick={closeMenu}
-              className={`relative flex items-center group transition-colors z-70 ${isOpen ? "text-bg-body" : "text-text-main"}`}
+              className={`relative flex min-h-11 min-w-11 items-center justify-center group transition-colors z-70 lg:order-3 lg:ml-4 ${isOpen ? "text-bg-body" : "text-text-main"}`}
               title="Carrito"
               aria-label={`Ver carrito (${totalItems()} artículos)`}
             >
@@ -142,7 +143,7 @@ const Navbar = () => {
           {!isAdminPage && (
             <NavLink
               to="/"
-              className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-70 max-w-[58vw]"
+              className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group z-70 max-w-[58vw] lg:static lg:translate-x-0 lg:order-1 lg:items-start"
               onClick={closeMenu}
             >
               <span
@@ -156,7 +157,19 @@ const Navbar = () => {
             </NavLink>
           )}
 
-          <div className="flex items-center gap-6">
+          {!isAdminPage && !isOpen && (
+            <div className="hidden lg:flex lg:order-2 lg:ml-auto items-center gap-7">
+              {mainLinks.slice(1).map((link) => (
+                <NavLink key={link.to} to={link.to} className={({ isActive }) => `inline-flex min-h-11 items-center text-sm transition-colors hover:text-primary-hover ${isActive ? "underline underline-offset-8 decoration-primary-hover" : ""}`}>
+                  {link.label}
+                </NavLink>
+              ))}
+              <NavLink to={isAuthenticated() ? "/dashboard" : "/login"} className="inline-flex min-h-11 items-center border-l border-text-main/20 pl-7 text-sm hover:text-primary-hover transition-colors">
+                Mi cuenta
+              </NavLink>
+            </div>
+          )}
+          <div className="flex items-center gap-6 lg:order-4">
           <button
             className={`flex flex-col items-end justify-center gap-[5px] cursor-pointer group z-70 ${
               isAdminPage && !isOpen

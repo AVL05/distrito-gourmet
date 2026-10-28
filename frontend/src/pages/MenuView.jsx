@@ -85,6 +85,7 @@ const MenuView = () => {
             id: d.id,
             item_type: "plato",
             name: d.nombre,
+            slug: d.slug,
             description: d.descripcion,
             price: parseFloat(d.precio),
             category: d.categoria ? d.categoria.nombre.toLowerCase() : "otros",
@@ -214,9 +215,9 @@ const MenuView = () => {
           </FadeIn>
           <FadeIn delay={0.5}>
             <p className="text-text-muted font-normal leading-relaxed sm:leading-loose text-base sm:text-lg max-w-2xl mx-auto">
-              Una selección de sabores diseñada para despertar los sentidos,
-              desde los clásicos reinventados hasta las creaciones más audaces
-              de nuestro equipo a los mandos.
+              Entrantes para compartir, carnes, pescados y postres de obrador.
+              Consulte precios, alérgenos y opciones para recoger, o explore
+              la bodega y los menús degustación.
             </p>
           </FadeIn>
         </div>
@@ -497,8 +498,11 @@ const SectionHeader = ({ index, label }) => (
 // Fila de plato individual. Aquí es donde se añade al carrito.
 const DishRow = ({ item, addItem, isAdded }) => (
   <div className="group relative py-6 md:py-10 border-b border-text-main/10 flex flex-col md:flex-row md:items-center justify-between hover:bg-text-main/5 transition-colors duration-500 gap-4">
-    <div className="flex items-center gap-4 md:gap-8 w-full md:w-3/4">
-      <div className="grow">
+    <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 w-full md:w-3/4">
+      {item.slug === "pulpo-brasa-parmentier" && (
+        <img src="/pulpo-parmentier-640.webp" srcSet="/pulpo-parmentier-640.webp 640w, /pulpo-parmentier-960.webp 960w" sizes="(min-width: 768px) 160px, 100vw" width="1536" height="1024" alt="Pulpo a la brasa con parmentier trufado" loading="lazy" decoding="async" className="w-full max-w-sm aspect-3/2 object-cover md:w-40 md:shrink-0" />
+      )}
+      <div className="grow min-w-0">
         <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4 mb-2">
           <h3 className="font-heading text-2xl sm:text-3xl md:text-4xl text-text-main group-hover:text-primary-hover transition-colors leading-tight">
             {item.name}
@@ -514,17 +518,17 @@ const DishRow = ({ item, addItem, isAdded }) => (
         )}
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           {item.availableTakeaway === false && (
-            <span className="text-[10px] uppercase tracking-widest text-red-800/80">
+            <span className="text-xs leading-relaxed text-red-800">
               Solo disponible en sala
             </span>
           )}
           {item.max_per_order && item.max_per_order < 999 && (
-            <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
+            <span className="text-xs leading-relaxed text-text-muted">
               Máx. {item.max_per_order} por pedido
             </span>
           )}
           {item.allergens && (
-            <span className="text-[10px] uppercase tracking-widest text-text-muted opacity-60">
+            <span className="text-xs leading-relaxed text-text-muted">
               Alérgenos: {item.allergens}
             </span>
           )}
@@ -546,11 +550,11 @@ const DishRow = ({ item, addItem, isAdded }) => (
           item.availableTakeaway === false
             ? "cursor-not-allowed border-text-main/10 text-text-muted/50"
             : isAdded
-              ? "bg-primary border-primary text-white"
+              ? "bg-text-main border-text-main text-bg-body"
               : "bg-transparent border-text-main/30 text-text-main hover:border-primary"
         }`}
       >
-        <div className="absolute inset-0 w-0 bg-primary transition-all duration-500 ease-out group-hover:w-full z-0"></div>
+        <div className="absolute inset-0 w-0 bg-text-main transition-all duration-300 ease-out group-hover:w-full z-0"></div>
         <span className="relative z-10 font-bold transition-colors duration-300 group-hover:text-white">
           {item.availableTakeaway === false
             ? "Solo sala"

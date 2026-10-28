@@ -2,7 +2,6 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import {
   PageTransition,
-  FadeIn,
   TextReveal,
   ScrollReveal,
   ParallaxImage,
@@ -18,81 +17,47 @@ const HomeView = () => {
         <meta name="description" content="Restaurante de cocina española contemporánea en Valencia. Carta de temporada, bodega seleccionada y reservas online." />
       </Helmet>
 
-      <section className="relative min-h-[calc(100dvh-5rem)] md:min-h-[calc(100dvh-6rem)] flex flex-col items-center justify-center text-center overflow-hidden bg-bg-body">
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-20"
-          style={{ backgroundImage: "url('/sala-restaurante.webp')" }}
-        ></div>
-
-        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-text-main/5 -translate-x-1/2 z-0 hidden md:block"></div>
-        <div className="absolute top-1/2 left-0 right-0 h-px bg-text-main/5 -translate-y-1/2 z-0 hidden md:block"></div>
-
-        <div className="relative z-10 px-4 py-8 max-w-5xl 2k:max-w-7xl 4k:max-w-360 mx-auto flex flex-col items-center justify-center">
-          <TextReveal
-            text="Distrito"
-            aria-label="Distrito Gourmet"
-            splitBy="char"
-            as="h1"
-            staggerDelay={0.04}
-            delay={0.1}
-            allowWrap={false}
-            className="text-[clamp(2.35rem,10vw,6rem)] md:text-[6.8rem] leading-[0.9] font-heading text-text-main mb-2 tracking-normal justify-center"
-          />
-          <TextReveal
-            text="Gourmet"
-            aria-hidden="true"
-            splitBy="char"
-            as="span"
-            staggerDelay={0.04}
-            delay={0.15}
-            allowWrap={false}
-            className="italic text-[clamp(2.75rem,11vw,5.4rem)] md:text-[5.8rem] text-primary font-heading mb-5 justify-center"
-          />
-
-          <FadeIn delay={0.15}>
-            <p className="text-xs sm:text-sm md:text-base text-text-muted font-body font-normal mb-8 sm:mb-10 max-w-lg mx-auto leading-loose tracking-[0.18em] sm:tracking-widest uppercase">
-              Cocina Española Contemporánea
+      <section className="bg-bg-body border-b border-text-main/10">
+        <div className="container grid lg:grid-cols-12 gap-8 lg:gap-12 items-center py-10 sm:py-14 lg:py-16">
+          <div className="lg:col-span-5">
+            <p className="text-xs text-primary-hover uppercase tracking-[0.16em] mb-6">Distrito Gourmet · Cocina española</p>
+            <h1 className="font-heading normal-case tracking-tight text-[clamp(2.75rem,5vw,5rem)] leading-[1.08] mb-6">
+              Cocina de temporada.<br />
+              <span className="italic text-primary-hover">Tiempo para disfrutar.</span>
+            </h1>
+            <p className="text-text-muted leading-relaxed max-w-md mb-8">
+              Entrantes para compartir, cocina de raíz española y una bodega
+              para acompañar la mesa. Descubra la carta y elija su próxima visita.
             </p>
-          </FadeIn>
-
-          <FadeIn delay={0.25}>
-            <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 items-center w-full sm:w-auto">
-              <Link
-                to="/menu"
-                className="group relative px-6 text-text-main font-body text-[12px] sm:text-[13px] uppercase tracking-[2px] sm:tracking-[3px] transition-all"
-              >
-                <span className="relative z-10 font-bold group-hover:text-primary transition-colors pb-1 border-b border-text-main group-hover:border-primary">
-                  Descubrir la Carta
-                </span>
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              <Link to="/reservations" className="inline-flex min-h-12 items-center justify-center bg-text-main text-bg-body px-6 py-4 text-xs font-semibold uppercase tracking-widest hover:bg-primary-hover transition-colors">
+                Reservar mesa
               </Link>
-              <MagneticButton as="div" strength={12} className="cursor-pointer">
-                <div>
-                  <Link
-                    to="/reservations"
-                    className="group relative px-8 sm:px-10 py-4 bg-text-main text-bg-body font-body text-[11px] sm:text-[12px] uppercase tracking-[2px] sm:tracking-[3px] overflow-hidden transition-all hover:bg-primary w-full sm:w-auto text-center inline-block"
-                  >
-                    <div className="absolute inset-0 w-0 bg-primary transition-all duration-400 ease-out group-hover:w-full"></div>
-                    <span className="relative z-10 font-semibold transition-colors duration-300 group-hover:text-white">
-                      Reservar Mesa
-                    </span>
-                  </Link>
-                </div>
-              </MagneticButton>
+              <Link to="/menu" className="inline-flex min-h-12 items-center text-sm underline underline-offset-4 hover:text-primary-hover transition-colors">
+                Descubrir la carta
+              </Link>
             </div>
-          </FadeIn>
+          </div>
+          <figure className="lg:col-span-7 m-0">
+            <img src="/pulpo-parmentier.webp" srcSet="/pulpo-parmentier-640.webp 640w, /pulpo-parmentier-960.webp 960w, /pulpo-parmentier.webp 1536w" sizes="(min-width: 1024px) 55vw, 100vw" width="1536" height="1024" fetchPriority="high" decoding="async" alt="Pulpo a la brasa sobre parmentier de patata, con pimentón" className="w-full h-auto aspect-3/2 object-cover" />
+            <figcaption className="flex flex-wrap justify-between gap-2 pt-4 text-xs text-text-muted">
+              <span>De nuestra carta</span>
+              <span>Pulpo a la brasa · Parmentier trufado</span>
+            </figcaption>
+          </figure>
         </div>
       </section>
 
       <section className="py-16 md:py-24 border-y border-text-main/10 bg-bg-surface">
         <div className="container grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
           <div className="lg:col-span-7">
-            <img src="/pulpo-parmentier.webp" srcSet="/pulpo-parmentier-640.webp 640w, /pulpo-parmentier-960.webp 960w, /pulpo-parmentier.webp 1536w" sizes="(min-width: 1024px) 55vw, 100vw" width="1536" height="1024" loading="lazy" decoding="async" alt="Pulpo a la brasa sobre parmentier de patata, con pimentón" className="w-full h-auto aspect-3/2 object-cover" />
+            <img src="/sala-restaurante.webp" width="1536" height="1024" loading="lazy" decoding="async" alt="Sala de Distrito Gourmet, con mesas de madera e iluminación cálida" className="w-full h-auto aspect-3/2 object-cover" />
           </div>
           <div className="lg:col-span-5">
-            <p className="text-sm text-primary-hover mb-4">De nuestra carta</p>
-            <h2 className="text-3xl md:text-4xl normal-case tracking-normal leading-tight">Pulpo a la brasa con parmentier trufado</h2>
-            <p className="text-text-muted leading-relaxed mb-6">Pulpo de roca, puré de patata sedoso con aceite de trufa blanca y pimentón de la Vera. Una de las propuestas para disfrutar en la sala.</p>
-            <Link to="/menu?category=carta&q=pulpo" className="btn btn-outline">Consultar la carta</Link>
+            <p className="text-sm text-primary-hover mb-4">La sala</p>
+            <h2 className="text-3xl md:text-4xl normal-case tracking-normal leading-tight">Una mesa para disfrutar sin prisas</h2>
+            <p className="text-text-muted leading-relaxed mb-6">Una sala cálida y urbana, con pocas mesas y un servicio cercano. Elija día, hora y número de comensales para preparar su próxima visita.</p>
+            <Link to="/reservations" className="btn btn-outline">Consultar disponibilidad</Link>
           </div>
         </div>
       </section>
@@ -274,7 +239,7 @@ const HomeView = () => {
                   className="group relative px-12 py-5 bg-transparent border border-bg-body/60 text-bg-body font-body text-[12px] uppercase tracking-[3px] overflow-hidden transition-all hover:border-primary-light focus-visible:outline w-full sm:w-auto text-center inline-block"
                 >
                   <div className="absolute inset-0 w-0 bg-primary-light transition-all duration-400 ease-out group-hover:w-full"></div>
-                  <span className="relative z-10 font-bold group-hover:text-white transition-colors duration-300">
+                  <span className="relative z-10 font-bold group-hover:text-text-main transition-colors duration-300">
                     Solicitar Reserva
                   </span>
                 </Link>
