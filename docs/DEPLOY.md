@@ -37,6 +37,7 @@ Configurar en Render, sin subir secretos al repositorio:
 - `APP_URL` con la URL HTTPS del backend; `FRONTEND_URL` y `CORS_ALLOWED_ORIGINS` con el origen HTTPS del frontend; `SANCTUM_STATEFUL_DOMAINS` con su host sin protocolo.
 - `SESSION_DRIVER=database`, `SESSION_SECURE_COOKIE=true`, `SESSION_HTTP_ONLY=true`, `SESSION_SAME_SITE=lax`; `SESSION_DOMAIN` debe compartir el dominio principal de frontend y backend.
 - `CACHE_STORE=database`. En el plan gratuito, usar `QUEUE_CONNECTION=sync` salvo que exista un worker operativo; configurar SMTP antes de exigir envío real de correo.
+- `TRUSTED_PROXIES` con las IP/CIDR de los proxies autorizados. Si el proveedor usa proxies dinámicos, `*` solo es válido cuando el proveedor garantiza que no se puede acceder directamente al proceso y sobrescribe las cabeceras reenviadas; verificarlo antes de publicar. Por defecto se ignoran esas cabeceras. Esta variable es necesaria para atribuir los límites a la IP real y detectar HTTPS detrás del proxy.
 
 El backend necesita un subdominio del mismo dominio principal que la SPA para Sanctum. Configurar `VITE_API_URL` en Vercel y permitir únicamente ese origen en `connect-src` de CSP. Las comprobaciones anteriores verifican la conexión y las pantallas; la creación y cancelación reales de reservas/pedidos se cubren en tests, pero no se han ejercitado en producción.
 
@@ -58,11 +59,25 @@ Render gratuito puede detenerse por inactividad; Supabase gratuito tiene límite
 
 ---
 
+## Proxies, alertas y recuperación
+
+Estas acciones de operación no se activan al cambiar el código:
+
+1. Antes de publicar, confirmar `TRUSTED_PROXIES`, `APP_DEBUG=false`, cookies seguras, CORS y dominio compartido de Sanctum. Probar que dos clientes reales conservan IP distintas en los logs y que una cabecera `X-Forwarded-For` manipulada no cambia la identidad. Configurar TLS en el borde; el Compose local no lo termina.
+2. En el alojamiento, filtrar `security.request_denied`, estados 429 y errores 5xx. Configurar una alerta ante incrementos sostenidos respecto al tráfico habitual; no enviar contraseñas, cuerpos ni cookies al sistema de monitorización. Revisar también `security.admin_write`. Restringir acceso y fijar una retención acorde al uso de datos de prueba.
+3. Aplicar reglas WAF/rate limiting tanto al frontend como al dominio de la API. Una regla solo en Vercel no protege el backend alojado por separado. Comprobar CSRF y reservas desde el navegador después de activar reglas para evitar bloquear flujos legítimos.
+4. Hacer copias automáticas cifradas de la base de datos en un almacenamiento privado separado del servidor. Conservar las claves de recuperación fuera del repositorio y del log; usar una cuenta de copia con permisos mínimos. En PostgreSQL/Supabase usar un dump que incluya el esquema del restaurante; en MySQL incluir todas las tablas y una copia transaccional coherente.
+5. Probar la restauración en una base aislada, nunca sobre producción: aplicar la copia, comprobar recuentos e integridad de usuarios/catálogo/reservas/pedidos y verificar login con cuentas de prueba. Registrar fecha, duración, antigüedad de la copia y resultado real. Un dump generado no acredita una restauración.
+
+Pendientes antes de admitir datos reales: rotar las cuentas de ejemplo, verificar SMTP y recuperación, completar MFA administrativo con alta/códigos de recuperación, y comprobar copias y alertas en el proveedor. Esta entrega no modifica cuentas ni configura servicios externos.
+
+---
+
 ## 🛠️ Requisitos previos
 
 - **Docker** y **Docker Compose** instalados.
 - **Git** para la clonación del repositorio.
-- Puertos libres: `80` (Frontend), `8000` (Backend) y `3306` (Base de datos).
+- Puertos libres: `80` (Frontend) y `127.0.0.1:8000` (acceso local al backend). MySQL no publica un puerto en el host.
 
 ---
 
@@ -87,6 +102,12 @@ cp frontend/.env.example frontend/.env
 ```
 
 Revisa la sección [Variables de entorno](#-variables-de-entorno) para ajustar los valores clave antes de levantar el entorno.
+
+Compose carga `backend/.env` para la configuración de Laravel. También exige `DB_PASSWORD` y `DB_ROOT_PASSWORD` mediante el entorno o un `.env` en la raíz (no versionado); usar contraseñas distintas y propias. `DB_DATABASE` y `DB_USERNAME` deben coincidir con Laravel. Generar `APP_KEY` antes del arranque. No copiar credenciales reales a la imagen: `.dockerignore` excluye los archivos de entorno.
+
+Si ya existe `db_data`, mantener las credenciales reales actuales: cambiar estas variables no cambia las contraseñas de usuarios de un volumen MySQL inicializado. La rotación debe hacerse como operación separada, con copia previa; no borrar el volumen para resolver un error de autenticación.
+
+MySQL queda accesible solo dentro de la red de Compose; para administrarlo usar `docker compose exec db mysql -u root -p`. El backend publica su puerto únicamente en loopback. Nginx sobrescribe `X-Forwarded-For` con la IP de la conexión y Compose configura `TRUSTED_PROXIES=REMOTE_ADDR` para ese salto interno. Si hay un proxy TLS adicional delante de Nginx, configurar sus IP confiables y la recuperación de IP/protocolo en Nginx antes de publicarlo; no reenviar cabeceras del cliente sin comprobar su origen.
 
 ### 3. Levantar los contenedores
 
@@ -207,7 +228,7 @@ Para el entorno de producción en un servidor Ubuntu, se utiliza el script de ge
 
 | Síntoma | Posible causa | Solución |
 |---|---|---|
-| `docker-compose up` falla por puerto ocupado | Otro proceso usando `80`, `8000` o `3306` | Libera el puerto o cambia el mapeo en `docker-compose.yml` |
+| `docker-compose up` falla por puerto ocupado | Otro proceso usando `80` o `127.0.0.1:8000` | Libera el puerto o cambia el mapeo en `docker-compose.yml` |
 | Frontend no conecta con la API | `VITE_API_URL` mal configurada | Revisa `frontend/.env` y reconstruye el contenedor del frontend |
 | Error de conexión a base de datos | El backend arrancó antes de que MySQL esté listo | Reinicia el servicio backend: `docker-compose restart backend` |
 | `php artisan migrate --seed` falla | Variables `DB_*` incorrectas en `backend/.env` | Verifica que coincidan con el servicio `db` definido en `docker-compose.yml` |

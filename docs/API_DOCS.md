@@ -45,6 +45,9 @@
 | `POST` | `/api/login` | ❌ | Inicio de sesión |
 | `POST` | `/api/logout` | ✅ | Cierre de sesión |
 | `GET` | `/api/user` | ✅ | Usuario autenticado |
+| `PUT` | `/api/profile` | ✅ | Actualizar perfil; cambios de credenciales requieren contraseña actual |
+| `POST` | `/api/forgot-password` | ❌ | Solicitar recuperación |
+| `POST` | `/api/reset-password` | ❌ | Restablecer contraseña con token |
 | `GET` | `/api/dishes` | ❌ | Carta completa (platos, vinos, bebidas, menús) |
 | `GET` | `/api/reservation-availability` | ❌ | Disponibilidad de turnos por fecha |
 | `POST` | `/api/contact` | ❌ | Envío de consulta de contacto |
@@ -133,7 +136,7 @@ POST /api/login
 }
 ```
 
-> 🔒 `POST /api/register` y `POST /api/login` tienen un **rate limit de 5 intentos por minuto** por email/IP.
+> 🔒 Registro, login y recuperación aplican límites independientes por IP y cuenta, además de 5 intentos/minuto por combinación cuenta/IP. Consultar los [límites completos](SECURITY.md#3-rate-limiting). HTTP 429 incluye `Retry-After`; esperar ese intervalo antes de reintentar. Los intentos inválidos también cuentan.
 
 ---
 
@@ -158,6 +161,23 @@ GET /api/user
 ```
 
 Las rutas protegidas reciben automáticamente la cookie de sesión. En despliegues con frontend y API en orígenes distintos deben configurarse `SANCTUM_STATEFUL_DOMAINS`, `CORS_ALLOWED_ORIGINS` y las opciones seguras de sesión.
+
+---
+
+### Actualizar el perfil
+
+`PUT /api/profile` acepta `nombre`, `email`, `telefono` y `password` opcionales. Si cambia el correo o se envía una nueva contraseña, también exige `current_password` válido; si falta o es incorrecto, devuelve HTTP 422 con `errors.current_password` y no guarda cambios. No acepta cambios de rol desde el perfil. Ejemplo:
+
+```json
+{
+  "email": "nuevo.correo@example.com",
+  "current_password": "contraseña-actual-del-usuario"
+}
+```
+
+Respuesta HTTP 200: `{ "message": "Usuario actualizado correctamente", "user": { ... } }`, sin contraseña. Actualizar solo nombre/teléfono o reenviar el mismo correo no requiere contraseña actual. El límite es 10 intentos/minuto por usuario.
+
+`PUT /api/admin/users/{id}` conserva la gestión administrativa de otros usuarios; un administrador que cambia sus propias credenciales también debe enviar `current_password`. Comparte el límite de 10 intentos/minuto con el perfil para impedir usarlo como vía alternativa. Mantener la sesión y protección CSRF en ambos casos. La respuesta del backend sigue siendo la autoridad para actualizar el estado de usuario de la SPA.
 
 ---
 

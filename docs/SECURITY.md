@@ -60,7 +60,27 @@ El frontend consume la API mediante el prefijo `/api` y, en desarrollo, Vite pue
 
 ### 3. Rate limiting
 
-Las rutas públicas de autenticación (`/api/login` y `/api/register`) aplican límite de intentos por email/IP para reducir abuso por fuerza bruta.
+Todas las rutas API tienen un límite general de 120 peticiones/minuto por usuario autenticado o IP anónima. Además:
+
+| Operación | Límites |
+| --- | --- |
+| Login, registro, solicitud y restablecimiento de contraseña | 30/min por IP, 10/min por cuenta normalizada y 5/min por combinación cuenta/IP |
+| Contacto | 5/min por IP, independientemente del correo enviado |
+| Perfil y actualización administrativa de usuarios | 10/min por usuario (contador compartido) |
+| Crear pedidos | 5/min y 30/hora por usuario |
+| Crear reservas | 5/min y 20/hora por usuario |
+
+Los límites cuentan también los intentos inválidos, devuelven HTTP 429 y `Retry-After`, y necesitan un almacén de caché compartido en producción (`CACHE_STORE=database` o Redis). No sustituyen un WAF ni la protección de red frente a DDoS.
+
+### 4. Cambios de cuenta y auditoría
+
+Cambiar el correo o la contraseña propios exige `current_password` válido. Nombre y teléfono no requieren esa confirmación. El perfil no permite modificar roles; esa operación sigue limitada al endpoint administrativo. El frontend mantiene el usuario en memoria y ya no persiste el perfil en `localStorage`.
+
+El middleware `SecurityAudit` registra escrituras administrativas exitosas (`security.admin_write`) y rechazos 401/403/429 o login inválido (`security.request_denied`). Solo conserva identificador interno del actor, IP, método, plantilla de ruta y estado HTTP. No registra cuerpos, parámetros de consulta, contraseñas, tokens ni cookies. IP e identificadores siguen siendo datos a proteger; limitar acceso y retención de logs. La configuración de alertas y retención del alojamiento es una tarea operativa, no viene activada por el middleware.
+
+### 5. Proxies y red
+
+Por defecto no se confía en cabeceras reenviadas. Configurar `TRUSTED_PROXIES` según [la guía de despliegue](DEPLOY.md#proxies-alertas-y-recuperación). Docker mantiene MySQL en su red interna y publica el acceso directo del backend solo en loopback. No reutilizar credenciales de prueba en un servidor público.
 
 ---
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { USE_STATIC_DEMO_DATA } from "@/config/demo";
+import { useAuthStore } from "@/store/auth";
 import {
   adminEditInputClass,
   showAdminErrorToast,
@@ -10,6 +11,7 @@ import {
 
 // Fila editable para la gestión de usuarios y roles en el panel de administración
 const UserEditRow = ({ user, fetchData }) => {
+  const currentUser = useAuthStore((state) => state.user);
   const [isEditing, setIsEditing] = useState(false);
   const [editUser, setEditUser] = useState({
     nombre: user.nombre,
@@ -17,7 +19,9 @@ const UserEditRow = ({ user, fetchData }) => {
     email: user.email,
     telefono: user.telefono || "",
     password: "",
+    current_password: "",
   });
+  const changesOwnCredentials = currentUser?.id === user.id && (!!editUser.password || editUser.email !== user.email);
 
   // Actualiza los datos del usuario en la base de datos
   const handleUpdate = async () => {
@@ -41,7 +45,9 @@ const UserEditRow = ({ user, fetchData }) => {
         delete dataToSend.password;
       }
 
-      await axios.put(`/admin/users/${user.id}`, dataToSend);
+      const response = await axios.put(`/admin/users/${user.id}`, dataToSend);
+      if (currentUser?.id === user.id) useAuthStore.setState({ user: response.data.user });
+      setEditUser((current) => ({ ...current, password: "", current_password: "" }));
       showAdminToast("Usuario actualizado");
       setIsEditing(false);
       fetchData();
@@ -160,6 +166,13 @@ const UserEditRow = ({ user, fetchData }) => {
               className={adminEditInputClass}
             />
           </div>
+          {changesOwnCredentials && (
+            <div className="text-left">
+              <label htmlFor={`current-password-${user.id}`} className="mb-2 block text-sm text-text-main">Su contraseña actual</label>
+              <input id={`current-password-${user.id}`} type="password" autoComplete="current-password" value={editUser.current_password} onChange={(e) => setEditUser({ ...editUser, current_password: e.target.value })} className={adminEditInputClass} />
+              <p className="mt-2 text-sm text-text-muted">Necesaria para cambiar sus propias credenciales.</p>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 pt-4 border-t border-text-main/5 mt-auto">

@@ -143,6 +143,7 @@ class RestaurantOperationsTest extends TestCase
 
     public function test_https_is_detected_behind_the_hosting_proxy(): void
     {
+        config(['trustedproxy.proxies' => '127.0.0.1']);
         Route::get('/proxy-check', fn () => ['secure' => request()->isSecure()]);
         $this->getJson('/proxy-check', ['X-Forwarded-Proto' => 'https'])->assertOk()->assertJsonPath('secure', true);
     }

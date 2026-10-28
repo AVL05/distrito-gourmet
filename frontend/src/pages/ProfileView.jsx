@@ -5,19 +5,26 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { PageTransition, FadeIn, MotionButton } from "@/motion";
 import { Link } from "react-router-dom";
+import { getApiErrorMessage, getApiFieldErrors } from "@/utils/apiErrors";
 
 // Vista de perfil del usuario: permite gestionar información personal y credenciales de acceso
 const ProfileView = () => {
   const { user } = useAuthStore();
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     nombre: user?.nombre || "",
     email: user?.email || "",
     telefono: user?.telefono || "",
     password: "",
+    current_password: "",
   });
+  const changesCredentials = !!formData.password || formData.email !== user?.email;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return;
+    setErrors({});
 
     // Validación local de contraseña
     if (formData.password && formData.password.length < 8) {
@@ -32,6 +39,7 @@ const ProfileView = () => {
       return;
     }
 
+    setSaving(true);
     try {
       const response = await axios.put("/profile", formData);
       Swal.fire({
@@ -42,20 +50,22 @@ const ProfileView = () => {
         confirmButtonColor: "var(--accent)",
       });
 
-      // Actualizar localStorage y contexto si cambia email/nombre
       const updatedUser = response.data.user;
-      localStorage.setItem("user", JSON.stringify(updatedUser));
       useAuthStore.setState({ user: updatedUser });
+      setFormData({ nombre: updatedUser.nombre, email: updatedUser.email, telefono: updatedUser.telefono || "", password: "", current_password: "" });
     } catch (err) {
-      console.error(err);
+      const fieldErrors = getApiFieldErrors(err);
+      setErrors(fieldErrors);
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: err.response?.data?.message || "Error al actualizar",
+        text: Object.values(fieldErrors)[0] || getApiErrorMessage(err, "No se pudo actualizar el perfil."),
         background: "#fdfaf6",
         color: "#2c302e",
         confirmButtonColor: "var(--accent)",
       });
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -85,7 +95,7 @@ const ProfileView = () => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-8" aria-busy={saving}>
           <div className="relative group">
             <label htmlFor="profile-name" className="text-[10px] uppercase tracking-[3px] text-primary-hover block mb-2 transition-colors group-focus-within:text-primary-hover">
               Nombre Completo
@@ -156,14 +166,35 @@ const ProfileView = () => {
             <p id="profile-password-help" className="text-sm text-text-muted mt-2">Al menos 8 caracteres. Déjelo vacío para mantener su contraseña actual.</p>
           </div>
 
+          {changesCredentials && (
+            <div>
+              <label htmlFor="profile-current-password" className="block text-sm text-text-main mb-2">Contraseña actual</label>
+              <input
+                id="profile-current-password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={formData.current_password}
+                onChange={(e) => setFormData({ ...formData, current_password: e.target.value })}
+                aria-invalid={!!errors.current_password}
+                aria-describedby="profile-current-password-help"
+                className="w-full border border-text-main/30 bg-white px-3 py-3 text-text-main focus:border-text-main focus:ring-text-main"
+              />
+              <p id="profile-current-password-help" className="mt-2 text-sm text-text-muted" role={errors.current_password ? "alert" : undefined}>
+                {errors.current_password || "Para cambiar su correo o contraseña, confirme su identidad con la contraseña actual."}
+              </p>
+            </div>
+          )}
+
           <div className="pt-8">
             <MotionButton
               type="submit"
+              disabled={saving}
               className="group relative w-full py-5 bg-transparent border border-primary text-primary-hover font-body text-xs uppercase tracking-[4px] overflow-hidden transition-all duration-500 hover:shadow-[0_0_30px_rgba(197,160,89,0.5)]"
             >
               <div className="absolute inset-0 w-0 bg-primary transition-all duration-400 ease-out group-hover:w-full"></div>
               <span className="relative z-10 font-bold tracking-[5px] group-hover:text-black transition-colors duration-300">
-                GUARDAR CAMBIOS
+                {saving ? "GUARDANDO…" : "GUARDAR CAMBIOS"}
               </span>
             </MotionButton>
           </div>

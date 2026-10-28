@@ -45,12 +45,12 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $request->merge(['email' => trim($request->email)]);
-
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string',
         ]);
+
+        $request->merge(['email' => trim($request->email)]);
 
         if (! Auth::guard('web')->attempt($request->only('email', 'password'))) {
             throw ValidationException::withMessages([

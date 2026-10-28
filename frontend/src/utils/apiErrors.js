@@ -16,6 +16,10 @@ export const getApiErrorMessage = (
 ) => {
   const data = error?.response?.data;
 
+  if (error?.response?.status === 429) {
+    return "Demasiadas solicitudes. Espere un momento antes de volver a intentarlo.";
+  }
+
   if (error?.response?.status >= 500) {
     return "No pudimos completar la operación. Inténtelo más tarde.";
   }

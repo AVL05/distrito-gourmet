@@ -5,11 +5,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-distrito_gourmet}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Configure DB_ROOT_PASSWORD}
       MYSQL_USER: ${DB_USERNAME:-distrito_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
-    ports:
-      - "3306:3306"
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
 
@@ -19,8 +17,10 @@ services:
       dockerfile: Dockerfile
     container_name: distrito-backend
     restart: always
+    env_file:
+      - ./backend/.env
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
@@ -28,7 +28,8 @@ services:
       DB_HOST: db
       DB_DATABASE: ${DB_DATABASE:-distrito_gourmet}
       DB_USERNAME: ${DB_USERNAME:-distrito_user}
-      DB_PASSWORD: ${DB_PASSWORD:-password}
+      DB_PASSWORD: ${DB_PASSWORD:?Configure DB_PASSWORD}
+      TRUSTED_PROXIES: REMOTE_ADDR
     depends_on:
       - db
 

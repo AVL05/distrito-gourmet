@@ -6,6 +6,7 @@ import axios from "@/services/api";
 import Swal from "sweetalert2";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
+import { getApiErrorMessage } from "@/utils/apiErrors";
 
 // Formulario de reserva de mesa
 const ReservationForm = ({ compact = false }) => {
@@ -222,25 +223,10 @@ const ReservationForm = ({ compact = false }) => {
         comments: "",
       }));
     } catch (err) {
-      // Si hay error, lo mostramos por pantalla con detalle
-      console.error("Error de reserva:", err);
-      const errorData = err.response?.data;
-      let errorMsg = "No se pudo procesar la reserva";
-
-      if (errorData?.mensaje) {
-        errorMsg = errorData.mensaje;
-      } else if (errorData?.message) {
-        errorMsg = errorData.message;
-      } else if (errorData?.errors) {
-        // Recoger el primer error de validación si existe
-        const firstError = Object.values(errorData.errors)[0];
-        if (Array.isArray(firstError)) errorMsg = firstError[0];
-      }
-
       Swal.fire({
         icon: "error",
         title: "Atención",
-        text: errorMsg,
+        text: getApiErrorMessage(err, "No se pudo procesar la reserva."),
         confirmButtonColor: "var(--accent)",
         background: "#fdfaf6",
         color: "#2c302e",

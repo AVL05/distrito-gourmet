@@ -45,12 +45,20 @@ class UsuarioController extends Controller
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
+        $changesCredentials = $request->filled('password')
+            || ($request->has('email') && $request->input('email') !== $user->email);
+
         $request->validate([
             'nombre' => 'sometimes|required|string|max:255',
             'email' => ['sometimes', 'required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'telefono' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:8',
+            'current_password' => $userId == auth()->id() && $changesCredentials
+                ? ['required', 'string', 'current_password'] : ['nullable', 'string'],
             'rol' => ['sometimes', 'required', Rule::in(['Administrador', 'Cliente', 'Staff'])],
+        ], [
+            'current_password.required' => 'Introduzca su contraseña actual para cambiar el correo o la contraseña.',
+            'current_password.current_password' => 'La contraseña actual no es correcta.',
         ]);
 
         $data = $request->only(['nombre', 'email', 'telefono']);
@@ -59,7 +67,7 @@ class UsuarioController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        if ($request->filled('rol') && auth()->user()->rol === 'Administrador') {
+        if ($id !== null && $request->filled('rol') && auth()->user()->rol === 'Administrador') {
             $data['rol'] = $request->rol;
         }
 

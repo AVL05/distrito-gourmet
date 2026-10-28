@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:auth');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');
 Route::post('/forgot-password', [PasswordResetController::class, 'forgotPassword'])->middleware('throttle:auth');
-Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->middleware('throttle:auth');
 Route::get('/dishes', [PlatoController::class, 'index']);
 Route::get('/pickup-times', PickupTimesController::class);
 Route::get('/reservation-availability', ReservationAvailabilityController::class);
@@ -30,19 +30,19 @@ Route::get('/service-calendar', fn () => response()->json([
     'days' => RestaurantSchedule::calendar(),
     'services' => config('restaurant.services'),
 ]));
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:auth');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact');
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'me']);
-    Route::put('/profile', [UsuarioController::class, 'update']);
+    Route::put('/profile', [UsuarioController::class, 'update'])->middleware('throttle:profile');
 
     Route::get('/reservations', [ReservaController::class, 'index']);
-    Route::post('/reservations', [ReservaController::class, 'store']);
+    Route::post('/reservations', [ReservaController::class, 'store'])->middleware('throttle:reservations');
     Route::patch('/reservations/{id}/cancel', [ReservaController::class, 'cancel']);
 
-    Route::post('/orders', [PedidoController::class, 'store']);
+    Route::post('/orders', [PedidoController::class, 'store'])->middleware('throttle:orders');
     Route::get('/orders', [PedidoController::class, 'index']);
 
     // Rutas de staff (sala y cocina: Administrador + Staff)
@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/users', [UsuarioController::class, 'index']);
         Route::post('/users', [UsuarioController::class, 'store']);
-        Route::put('/users/{id}', [UsuarioController::class, 'update']);
+        Route::put('/users/{id}', [UsuarioController::class, 'update'])->middleware('throttle:profile');
         Route::delete('/users/{id}', [UsuarioController::class, 'destroy']);
     });
 });

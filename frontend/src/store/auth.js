@@ -2,6 +2,7 @@ import api, { initializeCsrfProtection } from "@/services/api";
 import { IS_PUBLIC_DEMO } from "@/config/demo";
 import { demoAdminUser } from "@/data/demoAdmin";
 import { create } from "zustand";
+import { getApiErrorMessage } from "@/utils/apiErrors";
 
 // Store de autenticación con Zustand: la sesión real vive en una cookie HttpOnly.
 export const useAuthStore = create((set, get) => ({
@@ -48,7 +49,7 @@ export const useAuthStore = create((set, get) => ({
       set({
         error: err.response?.data?.errors
           ? Object.values(err.response.data.errors).flat()[0]
-          : err.response?.data?.message || "Error al iniciar sesión",
+          : getApiErrorMessage(err, "Error al iniciar sesión"),
         loading: false,
       });
       return false;
@@ -76,7 +77,7 @@ export const useAuthStore = create((set, get) => ({
       set({
         error: err.response?.data?.errors
           ? Object.values(err.response.data.errors).flat()[0]
-          : err.response?.data?.message || "Error al registrarse",
+          : getApiErrorMessage(err, "Error al registrarse"),
         loading: false,
       });
       return false;
